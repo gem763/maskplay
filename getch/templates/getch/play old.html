@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+
+{% load static %}
+<head>
+  <title>GET.CH</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
+  <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+
+  <!-- favicon.ico 404 Not found error -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <style>
+    :root {
+      --menu: 40px;
+      --height: min(100vh, calc(2*100vw - 2*var(--menu)));
+      --width: min(100vw, calc(50vh + var(--menu)));
+      --menu-left: calc(var(--width) - var(--menu) - 2px);
+    }
+
+    * {
+      /* box-sizing: border-box; */
+    }
+
+    .swiper-container {
+      height: 100%;
+      width: 100%;
+    }
+
+    .swiper-slide {
+      background: black;
+    }
+
+    table.post {
+      margin: 0 !important;
+      height: var(--height) !important;
+      width: var(--width) !important;
+      border-bottom: 1px solid black !important;
+      border-right: 1px solid black !important;
+      border-radius: 0 !important;
+    }
+
+    table.post td {
+      border-color: black !important;
+      padding: 0 !important;
+      box-sizing: content-box !important;
+    }
+
+    table.post td.right {
+      width: var(--menu) !important;
+      border-top: none;
+      position: relative;
+    }
+
+    table.post.master {
+      background: white !important;
+      opacity: 0.5;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .menu-block {
+      position: absolute;
+      background: orange;
+      width: var(--menu);
+      height: var(--menu);
+      border: 1px solid black;
+      box-sizing: content-box;
+      z-index: 2;
+      pointer-events: auto;
+    }
+
+    .menu-block.owner {
+      top: -1px;
+      left: -1px;
+    }
+
+    .menu-block.my {
+      right: -1px;
+      bottom: -1px;
+    }
+
+    .menu-block.posting {
+      right: -1px;
+      bottom: var(--menu);
+    }
+  </style>
+</head>
+
+
+<body>
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        {% include "getch/post.html" with background='lightblue' %}
+      </div>
+      <div class="swiper-slide">
+        {% include "getch/post.html" with background='lightpink' %}
+      </div>
+      <div class="swiper-slide">
+        {% include "getch/post.html" with background='lightgreen' %}
+      </div>
+    </div>
+  </div>
+
+  <div style='width:100%;height:100%;background:black;'>
+    <table class="post master ui unstackable very basic celled table">
+      <tbody>
+        <tr>
+          <td>
+            <div class='menu-block posting'>B</div>
+            <div class='menu-block my'>C</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+  <script src="{% static 'semantic/semantic.min.js' %}"></script>
+  <script src="{% static 'vue/vue.js' %}"></script>
+  <script src="{% static 'swiper/swiper.js' %}"></script>
+
+
+  <script>
+    // https://docs.djangoproject.com/en/2.2/ref/csrf/
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+
+    $(document).ready(function(){
+      var csrftoken = Cookies.get('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+
+      var swiper = new Swiper ('.swiper-container', {
+        // Optional parameters
+        direction: 'vertical',
+        loop: true
+      })
+    });
+  </script>
+
+</body>
+</html>

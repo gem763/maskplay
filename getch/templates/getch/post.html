@@ -1,15 +1,26 @@
-<table class="ui unstackable very basic celled table">
+<table class="post ui unstackable very basic celled table">
   <tbody>
     <tr>
-      <td class='left'>abc</td>
-      <td class='right'>
-        <div class='menu-block owner'>A</div>
+      <td class='top full' colspan='2'>A</td>
+      <td class='top menu'>
+        <div class='author menublock'>who</div>
       </td>
     </tr>
 
     <tr>
-      <td class='left'>dede</td>
-      <td class='right'>15</td>
+      {% if type == "1" %}
+      <td class='bottom half'>
+        <div class='vs'>VS</div>
+      </td>
+      <td></td>
+
+      {% elif type == "2" %}
+      <td class='bottom full' colspan='2'>
+        <div class='vs'>VS</div>
+      </td>
+      {% endif %}
+
+      <td></td>
     </tr>
   </tbody>
 </table>

@@ -19,6 +19,7 @@
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
       --width: min(100vw, calc(50vh + var(--menu)));
       --vs-fsize: 30px;
+      --ox-fsize: 100px;
     }
 
     * {
@@ -39,6 +40,7 @@
       top: 0;
       left: 0;
       margin: 0;
+      border-bottom: 1px solid black !important;
     }
 
     #frame table td {
@@ -61,7 +63,7 @@
       width: var(--menu);
       height: var(--menu);
       background: white;
-      z-index: 1;
+      z-index: 2;
       border: 1px solid black;
       border-right: none;
       box-sizing: content-box;
@@ -87,14 +89,24 @@
 
     .author.menublock {
       top: -1px;
-      left: -1px;
+      right: 0;
     }
 
     table.post {
+      position: relative !important;
       width: 100%;
       height: 100%;
-      border-bottom: 1px solid black !important;
+      /* border-bottom: 1px solid black !important; */
       border-radius: 0 !important;
+      background: white !important;
+    }
+
+    table.post tr {
+      height: calc(var(--height) / 2);
+    }
+
+    table.post td {
+      text-align: center !important;
     }
 
     table.post td.top.full {
@@ -109,11 +121,19 @@
       width: var(--menu)
     }
 
+    table.post .ox {
+      color: white;
+      background: black;
+      font-weight: bold;
+      font-size: var(--ox-fsize);
+      line-height: var(--ox-fsize);
+    }
+
     table.post .vs {
       position: absolute;
       background: black;
       color: white;
-      height: var(--vs-fsize);
+      /* height: var(--vs-fsize); */
       font-size: var(--vs-fsize);
       line-height: var(--vs-fsize);
       z-index: 2;
@@ -128,6 +148,40 @@
       top: calc(50% - var(--menu)/2);
       left: calc(100% - var(--menu)/2);
     }
+
+    table.post img.postimg {
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* table.post .post-ox .pos:hover ~ .neg .ox {
+      background: red;
+    }
+
+    table.post .post-ox .neg:hover ~ .pos .ox {
+      background: blue;
+    } */
+
+    /* table.post .post-ab img.postimg {
+      -webkit-filter: grayscale(0);
+      filter: none;
+    } */
+
+    /* table.post .post-ab img.postimg:hover {
+      filter: gray;
+      filter: grayscale(1);
+      -webkit-filter: grayscale(1);
+    } */
+
+    /* table.post .post-ab tr:hover ~ tr img.postimg {
+     filter: gray;
+     filter: grayscale(1);
+     -webkit-filter: grayscale(1);
+    } */
   </style>
 </head>
 
@@ -142,14 +196,17 @@
 
             <div class="swiper-container">
               <div class="swiper-wrapper">
-                <div class="swiper-slide" style='background:white;'>
-                  {% include "getch/post.html" with type="2" %}
+                <div class="swiper-slide">
+                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_chanelbag.jpg" %}
                 </div>
-                <div class="swiper-slide" style='background:lightpink;'>
-                  {% include "getch/post.html" with type="1" %}
+                <div class="swiper-slide">
+                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" %}
                 </div>
-                <div class="swiper-slide" style='background:lightgreen;'>
-                  {% include "getch/post.html" with type="2" %}
+                <div class="swiper-slide">
+                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_onepiece.jpg" %}
+                </div>
+                <div class="swiper-slide">
+                  {% include "getch/post.html" with type="ab" imgsrcA="/static/materials/imgs/AB_anorak_A.jpg" imgsrcB="/static/materials/imgs/AB_anorak_B.jpg" %}
                 </div>
               </div>
             </div>
@@ -157,11 +214,11 @@
           </td>
         </tr>
       </tbody>
-    </table>
 
-    <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
-    <div class='posting menublock'><img src="{% static 'materials/profile.png' %}"></div>
-    <div class='mypage menublock'><img src="{% static 'materials/plus.png' %}"></div>
+      <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
+      <div class='posting menublock'><img src="{% static 'materials/icons/profile.png' %}"></div>
+      <div class='mypage menublock'><img src="{% static 'materials/icons/plus.png' %}"></div>
+    </table>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -193,8 +250,27 @@
         // Optional parameters
         direction: 'vertical',
         loop: true
-      })
+      });
     });
+
+    $('.vote.o').click(function() {
+      var val = $(this).attr('value');
+      if (val==='1') {
+        $(this).children('.ox').css('background', 'k');
+        $(this).attr('value', '0')
+
+      } else {
+        $(this).children('.ox').css('background', 'rgb(241,20,15)');
+        $(this).attr('value', '1')
+      }
+
+      $(this).siblings().children('.ox').css('background', 'k');
+    })
+
+    $('.vote.x').click(function() {
+      $(this).children('.ox').css('background', 'rgb(22,187,204)');
+      $(this).siblings().children('.ox').css('background', 'black');
+    })
   </script>
 
 </body>

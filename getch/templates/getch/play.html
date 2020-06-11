@@ -253,7 +253,7 @@
       });
     });
 
-    $('td.vote').click(function() {
+    $('.post-ab td.vote').click(function() {
       var radio = $(this).children('input[type="radio"]');
       var status = radio.prop('checked');
       var selected = radio.closest('tr');
@@ -265,6 +265,20 @@
         selected.css('filter', 'grayscale(0)')
         selected.siblings().css('filter', 'grayscale(1)')
       }
+    })
+
+      $('.post-ox td.vote').click(function() {
+        var radio = $(this).children('input[type="radio"]');
+        var status = radio.prop('checked');
+        var selected = radio.closest('tr');
+        if (status) {
+          radio.prop('checked', false);
+          // selected.siblings().css('filter', 'grayscale(0)')
+        } else {
+          radio.prop('checked', true);
+          // selected.css('filter', 'grayscale(0)')
+          // selected.siblings().css('filter', 'grayscale(1)')
+        }
 
     })
   </script>

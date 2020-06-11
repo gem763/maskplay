@@ -6,6 +6,8 @@
   <title>GET.CH</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
   <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
 
@@ -158,29 +160,24 @@
       height: 100%;
     }
 
-    /* table.post .post-ox .pos:hover ~ .neg .ox {
-      background: red;
+    input[type='radio'] {
+      display: none;
+      visibility: hidden;
     }
 
-    table.post .post-ox .neg:hover ~ .pos .ox {
-      background: blue;
-    } */
+    input.o:checked ~ span.ox {
+      background: rgb(241,20,15);
+    }
 
-    /* table.post .post-ab img.postimg {
-      -webkit-filter: grayscale(0);
-      filter: none;
-    } */
+    input.x:checked ~ span.ox {
+      background: rgb(22,187,204);
+    }
 
-    /* table.post .post-ab img.postimg:hover {
+    /* input.a:checked ~ img.postimg,
+    input.b:checked ~ img.postimg {
       filter: gray;
       filter: grayscale(1);
       -webkit-filter: grayscale(1);
-    } */
-
-    /* table.post .post-ab tr:hover ~ tr img.postimg {
-     filter: gray;
-     filter: grayscale(1);
-     -webkit-filter: grayscale(1);
     } */
   </style>
 </head>
@@ -196,17 +193,20 @@
 
             <div class="swiper-container">
               <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_chanelbag.jpg" %}
+                <div class="swiper-slide" style='background:white;width:100%;height:100%;position:relative;border-bottom:0px solid black;'>
+                  <span style='font-family:"Monoton",cursive;font-size:30px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)'>maskplay</span>
                 </div>
                 <div class="swiper-slide">
-                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" %}
+                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_chanelbag.jpg" author="/static/materials/imgs/user.jpg" %}
                 </div>
                 <div class="swiper-slide">
-                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_onepiece.jpg" %}
+                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" author="/static/materials/imgs/user2.jpg" %}
                 </div>
                 <div class="swiper-slide">
-                  {% include "getch/post.html" with type="ab" imgsrcA="/static/materials/imgs/AB_anorak_A.jpg" imgsrcB="/static/materials/imgs/AB_anorak_B.jpg" %}
+                  {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_onepiece.jpg" author="/static/materials/imgs/user3.jpg" %}
+                </div>
+                <div class="swiper-slide">
+                  {% include "getch/post.html" with type="ab" imgsrcA="/static/materials/imgs/AB_anorak_A.jpg" imgsrcB="/static/materials/imgs/AB_anorak_B.jpg" author="/static/materials/imgs/user.jpg" %}
                 </div>
               </div>
             </div>
@@ -253,23 +253,19 @@
       });
     });
 
-    $('.vote.o').click(function() {
-      var val = $(this).attr('value');
-      if (val==='1') {
-        $(this).children('.ox').css('background', 'k');
-        $(this).attr('value', '0')
-
+    $('td.vote').click(function() {
+      var radio = $(this).children('input[type="radio"]');
+      var status = radio.prop('checked');
+      var selected = radio.closest('tr');
+      if (status) {
+        radio.prop('checked', false);
+        selected.siblings().css('filter', 'grayscale(0)')
       } else {
-        $(this).children('.ox').css('background', 'rgb(241,20,15)');
-        $(this).attr('value', '1')
+        radio.prop('checked', true);
+        selected.css('filter', 'grayscale(0)')
+        selected.siblings().css('filter', 'grayscale(1)')
       }
 
-      $(this).siblings().children('.ox').css('background', 'k');
-    })
-
-    $('.vote.x').click(function() {
-      $(this).children('.ox').css('background', 'rgb(22,187,204)');
-      $(this).siblings().children('.ox').css('background', 'black');
     })
   </script>
 

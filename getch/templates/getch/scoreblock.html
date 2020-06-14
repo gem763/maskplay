@@ -1,0 +1,39 @@
+<style>
+  .scoreblock {
+    position: absolute;
+    bottom: calc(var(--height)/15 + 20px);
+    right: 0;
+    width: calc(var(--height)/15);
+    transform: rotate(-90deg);
+    transform-origin: 100% 100%;
+  }
+
+  .score-unit {
+    width: 100%;
+    height: calc(var(--width)/40);
+    background: rgb(241,20,15);
+    margin-top: 2px;
+  }
+
+  .score-num {
+    width: 100%;
+    height: calc(var(--height)/15);
+    line-height: calc(var(--height)/15);
+    background: rgb(241,20,15);
+    margin-bottom: 2px;
+    color: white;
+    transform: rotate(90deg);
+  }
+</style>
+
+<div class='scoreblock'>
+
+  <div class='score-num'>60%</div>
+
+  {% with ''|center:score as range %}
+  {% for _ in range %}
+  <div class='score-unit'></div>
+  {% endfor %}
+  {% endwith %}
+
+</div>

@@ -193,9 +193,9 @@
 
             <div class="swiper-container">
               <div class="swiper-wrapper">
-                <div class="swiper-slide" style='background:white;width:100%;height:100%;position:relative;border-bottom:0px solid black;'>
+                <!-- <div class="swiper-slide" style='background:white;width:100%;height:100%;position:relative;border-bottom:0px solid black;'>
                   <span style='font-family:"Monoton",cursive;font-size:30px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)'>maskplay</span>
-                </div>
+                </div> -->
                 <div class="swiper-slide">
                   {% include "getch/post.html" with type="ox" imgsrc="/static/materials/imgs/OX_chanelbag.jpg" author="/static/materials/imgs/user.jpg" %}
                 </div>
@@ -253,7 +253,7 @@
       });
     });
 
-    $('.post-ab td.vote').click(function() {
+    $('.post-ab .vote').click(function() {
       var radio = $(this).children('input[type="radio"]');
       var status = radio.prop('checked');
       var selected = radio.closest('tr');
@@ -267,17 +267,14 @@
       }
     })
 
-      $('.post-ox td.vote').click(function() {
+      $('.post-ox .vote').click(function() {
         var radio = $(this).children('input[type="radio"]');
         var status = radio.prop('checked');
         var selected = radio.closest('tr');
         if (status) {
           radio.prop('checked', false);
-          // selected.siblings().css('filter', 'grayscale(0)')
         } else {
           radio.prop('checked', true);
-          // selected.css('filter', 'grayscale(0)')
-          // selected.siblings().css('filter', 'grayscale(1)')
         }
 
     })

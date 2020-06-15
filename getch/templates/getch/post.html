@@ -1,5 +1,4 @@
 <table class="post ui unstackable very basic celled table">
-  {% if type == 'ox' %}
   <tbody class='post-ox'>
     <tr>
       <td class='top full' colspan='2'>
@@ -12,47 +11,10 @@
 
     <tr>
       <td class='o vote bottom half'>
-        <!-- <input type="radio" name='vote'>
-        <span class='ox'>O</span> -->
-        <!-- <span class='vs'>VS</span> -->
-        <!-- {% include "getch/scorebar.html" with score='5' %} -->
       </td>
       <td class='x vote'>
-        <!-- <input type="radio" name='vote'>
-        <span class='ox'>X</span> -->
       </td>
       <td></td>
     </tr>
   </tbody>
-
-  {% elif type == 'ab' %}
-  <!-- <tbody class='post-ab'>
-    <tr>
-      <td class='vote top full'>
-        <input type="radio" name='vote'>
-        <img class='postimg' src={{imgsrcA}}>
-      </td>
-
-      <td class='top menu'>
-      </td>
-    </tr>
-
-    <tr>
-      <td class='vote bottom full'>
-        <input type="radio" name='vote'>
-        <img class='postimg' src={{imgsrcB}}>
-        <span class='vs'>VS</span>
-      </td>
-      <td></td>
-    </tr>
-  </tbody> -->
-  {% endif %}
-
-  <!-- <div class='author menublock'><img src={{author}} style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover'></div>
-  <div style='text-align:right;position:absolute;top:50%;right:10px;z-index:10;width:50%;transform:translate(0,-50%)'>
-    <span style='background:black;color:white;'>@김다리미</span><br>
-    <span style='background:black;color:white;'>#살말?</span><br>
-    <span style='background:black;color:white;'>택포 40이면 돈값함?</span><br>
-    <span style='background:black;color:white;'>완사닷컴이라는 인쇼야</span>
-  </div> -->
 </table>

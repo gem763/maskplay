@@ -1,0 +1,48 @@
+<style>
+  .scorebar {
+    position: absolute;
+    width: calc(var(--height)/15);
+  }
+
+  .score-unit {
+    width: 100%;
+    height: calc(var(--width)/50);
+    margin-top: 2px;
+    color: white;
+  }
+
+  .score-unit.num {
+    height: calc(var(--height)/15);
+    line-height: calc(var(--height)/15);
+  }
+
+  .scorebar.o {
+    /* bottom: calc(var(--height)/15 + 20px); */
+    bottom: 100px;
+    right: 0;
+    transform: rotate(-90deg);
+    transform-origin: 100% 100%;
+  }
+
+  .scorebar.o .score-unit {
+    background: var(--color-pos);
+  }
+
+  .scorebar.o .score-unit div {
+    transform: rotate(90deg);
+  }
+</style>
+
+
+<div class='scorebar o'>
+  <div class='score-unit num'>
+    <div>60%</div>
+  </div>
+
+  {% with ''|center:score as range %}
+  {% for _ in range %}
+  <div class='score-unit'></div>
+  {% endfor %}
+  {% endwith %}
+
+</div>

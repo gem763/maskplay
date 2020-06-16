@@ -16,6 +16,7 @@
 
   <style>
     :root {
+      --border: 5px;
       --menu: 35px;
       --menu-img: 25px;
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
@@ -24,7 +25,9 @@
       --ox-fsize: 100px;
       --color-pos: rgb(241,20,15);
       --color-neg: rgb(22,187,204);
-      --border: 5px;
+      --scorebar-w: calc(var(--height) / 15);
+      --scorebar-h: calc(var(--width) / 50);
+      --scorebar-offset: 20px;
     }
 
     * {
@@ -68,17 +71,18 @@
     }
 
     .post {
-      position: absolute !important;
+      position: absolute;
       width: 100%;
       height: 100%;
       border-radius: 0 !important;
-      /* border: var(--border) solid black !important; */
       border: var(--border) solid black !important;
-      /* border-bottom: none !important; */
+      border-bottom: none !important;
+      background: white !important;
     }
 
-    .post tr {
-      height: calc(var(--height) / 2);
+    .post td.top {
+      /* height: calc(var(--height) / 2 - var(--border)); */
+      height: calc(var(--width) - 3*var(--border) - var(--menu));
     }
 
     .post td.top.full {
@@ -86,7 +90,8 @@
     }
 
     .post td.half {
-      width: calc(var(--height) / 4 - var(--border) / 2);
+      /* width: calc(var(--height) / 4 - var(--border) / 2); */
+      width: calc((var(--width) - 4*var(--border) - var(--menu)) * 0.5);
     }
 
     .post td.menu {
@@ -101,6 +106,99 @@
       width: 100%;
       height: 100%;
     }
+
+    .menublock {
+      position: absolute;
+      width: var(--menu);
+      height: var(--menu);
+      /* width: 100%;
+      padding-top: 100%; */
+      background: white;
+      z-index: 2;
+      border: var(--border) solid black;
+      line-height: var(--menu);
+      text-align: center;
+      box-sizing: content-box;
+    }
+
+    .menublock img.full {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .menublock img.icon {
+      width: var(--menu-img);
+      height: var(--menu-img);
+      vertical-align: middle;
+    }
+
+    .author.menublock {
+      top: calc(var(--border)*(-1));
+      right: calc(var(--border)*(-1));
+    }
+
+    .posting.menublock {
+      bottom: calc(var(--menu) + var(--border));
+      right: 0;
+    }
+
+    .mypage.menublock {
+      bottom: 0;
+      right: 0;
+    }
+
+    .post .vs {
+      position: absolute;
+      background: black;
+      color: white;
+      font-size: var(--vs-fsize);
+      line-height: var(--vs-fsize);
+      z-index: 2;
+    }
+
+    .post .bottom.half .vs {
+      top: 50%;
+      right: calc(var(--border) * (-1/2));
+      transform: translate(50%,-50%);
+    }
+
+    .post .bottom.full .vs {
+      top: calc(var(--border) * (-1/2));
+      /* left: calc(50% - var(--menu) - var(--border)/2); */
+      left: var(--scorebar-offset);
+      transform: translate(0,-50%);
+    }
+
+    .post span.ox {
+      color: white;
+      background: black;
+      font-weight: bold;
+      font-size: var(--ox-fsize);
+      line-height: var(--ox-fsize);
+      display: inline-block;
+      width: 60%;
+    }
+
+    input[name='vote'] {
+      display: none;
+      visibility: hidden;
+    }
+
+    .vote.o input:checked ~ span.ox {
+      background: var(--color-pos);
+    }
+
+    .vote.x input:checked ~ span.ox {
+      background: var(--color-neg);
+    }
+
+    .vote input:checked ~ .scorebar {
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -114,33 +212,36 @@
           <div class="swiper-container">
             <div class="swiper-wrapper">
 
-              <div class="swiper-slide" style='background:lightgreen;'>
-                {% include "getch/post.html" with imgsrc="/static/materials/imgs/OX_chanelbag.jpg" %}
-              </div>
-              <div class="swiper-slide" style='background:lightpink'>
-                {% include "getch/post.html" with imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" %}
-              </div>
-              <div class="swiper-slide" style='background:lightyellow;'>
-                {% include "getch/post.html" with imgsrc="/static/materials/imgs/OX_onepiece.jpg" %}
-              </div>
-              <div class="swiper-slide" style='background:lightyellow;'>
-                {% include "getch/post.html" with imgsrc="/static/materials/imgs/OX_onepiece.jpg" %}
-              </div>
-              <div class="swiper-slide" style='background:lightyellow;'>
-                {% include "getch/post.html" with imgsrc="/static/materials/imgs/OX_onepiece.jpg" %}
+              <div class="swiper-slide">
+                {% include "getch/post.html" with type='ab' imgsrc_a="/static/materials/imgs/AB_anorak_A.jpg" imgsrc_b="/static/materials/imgs/AB_anorak_B.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
               </div>
 
+              <div class="swiper-slide">
+                {% include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_chanelbag.jpg" author="/static/materials/imgs/user.jpg" score1='24' score2='76'%}
+              </div>
+              <div class="swiper-slide">
+                {% include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" author="/static/materials/imgs/user2.jpg" score1='59' score2='41' %}
+              </div>
+              <div class="swiper-slide">
+                {% include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_onepiece.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
+              </div>
             </div>
           </div>
 
           <div class='border'></div>
+
+          <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
+          <div class='posting menublock'>
+            <img class='icon' src="{% static 'materials/icons/profile.png' %}">
+          </div>
+
+          <div class='mypage menublock'>
+            <img class='icon' src="{% static 'materials/icons/plus.png' %}">
+          </div>
+
         </td>
       </tr>
     </tbody>
-
-    <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
-    <!-- <div class='posting menublock'><img src="{% static 'materials/icons/profile.png' %}"></div>
-    <div class='mypage menublock'><img src="{% static 'materials/icons/plus.png' %}"></div> -->
   </table>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -176,16 +277,36 @@
       });
     });
 
-    $('.post').click(function() {
-      console.log('kkkkkkkkkkkkkkkk');
-      // var radio = $(this).children('input[type="radio"]');
-      // var status = radio.prop('checked');
-      //
-      // if (status) {
-      //   radio.prop('checked', false);
-      // } else {
-      //   radio.prop('checked', true);
-      // }
+    $('.post.ox td.vote').click(function() {
+      var radio = $(this).children('input[name="vote"]');
+      var status = radio.prop('checked');
+      var table = radio.closest('table');
+
+      if (status) {
+        radio.prop('checked', false);
+        table.find('.vs').css('opacity', 1);
+      } else {
+        radio.prop('checked', true);
+        table.find('.vs').css('opacity', 0);
+      }
+    });
+
+    $('.post.ab td.vote').click(function() {
+      var radio = $(this).children('input[name="vote"]');
+      var status = radio.prop('checked');
+      var table = radio.closest('table');
+      var selected = radio.closest('tr');
+
+      if (status) {
+        radio.prop('checked', false);
+        table.find('.vs').css('opacity', 1);
+        selected.siblings().css('filter', 'grayscale(0)')
+      } else {
+        radio.prop('checked', true);
+        table.find('.vs').css('opacity', 0);
+        selected.css('filter', 'grayscale(0)')
+        selected.siblings().css('filter', 'grayscale(1)')
+      }
     });
   </script>
 

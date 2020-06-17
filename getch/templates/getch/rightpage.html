@@ -1,0 +1,78 @@
+<style>
+  .close {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    background: black;
+  }
+
+  .close img {
+    width: 20px;
+    height: 20px;
+    filter: invert(100%);
+  }
+
+  .login-bt {
+    box-sizing: border-box;
+    width: 100%;
+    border: var(--border) solid black;
+    padding: 10px;
+    color: white;
+    /* font-weight: bold; */
+    /* margin-top: 20px; */
+  }
+
+  .fb.login-bt {
+    background: rgb(46,117,182);
+    margin-bottom: 20px;
+  }
+
+  .google.login-bt {
+    background: black;
+  }
+</style>
+
+
+{% load socialaccount %}
+<div style='position:absolute;top:0;left:0;height:100%;width:100%;background:white;'>
+  <div class='close'>
+    <img src='/static/materials/icons/times.png'>
+  </div>
+
+  {% if user.is_authenticated %}
+  <div style='margin-top:30vh;'>
+    <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="object-fit:cover;width:150px;height:150px;">
+    <p>
+      <a href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+    </p>
+  </div>
+
+  {% else %}
+  <div style='margin-top:30vh;font-size:50px;font-weight:bold;'>
+    GET.CH
+  </div>
+
+  <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:40px;'>
+    <div style='background:none;width:100%;margin-bottom:0px;text-align:right;'>
+      <img src='/static/materials/icons/barcode.png' style='height:30px;width:40px;background:none;'>
+    </div>
+
+    <a href="{% provider_login_url 'facebook' method='oauth2' %}">
+      <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
+    </a>
+
+    <a href="{% provider_login_url 'google' method='oauth2' %}">
+      <div class='google login-bt'>LOGIN WITH GOOGLE</div>
+    </a>
+
+    <div style='font-size:8px;text-align:left;padding:10px;'>
+      <p>
+        BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+</div>

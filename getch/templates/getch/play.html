@@ -7,7 +7,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
   <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
   <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
 
@@ -32,6 +33,7 @@
 
     * {
       /* box-sizing: border-box; */
+      font-family: 'Noto Sans KR', sans-serif;
     }
 
     #frame {
@@ -41,6 +43,7 @@
       height: var(--height);
       border-radius: 0;
       margin: 0;
+      overflow: hidden;
     }
 
     #frame td {
@@ -59,7 +62,7 @@
       height: 100%;
       border: var(--border) solid black;
       pointer-events: none;
-      z-index: 1;
+      z-index: 5;
     }
 
     .swiper-container {
@@ -146,7 +149,7 @@
       right: 0;
     }
 
-    .mypage.menublock {
+    .my.menublock {
       bottom: 0;
       right: 0;
     }
@@ -199,6 +202,39 @@
     .vote input:checked ~ .scorebar {
       opacity: 1;
     }
+
+    input.my:checked ~ .rightpage {
+      left: 0 !important;
+    }
+
+    input.my:checked ~ .shader {
+      opacity: 0.5
+    }
+
+    .rightpage {
+      position: absolute;
+      top: 0;
+      left: 100%;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 3;
+      border: var(--border) solid black;
+      transition: left 0.3s ease;
+    }
+
+    .shader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
   </style>
 </head>
 
@@ -228,17 +264,22 @@
             </div>
           </div>
 
-          <div class='border'></div>
-
           <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
           <div class='posting menublock'>
-            <img class='icon' src="{% static 'materials/icons/profile.png' %}">
-          </div>
-
-          <div class='mypage menublock'>
             <img class='icon' src="{% static 'materials/icons/plus.png' %}">
           </div>
 
+          <div class='my menublock'>
+            <img class='icon' src="{% static 'materials/icons/profile.png' %}">
+          </div>
+
+          <input class='my' type="checkbox">
+          <div class='shader'></div>
+          <div class='rightpage'>
+            {% include 'getch/rightpage.html' %}
+          </div>
+
+          <div class='border'></div>
         </td>
       </tr>
     </tbody>
@@ -308,6 +349,21 @@
         selected.siblings().css('filter', 'grayscale(1)')
       }
     });
+
+    $('.my.menublock').click(function() {
+      var checkbox = $('input.my');
+      var status = checkbox.prop('checked');
+
+      if (status) {
+        checkbox.prop('checked', false);
+      } else {
+        checkbox.prop('checked', true);
+      }
+    });
+
+    $('.rightpage .close').click(function() {
+      $('input.my').prop('checked', false);
+    })
   </script>
 
 </body>

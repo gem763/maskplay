@@ -38,6 +38,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'getch',
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.naver',
+    'allauth.socialaccount.providers.facebook',
+    'custom_user',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +58,67 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+# 소셜로그인 기능 사용하기
+# https://django-allauth.readthedocs.io/en/latest/installation.html#django
+# https://ldgeao99.tistory.com/117
+
+#1331691227003429:eedf26d0e0df7b15784591d5eeabf513f
+#Q60jbPX1POJFmqb0dgGl:5RnWiWQnmln
+#671339125678-c9in180buoiu79t797tppifmm8qk24ja.apps.googleusercontent.com:JPgwwfpI5lnlC4M7IgqFaUpTg
+
+
+AUTH_USER_MODEL = 'getch.User'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend', # Django 기본 유저모델
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email','public_profile'],
+        # 'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'verified',
+            'locale',
+            'timezone',
+            'link',
+            'gender',
+            'updated_time'],
+        'EXCHANGE_TOKEN': True,
+        'LOCALE_FUNC': lambda request: 'kr_KR',
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v2.9' #'v.2.4'
+    },
+
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {
+            'access_type': 'online', 
+        }
+    }
+}
+
+LOGIN_REDIRECT_URL = 'play'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'play'
+ACCOUNT_LOGOUT_ON_GET = True
+
+SITE_ID = 1
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
 
 ROOT_URLCONF = 'home.urls'
 

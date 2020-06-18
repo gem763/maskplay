@@ -3,7 +3,7 @@
   <tbody>
     <tr>
       <td class='top full' colspan='2'>
-        <!-- <img class='postimg' src={{imgsrc}}> -->
+        <img class='postimg' src={{imgsrc}}>
       </td>
 
       <td class='top menu'>
@@ -37,7 +37,7 @@
     <tr>
       <td class='a vote top full'>
         <input type="radio" name='vote'>
-        <!-- <img class='postimg' src={{imgsrc_a}}> -->
+        <img class='postimg' src={{imgsrc_a}}>
         {% include "getch/scorebar.html" with score=score1 %}
       </td>
 
@@ -51,7 +51,7 @@
     <tr>
       <td class='b vote bottom full'>
         <input type="radio" name='vote'>
-        <!-- <img class='postimg' src='{{imgsrc_b}}'> -->
+        <img class='postimg' src='{{imgsrc_b}}'>
         <span class='vs'>VS</span>
         {% include "getch/scorebar.html" with score=score2 %}
       </td>
@@ -61,9 +61,16 @@
 </table>
 {% endif %}
 
-<div style='text-align:right;position:absolute;top:50%;right:10px;z-index:10;width:50%;transform:translate(0,-50%)'>
+<div style='text-align:right;position:absolute;top:50%;right:10px;z-index:3;width:50%;transform:translate(0,-50%)'>
   <span style='background:black;color:white;'>@김다리미</span><br>
   <span style='background:black;color:white;'>#살말?</span><br>
   <span style='background:black;color:white;'>택포 40이면 돈값함?</span><br>
   <span style='background:black;color:white;'>완사닷컴이라는 인쇼야</span>
+</div>
+
+
+<input class='author profile' type="checkbox">
+<div class='shader'></div>
+<div class='author rightpage'>
+  {% include 'getch/rightpage.html' with author=author %}
 </div>

@@ -204,11 +204,11 @@
       opacity: 1;
     }
 
-    input.my:checked ~ .rightpage {
+    input.profile:checked ~ .rightpage {
       left: 0 !important;
     }
 
-    input.my:checked ~ .shader {
+    input.profile:checked ~ .shader {
       opacity: 0.5
     }
 
@@ -219,7 +219,7 @@
       width: 100%;
       height: 100%;
       background: white;
-      z-index: 3;
+      z-index: 4;
       border: var(--border) solid black;
       transition: left 0.3s ease;
     }
@@ -246,7 +246,7 @@
     <tbody>
       <tr>
         <td>
-          <div class="swiper-container">
+          <div class="swiper-container swiper-container-v">
             <div class="swiper-wrapper">
 
               <div class="swiper-slide">
@@ -274,9 +274,9 @@
             <img class='icon' src="{% static 'materials/icons/profile.png' %}">
           </div>
 
-          <input class='my' type="checkbox">
+          <input class='my profile' type="checkbox">
           <div class='shader'></div>
-          <div class='rightpage'>
+          <div class='my rightpage'>
             {% include 'getch/rightpage.html' %}
           </div>
 
@@ -311,12 +311,14 @@
         }
       });
 
-      var swiper = new Swiper ('.swiper-container', {
+      var swiper = new Swiper('.swiper-container-v', {
         direction: 'vertical'
         // loop: true
         // preventClicks: false,
         // preventClicksPropagation: false
       });
+
+      var swiper_author = new Swiper('.swiper-container-h', {});
     });
 
     $('.post.ox td.vote').click(function() {
@@ -352,7 +354,7 @@
     });
 
     $('.my.menublock').click(function() {
-      var checkbox = $('input.my');
+      var checkbox = $('input.my.profile');
       var status = checkbox.prop('checked');
 
       if (status) {
@@ -362,8 +364,23 @@
       }
     });
 
-    $('.rightpage .close').click(function() {
-      $('input.my').prop('checked', false);
+    $('.my.rightpage .close').click(function() {
+      $('input.my.profile').prop('checked', false);
+    });
+
+    $('.author.menublock').click(function() {
+      var checkbox = $(this).closest('table.post').siblings('input.author.profile');
+      var status = checkbox.prop('checked');
+
+      if (status) {
+        checkbox.prop('checked', false);
+      } else {
+        checkbox.prop('checked', true);
+      }
+    });
+
+    $('.author.rightpage .close').click(function() {
+      $(this).closest('.author.rightpage').siblings('input.author.profile').prop('checked', false);
     })
   </script>
 

@@ -92,107 +92,161 @@
 </style>
 
 
-{% load socialaccount %}
 <div style='position:absolute;top:0;left:0;height:100%;width:100%;background:white;'>
-  {% if user.is_authenticated %}
-  <!-- <div style='margin-top:30vh;'>
-    <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="object-fit:cover;width:150px;height:150px;">
-    <p>
-      <a href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
-    </p>
-  </div> -->
+  {% if author %}
+    <table id='userinfo' class='ui unstackable celled four column table'>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>
+            <div class='follow'>
+              <span>FOLLOW</span>
+            </div>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
 
-  <table id='userinfo' class='ui unstackable celled four column table'>
-    <tbody>
-      <tr>
-        <td></td>
-        <td>
-          <div class='follow'>
-            <span>FOLLOW</span>
-          </div>
-        </td>
-        <td></td>
-        <td>
-          <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
-        </td>
-      </tr>
+        <tr>
+          <td></td>
+          <td>
+            <img src="{{ author }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
+          </td>
+          <td>
+            <i class="fa fa-barcode"></i>
+          </td>
+          <td>
+          </td>
+        </tr>
 
-      <tr>
-        <td></td>
-        <td>
-          <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
-        </td>
-        <td>
-          <i class="fa fa-barcode"></i>
-        </td>
-        <td>
-        </td>
-      </tr>
+        <tr>
+          <td>
+            <div style='position:absolute;top:50%;left:0;width:400%;background:none;z-index:3;transform:translate(0,-50%);'>
+              <span style='background:black;color:white;'>@sexyismylife</span><br>
+              <span style='background:black;color:white;'>짜증대마녀. 패덬 코덬 스니커즈마니야.</span><br>
+              <span style='background:black;color:white;'>같이의 가치 얍얍얍.</span>
+            </div>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
 
-      <tr>
-        <td>
-          <div style='position:absolute;top:50%;left:0;width:400%;background:none;z-index:5;transform:translate(0,-50%);'>
-            <span style='background:black;color:white;'>@sexyismylife</span><br>
-            <span style='background:black;color:white;'>짜증대마녀. 패덬 코덬 스니커즈마니야.</span><br>
-            <span style='background:black;color:white;'>같이의 가치 얍얍얍.</span>
-          </div>
-        </td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
+        <tr>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+        </tr>
 
-      <tr>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-      </tr>
+        <tr>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+        </tr>
 
-      <tr>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-      </tr>
+        <tr>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+        </tr>
 
-      <tr>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-        <td style='padding-top:50%;'></td>
-      </tr>
+      </tbody>
+    </table>
 
-    </tbody>
-  </table>
+
 
   {% else %}
-  <div style='margin-top:30vh;font-size:50px;font-weight:bold;'>
-    GET.CH
-  </div>
+    {% if user.is_authenticated %}
+    <table id='userinfo' class='ui unstackable celled four column table'>
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+          </td>
+        </tr>
 
-  <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:40px;'>
-    <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
-      <!-- <img src='/static/materials/icons/barcode.png' style='height:30px;width:40px;background:none;'> -->
-      <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
+        <tr>
+          <td></td>
+          <td>
+            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
+          </td>
+          <td>
+            <i class="fa fa-barcode"></i>
+          </td>
+          <td>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div style='position:absolute;top:50%;left:0;width:400%;background:none;z-index:3;transform:translate(0,-50%);'>
+              <span style='background:black;color:white;'>@sexyismylife</span><br>
+              <span style='background:black;color:white;'>짜증대마녀. 패덬 코덬 스니커즈마니야.</span><br>
+              <span style='background:black;color:white;'>같이의 가치 얍얍얍.</span>
+            </div>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+        </tr>
+
+        <tr>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+        </tr>
+
+        <tr>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+          <td style='padding-top:50%;'></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    {% else %}
+    {% load socialaccount %}
+    <div style='margin-top:30vh;font-size:50px;font-weight:bold;'>
+      GET.CH
     </div>
 
-    <a href="{% provider_login_url 'facebook' method='oauth2' %}">
-      <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
-    </a>
+    <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:40px;'>
+      <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
+        <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
+      </div>
 
-    <a href="{% provider_login_url 'google' method='oauth2' %}">
-      <div class='google login-bt'>LOGIN WITH GOOGLE</div>
-    </a>
+      <a href="{% provider_login_url 'facebook' method='oauth2' %}">
+        <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
+      </a>
 
-    <div style='font-size:8px;text-align:left;padding:10px;'>
-      <p>
-        BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
-      </p>
+      <a href="{% provider_login_url 'google' method='oauth2' %}">
+        <div class='google login-bt'>LOGIN WITH GOOGLE</div>
+      </a>
+
+      <div style='font-size:8px;text-align:left;padding:10px;'>
+        <p>
+          BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
+        </p>
+      </div>
     </div>
-  </div>
+    {% endif %}
   {% endif %}
-
 
   <div class='close'>
     <img src='/static/materials/icons/times.png'>

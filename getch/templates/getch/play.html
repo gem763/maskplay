@@ -9,6 +9,7 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
   <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
   <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -18,12 +19,12 @@
 
   <style>
     :root {
-      --border: 5px;
+      --border: 1px;
       --menu: 35px;
       --menu-img: 25px;
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
       --width: min(100vw, calc(50vh + var(--menu)));
-      --vs-fsize: 30px;
+      --vs-fsize: 20px;
       --ox-fsize: 100px;
       --color-pos: rgb(241,20,15);
       --color-neg: rgb(22,187,204);
@@ -160,8 +161,9 @@
       background: black;
       color: white;
       font-size: var(--vs-fsize);
-      line-height: var(--vs-fsize);
+      line-height: calc(var(--vs-fsize) + 8px);
       z-index: 2;
+      font-weight: bold;
     }
 
     .post .bottom.half .vs {
@@ -173,7 +175,8 @@
     .post .bottom.full .vs {
       top: calc(var(--border) * (-1/2));
       /* left: calc(50% - var(--menu) - var(--border)/2); */
-      left: var(--scorebar-offset);
+      /* left: var(--scorebar-offset); */
+      left: calc(var(--scorebar-offset) * 1.5);
       transform: translate(0,-50%);
     }
 

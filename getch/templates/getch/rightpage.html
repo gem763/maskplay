@@ -20,6 +20,7 @@
     border: var(--border) solid black;
     padding: 10px;
     color: white;
+    font-size: 11px;
   }
 
   .fb.login-bt {
@@ -222,11 +223,15 @@
 
     {% else %}
     {% load socialaccount %}
-    <div style='margin-top:30vh;font-size:50px;font-weight:bold;'>
+    <!-- <div style='margin-top:30vh;font-size:50px;font-weight:bold;'>
       GET.CH
+    </div> -->
+
+    <div style="margin-top:30vh;font-size:50px;font-weight:bold;font-family: 'Source Code Pro', monospace;">
+      side B
     </div>
 
-    <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:40px;'>
+    <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:30px;'>
       <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
         <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
       </div>

@@ -20,8 +20,6 @@
     border: var(--border) solid black;
     padding: 10px;
     color: white;
-    /* font-weight: bold; */
-    /* margin-top: 20px; */
   }
 
   .fb.login-bt {
@@ -32,22 +30,141 @@
   .google.login-bt {
     background: black;
   }
+
+  #userinfo {
+    background: none;
+    position: absolute;
+    top: calc(var(--border)*(-1));
+    left: calc(var(--border)*(-1));
+    width: var(--width);
+    /* bottom: -5px; */
+    border-radius: 0;
+    margin: 0;
+    border: var(--border) solid black;
+  }
+
+  #userinfo td {
+    width: 25%;
+    padding-top: 25%;
+  }
+
+  #userinfo tr:not(:last-child) td {
+    border-bottom: var(--border) solid black;
+  }
+
+  #userinfo a.logout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  #userinfo .follow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: rgb(255,132,9);
+    border-bottom: var(--border) solid black;
+  }
+
+  #userinfo .follow span {
+    background: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-weight: bold;
+  }
+
+  #userinfo .fa-barcode {
+    font-size: 50px;
+    /* font-weight: bold; */
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    background: none;
+    transform: translate(-50%,0) scale(1,0.5);
+    transform-origin: center bottom;
+    color: rgb(255,132,9)
+  }
 </style>
 
 
 {% load socialaccount %}
 <div style='position:absolute;top:0;left:0;height:100%;width:100%;background:white;'>
-  <div class='close'>
-    <img src='/static/materials/icons/times.png'>
-  </div>
-
   {% if user.is_authenticated %}
-  <div style='margin-top:30vh;'>
+  <!-- <div style='margin-top:30vh;'>
     <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="object-fit:cover;width:150px;height:150px;">
     <p>
       <a href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
     </p>
-  </div>
+  </div> -->
+
+  <table id='userinfo' class='ui unstackable celled four column table'>
+    <tbody>
+      <tr>
+        <td></td>
+        <td>
+          <div class='follow'>
+            <span>FOLLOW</span>
+          </div>
+        </td>
+        <td></td>
+        <td>
+          <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+        </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
+        </td>
+        <td>
+          <i class="fa fa-barcode"></i>
+        </td>
+        <td>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <div style='position:absolute;top:50%;left:0;width:400%;background:none;z-index:5;transform:translate(0,-50%);'>
+            <span style='background:black;color:white;'>@sexyismylife</span><br>
+            <span style='background:black;color:white;'>짜증대마녀. 패덬 코덬 스니커즈마니야.</span><br>
+            <span style='background:black;color:white;'>같이의 가치 얍얍얍.</span>
+          </div>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+      </tr>
+
+      <tr>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+      </tr>
+
+      <tr>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+        <td style='padding-top:50%;'></td>
+      </tr>
+
+    </tbody>
+  </table>
 
   {% else %}
   <div style='margin-top:30vh;font-size:50px;font-weight:bold;'>
@@ -55,8 +172,9 @@
   </div>
 
   <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:40px;'>
-    <div style='background:none;width:100%;margin-bottom:0px;text-align:right;'>
-      <img src='/static/materials/icons/barcode.png' style='height:30px;width:40px;background:none;'>
+    <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
+      <!-- <img src='/static/materials/icons/barcode.png' style='height:30px;width:40px;background:none;'> -->
+      <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
     </div>
 
     <a href="{% provider_login_url 'facebook' method='oauth2' %}">
@@ -75,4 +193,8 @@
   </div>
   {% endif %}
 
+
+  <div class='close'>
+    <img src='/static/materials/icons/times.png'>
+  </div>
 </div>

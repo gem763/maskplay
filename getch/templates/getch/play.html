@@ -207,27 +207,18 @@
       opacity: 1;
     }
 
-    input.profile:checked ~ .rightpage {
+
+
+    /* input.profile:checked ~ .rightpage {
       left: 0 !important;
     }
 
     input.profile:checked ~ .shader {
       opacity: 0.5
-    }
+    } */
 
-    .rightpage {
-      position: absolute;
-      top: 0;
-      left: 100%;
-      width: 100%;
-      height: 100%;
-      background: white;
-      z-index: 4;
-      border: var(--border) solid black;
-      transition: left 0.3s ease;
-    }
 
-    .shader {
+    /* .shader {
       position: absolute;
       top: 0;
       left: 0;
@@ -238,7 +229,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
-    }
+    } */
   </style>
 </head>
 
@@ -277,11 +268,7 @@
             <img class='icon' src="{% static 'materials/icons/profile.png' %}">
           </div>
 
-          <input class='my profile' type="checkbox">
-          <div class='shader'></div>
-          <div class='my rightpage'>
-            {% include 'getch/rightpage.html' %}
-          </div>
+          {% include 'getch/pager.html' %}
 
           <div class='border'></div>
         </td>
@@ -321,7 +308,7 @@
         // preventClicksPropagation: false
       });
 
-      var swiper_author = new Swiper('.swiper-container-h', {});
+      // var swiper_author = new Swiper('.swiper-container-h', {});
     });
 
     $('.post.ox td.vote').click(function() {
@@ -356,20 +343,32 @@
       }
     });
 
+    // $('.my.menublock').click(function() {
+    //   var checkbox = $('input.my.profile');
+    //   var status = checkbox.prop('checked');
+    //
+    //   if (status) {
+    //     checkbox.prop('checked', false);
+    //   } else {
+    //     checkbox.prop('checked', true);
+    //   }
+    // });
+
     $('.my.menublock').click(function() {
-      var checkbox = $('input.my.profile');
-      var status = checkbox.prop('checked');
+      {% if user.is_authenticated %}
+      $('.my-page .toggle').prop('checked', true);
+      {% else %}
+      $('.login-page .toggle').prop('checked', true);
+      {% endif %}
+    })
 
-      if (status) {
-        checkbox.prop('checked', false);
-      } else {
-        checkbox.prop('checked', true);
-      }
-    });
+    $('.pager .page .content .close').click(function() {
+      $(this).closest('.page').siblings('.toggle').prop('checked', false);
+    })
 
-    $('.my.rightpage .close').click(function() {
-      $('input.my.profile').prop('checked', false);
-    });
+    // $('.my.rightpage .close').click(function() {
+    //   $('input.my.profile').prop('checked', false);
+    // });
 
     // $('.author.menublock').click(function() {
     //   var checkbox = $(this).closest('table.post').siblings('input.author.profile');

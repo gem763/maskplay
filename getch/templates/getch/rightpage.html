@@ -1,4 +1,21 @@
 <style>
+  .rightpage {
+    position: absolute;
+    top: 0;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 4;
+    border: var(--border) solid black;
+    transition: left 0.3s ease;
+  }
+
+  .pager {
+    /* display: none;
+    visibility: hidden; */
+  }
+
   .close {
     position: absolute;
     top: 10px;
@@ -92,7 +109,10 @@
 </style>
 
 
-<div class='{{name}}' style='position:absolute;top:0;left:0;height:100%;width:100%;background:white;'>
+<input class='pager' type="checkbox">
+<div class='rightpage'>
+
+   <!-- style='position:absolute;top:0;left:0;height:100%;width:100%;background:white;'> -->
   {% if author %}
   {% else %}
     {% if user.is_authenticated %}

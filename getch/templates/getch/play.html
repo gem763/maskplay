@@ -19,7 +19,7 @@
 
   <style>
     :root {
-      --border: 1px;
+      --border: 5px;
       --menu: 35px;
       --menu-img: 25px;
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
@@ -371,20 +371,20 @@
       $('input.my.profile').prop('checked', false);
     });
 
-    $('.author.menublock').click(function() {
-      var checkbox = $(this).closest('table.post').siblings('input.author.profile');
-      var status = checkbox.prop('checked');
-
-      if (status) {
-        checkbox.prop('checked', false);
-      } else {
-        checkbox.prop('checked', true);
-      }
-    });
-
-    $('.author.rightpage .close').click(function() {
-      $(this).closest('.author.rightpage').siblings('input.author.profile').prop('checked', false);
-    })
+    // $('.author.menublock').click(function() {
+    //   var checkbox = $(this).closest('table.post').siblings('input.author.profile');
+    //   var status = checkbox.prop('checked');
+    //
+    //   if (status) {
+    //     checkbox.prop('checked', false);
+    //   } else {
+    //     checkbox.prop('checked', true);
+    //   }
+    // });
+    //
+    // $('.author.rightpage .close').click(function() {
+    //   $(this).closest('.author.rightpage').siblings('input.author.profile').prop('checked', false);
+    // })
   </script>
 
 </body>

@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
   <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.min.css' %}">
 
   <!-- favicon.ico 404 Not found error -->
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
@@ -253,6 +254,7 @@
   </table>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
   <script src="{% static 'semantic/semantic.min.js' %}"></script>
   <script src="{% static 'vue/vue.js' %}"></script>
@@ -329,6 +331,47 @@
 
     $('.pager .page .content .close').click(function() {
       $(this).closest('.page').siblings('.toggle').prop('checked', false);
+    })
+
+    $('img.item.charac').click(function() {
+      var src = $(this).prop('src');
+      $('.profiler-canvas img').prop('src', src);
+    })
+
+    $('.profiler-name textarea').on({
+      'focusin': function() {
+        this.style.height = '30px';
+        this.style.height = (this.scrollHeight) + 'px';
+      },
+
+      'focusout': function() {
+        if (this.value=='') {
+          this.style.height = '30px';
+        };
+      },
+
+      'input': function() {
+        this.style.height = '30px';
+        this.style.height = (this.scrollHeight) + 'px';
+      }
+    });
+
+    function load_img(input) {
+      if (input.files && input.files[0]) {
+        let reader = new FileReader();
+
+        reader.onload = function(e) {
+          let img = $(input).next('img');
+          img.attr("src", e.target.result);
+          // img.parent().css("display", "block");
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    $('#mask-guide').draggable({
+      axis: 'y'
     })
   </script>
 

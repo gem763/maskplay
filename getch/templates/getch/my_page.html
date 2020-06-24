@@ -1,1 +1,119 @@
-mymy
+<style>
+  .userpage-grid {
+    background: none;
+    position: absolute;
+    top: calc(var(--border)*(-1));
+    left: calc(var(--border)*(-1));
+    width: var(--width) !important;
+    /* bottom: -5px; */
+    border-radius: 0;
+    margin: 0 !important;
+    border: var(--border) solid black !important;
+  }
+
+  .userpage-grid td {
+    width: 25% !important;
+    padding-top: 25% !important;
+  }
+
+  .userpage-grid tr:not(:last-child) td {
+    border-bottom: var(--border) solid black !important;
+  }
+
+  .userpage-grid a.logout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .userpage-grid .follow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: rgb(255,132,9);
+    border-bottom: var(--border) solid black;
+  }
+
+  .userpage-grid .follow span {
+    background: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-weight: bold;
+  }
+
+  .userpage-grid .fa-barcode {
+    font-size: 50px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    background: none;
+    transform: translate(-50%,0) scale(1,0.5);
+    transform-origin: center bottom;
+    color: rgb(255,132,9)
+  }
+</style>
+
+<table class='userpage-grid ui unstackable celled four column table'>
+  <tbody>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+      </td>
+    </tr>
+
+    <tr>
+      <td></td>
+      <td>
+        <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
+      </td>
+      <td>
+        <i class="fa fa-barcode"></i>
+      </td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <div style='position:absolute;top:50%;left:0;width:400%;background:none;z-index:3;transform:translate(0,-50%);'>
+          <span style='background:black;color:white;'>@sexyismylife</span><br>
+          <span style='background:black;color:white;'>짜증대마녀. 패덬 코덬 스니커즈마니야.</span><br>
+          <span style='background:black;color:white;'>같이의 가치 얍얍얍.</span>
+        </div>
+      </td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+    </tr>
+
+    <tr>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+    </tr>
+
+    <tr>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+      <td style='padding-top:50%;'></td>
+    </tr>
+
+  </tbody>
+</table>

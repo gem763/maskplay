@@ -1,0 +1,171 @@
+<style>
+  :root {
+    --canvas-size: calc(var(--width) * 0.7)
+  }
+
+  .profiler-top {
+    /* background: lightblue; */
+    height: 30%;
+    position: relative;
+    /* text-align: center; */
+  }
+
+  .profiler-name {
+    position: absolute;
+    background: lightgreen;
+    bottom: 7px;
+    left: 50%;
+    width: var(--canvas-size);
+    transform: translate(-50%,0);
+    text-align: left;
+  }
+
+  .profiler-name span {
+    background: black;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 30px;
+  }
+
+  .profiler-mid {
+    background: lightyellow;
+    height: var(--canvas-size);
+    text-align: center;
+  }
+
+  .profiler-canvas {
+    position: relative;
+    width: var(--canvas-size);
+    height: 100%;
+    background: lightpink;
+    display: inline-block;
+    border: var(--border) solid black;
+  }
+
+  .profiler-canvas img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .profiler-bottom {
+    padding-top: 20px;
+    background: lightblue;
+    position: relative;
+  }
+
+  .img-selector {
+    border-radius: 0 !important;
+    border: 0 !important;
+    border-top: var(--border) solid black !important;
+    border-bottom: var(--border) solid black !important;
+    margin: 0 !important;
+  }
+
+  .img-selector td {
+    border: 0 !important;
+    width: 20% !important;
+    padding-top: 20% !important;
+    background: none;
+    position: relative;
+  }
+
+  .img-selector td .item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .img-selector td img.item {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+  }
+
+  .img-selector td .txt {
+    background: black;
+    color: white;
+    font-size: 25px;
+    line-height: 30px;
+  }
+
+  .options {
+    position: absolute !important;
+    top: calc(100% - var(--border)) !important;
+    margin: 0 !important;
+    border: var(--border) solid black !important;
+    border-radius: 0 !important;
+  }
+
+  .options.left {
+    left: var(--menu) !important;
+  }
+
+  .options.right {
+    right: var(--menu) !important;
+  }
+
+  .options td {
+    width:var(--menu) !important;
+    height: var(--menu) !important;
+    line-height: var(--menu) !important;
+  }
+
+  .options td:last-child {
+    width: calc(var(--menu) + var(--border)) !important;
+  }
+</style>
+
+
+<div class='profiler-top'>
+  <div class='profiler-name'>
+    <span>CHARACTER NAME</span>
+  </div>
+</div>
+
+<div class='profiler-mid'>
+  <div class='profiler-canvas'>
+    <img src='/static/materials/imgs/einstein.jpg'>
+  </div>
+</div>
+
+<div class='profiler-bottom'>
+  <table class='img-selector ui unstackable table'>
+    <tbody>
+      <tr>
+        <td><img class='item' src='/static/materials/icons/img_select.png'></td>
+        <td><span class='item txt'>히</span></td>
+        <td><img class='item' src='/static/materials/imgs/boocha1.png'></td>
+        <td><img class='item' src='/static/materials/imgs/boocha2.png'></td>
+        <td><img class='item' src='/static/materials/imgs/boocha3.png'></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class='options left ui collapsing unstackable table'>
+    <tbody>
+      <tr>
+        <td>
+          <img src='/static/materials/icons/mask.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
+        </td>
+        <td style='background:rgb(241,20,15);'></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class='options right ui collapsing unstackable table'>
+    <tbody>
+      <tr>
+        <td><span style='background:black;color:white;font-size:15px;'>Aa</span></td>
+        <td>
+          <img src='/static/materials/icons/arrow_down.png' style='width:25px;height:25px;object-fit:cover;vertical-align:middle;'>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

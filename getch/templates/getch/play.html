@@ -206,30 +206,6 @@
     .vote input:checked ~ .scorebar {
       opacity: 1;
     }
-
-
-
-    /* input.profile:checked ~ .rightpage {
-      left: 0 !important;
-    }
-
-    input.profile:checked ~ .shader {
-      opacity: 0.5
-    } */
-
-
-    /* .shader {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      z-index: 2;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    } */
   </style>
 </head>
 
@@ -343,20 +319,9 @@
       }
     });
 
-    // $('.my.menublock').click(function() {
-    //   var checkbox = $('input.my.profile');
-    //   var status = checkbox.prop('checked');
-    //
-    //   if (status) {
-    //     checkbox.prop('checked', false);
-    //   } else {
-    //     checkbox.prop('checked', true);
-    //   }
-    // });
-
     $('.my.menublock').click(function() {
       {% if user.is_authenticated %}
-      $('.my-page .toggle').prop('checked', true);
+      $('.profiler-page .toggle').prop('checked', true);
       {% else %}
       $('.login-page .toggle').prop('checked', true);
       {% endif %}
@@ -365,25 +330,6 @@
     $('.pager .page .content .close').click(function() {
       $(this).closest('.page').siblings('.toggle').prop('checked', false);
     })
-
-    // $('.my.rightpage .close').click(function() {
-    //   $('input.my.profile').prop('checked', false);
-    // });
-
-    // $('.author.menublock').click(function() {
-    //   var checkbox = $(this).closest('table.post').siblings('input.author.profile');
-    //   var status = checkbox.prop('checked');
-    //
-    //   if (status) {
-    //     checkbox.prop('checked', false);
-    //   } else {
-    //     checkbox.prop('checked', true);
-    //   }
-    // });
-    //
-    // $('.author.rightpage .close').click(function() {
-    //   $(this).closest('.author.rightpage').siblings('input.author.profile').prop('checked', false);
-    // })
   </script>
 
 </body>

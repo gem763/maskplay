@@ -255,6 +255,7 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
   <script src="{% static 'semantic/semantic.min.js' %}"></script>
   <script src="{% static 'vue/vue.js' %}"></script>
@@ -323,19 +324,28 @@
 
     $('.my.menublock').click(function() {
       {% if user.is_authenticated %}
-      $('.profiler-page .toggle').prop('checked', true);
+      $('.my-page > .toggle').prop('checked', true);
       {% else %}
-      $('.login-page .toggle').prop('checked', true);
+      $('.login-page > .toggle').prop('checked', true);
       {% endif %}
+    });
+
+    $('.my-page img.myboocha').click(function() {
+      $('.profiler-page > .toggle').prop('checked', true);
     })
 
     $('.pager .page .content .close').click(function() {
       $(this).closest('.page').siblings('.toggle').prop('checked', false);
     })
 
-    $('img.item.charac').click(function() {
+    $('.item.img.charac').click(function() {
       var src = $(this).prop('src');
-      $('.profiler-canvas img').prop('src', src);
+      $('.profiler-canvas img.charac').prop('src', src);
+    })
+
+    $('.item.img.mask').click(function() {
+      var src = $(this).prop('src');
+      $('.profiler-canvas img.mask').prop('src', src);
     })
 
     $('.profiler-name textarea').on({
@@ -370,8 +380,21 @@
       }
     }
 
-    $('#mask-guide').draggable({
-      axis: 'y'
+    $('.mask-guide').draggable({
+      axis: 'y',
+      containment: 'parent'
+    });
+
+    $('.profiler-bottom .mask-put').click(function() {
+      var status = $('.profiler-canvas .toggle').prop('checked');
+      if (status) {
+        $('.profiler-canvas .toggle').prop('checked', false);
+        $('.profiler-bottom .toggle').prop('checked', false);
+      } else {
+        $('.profiler-canvas .toggle').prop('checked', true);
+        $('.profiler-bottom .toggle').prop('checked', true);
+      }
+
     })
   </script>
 

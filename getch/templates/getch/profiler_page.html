@@ -12,7 +12,7 @@
 
   .profiler-name {
     position: absolute;
-    background: lightgreen;
+    /* background: lightgreen; */
     bottom: 7px;
     left: 50%;
     width: var(--canvas-size);
@@ -40,7 +40,8 @@
     height: 100%;
     background: lightpink;
     display: inline-block;
-    border: var(--border) solid black;
+    /* border: var(--border) solid black; */
+    overflow: hidden;
   }
 
   .profiler-canvas img {
@@ -52,21 +53,87 @@
     height: 100%;
   }
 
+  .profiler-canvas .mask-layer {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    transition: bottom 0.2s;
+  }
+
+  .profiler-canvas .mask-layer .mask-guide {
+    position: absolute;
+    background: white;
+    top: 25%;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    border: var(--border) solid black;
+  }
+
+  .profiler-canvas .toggle:checked + .mask-layer {
+    bottom: 0;
+  }
+
+  .profiler-canvas .border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: var(--border) solid black;
+    pointer-events: none;
+  }
+
+  /* .profiler-mid-margin {
+    background: lightpink;
+    height: 20px;
+  } */
+
   .profiler-bottom {
     padding-top: 20px;
-    background: lightblue;
+    /* background: lightblue; */
     position: relative;
+    /* overflow: hidden;
+    height: 500px; */
   }
 
-  .img-selector {
-    border-radius: 0 !important;
-    border: 0 !important;
+  .selector {
+    /* border-radius: 0 !important;
+    border: 0 !important; */
     border-top: var(--border) solid black !important;
     border-bottom: var(--border) solid black !important;
-    margin: 0 !important;
+    position: relative;
+    overflow: hidden;
+    /* margin: 0 !important; */
   }
 
-  .img-selector td {
+  .selector table {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+  }
+
+  .profiler-bottom .toggle:checked + .masks {
+    bottom: 0;
+  }
+
+  /* .selector.base {
+    position: relative;
+  } */
+
+  .selector .masks {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    transition: bottom 0.2s;
+  }
+
+  .selector td {
     border: 0 !important;
     width: 20% !important;
     padding-top: 20% !important;
@@ -74,20 +141,20 @@
     position: relative;
   }
 
-  .img-selector td .item {
+  .selector td .item {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
   }
 
-  .img-selector td img.item {
+  .selector td .item.img {
     width: 35px;
     height: 35px;
     object-fit: contain;
   }
 
-  .img-selector td .txt {
+  .selector td .item.txt {
     background: black;
     color: white;
     font-size: 25px;
@@ -132,33 +199,58 @@
 <div class='profiler-mid'>
   <div class='profiler-canvas'>
     <input type="file" name="image" accept="image/*" style="display:none;" id="imageuploader0" onchange="load_img(this)">
-    <img src='/static/materials/imgs/einstein.jpg'>
-    <div id='mask-guide' class='draggable ui-widget-content' style='position:absolute;background:white;top:calc(50% - var(--border));left:0;width:100%;height:50px;border-bottom:var(--border) solid black;border-top:var(--border) solid black;transform:translate(0,-50%)'></div>
+    <img class='charac' src='/static/materials/imgs/einstein.jpg'>
+    <input class='toggle' type='checkbox'>
+    <div class='mask-layer'>
+      <div class='mask-guide'>
+        <div style='position:absolute;top:0;left:30%;width:40%;height:100%;background:lightpink;'>
+          <img class='mask' src='/static/materials/imgs/eye1.png' style='height:100%;width:100%;object-fit:cover;'>
+        </div>
+      </div>
+    </div>
+    <div class='border'></div>
   </div>
 </div>
 
+<div class='profiler-mid-margin'></div>
+
 <div class='profiler-bottom'>
-  <table class='img-selector ui unstackable table'>
-    <tbody>
-      <tr>
-        <td>
-          <label for='imageuploader0'>
-            <img class='item' src='/static/materials/icons/img_select.png'>
-          </label>
-        </td>
-        <td><span class='item txt'>히</span></td>
-        <td><img class='item charac' src='/static/materials/imgs/boocha1.png'></td>
-        <td><img class='item charac' src='/static/materials/imgs/boocha2.png'></td>
-        <td><img class='item charac' src='/static/materials/imgs/boocha3.png'></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class='selector'>
+    <table class='base ui unstackable table'>
+      <tbody>
+        <tr>
+          <td>
+            <label for='imageuploader0'>
+              <img class='item img' src='/static/materials/icons/img_select.png'>
+            </label>
+          </td>
+          <td><span class='item txt'>히</span></td>
+          <td><img class='item img charac' src='/static/materials/imgs/boocha1.png'></td>
+          <td><img class='item img charac' src='/static/materials/imgs/boocha2.png'></td>
+          <td><img class='item img charac' src='/static/materials/imgs/boocha3.png'></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <input class='toggle' type='checkbox'>
+    <table class='masks ui unstackable table'>
+      <tbody>
+        <tr>
+          <td><img class='item img mask' src='/static/materials/imgs/eye1.png'></td>
+          <td><img class='item img mask' src='/static/materials/imgs/eye2.png'></td>
+          <td><img class='item img mask' src='/static/materials/imgs/eye3.png'></td>
+          <td><img class='item img mask' src='/static/materials/imgs/eye4.png'></td>
+          <td><img class='item img mask' src='/static/materials/imgs/eye5.png'></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <table class='options left ui collapsing unstackable table'>
     <tbody>
       <tr>
-        <td>
-          <img src='/static/materials/icons/mask.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
+        <td class='mask-put'>
+          <img src='/static/materials/icons/mask4.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
         </td>
         <td style='background:rgb(241,20,15);'></td>
       </tr>

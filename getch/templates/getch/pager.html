@@ -61,7 +61,7 @@
 
   <div class='login-page'>
     <input class='toggle' type='checkbox'>
-    <div class='page'>
+    <div class='page' style='z-index:1;'>
       <div class='content'>
         {% include 'getch/login_page.html' %}
         <div class='close'>
@@ -73,7 +73,7 @@
 
   <div class='my-page'>
     <input class='toggle' type='checkbox'>
-    <div class='page'>
+    <div class='page' style='z-index:2;'>
       <div class='content'>
         {% include 'getch/my_page.html' %}
         <div class='close'>
@@ -85,7 +85,8 @@
 
   <div class='profiler-page'>
     <input class='toggle' type='checkbox'>
-    <div class='page' style='left:-100%;'>
+    <div class='page' style='left:0%;z-index:3;'>
+    <!-- <div class='page' style='left:-100%;'> -->
       <div class='content'>
         {% include 'getch/profiler_page.html' %}
         <div class='close'>

@@ -102,7 +102,7 @@ SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {
-            'access_type': 'online', 
+            'access_type': 'online',
         }
     }
 }
@@ -141,15 +141,50 @@ TEMPLATES = [
 WSGI_APPLICATION = 'home.wsgi.application'
 
 
+# Storage
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'sideb-proejct.appspot.com'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(BASE_DIR, 'data', 'sideb-proejct-0e33d8c0b0a9.json')
+
+
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+
+if os.getenv('GAE_APPLICATION', None):
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': '/cloudsql/sideb-proejct:us-central1:sideb-db',
+            'USER': 'postgres',
+            'PASSWORD': 'kkangse1',
+            'NAME': 'postgres',
+        }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+            'NAME': 'postgres',            # sql 인스턴스에서 실제로 생성된 db 명칭 (인스턴스명 아님)
+                                           # https://console.cloud.google.com/sql/instances/getchdb-001/databases?project=getch-245810
+            'USER': 'postgres',            # sql 사용자계정 (IAM 서비스계정 아님)
+                                           # https://console.cloud.google.com/sql/instances/getchdb-001/users?project=getch-245810
+            'PASSWORD': 'kkangse1',
+        }
+    }
+
 
 
 # Password validation

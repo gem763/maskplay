@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "sideb-proejct",
+  "private_key_id": "0e33d8c0b0a97a2b745839ba5e78cae2874aba03",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCR/w6Trp2jlosB\nnTGe3WUuou/uRxzqM2uIj8AIcOS6wLvFKkyOp3l3mEXUrXDbWRHNcJjJL9I+dMMi\ncGxeoZmE07E+hMwGX+W4cxY8vca4DKqFjABDyFtZUQ/6CBu5cgIeJdqCkdMeqdpO\nxP16p/16fzYBITeTOEXGRKxSxer0ESi6do1PQ9j964Bd6sHyCNvTfX535VACKWmM\nGQp/pdmjK9OXDQPdUvZA8W2hyB3YxPFi1hBToVRAzHHwJ9N/Uqhc/ouItCb1911K\nb6EyEiQk0XyPpQm7YA+jamBuFLId2IqJ/iokWmoqsJ6RubcMkRRzX9ru3nwydVDt\nuIj4ZA3DAgMBAAECggEAJNlxNvJMZJVjSYmBFD2CQ+apU4WMdUp8OlA6IodIHCD4\nY9f80cbQoFCFU5xhT2PoW+evEJyq3su+0ur4V1xHcOCzrHl9O6CpzUfzFWq7BQph\nYerHyFQCRoVw2GWCheiSQ0S/pdQjquopKVeMORC8qFYCbf+R1O1Poy8DJbNBzc9D\nSeYQXjB25j4x9dU8WTRAE5PCin18JgPdxXYAKAQSFcp6vXeKAlo+eHjEkKIYOwA+\nWc3HqGzv7qsJJLGJItCfp9aIxioYuMkk1yHcIfd7QLeXqDowX+oeMwbzgL0rkuDk\nTiiVFQ11xY6M6WeLXjDnotg7PVbN7fFUBxgBuuOpPQKBgQDHgTyCzL/8rrWLs4+q\n9/AMLfvx5vt45CEQTvQcTuFusv0ZSpmDrVlIGcHMhskcm6Jwh7lV8pQmxZbeSaCM\ngphWrsbPa6p18uKw95r8eOZRFmNm9pvyQ50snyaJvKFJn7ZNTJbZ2HD8Z2mGgrM1\nwAZMxKModbqXa7ny4Uo2cHqbLQKBgQC7Vs/S1oHU8n+8SP3pjh4lZSyFV7CPhjfl\nFa70DkRpjCifM1omqrad5lJNoNMGBPzIRyhQBfb0vG8wn1BQ7N5POmf676Pt5bd5\nLZd8K6mcn5d4QPhuED2sZB1bRmogFiBVMj84ASc8XMgK2bXinB/XirXi5bCVeOfc\nqyOdFtgirwKBgAjRpKwfgukXi/zl7hbfqOPQ8I8r57fbVb7TzqSls/9huCBzFMAm\nXIj8Yn25A5DZLGAPD9lFxNjF6TpgRNGRQEysoysuFjXqi6zI9Tft3Dh/Zdt6UUBv\nTrZXPqveA78uaS+XkB+HGs99fsOsaWGZ4G1qT9ANDDd/UpPy84XeiPztAoGBALrF\n6z7+A8UF3Bog/50pxp5rxz5N1cbR/soTmzDRRJ2iUiGetgOU8aptJaMlcx4uPMOE\nRgm6WKNZdtWYECAOd/mvdll1MA+PliNnM/9lHJ39cqs+wzAgWwyTZ71Hb6j7xlKK\nXQL+C1sf+YTv12nNU+W18m77ptjvCOM1cLU+QFAbAoGALP0X0/Ij+UTSFqpuHcBj\nsTz2H+LqW9BDx+cvFVGvKPCjGEwa7TLZwn8GCx8caa0AEM5kcUwhSRsCxd3uObhC\nqI8YKocmYBVrIF71AvDfGbIO2tJ0C2rQqXgZTUg/Vk4bLB7OjMfnjtUI4gHSOyJE\nXakJY5hTruAYq3dGRSMFosU=\n-----END PRIVATE KEY-----\n",
+  "client_email": "sideb-serviceaccount@sideb-proejct.iam.gserviceaccount.com",
+  "client_id": "102445119165334691486",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sideb-serviceaccount%40sideb-proejct.iam.gserviceaccount.com"
+}

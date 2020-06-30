@@ -73,7 +73,7 @@
 
   <div class='my-page'>
     <input class='toggle' type='checkbox'>
-    <div class='page' style='z-index:2;'>
+    <div class='page' style='left:0;z-index:2;'>
       <div class='content'>
         {% include 'getch/my_page.html' %}
         <div class='close'>
@@ -83,9 +83,21 @@
     </div>
   </div>
 
+  <div class='boochoose-page'>
+    <input class='toggle' type='checkbox'>
+    <div class='page' style='left:-100%;z-index:3;'>
+      <div class='content'>
+        {% include 'getch/boochoose_page.html' %}
+        <div class='close'>
+          <img src='/static/materials/icons/times.png'>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class='profiler-page'>
     <input class='toggle' type='checkbox'>
-    <div class='page' style='left:0%;z-index:3;'>
+    <div class='page' style='left:0%;z-index:4;'>
     <!-- <div class='page' style='left:-100%;'> -->
       <div class='content'>
         {% include 'getch/profiler_page.html' %}

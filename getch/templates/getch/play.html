@@ -20,7 +20,7 @@
 
   <style>
     :root {
-      --border: 1px;
+      --border: 5px;
       --menu: 35px;
       --menu-img: 25px;
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
@@ -330,9 +330,15 @@
       {% endif %}
     });
 
-    $('.my-page img.myboocha').click(function() {
-      $('.profiler-page > .toggle').prop('checked', true);
-    })
+    // $('.my-page img.myboo').click(function() {
+    //   $('.boochoose-page > .toggle').prop('checked', true);
+    // })
+
+    $('.my-page').on('click', 'img.myboo', function() {
+      $('.boochoose-page > .toggle').prop('checked', true);
+      // $('.profiler-page > .toggle').prop('checked', true);
+    });
+
 
     $('.pager .page .content .close').click(function() {
       $(this).closest('.page').siblings('.toggle').prop('checked', false);
@@ -394,7 +400,26 @@
         $('.profiler-canvas .toggle').prop('checked', true);
         $('.profiler-bottom .toggle').prop('checked', true);
       }
+    });
 
+    $('.boo-candidate').click(function() {
+      let boo_id = $(this).attr('boo_id');
+      if (boo_id=='') {
+
+      } else {
+        let user_id = '{{user.id}}';
+        let api = '/user/' + user_id + '/boo/set/' + boo_id;
+
+        fetch(api)
+          .then(x => x.json())
+          .then(js => {
+            if (js.success) {
+              $('.my-page .mainpage').load('/my', function() {
+                $('.boochoose-page .toggle').prop('checked', false);
+              });
+            }
+          });
+      }
     })
   </script>
 

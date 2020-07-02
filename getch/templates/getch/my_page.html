@@ -1,6 +1,6 @@
 <style>
   .userpage-grid {
-    background: none;
+    background: white;
     position: absolute;
     top: calc(var(--border)*(-1));
     left: calc(var(--border)*(-1));
@@ -58,6 +58,7 @@
   }
 </style>
 
+{% with user.boo as myboo %}
 <table class='userpage-grid ui unstackable celled four column table'>
   <tbody>
     <tr>
@@ -72,7 +73,8 @@
     <tr>
       <td></td>
       <td>
-        <img class='myboocha' src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
+        <img class='myboo' src="{{ myboo.profile.pix.url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;">
+        <!-- <img class='myboo' src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;"> -->
       </td>
       <td>
         <i class="fa fa-barcode"></i>
@@ -84,27 +86,15 @@
     <tr>
       <td>
         <div style='position:absolute;top:50%;left:0;width:400%;background:none;z-index:2;transform:translate(0,-50%);'>
-          <span style='background:black;color:white;'>@sexyismylife</span><br>
-          <span style='background:black;color:white;'>짜증대마녀. 패덬 코덬 스니커즈마니야.</span><br>
-          <span style='background:black;color:white;'>같이의 가치 얍얍얍.</span>
+          <span style='background:black;color:white;'>@{{myboo.nick}}</span><br>
+          <span style='background:black;color:white;line-height:15px;'>{{myboo.text|linebreaksbr}}</span>
         </div>
       </td>
       <td></td>
       <td></td>
       <td></td>
-    </tr>
-
-    <tr>
-      <td colspan='4' style='background:none;padding-top:0 !important;'>
-        <div>
-          {% for boo in user.boo_set.all %}
-          <div style='display:inline-block;width:25%;padding-top:25%;border:1px solid black;margin:10px;position:relative;'>
-            <img src='{{boo.profile.pix.url}}' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;'>
-          </div>
-          {% endfor %}
-        </div>
-      </td>
     </tr>
 
   </tbody>
 </table>
+{% endwith %}

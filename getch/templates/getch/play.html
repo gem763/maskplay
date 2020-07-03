@@ -336,23 +336,35 @@
 
     $('.my-page').on('click', 'img.myboo', function() {
       $('.boochoose-page > .toggle').prop('checked', true);
-      // $('.profiler-page > .toggle').prop('checked', true);
+    });
+
+    $('.my-page').on('click', 'i.fa-barcode', function() {
+      $('.profiler-page > .toggle').prop('checked', true);
     });
 
 
-    $('.pager .page .content .close').click(function() {
+    // $('.pager .page .content .close').click(function() {
+    //   $(this).closest('.page').siblings('.toggle').prop('checked', false);
+    // });
+
+    $('.pager .page .content').on('click', '.close', function() {
       $(this).closest('.page').siblings('.toggle').prop('checked', false);
-    })
+    });
 
     $('.item.img.charac').click(function() {
       var src = $(this).prop('src');
       $('.profiler-canvas img.charac').prop('src', src);
     })
 
-    $('.item.img.mask').click(function() {
-      var src = $(this).prop('src');
-      $('.profiler-canvas img.mask').prop('src', src);
+    $('.profiler-page').on('click', '.item.img.mask', function() {
+        var src = $(this).prop('src');
+        $('.profiler-canvas img.mask').prop('src', src);
     })
+
+    // $('.item.img.mask').click(function() {
+    //   var src = $(this).prop('src');
+    //   $('.profiler-canvas img.mask').prop('src', src);
+    // })
 
     $('.profiler-name textarea').on({
       'focusin': function() {
@@ -391,7 +403,18 @@
       containment: 'parent'
     });
 
-    $('.profiler-bottom .mask-put').click(function() {
+    // $('.profiler-bottom .mask-put').click(function() {
+    //   var status = $('.profiler-canvas .toggle').prop('checked');
+    //   if (status) {
+    //     $('.profiler-canvas .toggle').prop('checked', false);
+    //     $('.profiler-bottom .toggle').prop('checked', false);
+    //   } else {
+    //     $('.profiler-canvas .toggle').prop('checked', true);
+    //     $('.profiler-bottom .toggle').prop('checked', true);
+    //   }
+    // });
+
+    $('.profiler-page').on('click', '.profiler-bottom .mask-put', function() {
       var status = $('.profiler-canvas .toggle').prop('checked');
       if (status) {
         $('.profiler-canvas .toggle').prop('checked', false);
@@ -400,7 +423,7 @@
         $('.profiler-canvas .toggle').prop('checked', true);
         $('.profiler-bottom .toggle').prop('checked', true);
       }
-    });
+    })
 
     $('.boo-candidate').click(function() {
       let boo_id = $(this).attr('boo_id');
@@ -417,6 +440,8 @@
               $('.my-page .mainpage').load('/my', function() {
                 $('.boochoose-page .toggle').prop('checked', false);
               });
+
+              $('.profiler-page .mainpage').load('/profiler');
             }
           });
       }

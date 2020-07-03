@@ -6,6 +6,7 @@
   .profiler-top {
     /* background: lightblue; */
     height: 30%;
+    width: 100%;
     position: relative;
     /* text-align: center; */
   }
@@ -121,9 +122,6 @@
     bottom: 0;
   }
 
-  /* .selector.base {
-    position: relative;
-  } */
 
   .selector .masks {
     position: absolute;
@@ -189,82 +187,87 @@
 </style>
 
 
-<div class='profiler-top'>
-  <div class='profiler-name'>
-    <span>CHARACTER NAME</span>
-    <!-- <textarea name="text" cols="40" rows="1" maxlength="30" placeholder="CHARACTER NAME" style='resize:none;position:absolute;left:0;bottom:0;width:100%;border:0;height:30px;'></textarea> -->
-  </div>
-</div>
+<div style='background:white;width:100%;height:100%;position:relative;"'>
 
-<div class='profiler-mid'>
-  <div class='profiler-canvas'>
-    <input type="file" name="image" accept="image/*" style="display:none;" id="imageuploader0" onchange="load_img(this)">
-    <img class='charac' src='/static/materials/imgs/einstein.jpg'>
-    <input class='toggle' type='checkbox'>
-    <div class='mask-layer'>
-      <div class='mask-guide'>
-        <div style='position:absolute;top:0;left:30%;width:40%;height:100%;background:lightpink;'>
-          <img class='mask' src='/static/materials/imgs/eye1.png' style='height:100%;width:100%;object-fit:cover;'>
+  <div class='profiler-top'>
+    <div class='profiler-name'>
+      <span>CHARACTER NAME</span>
+      <!-- <textarea name="text" cols="40" rows="1" maxlength="30" placeholder="CHARACTER NAME" style='resize:none;position:absolute;left:0;bottom:0;width:100%;border:0;height:30px;'></textarea> -->
+    </div>
+  </div>
+
+  <div class='profiler-mid'>
+    <div class='profiler-canvas'>
+      <input type="file" name="image" accept="image/*" style="display:none;" id="imageuploader0" onchange="load_img(this)">
+      <img class='charac' src='{{user.boo.profile.pix.url}}'>
+      <!-- <img class='charac' src='/static/materials/imgs/einstein.jpg'> -->
+      <input class='toggle' type='checkbox'>
+      <div class='mask-layer'>
+        <div class='mask-guide'>
+          <div style='position:absolute;top:0;left:30%;width:40%;height:100%;background:lightpink;'>
+            <img class='mask' src='/static/materials/imgs/eye1.png' style='height:100%;width:100%;object-fit:cover;'>
+          </div>
         </div>
       </div>
+      <div class='border'></div>
     </div>
-    <div class='border'></div>
   </div>
-</div>
 
-<div class='profiler-mid-margin'></div>
+  <div class='profiler-mid-margin'></div>
 
-<div class='profiler-bottom'>
-  <div class='selector'>
-    <table class='base ui unstackable table'>
+  <div class='profiler-bottom'>
+    <div class='selector'>
+      <table class='base ui unstackable table'>
+        <tbody>
+          <tr>
+            <td>
+              <label for='imageuploader0'>
+                <img class='item img' src='/static/materials/icons/img_select.png'>
+              </label>
+            </td>
+            <td><span class='item txt'>히</span></td>
+            <td><img class='item img charac' src='/static/materials/imgs/boocha1.png'></td>
+            <td><img class='item img charac' src='/static/materials/imgs/boocha2.png'></td>
+            <td><img class='item img charac' src='/static/materials/imgs/boocha3.png'></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <input class='toggle' type='checkbox'>
+      <table class='masks ui unstackable table'>
+        <tbody>
+          <tr>
+            <td><img class='item img mask' src='/static/materials/imgs/eye1.png'></td>
+            <td><img class='item img mask' src='/static/materials/imgs/eye2.png'></td>
+            <td><img class='item img mask' src='/static/materials/imgs/eye3.png'></td>
+            <td><img class='item img mask' src='/static/materials/imgs/eye4.png'></td>
+            <td><img class='item img mask' src='/static/materials/imgs/eye5.png'></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <table class='options left ui collapsing unstackable table'>
       <tbody>
         <tr>
-          <td>
-            <label for='imageuploader0'>
-              <img class='item img' src='/static/materials/icons/img_select.png'>
-            </label>
+          <td class='mask-put'>
+            <img src='/static/materials/icons/mask4.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
           </td>
-          <td><span class='item txt'>히</span></td>
-          <td><img class='item img charac' src='/static/materials/imgs/boocha1.png'></td>
-          <td><img class='item img charac' src='/static/materials/imgs/boocha2.png'></td>
-          <td><img class='item img charac' src='/static/materials/imgs/boocha3.png'></td>
+          <td style='background:rgb(241,20,15);'></td>
         </tr>
       </tbody>
     </table>
 
-    <input class='toggle' type='checkbox'>
-    <table class='masks ui unstackable table'>
+    <table class='options right ui collapsing unstackable table'>
       <tbody>
         <tr>
-          <td><img class='item img mask' src='/static/materials/imgs/eye1.png'></td>
-          <td><img class='item img mask' src='/static/materials/imgs/eye2.png'></td>
-          <td><img class='item img mask' src='/static/materials/imgs/eye3.png'></td>
-          <td><img class='item img mask' src='/static/materials/imgs/eye4.png'></td>
-          <td><img class='item img mask' src='/static/materials/imgs/eye5.png'></td>
+          <td><span style='background:black;color:white;font-size:15px;'>Aa</span></td>
+          <td>
+            <img src='/static/materials/icons/arrow_down.png' style='width:25px;height:25px;object-fit:cover;vertical-align:middle;'>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <table class='options left ui collapsing unstackable table'>
-    <tbody>
-      <tr>
-        <td class='mask-put'>
-          <img src='/static/materials/icons/mask4.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
-        </td>
-        <td style='background:rgb(241,20,15);'></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <table class='options right ui collapsing unstackable table'>
-    <tbody>
-      <tr>
-        <td><span style='background:black;color:white;font-size:15px;'>Aa</span></td>
-        <td>
-          <img src='/static/materials/icons/arrow_down.png' style='width:25px;height:25px;object-fit:cover;vertical-align:middle;'>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 </div>

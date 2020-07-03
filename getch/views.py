@@ -11,6 +11,10 @@ def my(request):
     return render(request, 'getch/my_page.html')
 
 
+def profiler(request):
+    return render(request, 'getch/profiler_page.html')
+
+
 def set_boo(request, user_id, boo_id):
     user = m.User.objects.get(pk=user_id)
     # print(user)

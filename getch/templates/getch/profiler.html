@@ -1,0 +1,341 @@
+{% extends "getch/basepage.html" %}
+
+{% block style %}
+{{ block.super }}
+<style>
+  :root {
+    --canvas-size: calc(var(--width) * 0.7)
+  }
+
+  .profiler-top {
+    /* background: lightblue; */
+    height: 30%;
+    width: 100%;
+    position: relative;
+    /* text-align: center; */
+  }
+
+  .profiler-name {
+    position: absolute;
+    /* background: lightgreen; */
+    bottom: 7px;
+    left: 50%;
+    width: var(--canvas-size);
+    transform: translate(-50%,0);
+    text-align: left;
+  }
+
+  .profiler-name span {
+    background: black;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    line-height: 30px;
+  }
+
+  .profiler-mid {
+    background: lightyellow;
+    height: var(--canvas-size);
+    text-align: center;
+  }
+
+  .profiler-canvas {
+    position: relative;
+    width: var(--canvas-size);
+    height: 100%;
+    background: lightpink;
+    display: inline-block;
+    /* border: var(--border) solid black; */
+    overflow: hidden;
+  }
+
+  .profiler-canvas img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .profiler-canvas .mask-layer {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    transition: bottom 0.2s;
+  }
+
+  .profiler-canvas .mask-layer .mask-guide {
+    position: absolute;
+    background: white;
+    top: 25%;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    border: var(--border) solid black;
+  }
+
+  .profiler-canvas .toggle:checked + .mask-layer {
+    bottom: 0;
+  }
+
+  .profiler-canvas .border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: var(--border) solid black;
+    pointer-events: none;
+  }
+
+  /* .profiler-mid-margin {
+    background: lightpink;
+    height: 20px;
+  } */
+
+  .profiler-bottom {
+    padding-top: 20px;
+    /* background: lightblue; */
+    position: relative;
+    /* overflow: hidden;
+    height: 500px; */
+  }
+
+  .selector {
+    /* border-radius: 0 !important;
+    border: 0 !important; */
+    border-top: var(--border) solid black !important;
+    border-bottom: var(--border) solid black !important;
+    position: relative;
+    overflow: hidden;
+    /* margin: 0 !important; */
+  }
+
+  .selector table {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+  }
+
+  .profiler-bottom .toggle:checked + .masks {
+    bottom: 0;
+  }
+
+
+  .selector .masks {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    transition: bottom 0.2s;
+  }
+
+  .selector td {
+    border: 0 !important;
+    width: 20% !important;
+    padding-top: 20% !important;
+    background: none;
+    position: relative;
+  }
+
+  .selector td .item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .selector td .item.img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+  }
+
+  .selector td .item.txt {
+    background: black;
+    color: white;
+    font-size: 25px;
+    line-height: 30px;
+  }
+
+  .options {
+    position: absolute !important;
+    top: calc(100% - var(--border)) !important;
+    margin: 0 !important;
+    border: var(--border) solid black !important;
+    border-radius: 0 !important;
+  }
+
+  .options.left {
+    left: var(--menu) !important;
+  }
+
+  .options.right {
+    right: var(--menu) !important;
+  }
+
+  .options td {
+    width:var(--menu) !important;
+    height: var(--menu) !important;
+    line-height: var(--menu) !important;
+  }
+
+  .options td:last-child {
+    width: calc(var(--menu) + var(--border)) !important;
+  }
+</style>
+{% endblock style %}
+
+{% block page %}
+<div style='background:white;width:100%;height:100%;position:relative;"'>
+
+  <div class='profiler-top'>
+    <div class='profiler-name'>
+      <span>CHARACTER NAME</span>
+      <!-- <textarea name="text" cols="40" rows="1" maxlength="30" placeholder="CHARACTER NAME" style='resize:none;position:absolute;left:0;bottom:0;width:100%;border:0;height:30px;'></textarea> -->
+    </div>
+  </div>
+
+  <div class='profiler-mid'>
+    <div class='profiler-canvas'>
+      <input type="file" name="image" accept="image/*" style="display:none;" id="imageuploader0" onchange="load_img(this)">
+      <img class='charac' src='{{user.boo.profile.pix.url}}'>
+      <!-- <img class='charac' src='/static/materials/imgs/einstein.jpg'> -->
+      <input class='toggle' type='checkbox'>
+      <div class='mask-layer'>
+        <div class='mask-guide'>
+          <div style='position:absolute;top:0;left:30%;width:40%;height:100%;background:lightpink;'>
+            <img class='mask' src='/static/materials/imgs/eye1.png' style='height:100%;width:100%;object-fit:cover;'>
+          </div>
+        </div>
+      </div>
+      <div class='border'></div>
+    </div>
+  </div>
+
+  <div class='profiler-mid-margin'></div>
+
+  <div class='profiler-bottom'>
+    <div class='selector'>
+      <table class='base ui unstackable table'>
+        <tbody>
+          <tr>
+            <td>
+              <label for='imageuploader0'>
+                <img class='item img' src='/static/materials/icons/img_select.png'>
+              </label>
+            </td>
+            <td><span class='item txt'>히</span></td>
+            <td><img class='item img charac' src='/static/materials/imgs/boocha1.png' onclick='characterize(this)'></td>
+            <td><img class='item img charac' src='/static/materials/imgs/boocha2.png' onclick='characterize(this)'></td>
+            <td><img class='item img charac' src='/static/materials/imgs/boocha3.png' onclick='characterize(this)'></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <input class='toggle' type='checkbox'>
+      <table class='masks ui unstackable table'>
+        <tbody>
+          <tr>
+            <td><img class='item img mask eye' src='/static/materials/imgs/eye1.png' onclick='eye_mask(this)'></td>
+            <td><img class='item img mask eye' src='/static/materials/imgs/eye2.png' onclick='eye_mask(this)'></td>
+            <td><img class='item img mask eye' src='/static/materials/imgs/eye3.png' onclick='eye_mask(this)'></td>
+            <td><img class='item img mask eye' src='/static/materials/imgs/eye4.png' onclick='eye_mask(this)'></td>
+            <td><img class='item img mask eye' src='/static/materials/imgs/eye5.png' onclick='eye_mask(this)'></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <table class='options left ui collapsing unstackable table'>
+      <tbody>
+        <tr>
+          <td class='mask-put' onclick='show_mask_put()'>
+            <img src='/static/materials/icons/mask4.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
+          </td>
+          <td style='background:rgb(241,20,15);'></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class='options right ui collapsing unstackable table'>
+      <tbody>
+        <tr>
+          <td><span style='background:black;color:white;font-size:15px;'>Aa</span></td>
+          <td>
+            <img src='/static/materials/icons/arrow_down.png' style='width:25px;height:25px;object-fit:cover;vertical-align:middle;'>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock page %}
+
+
+{% block js %}
+{{ block.super }}
+<script>
+  function load_img(input) {
+    if (input.files && input.files[0]) {
+      let reader = new FileReader();
+
+      reader.onload = function(e) {
+        let img = $(input).next('img');  // 여기서는 jquery가 되네; 희안하다 (함수 안에서는 되는듯)
+        img.attr("src", e.target.result);
+        // img.parent().css("display", "block");
+      }
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function eye_mask(mask_img) {
+    let src = mask_img.src;
+    document.querySelector('.profiler-canvas img.mask').src = src;
+    // $('.profiler-canvas img.mask').prop('src', src);
+  }
+
+  function characterize(charac_img) {
+    let src = charac_img.src;
+    document.querySelector('.profiler-canvas img.charac').src = src;
+  }
+
+
+  function show_mask_put() {
+    var status = $('.profiler-canvas .toggle').prop('checked');
+    if (status) {
+      $('.profiler-canvas .toggle').prop('checked', false);
+      $('.profiler-bottom .toggle').prop('checked', false);
+    } else {
+      $('.profiler-canvas .toggle').prop('checked', true);
+      $('.profiler-bottom .toggle').prop('checked', true);
+    }
+  }
+
+
+  // $('.profiler-name textarea').on({
+  //   'focusin': function() {
+  //     this.style.height = '30px';
+  //     this.style.height = (this.scrollHeight) + 'px';
+  //   },
+  //
+  //   'focusout': function() {
+  //     if (this.value=='') {
+  //       this.style.height = '30px';
+  //     };
+  //   },
+  //
+  //   'input': function() {
+  //     this.style.height = '30px';
+  //     this.style.height = (this.scrollHeight) + 'px';
+  //   }
+  // });
+</script>
+{% endblock js %}

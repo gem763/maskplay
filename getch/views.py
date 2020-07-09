@@ -7,12 +7,16 @@ def play(request):
     return render(request, 'getch/play.html')
 
 
-def my(request):
-    return render(request, 'getch/my_page.html')
+def mypage(request):
+    return render(request, 'getch/mypage.html')
 
 
 def profiler(request):
-    return render(request, 'getch/profiler_page.html')
+    return render(request, 'getch/profiler.html')
+
+
+def boochooser(request):
+    return render(request, 'getch/boochooser.html')
 
 
 def set_boo(request, user_id, boo_id):
@@ -20,3 +24,6 @@ def set_boo(request, user_id, boo_id):
     # print(user)
     user.set_boo(boo_id)
     return JsonResponse({'success':True}, safe=False)
+
+# def test(request, state):
+#     print(state, '******************************')

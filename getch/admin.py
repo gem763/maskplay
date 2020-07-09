@@ -5,6 +5,8 @@ import getch.models as m
 
 admin.site.register(m.Profile)
 admin.site.register(m.Post)
+admin.site.register(m.PostVoteAB)
+admin.site.register(m.PostVoteOX)
 
 
 

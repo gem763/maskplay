@@ -20,7 +20,7 @@ class User(AbstractEmailUser):
     def set_boo(self, boo_id):
         self.boo_selected = boo_id
         self.save()
-        
+
 
 class Boo(BigIdAbstract):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -58,10 +58,24 @@ class Post(BigIdAbstract):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+def _postpix_path(instance, fname):
+    user = instance.boo.user.email
+    now = datetime.now()
+    fname = str(now) + '__' + fname
+    fmt = 'post/{year}/{month}/{day}/{user}/{fname}'
+    return fmt.format(year=now.year, month=now.month, day=now.day, user=user, fname=fname)
+
+
 class PostVoteOX(Post):
-    pass
-    # pix_intro = models.ImageField(upload_to=_image_path, max_length=500, null=True, black=True)
+    pix = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
+
+    def __str__(self):
+        return 'OX | ' + self.boo.nick
 
 
 class PostVoteAB(Post):
-    pass
+    pix_a = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
+    pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
+
+    def __str__(self):
+        return 'AB | ' + self.boo.nick

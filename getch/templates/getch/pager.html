@@ -15,7 +15,7 @@
     visibility: hidden;
   }
 
-  .page {
+  .mother {
     position: absolute;
     top: 0;
     left: 0;
@@ -25,7 +25,7 @@
     transition: all 0.3s ease;
   }
 
-  .page .content {
+  .mother .child {
     position: absolute;
     top: 0;
     right: 0;
@@ -36,7 +36,7 @@
     pointer-events: auto;
   }
 
-  .page .content .close {
+  .mother .child .close {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -45,71 +45,50 @@
     background: black;
   }
 
-  .page .content .close img {
+  .mother .child .close img {
     width: 20px;
     height: 20px;
     filter: invert(100%);
   }
 
-  .pager .toggle:checked + .page {
+  .pager .toggle:checked + .mother {
     left: -100% !important;
     background: rgba(0,0,0,0.5) !important;
   }
 </style>
 
+
 <div class='pager'>
-
-  <div class='login-page'>
-    <input class='toggle' type='checkbox'>
-    <div class='page' style='z-index:1;'>
-      <div class='content'>
-        {% include 'getch/login_page.html' %}
-        <div class='close'>
-          <img src='/static/materials/icons/times.png'>
-        </div>
-      </div>
-    </div>
+  <div id='loginpage'>
+    {% include 'getch/loginpage.html' %}
   </div>
 
-  <div class='my-page'>
-    <input class='toggle' type='checkbox'>
-    <div class='page' style='left:0%;z-index:2;'>
-      <div class='content'>
-        <div class='mainpage'>
-          {% include 'getch/my_page.html' %}
-        </div>
-        <div class='close'>
-          <img src='/static/materials/icons/times.png'>
-        </div>
-      </div>
-    </div>
+  <div id='mypage'>
+    {% include 'getch/mypage.html' %}
   </div>
 
-  <div class='boochoose-page'>
-    <input class='toggle' type='checkbox'>
-    <div class='page' style='left:0%;z-index:3;'>
-      <div class='content'>
-        {% include 'getch/boochoose_page.html' %}
-        <div class='close'>
-          <img src='/static/materials/icons/times.png'>
-        </div>
-      </div>
-    </div>
+  <div id='boochooser'>
+    {% include 'getch/boochooser.html' %}
   </div>
 
-  <div class='profiler-page'>
-    <input class='toggle' type='checkbox'>
-    <div class='page' style='left:0%;z-index:4;'>
-    <!-- <div class='page' style='left:-100%;'> -->
-      <div class='content'>
-        <div class='mainpage' style='position:relative;width:100%;height:100%;'>
-          {% include 'getch/profiler_page.html' %}
-        </div>
-        <div class='close'>
-          <img src='/static/materials/icons/times.png'>
-        </div>
-      </div>
-    </div>
+  <div id='profiler'>
+    {% include 'getch/profiler.html' %}
   </div>
-
 </div>
+
+
+<script>
+  function close_page(bt) {
+    bt.closest('.basepage').querySelector('.toggle').checked = false;
+  }
+
+  function goto_boochooser() {
+    document.querySelector('#boochooser .toggle').checked = true;
+    // $('#boochooser .toggle').prop('checked', true);
+  }
+
+  function goto_profiler() {
+    document.querySelector('#profiler .toggle').checked = true;
+    // $('#profiler .toggle').prop('checked', true);
+  }
+</script>

@@ -1,0 +1,107 @@
+{% extends "getch/basepage.html" %}
+
+{% block style %}
+{{ block.super }}
+<style>
+  .boo-candidate-pair {
+    background: white;
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .boo-candidate {
+    width: 75px;
+    height: 75px;
+    outline: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .boo-candidate:hover {
+    outline: 5px solid rgb(241,20,15);
+  }
+
+  .boo-candidate.selected {
+    outline: 5px solid black;
+  }
+
+  .boo-candidate .pix {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .boo-candidate .icon {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+  }
+</style>
+{% endblock style %}
+
+{% block page %}
+<div style='background:white;width:100%;height:100%;overflow:auto;padding:15%;'>
+  <div style='background:none;width:100%;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
+    <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
+  </div>
+
+  {% load ctags %}
+  {% with user.boo_set.all|boo_regroup as boo_pairs %}
+
+  {% for boos in boo_pairs %}
+  <div class='boo-candidate-pair'>
+    {% for boo in boos %}
+
+      <div class='boo-candidate {% if boo.pk == user.boo_selected %}selected{% endif %}' boo_id='{{boo.pk}}' onclick='select_this_boo(this)'>
+        {% if boo %}
+        <img class='pix' src='{{boo.profile.pix.url}}'>
+        {% else %}
+        <img class='icon' src='/static/materials/icons/boo_plus.png'>
+        {% endif %}
+
+        <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+          {{boo.nick}}
+        </span>
+      </div>
+
+    {% endfor %}
+  </div>
+  {% endfor %}
+  {% endwith %}
+
+</div>
+{% endblock page %}
+
+
+{% block js %}
+{{ block.super }}
+<script>
+  function select_this_boo(boo) {
+    let boo_id = $(boo).attr('boo_id');
+    if (boo_id=='') {
+
+    } else {
+      let user_id = '{{user.id}}';
+      let api = '/user/' + user_id + '/boo/set/' + boo_id;
+
+      fetch(api)
+        .then(x => x.json())
+        .then(js => {
+          if (js.success) {
+            $('#mypage').load('/mypage', function() {
+              $('#mypage .toggle').prop('checked', true);
+              $('#boochooser .toggle').prop('checked', false);
+            });
+
+            $('#profiler').load('/profiler');
+            $('#boochooser').load('/boochooser');
+          }
+        });
+    }
+  }
+</script>
+{% endblock %}

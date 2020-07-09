@@ -1,5 +1,7 @@
 from django.db import models
 from custom_user.models import AbstractEmailUser
+from model_utils.managers import InheritanceManager
+from vote.models import VoteModel
 from datetime import datetime
 
 # Create your models here.
@@ -52,10 +54,18 @@ class Profile(BigIdAbstract):
         return self.boo.nick + ' | ' + self.boo.user.email
 
 
-class Post(BigIdAbstract):
+class Post(BigIdAbstract, VoteModel):
     boo = models.ForeignKey(Boo, on_delete=models.CASCADE)
     text = models.TextField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    objects = InheritanceManager()
+
+    def __str__(self):
+        return self.boo.nick + ' | ' + str(self.created_at)
+
+    @property
+    def post_type(self):
+        return self.__class__.__name__.lower()
 
 
 def _postpix_path(instance, fname):

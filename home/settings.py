@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.naver',
     'allauth.socialaccount.providers.facebook',
     'custom_user',
+
+    'vote',
 ]
 
 MIDDLEWARE = [

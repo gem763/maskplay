@@ -209,7 +209,6 @@
 
 
 <body style='width:100%;height:100%;background:lightgray;'>
-
   <table id='frame' class='ui unstackable very basic celled table'>
     <tbody>
       <tr>
@@ -217,19 +216,25 @@
           <div class="swiper-container swiper-container-v">
             <div class="swiper-wrapper">
 
+              {% for post in posts %}
               <div class="swiper-slide">
-                {% include "getch/post.html" with type='ab' imgsrc_a="/static/materials/imgs/AB_anorak_A.jpg" imgsrc_b="/static/materials/imgs/AB_anorak_B.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
+                {% include "getch/post.html" with post=post %}
+              </div>
+              {% endfor %}
+
+              <!-- <div class="swiper-slide">
+                include "getch/post.html" with type='ab' imgsrc_a="/static/materials/imgs/AB_anorak_A.jpg" imgsrc_b="/static/materials/imgs/AB_anorak_B.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
               </div>
 
               <div class="swiper-slide">
-                {% include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_chanelbag.jpg" author="/static/materials/imgs/user.jpg" score1='24' score2='76'%}
+                include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_chanelbag.jpg" author="/static/materials/imgs/user.jpg" score1='24' score2='76'%}
               </div>
               <div class="swiper-slide">
-                {% include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" author="/static/materials/imgs/user2.jpg" score1='59' score2='41' %}
+                include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" author="/static/materials/imgs/user2.jpg" score1='59' score2='41' %}
               </div>
               <div class="swiper-slide">
-                {% include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_onepiece.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
-              </div>
+                include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_onepiece.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
+              </div> -->
             </div>
           </div>
 

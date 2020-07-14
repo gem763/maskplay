@@ -1,13 +1,13 @@
 from django.contrib import admin
 # from getch.models import User
 import getch.models as m
+from vote.models import VoteModel
 
 
 admin.site.register(m.Profile)
 admin.site.register(m.Post)
 admin.site.register(m.PostVoteAB)
 admin.site.register(m.PostVoteOX)
-
 
 
 class BooInline(admin.TabularInline):

@@ -13,14 +13,13 @@ def vote(request, post_id):
     action = request.GET.get('action', None)
 
     if action:
-        post = m.Post.objects.get(pk=post_id)
         boo_id = request.user.boo().pk
+        post = m.Post.objects.get(pk=post_id)
+        post.vote(int(action), boo_id)
 
-        if action=='up':
-            post.votes.up(boo_id)
-
-        elif action=='down':
-            post.votes.down(boo_id)
+        print('up vote: ', post.votes.user_ids(action=0))
+        print('down vote: ', post.votes.user_ids(action=1))
+        # print(post.votes.all(boo_id, action=1), 'kkkkkkkkkkkkkkkk')
 
         return JsonResponse({'success':True}, safe=False)
 

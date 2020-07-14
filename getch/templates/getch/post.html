@@ -18,13 +18,13 @@
         <input type="radio" name='vote'>
         <span class='ox'>O</span>
         <span class='vs'>VS</span>
-        <!-- include "getch/scorebar.html" with score=score1 %} -->
+        {% include "getch/scorebar.html" with score=post.score_up_fwd %}
       </td>
 
       <td class='x vote'>
         <input type="radio" name='vote'>
         <span class='ox'>X</span>
-        <!-- include "getch/scorebar.html" with score=score2 %} -->
+        {% include "getch/scorebar.html" with score=post.score_down_fwd %}
       </td>
       <td></td>
     </tr>
@@ -38,7 +38,7 @@
       <td class='a vote top full'>
         <input type="radio" name='vote'>
         <img class='postimg' src={{post.pix_a.url}}>
-        <!-- include "getch/scorebar.html" with score=score1 %} -->
+        {% include "getch/scorebar.html" with score=post.score_up_fwd %}
       </td>
 
       <td class='top menu'>
@@ -53,7 +53,7 @@
         <input type="radio" name='vote'>
         <img class='postimg' src='{{post.pix_b.url}}'>
         <span class='vs'>VS</span>
-        <!-- include "getch/scorebar.html" with score=score2 %} -->
+        {% include "getch/scorebar.html" with score=post.score_down_fwd %}
       </td>
       <td></td>
     </tr>
@@ -61,12 +61,8 @@
 </table>
 {% endif %}
 
+
 <div style='text-align:right;position:absolute;top:50%;right:10px;width:50%;transform:translate(0,-50%);font-size:12px;line-height:15px;'>
   <span style='background:black;color:white;'>@{{post.boo.nick}}</span><br>
   <span style='background:black;color:white;line-height:15px;'>{{post.text|linebreaksbr}}</span>
-
-  <!-- <span style='background:black;color:white;'>@김다리미</span><br>
-  <span style='background:black;color:white;'>#살말?</span><br>
-  <span style='background:black;color:white;'>택포 40이면 돈값함?</span><br>
-  <span style='background:black;color:white;'>완사닷컴이라는 인쇼야</span> -->
 </div>

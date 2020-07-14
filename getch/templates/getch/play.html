@@ -222,19 +222,6 @@
               </div>
               {% endfor %}
 
-              <!-- <div class="swiper-slide">
-                include "getch/post.html" with type='ab' imgsrc_a="/static/materials/imgs/AB_anorak_A.jpg" imgsrc_b="/static/materials/imgs/AB_anorak_B.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
-              </div>
-
-              <div class="swiper-slide">
-                include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_chanelbag.jpg" author="/static/materials/imgs/user.jpg" score1='24' score2='76'%}
-              </div>
-              <div class="swiper-slide">
-                include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_tennisskirt.jpg" author="/static/materials/imgs/user2.jpg" score1='59' score2='41' %}
-              </div>
-              <div class="swiper-slide">
-                include "getch/post.html" with type='ox' imgsrc="/static/materials/imgs/OX_onepiece.jpg" author="/static/materials/imgs/user3.jpg" score1='32' score2='68' %}
-              </div> -->
             </div>
           </div>
 
@@ -288,8 +275,6 @@
         // preventClicks: false,
         // preventClicksPropagation: false
       });
-
-      // var swiper_author = new Swiper('.swiper-container-h', {});
     });
 
     $('.post.ox td.vote').click(function() {
@@ -315,12 +300,12 @@
       if (status) {
         radio.prop('checked', false);
         table.find('.vs').css('opacity', 1);
-        selected.siblings().css('filter', 'grayscale(0)')
+        selected.siblings().children('td.vote').css('filter', 'grayscale(0)')
       } else {
         radio.prop('checked', true);
         table.find('.vs').css('opacity', 0);
-        selected.css('filter', 'grayscale(0)')
-        selected.siblings().css('filter', 'grayscale(1)')
+        selected.children('td.vote').css('filter', 'grayscale(0)')
+        selected.siblings().children('td.vote').css('filter', 'grayscale(1)')
       }
     });
 

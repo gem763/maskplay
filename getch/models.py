@@ -41,7 +41,7 @@ class Boo(BigIdAbstract):
 def _profilepix_path(instance, fname):
     user = instance.boo.user.email
     fname = str(datetime.now()) + '__' + fname
-    fmt = '{user}/{fname}'
+    fmt = 'user/{user}/{fname}'
     return fmt.format(user=user, fname=fname)
 
 
@@ -67,6 +67,49 @@ class Post(BigIdAbstract, VoteModel):
     def post_type(self):
         return self.__class__.__name__.lower()
 
+    def vote(self, action, boo_id):
+        # up
+        if action==0:
+            self.votes.up(boo_id)
+
+        # down
+        elif action==1:
+            self.votes.down(boo_id)
+
+    @property
+    def nvotes(self):
+        return self.num_vote_up + self.num_vote_down
+
+    def score(self, what, add=0):
+        try:
+            if what=='up':
+                num_vote = self.num_vote_up + add
+
+            elif what=='down':
+                num_vote = self.num_vote_down + add
+
+            nvotes = self.nvotes + add
+            return int(num_vote / nvotes * 100)
+
+        except:
+            return 0
+
+    @property
+    def score_up(self):
+        return self.score('up')
+
+    @property
+    def score_down(self):
+        return self.score('down')
+
+    @property
+    def score_up_fwd(self):
+        return self.score('up', add=1)
+
+    @property
+    def score_down_fwd(self):
+        return self.score('down', add=1)
+        
 
 def _postpix_path(instance, fname):
     user = instance.boo.user.email

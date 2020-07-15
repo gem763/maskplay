@@ -18,11 +18,9 @@ def boo_regroup(boos):
 
 
 @register.filter
-def voted_by(post, boo_id):
-    # post = m.Post.objects.get(pk=post_id)
-
-    print(type(post))
-    print('up vote: ', post.votes.user_ids(action=0))
-    print('down vote: ', post.votes.user_ids(action=1))
+def voted(post, boo_id):
+    # print(type(post))
+    # print('up vote: ', post.votes.user_ids(action=0))
+    # print('down vote: ', post.votes.user_ids(action=1))
 
     return post.voted(boo_id)

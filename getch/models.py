@@ -91,7 +91,7 @@ class Post(BigIdAbstract, VoteModel):
             return 1
 
         else:
-            return 3
+            return None
 
     @property
     def nvotes(self):

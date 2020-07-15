@@ -1,10 +1,10 @@
 {% load ctags %}
-{{ post|voted_by:user.boo.pk }}
+{% with voted=post|voted:user.boo.pk %}
 
 
 {% if post.post_type == 'postvoteox' %}
-<input class='o vote' type="radio" name='vote {{post.pk}}' {% if voted_up == 'true' %}checked{% endif %}>
-<input class='x vote' type="radio" name='vote {{post.pk}}' {% if voted_down == 'true' %}checked{% endif %}>
+<input class='o vote' type="radio" name='vote {{post.pk}}' {% if voted == 0 %}checked{% endif %}>
+<input class='x vote' type="radio" name='vote {{post.pk}}' {% if voted == 1 %}checked{% endif %}>
 <table class="post ox ui unstackable very basic celled table">
   <tbody>
     <tr>
@@ -23,12 +23,24 @@
       <td class='o vote bottom half'>
         <span class='ox'>O</span>
         <span class='vs'>VS</span>
+        {% if voted == 0 %}
+        {% include "getch/scorebar.html" with score=post.score_up %}
+        {% elif voted == 1 %}
+        {% include "getch/scorebar.html" with score=post.score_up_change %}
+        {% else %}
         {% include "getch/scorebar.html" with score=post.score_up_new %}
+        {% endif %}
       </td>
 
       <td class='x vote'>
         <span class='ox'>X</span>
+        {% if voted == 0 %}
+        {% include "getch/scorebar.html" with score=post.score_down_change %}
+        {% elif voted == 1 %}
+        {% include "getch/scorebar.html" with score=post.score_down %}
+        {% else %}
         {% include "getch/scorebar.html" with score=post.score_down_new %}
+        {% endif %}
       </td>
       <td></td>
     </tr>
@@ -36,14 +48,20 @@
 </table>
 
 {% elif post.post_type == 'postvoteab' %}
-<input class='a vote' type="radio" name='vote {{post.pk}}'>
-<input class='b vote' type="radio" name='vote {{post.pk}}'>
+<input class='a vote' type="radio" name='vote {{post.pk}}' {% if voted == 0 %}checked{% endif %}>
+<input class='b vote' type="radio" name='vote {{post.pk}}' {% if voted == 1 %}checked{% endif %}>
 <table class="post ab ui unstackable very basic celled table">
   <tbody>
     <tr>
       <td class='a vote top full'>
         <img class='postimg' src={{post.pix_a.url}}>
+        {% if voted == 0 %}
+        {% include "getch/scorebar.html" with score=post.score_up %}
+        {% elif voted == 1 %}
+        {% include "getch/scorebar.html" with score=post.score_up_change %}
+        {% else %}
         {% include "getch/scorebar.html" with score=post.score_up_new %}
+        {% endif %}
       </td>
 
       <td class='top menu'>
@@ -57,7 +75,13 @@
       <td class='b vote bottom full'>
         <img class='postimg' src='{{post.pix_b.url}}'>
         <span class='vs'>VS</span>
+        {% if voted == 0 %}
+        {% include "getch/scorebar.html" with score=post.score_down_change %}
+        {% elif voted == 1 %}
+        {% include "getch/scorebar.html" with score=post.score_down %}
+        {% else %}
         {% include "getch/scorebar.html" with score=post.score_down_new %}
+        {% endif %}
       </td>
       <td></td>
     </tr>
@@ -72,4 +96,4 @@
 </div>
 
 
-<!-- endwith %} -->
+{% endwith %}

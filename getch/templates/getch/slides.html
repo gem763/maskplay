@@ -1,0 +1,23 @@
+<div class="swiper-container swiper-container-v">
+  <div class="swiper-wrapper">
+
+    {% for post in posts %}
+    <div class="swiper-slide">
+      {% include "getch/post.html" with post=post %}
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+
+<script src="/static/swiper/swiper.js"></script>
+
+<script>
+  var swiper = new Swiper('.swiper-container-v', {
+    direction: 'vertical'
+    // loop: true
+    // preventClicks: false,
+    // preventClicksPropagation: false
+  });
+</script>

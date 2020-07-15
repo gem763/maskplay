@@ -9,12 +9,17 @@ def play(request):
     return render(request, 'getch/play.html', ctx)
 
 
+def slides(request):
+    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
+    ctx = {'posts': posts}
+    return render(request, 'getch/slides.html', ctx)
+
 def vote(request, post_id):
     action = request.GET.get('action', None)
 
     if action:
         boo_id = request.user.boo.pk
-        post = m.Post.objects.get(pk=post_id)
+        post = m.Post.objects.get_subclass(pk=post_id)
         post.vote(int(action), boo_id)
 
         print('up vote: ', post.votes.user_ids(action=0))

@@ -11,5 +11,6 @@ urlpatterns = [
     path('slides/', v.slides, name='slides'),
     path('user/<int:user_id>/boo/set/<int:boo_id>/', v.set_boo),
     path('post/<int:post_id>/vote/', v.vote, name='vote'),
+    path('post/<int:post_id>/vote/cancel/', v.vote_cancel, name='vote_cancel'),
     # path('test/<str:state>/', v.test)
 ]

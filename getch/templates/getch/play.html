@@ -143,8 +143,18 @@
     }
 
     .author.menublock {
-      top: calc(var(--border)*(-1));
+      /* top: calc(var(--border)*(-1) + var(--menu)); */
+      top: calc(var(--menu));
       right: calc(var(--border)*(-1));
+    }
+
+    .logo.menublock {
+      top: 0;
+      right: 0;
+    }
+
+    .logo.menublock img.full {
+      /* object-fit: contain; */
     }
 
     .posting.menublock {
@@ -232,6 +242,10 @@
           </div>
 
           <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
+          <div class='logo menublock'>
+            <img class='full' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
+          </div>
+
           <div class='posting menublock'>
             <img class='icon' src="{% static 'materials/icons/plus.png' %}">
           </div>
@@ -291,25 +305,47 @@
       }
     }
 
-    $('.post td.vote.a').on('click', function() {
-      let radio = $(this).closest('table.post').siblings('input.a');
+    function vote_here(obj, type) {
+      let radio = $(obj).closest('table.post').siblings('input.' + type);
       radio_toggle(radio);
-    });
 
-    $('.post td.vote.b').on('click', function() {
-      let radio = $(this).closest('table.post').siblings('input.b');
-      radio_toggle(radio);
-    });
+      let post_id = $(obj).closest('table.post').attr('id');
+      let action;
 
-    $('.post td.vote.o').on('click', function() {
-      let radio = $(this).closest('table.post').siblings('input.o');
-      radio_toggle(radio);
-    });
+      if (type=='o' | type=='a') {
+        action = '0';
 
-    $('.post td.vote.x').on('click', function() {
-      let radio = $(this).closest('table.post').siblings('input.x');
-      radio_toggle(radio);
-    });
+      } else if (type=='x' | type=='b') {
+        action = '1';
+      }
+
+      let api = 'post/' + post_id + '/vote?action=' + action;
+
+      fetch(api).then(x => x.json())
+                .then(js => {
+                  console.log(js);
+                })
+    }
+
+    // $('.post td.vote.a').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.a');
+    //   radio_toggle(radio);
+    // });
+    //
+    // $('.post td.vote.b').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.b');
+    //   radio_toggle(radio);
+    // });
+    //
+    // $('.post td.vote.o').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.o');
+    //   radio_toggle(radio);
+    // });
+    //
+    // $('.post td.vote.x').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.x');
+    //   radio_toggle(radio);
+    // });
 
 
     $('.my.menublock').click(function() {
@@ -319,6 +355,10 @@
       $('#loginpage .toggle').prop('checked', true);
       {% endif %}
     });
+
+    $('.posting.menublock').click(function() {
+      $('input.posting-type').prop('checked', true);
+    })
 
 
     $('#profiler .mask-guide').draggable({

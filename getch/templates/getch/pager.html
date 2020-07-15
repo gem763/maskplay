@@ -55,6 +55,11 @@
     left: -100% !important;
     background: rgba(0,0,0,0.5) !important;
   }
+
+  .pager .toggle.posting-type:checked + div.posting-type {
+    /* background: lightblue !important; */
+    bottom: 0 !important;
+  }
 </style>
 
 
@@ -73,6 +78,11 @@
 
   <div id='profiler'>
     {% include 'getch/profiler.html' %}
+  </div>
+
+  <input class='toggle posting-type' type='checkbox'>
+  <div class='posting-type' style='position:absolute;bottom:-30%;left:0;width:100%;height:30%;background:white;transition:0.2s;'>
+    TEST
   </div>
 </div>
 

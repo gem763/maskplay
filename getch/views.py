@@ -34,6 +34,13 @@ def vote(request, post_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def vote_cancel(request, post_id):
+    pass
+    # boo_id = request.user.boo.pk
+    # post = m.Post.objects.get_subclass(pk=post_id)
+    # post.vote(int(action), boo_id)
+
+
 def mypage(request):
     return render(request, 'getch/mypage.html')
 

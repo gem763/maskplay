@@ -189,32 +189,32 @@
       width: 60%;
     }
 
-    input.vote {
+    input[name='vote'] {
       display: none;
       visibility: hidden;
     }
 
-    input.vote.a:checked ~ table.post td.vote.b,
-    input.vote.b:checked ~ table.post td.vote.a {
+    input[name='vote'].a:checked ~ table.post td.vote.b,
+    input[name='vote'].b:checked ~ table.post td.vote.a {
       filter: grayscale(1);
     }
 
-    input.vote.o:checked ~ table.post td.vote.o span.ox {
+    input[name='vote'].o:checked ~ table.post td.vote.o span.ox {
       background: var(--color-pos);
     }
 
-    input.vote.x:checked ~ table.post td.vote.x span.ox {
+    input[name='vote'].x:checked ~ table.post td.vote.x span.ox {
       background: var(--color-neg);
     }
 
-    input.vote:checked ~ table.post span.vs {
+    input[name='vote']:checked ~ table.post span.vs {
       opacity: 0;
     }
 
-    input.vote.a:checked ~ table.post td.vote.a .scorebar,
-    input.vote.b:checked ~ table.post td.vote.b .scorebar,
-    input.vote.o:checked ~ table.post td.vote.o .scorebar,
-    input.vote.x:checked ~ table.post td.vote.x .scorebar {
+    input[name='vote'].a:checked ~ table.post td.vote.a .scorebar,
+    input[name='vote'].b:checked ~ table.post td.vote.b .scorebar,
+    input[name='vote'].o:checked ~ table.post td.vote.o .scorebar,
+    input[name='vote'].x:checked ~ table.post td.vote.x .scorebar {
       opacity: 1;
     }
 
@@ -291,6 +291,20 @@
       });
     });
 
+    // $('.post.ox td.vote').click(function() {
+    //   var radio = $(this).children('input[name="vote"]');
+    //   var status = radio.prop('checked');
+    //   var table = radio.closest('table');
+    //
+    //   if (status) {
+    //     radio.prop('checked', false);
+    //     table.find('.vs').css('opacity', 1);
+    //   } else {
+    //     radio.prop('checked', true);
+    //     table.find('.vs').css('opacity', 0);
+    //   }
+    // });
+    //
 
     function radio_toggle(radio) {
       let status = radio.prop('checked');
@@ -322,6 +336,23 @@
       radio_toggle(radio);
     });
 
+    // $('.post.ab td.vote').click(function() {
+    //   var radio = $(this).children('input[name="vote"]');
+    //   var status = radio.prop('checked');
+    //   var table = radio.closest('table');
+    //   var selected = radio.closest('tr');
+    //
+    //   if (status) {
+    //     radio.prop('checked', false);
+    //     table.find('.vs').css('opacity', 1);
+    //     selected.siblings().children('td.vote').css('filter', 'grayscale(0)')
+    //   } else {
+    //     radio.prop('checked', true);
+    //     table.find('.vs').css('opacity', 0);
+    //     selected.children('td.vote').css('filter', 'grayscale(0)')
+    //     selected.siblings().children('td.vote').css('filter', 'grayscale(1)')
+    //   }
+    // });
 
     $('.my.menublock').click(function() {
       {% if user.is_authenticated %}

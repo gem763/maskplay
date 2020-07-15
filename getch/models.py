@@ -16,6 +16,7 @@ class BigIdAbstract(models.Model):
 class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
 
+    @property
     def boo(self):
         return Boo.objects.get(pk=self.boo_selected, user=self)
 
@@ -76,19 +77,35 @@ class Post(BigIdAbstract, VoteModel):
         elif action==1:
             self.votes.down(boo_id)
 
+    # def voted_up(self, boo_id):
+    #     return self.votes.exists(boo_id, action=0)
+    #
+    # def voted_down(self, boo_id):
+    #     return self.votes.exists(boo_id, action=1)
+
+    def voted(self, boo_id):
+        if self.votes.exists(boo_id, action=0):
+            return 0
+
+        elif self.votes.exists(boo_id, action=1):
+            return 1
+
+        else:
+            return 3
+
     @property
     def nvotes(self):
         return self.num_vote_up + self.num_vote_down
 
-    def score(self, what, add=0):
+    def score(self, what, alpha=0, beta=0):
         try:
             if what=='up':
-                num_vote = self.num_vote_up + add
+                num_vote = self.num_vote_up + alpha
 
             elif what=='down':
-                num_vote = self.num_vote_down + add
+                num_vote = self.num_vote_down + alpha
 
-            nvotes = self.nvotes + add
+            nvotes = self.nvotes + beta
             return int(num_vote / nvotes * 100)
 
         except:
@@ -103,13 +120,21 @@ class Post(BigIdAbstract, VoteModel):
         return self.score('down')
 
     @property
-    def score_up_fwd(self):
-        return self.score('up', add=1)
+    def score_up_new(self):
+        return self.score('up', alpha=1, beta=1)
 
     @property
-    def score_down_fwd(self):
-        return self.score('down', add=1)
-        
+    def score_down_new(self):
+        return self.score('down', alpha=1, beta=1)
+
+    @property
+    def score_up_change(self):
+        return self.score('up', alpha=1)
+
+    @property
+    def score_down_change(self):
+        return self.score('down', alpha=1)
+
 
 def _postpix_path(instance, fname):
     user = instance.boo.user.email

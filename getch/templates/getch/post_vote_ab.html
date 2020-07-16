@@ -1,0 +1,40 @@
+<input class='a vote' type="radio" name='vote {{post.pk}}' {% if voted == 0 %}checked{% endif %}>
+<input class='b vote' type="radio" name='vote {{post.pk}}' {% if voted == 1 %}checked{% endif %}>
+
+<table id='{{post.pk}}' class="post ab ui unstackable very basic celled table">
+  <tbody>
+    <tr>
+      <td class='a vote top full' onclick='vote_here(this, "a")'>
+        <img class='postimg' src={{post.pix_a.url}}>
+        {% if voted == 0 %}
+        {% include "getch/scorebar.html" with score=post.score_up %}
+        {% elif voted == 1 %}
+        {% include "getch/scorebar.html" with score=post.score_up_change %}
+        {% else %}
+        {% include "getch/scorebar.html" with score=post.score_up_new %}
+        {% endif %}
+      </td>
+
+      <td class='top menu'>
+        <div class='author menublock'>
+          <img class='full' src={{post.boo.profile.pix.url}}>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class='b vote bottom full' onclick='vote_here(this, "b")'>
+        <img class='postimg' src='{{post.pix_b.url}}'>
+        <span class='vs'>VS</span>
+        {% if voted == 0 %}
+        {% include "getch/scorebar.html" with score=post.score_down_change %}
+        {% elif voted == 1 %}
+        {% include "getch/scorebar.html" with score=post.score_down %}
+        {% else %}
+        {% include "getch/scorebar.html" with score=post.score_down_new %}
+        {% endif %}
+      </td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>

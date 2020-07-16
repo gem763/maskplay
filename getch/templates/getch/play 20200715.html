@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="ko">
+
+{% load static %}
+<head>
+  <title>GET.CH</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
+  <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css"> -->
+  <link rel="stylesheet" href="{% static 'swiper/swiper.min.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.min.css' %}">
+
+  <!-- favicon.ico 404 Not found error -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <style>
+    :root {
+      --border: 1px;
+      --menu: 35px;
+      --menu-img: 25px;
+      --height: min(100vh, calc(2*100vw - 2*var(--menu)));
+      --width: min(100vw, calc(50vh + var(--menu)));
+      --vs-fsize: 20px;
+      --ox-fsize: 100px;
+      --color-pos: rgb(241,20,15);
+      --color-neg: rgb(22,187,204);
+      --scorebar-w: calc(var(--height) / 15);
+      --scorebar-h: calc(var(--width) / 50);
+      --scorebar-offset: 20px;
+    }
+
+    * {
+      /* box-sizing: border-box; */
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    #frame {
+      position: relative !important;
+      background: none;
+      width: var(--width);
+      height: var(--height);
+      border-radius: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #frame td {
+      padding: 0;
+      position: relative;
+      border-color: black;
+      border-width: var(--border);
+      text-align: center !important;
+    }
+
+    #frame .border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: var(--border) solid black;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .swiper-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .post {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 0 !important;
+      border: var(--border) solid black !important;
+      border-bottom: none !important;
+      background: white !important;
+      margin: 0 !important;
+    }
+
+    .post td.top {
+      height: calc(var(--width) - 3*var(--border) - var(--menu));
+    }
+
+    .post td.top.full {
+      border-bottom: var(--border) solid black !important;
+    }
+
+    .post td.half {
+      width: calc((var(--width) - 4*var(--border) - var(--menu)) * 0.5);
+    }
+
+    .post td.menu {
+      width: var(--menu);
+    }
+
+    .post img.postimg {
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .menublock {
+      position: absolute;
+      width: var(--menu);
+      height: var(--menu);
+      background: white;
+      z-index: 2;
+      border: var(--border) solid black;
+      line-height: var(--menu);
+      text-align: center;
+      box-sizing: content-box;
+    }
+
+    .menublock img.full {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .menublock img.icon {
+      width: var(--menu-img);
+      height: var(--menu-img);
+      vertical-align: middle;
+    }
+
+    .author.menublock {
+      top: calc(var(--menu));
+      right: calc(var(--border)*(-1));
+    }
+
+    .logo.menublock {
+      top: 0;
+      right: 0;
+    }
+
+    .logo.menublock img.full {
+      /* object-fit: contain; */
+    }
+
+    .posting.menublock {
+      bottom: calc(var(--menu) + var(--border));
+      right: 0;
+    }
+
+    .my.menublock {
+      bottom: 0;
+      right: 0;
+    }
+
+    .post .vs {
+      position: absolute;
+      background: black;
+      color: white;
+      font-size: var(--vs-fsize);
+      line-height: calc(var(--vs-fsize) + 8px);
+      z-index: 2;
+      font-weight: bold;
+    }
+
+    .post .bottom.half .vs {
+      top: 50%;
+      right: calc(var(--border) * (-1/2));
+      transform: translate(50%,-50%);
+    }
+
+    .post .bottom.full .vs {
+      top: calc(var(--border) * (-1/2));
+      left: calc(var(--scorebar-offset) * 1.5);
+      transform: translate(0,-50%);
+    }
+
+    .post span.ox {
+      color: white;
+      background: black;
+      font-weight: bold;
+      font-size: var(--ox-fsize);
+      line-height: var(--ox-fsize);
+      display: inline-block;
+      width: 60%;
+    }
+
+    input.vote {
+      display: none;
+      visibility: hidden;
+    }
+
+    input.vote.a:checked ~ table.post td.vote.b,
+    input.vote.b:checked ~ table.post td.vote.a {
+      filter: grayscale(1);
+    }
+
+    input.vote.o:checked ~ table.post td.vote.o span.ox {
+      background: var(--color-pos);
+    }
+
+    input.vote.x:checked ~ table.post td.vote.x span.ox {
+      background: var(--color-neg);
+    }
+
+    input.vote:checked ~ table.post span.vs {
+      opacity: 0;
+    }
+
+    input.vote.a:checked ~ table.post td.vote.a .scorebar,
+    input.vote.b:checked ~ table.post td.vote.b .scorebar,
+    input.vote.o:checked ~ table.post td.vote.o .scorebar,
+    input.vote.x:checked ~ table.post td.vote.x .scorebar {
+      opacity: 1;
+    }
+
+  </style>
+</head>
+
+
+<body style='width:100%;height:100%;background:lightgray;'>
+  <table id='frame' class='ui unstackable very basic celled table'>
+    <tbody>
+      <tr>
+        <td>
+          <div id='slides' style='position:absolute;top:0;left:0;width:100%;height:100%;'>
+            <!-- include 'getch/slides.html' %} -->
+
+            <table style='background:lightblue;position:absolute;top:10px;left:10px;border:5px solid black;border-collapse:collapse;'>
+              <tbody>
+                <tr>
+                  <td style='width:100px;height:100px;border:5px solid red;'>
+                    <img src='/static/materials/imgs/마블리.jpg' style='width:100%;height:100%;object-fit:cover;display:block;'>
+                  </td>
+                  <td style='width:100px;border:5px solid blue'>B</td>
+                </tr>
+                <tr><td style='height:70px;border:5px solid green'>C</td><td style='border:5px solid orange'>D</td></tr>
+              </tbody>
+            </table>
+
+          </div>
+
+          <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
+          <div class='logo menublock'>
+            <img class='full' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
+          </div>
+
+          <div class='posting menublock'>
+            <img class='icon' src="{% static 'materials/icons/plus.png' %}">
+          </div>
+
+          <div class='my menublock'>
+            <img class='icon' src="{% static 'materials/icons/profile.png' %}">
+          </div>
+
+          {% include 'getch/pager.html' %}
+
+          <div class='border'></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+  <script src="{% static 'semantic/semantic.min.js' %}"></script>
+  <script src="{% static 'vue/vue.js' %}"></script>
+  <script src="{% static 'swiper/swiper.js' %}"></script>
+
+
+  <script>
+    // https://docs.djangoproject.com/en/2.2/ref/csrf/
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+
+    $(document).ready(function(){
+      var csrftoken = Cookies.get('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+
+      // var swiper = new Swiper('.swiper-container-v', {
+      //   direction: 'vertical'
+      // });
+    });
+
+
+    function radio_toggle(radio) {
+      let status = radio.prop('checked');
+
+      if (status) {
+        radio.prop('checked', false);
+      } else {
+        radio.prop('checked', true);
+      }
+    }
+
+    function vote_here(obj, type) {
+      let radio = $(obj).closest('table.post').siblings('input.' + type);
+      radio_toggle(radio);
+
+      let post_id = $(obj).closest('table.post').attr('id');
+      let action;
+
+      if (type=='o' | type=='a') {
+        action = '0';
+
+      } else if (type=='x' | type=='b') {
+        action = '1';
+      }
+
+      let api = 'post/' + post_id + '/vote?action=' + action;
+
+      fetch(api).then(x => x.json())
+                .then(js => {
+                  console.log(js);
+                })
+    }
+
+    // $('.post td.vote.a').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.a');
+    //   radio_toggle(radio);
+    // });
+    //
+    // $('.post td.vote.b').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.b');
+    //   radio_toggle(radio);
+    // });
+    //
+    // $('.post td.vote.o').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.o');
+    //   radio_toggle(radio);
+    // });
+    //
+    // $('.post td.vote.x').on('click', function() {
+    //   let radio = $(this).closest('table.post').siblings('input.x');
+    //   radio_toggle(radio);
+    // });
+
+
+    $('.my.menublock').click(function() {
+      {% if user.is_authenticated %}
+      $('#mypage .toggle').prop('checked', true);
+      {% else %}
+      $('#loginpage .toggle').prop('checked', true);
+      {% endif %}
+    });
+
+    $('.posting.menublock').click(function() {
+      $('input.postype-select').prop('checked', true);
+    });
+
+    $('input.postype-select + .shade').click(function() {
+      $('input.postype-select').prop('checked', false);
+    })
+
+
+    $('#profiler .mask-guide').draggable({
+      axis: 'y',
+      containment: 'parent'
+    });
+  </script>
+
+</body>
+</html>

@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
-  <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}">
+  <!-- <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}"> -->
   <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css"> -->
   <link rel="stylesheet" href="{% static 'swiper/swiper.min.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -21,7 +21,7 @@
 
   <style>
     :root {
-      --border: 1px;
+      /* --border: 5px; */
       --menu: 35px;
       --menu-img: 25px;
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
@@ -33,82 +33,49 @@
       --scorebar-w: calc(var(--height) / 15);
       --scorebar-h: calc(var(--width) / 50);
       --scorebar-offset: 20px;
+
+      --border-w: 10px;
+      --border: var(--border-w) solid red;
+      --s-menu: 35px;
+      --s-0: min(calc(100vw - var(--s-menu) - var(--border-w)), calc(50vh - var(--border-w)/2));
+      --s-1: calc(var(--s-0)/2);
+      --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
+      --window-h: calc(var(--s-0)*2 + var(--border-w));
     }
 
     * {
-      /* box-sizing: border-box; */
       font-family: 'Noto Sans KR', sans-serif;
     }
 
-    #frame {
-      position: relative !important;
+    #window {
+      width: var(--window-w);
+      height: var(--window-h);
       background: none;
-      width: var(--width);
-      height: var(--height);
-      border-radius: 0;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    #frame td {
-      padding: 0;
       position: relative;
-      border-color: black;
-      border-width: var(--border);
-      text-align: center !important;
     }
 
-    #frame .border {
+    #window .border {
       position: absolute;
       top: 0;
       left: 0;
+      background: none;
       width: 100%;
       height: 100%;
-      border: var(--border) solid black;
-      pointer-events: none;
+      border: var(--border);
+      box-sizing: border-box;
       z-index: 5;
+      pointer-events: none;
+    }
+
+    #slides {
+      width: 100%;
+      height: 100%;
     }
 
     .swiper-container {
       position: absolute;
       left: 0;
       top: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .post {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 0 !important;
-      border: var(--border) solid black !important;
-      border-bottom: none !important;
-      background: white !important;
-      margin: 0 !important;
-    }
-
-    .post td.top {
-      height: calc(var(--width) - 3*var(--border) - var(--menu));
-    }
-
-    .post td.top.full {
-      border-bottom: var(--border) solid black !important;
-    }
-
-    .post td.half {
-      width: calc((var(--width) - 4*var(--border) - var(--menu)) * 0.5);
-    }
-
-    .post td.menu {
-      width: var(--menu);
-    }
-
-    .post img.postimg {
-      object-fit: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
     }
@@ -163,121 +130,32 @@
       bottom: 0;
       right: 0;
     }
-
-    .post .vs {
-      position: absolute;
-      background: black;
-      color: white;
-      font-size: var(--vs-fsize);
-      line-height: calc(var(--vs-fsize) + 8px);
-      z-index: 2;
-      font-weight: bold;
-    }
-
-    .post .bottom.half .vs {
-      top: 50%;
-      right: calc(var(--border) * (-1/2));
-      transform: translate(50%,-50%);
-    }
-
-    .post .bottom.full .vs {
-      top: calc(var(--border) * (-1/2));
-      left: calc(var(--scorebar-offset) * 1.5);
-      transform: translate(0,-50%);
-    }
-
-    .post span.ox {
-      color: white;
-      background: black;
-      font-weight: bold;
-      font-size: var(--ox-fsize);
-      line-height: var(--ox-fsize);
-      display: inline-block;
-      width: 60%;
-    }
-
-    input.vote {
-      display: none;
-      visibility: hidden;
-    }
-
-    input.vote.a:checked ~ table.post td.vote.b,
-    input.vote.b:checked ~ table.post td.vote.a {
-      filter: grayscale(1);
-    }
-
-    input.vote.o:checked ~ table.post td.vote.o span.ox {
-      background: var(--color-pos);
-    }
-
-    input.vote.x:checked ~ table.post td.vote.x span.ox {
-      background: var(--color-neg);
-    }
-
-    input.vote:checked ~ table.post span.vs {
-      opacity: 0;
-    }
-
-    input.vote.a:checked ~ table.post td.vote.a .scorebar,
-    input.vote.b:checked ~ table.post td.vote.b .scorebar,
-    input.vote.o:checked ~ table.post td.vote.o .scorebar,
-    input.vote.x:checked ~ table.post td.vote.x .scorebar {
-      opacity: 1;
-    }
-
   </style>
 </head>
 
 
-<body style='width:100%;height:100%;background:lightgray;'>
-  <table id='frame' class='ui unstackable very basic celled table'>
-    <tbody>
-      <tr>
-        <td>
-          <div id='slides' style='position:absolute;top:0;left:0;width:100%;height:100%;'>
-            <!-- include 'getch/slides.html' %} -->
+<body style='background:lightgray;margin:0;'>
+  <div id='window'>
+    <div id='slides'>
+      {% include 'getch/slides.html' %}
+      <!-- <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" style='background:orange;'>1</div>
+          <div class="swiper-slide" style='background:lightblue;'>2</div>
+          <div class="swiper-slide" style='background:lightpink;'>3</div>
+        </div>
+      </div> -->
+    </div>
 
-            <table style='background:lightblue;position:absolute;top:10px;left:10px;border:5px solid black;border-collapse:collapse;'>
-              <tbody>
-                <tr>
-                  <td style='width:100px;height:100px;border:5px solid red;'>
-                    <img src='/static/materials/imgs/마블리.jpg' style='width:100%;height:100%;object-fit:cover;display:block;'>
-                  </td>
-                  <td style='width:100px;border:5px solid blue'>B</td>
-                </tr>
-                <tr><td style='height:70px;border:5px solid green'>C</td><td style='border:5px solid orange'>D</td></tr>
-              </tbody>
-            </table>
-
-          </div>
-
-          <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
-          <div class='logo menublock'>
-            <img class='full' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
-          </div>
-
-          <div class='posting menublock'>
-            <img class='icon' src="{% static 'materials/icons/plus.png' %}">
-          </div>
-
-          <div class='my menublock'>
-            <img class='icon' src="{% static 'materials/icons/profile.png' %}">
-          </div>
-
-          {% include 'getch/pager.html' %}
-
-          <div class='border'></div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class='border'></div>
+  </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
   <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-  <script src="{% static 'semantic/semantic.min.js' %}"></script>
-  <script src="{% static 'vue/vue.js' %}"></script>
+  <!-- <script src="{% static 'semantic/semantic.min.js' %}"></script> -->
+  <!-- <script src="{% static 'vue/vue.js' %}"></script> -->
   <script src="{% static 'swiper/swiper.js' %}"></script>
 
 
@@ -299,9 +177,9 @@
         }
       });
 
-      // var swiper = new Swiper('.swiper-container-v', {
-      //   direction: 'vertical'
-      // });
+      var swiper = new Swiper('.swiper-container', {
+        direction: 'vertical'
+      });
     });
 
 
@@ -336,26 +214,6 @@
                   console.log(js);
                 })
     }
-
-    // $('.post td.vote.a').on('click', function() {
-    //   let radio = $(this).closest('table.post').siblings('input.a');
-    //   radio_toggle(radio);
-    // });
-    //
-    // $('.post td.vote.b').on('click', function() {
-    //   let radio = $(this).closest('table.post').siblings('input.b');
-    //   radio_toggle(radio);
-    // });
-    //
-    // $('.post td.vote.o').on('click', function() {
-    //   let radio = $(this).closest('table.post').siblings('input.o');
-    //   radio_toggle(radio);
-    // });
-    //
-    // $('.post td.vote.x').on('click', function() {
-    //   let radio = $(this).closest('table.post').siblings('input.x');
-    //   radio_toggle(radio);
-    // });
 
 
     $('.my.menublock').click(function() {

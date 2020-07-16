@@ -4,10 +4,9 @@ import getch.models as m
 
 
 def play(request):
-    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    ctx = {'posts': posts}
-    print(posts[0].text)
-    return render(request, 'getch/play.html', ctx)
+    # posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
+    # ctx = {'posts': posts}
+    return render(request, 'getch/play.html')#, ctx)
 
 
 def slides(request):

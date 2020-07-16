@@ -238,7 +238,7 @@
       <tr>
         <td>
           <div id='slides' style='position:absolute;top:0;left:0;width:100%;height:100%;'>
-              {% include 'getch/slides.html' %}
+            {% include 'getch/slides.html' %}
           </div>
 
           <!-- 이미지 수직정렬: https://blog.asamaru.net/2017/04/04/css-image-vertical-center/ -->
@@ -357,7 +357,11 @@
     });
 
     $('.posting.menublock').click(function() {
-      $('input.posting-type').prop('checked', true);
+      $('input.postype-select').prop('checked', true);
+    });
+
+    $('input.postype-select + .shade').click(function() {
+      $('input.postype-select').prop('checked', false);
     })
 
 

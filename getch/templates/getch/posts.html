@@ -1,0 +1,126 @@
+<style>
+
+
+
+  /* .post {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 0 !important;
+    border: var(--border-w) solid black !important;
+    border-bottom: none !important;
+    background: white !important;
+    margin: 0 !important;
+  }
+
+  .post td.top {
+    height: calc(var(--window-w) - 3*var(--border-w) - var(--s-menu));
+  }
+
+  .post td.top.full {
+    border-bottom: var(--border-w) solid black !important;
+  }
+
+  .post td.half {
+    width: calc((var(--window-w) - 4*var(--border-w) - var(--s-menu)) * 0.5);
+  }
+
+  .post td.menu {
+    width: var(--s-menu);
+  }
+
+  .post img.postimg {
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .post .vs {
+    position: absolute;
+    background: black;
+    color: white;
+    font-size: var(--vs-fsize);
+    line-height: calc(var(--vs-fsize) + 8px);
+    z-index: 2;
+    font-weight: bold;
+  }
+
+  .post .bottom.half .vs {
+    top: 50%;
+    right: calc(var(--border-w) * (-1/2));
+    transform: translate(50%,-50%);
+  }
+
+  .post .bottom.full .vs {
+    top: calc(var(--border-w) * (-1/2));
+    left: calc(var(--scorebar-offset) * 1.5);
+    transform: translate(0,-50%);
+  }
+
+  .post span.ox {
+    color: white;
+    background: black;
+    font-weight: bold;
+    font-size: var(--ox-fsize);
+    line-height: var(--ox-fsize);
+    display: inline-block;
+    width: 60%;
+  } */
+
+  input.vote {
+    display: none;
+    visibility: hidden;
+  }
+
+  input.vote.a:checked ~ table.post td.vote.b,
+  input.vote.b:checked ~ table.post td.vote.a {
+    filter: grayscale(1);
+  }
+
+  input.vote.o:checked ~ table.post td.vote.o span.ox {
+    background: var(--color-pos);
+  }
+
+  input.vote.x:checked ~ table.post td.vote.x span.ox {
+    background: var(--color-neg);
+  }
+
+  input.vote:checked ~ table.post span.vs {
+    opacity: 0;
+  }
+
+  input.vote.a:checked ~ table.post td.vote.a .scorebar,
+  input.vote.b:checked ~ table.post td.vote.b .scorebar,
+  input.vote.o:checked ~ table.post td.vote.o .scorebar,
+  input.vote.x:checked ~ table.post td.vote.x .scorebar {
+    opacity: 1;
+  }
+</style>
+
+
+<div class="swiper-container">
+  <div class="swiper-wrapper">
+
+    {% for post in posts %}
+    <div class="swiper-slide">
+      {% include "getch/post.html" with post=post %}
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+
+<script src="/static/swiper/swiper.js"></script>
+<script>
+  var swiper = new Swiper('.swiper-container', {
+    direction: 'vertical',
+    // spaceBetween: '-10'
+    // loop: true
+    // preventClicks: false,
+    // preventClicksPropagation: false
+  });
+</script>

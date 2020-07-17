@@ -1,0 +1,71 @@
+<style>
+  .post {
+    background: lightblue;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .post-backbone {
+    border-collapse: collapse;
+  }
+
+  .post-backbone td{
+    padding: 0;
+    box-sizing: border-box;
+    border: var(--border-w) solid black;
+  }
+
+  .post-backbone td.bottom {
+    border-bottom: none;
+  }
+
+  .post-backbone td.top.full {
+    width: var(--s-0);
+    height: var(--s-0);
+  }
+
+  .post-backbone td.top.side {
+    width: var(--s-menu);
+  }
+
+  .post-backbone td.bottom.half {
+    width: var(--s-1);
+    height: calc(var(--s-0) + var(--border-w)/2);
+    /* td.bottom의 아래경계선을 지워주면서, 그만큼 높이를 늘렸다 */
+  }
+
+  .menublock {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(var(--s-menu) - var(--border-w));
+    height: calc(var(--s-menu) - var(--border-w));
+    border: var(--border);
+  }
+</style>
+
+<div class='post'>
+  <input class='o vote' type="radio" name='vote {{post.pk}}' {% if voted == 0 %}checked{% endif %}>
+  <input class='x vote' type="radio" name='vote {{post.pk}}' {% if voted == 1 %}checked{% endif %}>
+
+  <table class='post-backbone'>
+    <tbody>
+      <tr>
+        <td class='top full' colspan='2'></td>
+        <td class='top side'></td>
+      </tr>
+
+      <tr>
+        <td class='bottom half'></td>
+        <td class='bottom half'></td>
+        <td class='bottom side'></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class='menublock'>
+  </div>
+</div>

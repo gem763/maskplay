@@ -1,0 +1,18 @@
+{% load ctags %}
+{% if user.boo %}
+{% with voted=post|voted:user.boo.pk %}
+
+{% if post.post_type == 'postvoteox' %}
+  {% include 'getch/post_vote_ox.html' with post=post voted=voted %}
+
+{% elif post.post_type == 'postvoteab' %}
+  {% include 'getch/post_vote_ab.html' with post=post voted=voted %}
+{% endif %}
+
+<div style='text-align:right;position:absolute;top:50%;right:10px;width:50%;transform:translate(0,-50%);font-size:12px;line-height:15px;'>
+  <span style='background:black;color:white;'>@{{post.boo.nick}}</span><br>
+  <span style='background:black;color:white;line-height:15px;'>{{post.text|linebreaksbr}}</span>
+</div>
+
+{% endwith %}
+{% endif %}

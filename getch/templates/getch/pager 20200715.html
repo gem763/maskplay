@@ -6,10 +6,55 @@
     width: 100%;
     height: 100%;
     background: none;
-    /* z-index: 4; */
+    z-index: 4;
     pointer-events: none;
-    overflow: hidden;
   }
+
+  /* .pager .toggle {
+    display: none;
+    visibility: hidden;
+  }
+
+  .mother {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background: rgba(0,0,0,0);
+    transition: all 0.3s ease;
+  }
+
+  .mother .child {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: white;
+    border: var(--border) solid black;
+    pointer-events: auto;
+  }
+
+  .mother .child .close {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 20px;
+    height: 20px;
+    background: black;
+  }
+
+  .mother .child .close img {
+    width: 20px;
+    height: 20px;
+    filter: invert(100%);
+  }
+
+  .pager .toggle:checked + .mother {
+    left: -100% !important;
+    background: rgba(0,0,0,0.5) !important;
+  } */
 
   /* .pager .toggle.postype-select:checked ~ div.postype-select {
     bottom: 0 !important;
@@ -65,13 +110,13 @@
     {% include 'getch/mypage.html' %}
   </div>
 
-  <!-- <div id='boochooser'>
-    % include 'getch/boochooser.html' %}
+  <div id='boochooser'>
+    {% include 'getch/boochooser.html' %}
   </div>
 
   <div id='profiler'>
-    % include 'getch/profiler.html' %}
-  </div> -->
+    {% include 'getch/profiler.html' %}
+  </div>
 
   <!-- <input class='toggle postype-select' type='checkbox'>
   <div class='shade' style='transition:0.1s;background:none;width:100%;height:100%;'></div>
@@ -132,19 +177,19 @@
 
 <script>
   function close_page(bt) {
-    bt.closest('.basepage').querySelector('.page-toggler').checked = false;
+    bt.closest('.basepage').querySelector('.toggle').checked = false;
   }
 
   function goto_boochooser() {
-    document.querySelector('#boochooser .page-toggler').checked = true;
+    document.querySelector('#boochooser .toggle').checked = true;
     // $('#boochooser .toggle').prop('checked', true);
   }
 
   function goto_profiler() {
-    document.querySelector('#profiler .page-toggler').checked = true;
+    document.querySelector('#profiler .toggle').checked = true;
   }
 
   function goto_posting(type) {
-    document.querySelector('#posting.' + type + ' .page-toggler').checked = true;
+    document.querySelector('#posting.' + type + ' .toggle').checked = true;
   }
 </script>

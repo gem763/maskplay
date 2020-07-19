@@ -105,59 +105,41 @@
   }
 
   .post input.vote-toggler {
-    display: none;
-    visibility: hidden;
+    /* display: none;
+    visibility: hidden; */
   }
 
-  .post input.vote-toggler:checked ~ .scores {
-    opacity: 1;
-  }
-
-  .post input.vote-toggler[vote='o']:checked ~ .backbone td[vote='o'] {
+  .post input.vote-toggler[id^='o']:checked ~ .backbone label[for^='o'] .ox {
     background: var(--color-pos);
   }
 
-  .post input.vote-toggler[vote='x']:checked ~ .backbone td[vote='x'] {
+  .post input.vote-toggler[id^='x']:checked ~ .backbone label[for^='x'] .ox {
     background: var(--color-neg);
   }
 
-  .post input.vote-toggler[vote='a']:checked ~ .backbone td[vote='b'],
-  .post input.vote-toggler[vote='b']:checked ~ .backbone td[vote='a'] {
+  .post input.vote-toggler[id^='a']:checked ~ .backbone label[for^='b'] img,
+  .post input.vote-toggler[id^='b']:checked ~ .backbone label[for^='a'] img {
     filter: grayscale(1);
   }
 
   .post .scores {
-    font-size: 40px;
-    font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.1s;
-    pointer-events: none;
+    font-size:40px;
   }
 
   .post .scores .score {
     position: absolute;
-    background: none;
+    background: lightpink;
     transform: translate(-50%,-50%);
   }
 
-  .post.postvoteox .scores .score.up {
-    top: calc(var(--s-0) + var(--s-1)/2);
+  .post .scores .score.up {
+    top: calc(var(--s-0) + 50px);
     left: calc(var(--s-1) + var(--border-w)/2 - var(--s-1)/2);
   }
 
-  .post.postvoteox .scores .score.down {
-    top: calc(var(--s-0) + var(--s-1)/2);
+  .post .scores .score.down {
+    top: calc(var(--s-0) + 50px);
     left: calc(var(--s-1) + var(--border-w)/2 + var(--s-1)/2);
-  }
-
-  .post.postvoteab .scores .score.up {
-    top: calc(var(--s-0) - var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
-  }
-
-  .post.postvoteab .scores .score.down {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
   }
 </style>
 
@@ -166,8 +148,8 @@
 
 <div class='post {{post.type}}'>
   {% if post.type == 'postvoteox' %}
-  <input vote='o' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 0 %}checked{% endif %}>
-  <input vote='x' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 1 %}checked{% endif %}>
+  <input id='o-{{post.pk}}' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 0 %}checked{% endif %}>
+  <input id='x-{{post.pk}}' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 1 %}checked{% endif %}>
 
   <table class='backbone'>
     <tbody>
@@ -177,8 +159,8 @@
       </tr>
 
       <tr>
-        <td class='bottom half' vote='o' onclick='vote_toggle(this)'><div class='ox'>O</div></td>
-        <td class='bottom half' vote='x' onclick='vote_toggle(this)'><div class='ox'>X</div></td>
+        <td class='bottom half'><label for='o-{{post.pk}}' onclick='deselect(this)'><div class='ox'>O</div></label></td>
+        <td class='bottom half'><label for='x-{{post.pk}}'><div class='ox'>X</div></label></td>
         <td class='bottom side'></td>
       </tr>
     </tbody>
@@ -186,18 +168,18 @@
 
 
   {% elif post.type == 'postvoteab' %}
-  <input vote='a' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 0 %}checked{% endif %}>
-  <input vote='b' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 1 %}checked{% endif %}>
+  <input id='a-{{post.pk}}' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 0 %}checked{% endif %}>
+  <input id='b-{{post.pk}}' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 1 %}checked{% endif %}>
 
   <table class='backbone'>
     <tbody>
       <tr>
-        <td class='top full' vote='a' onclick='vote_toggle(this)'><img class='pix' src='{{post.pix_a.url}}'></td>
+        <td class='top full'><label for='a-{{post.pk}}'><img class='pix' src='{{post.pix_a.url}}'></label></td>
         <td class='top side'></td>
       </tr>
 
       <tr>
-        <td class='bottom full' vote='b' onclick='vote_toggle(this)'><img class='pix' src='{{post.pix_b.url}}'></td>
+        <td class='bottom full'><label for='b-{{post.pk}}'><img class='pix' src='{{post.pix_b.url}}'></label></td>
         <td class='bottom side'></td>
       </tr>
     </tbody>
@@ -225,14 +207,14 @@
 {% endwith %}
 
 <script>
-  function vote_toggle(td) {
-    let voted_to = td.getAttribute('vote');
-    let toggler = td.closest('.post').querySelector(`input.vote-toggler[vote=${voted_to}]`);
-
-    if (toggler.checked) {
-      toggler.checked = false;
-    } else {
-      toggler.checked = true;
-    }
-  }
+  // function deselect(label) {
+  //   let radio_id = label.getAttribute('for');
+  //   let radio = document.querySelector('#' + radio_id);
+  //   if (radio.checked) {
+  //     console.log('checked')
+  //   } else {
+  //     console.log('unchecked')
+  //   }
+  //   return false
+  // }
 </script>

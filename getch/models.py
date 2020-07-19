@@ -65,7 +65,7 @@ class Post(BigIdAbstract, VoteModel):
         return self.boo.nick + ' | ' + str(self.created_at)
 
     @property
-    def post_type(self):
+    def type(self):
         return self.__class__.__name__.lower()
 
     def vote(self, action, boo_id):

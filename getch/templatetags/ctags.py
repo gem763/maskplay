@@ -18,9 +18,15 @@ def boo_regroup(boos):
 
 
 @register.filter
-def voted(post, boo_id):
+def voted(post, user):#boo_id):
     # print(type(post))
     # print('up vote: ', post.votes.user_ids(action=0))
     # print('down vote: ', post.votes.user_ids(action=1))
 
-    return post.voted(boo_id)
+    # return post.voted(boo_id)
+
+    try:
+        return post.voted(user.boo.pk)
+        
+    except:
+        return None

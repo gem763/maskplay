@@ -22,25 +22,26 @@
   <style>
     :root {
       /* --border: 5px; */
-      --menu: 35px;
+      /* --menu: 35px;
       --menu-img: 25px;
       --height: min(100vh, calc(2*100vw - 2*var(--menu)));
       --width: min(100vw, calc(50vh + var(--menu)));
-      --vs-fsize: 20px;
-      --ox-fsize: 100px;
-      --color-pos: rgb(241,20,15);
-      --color-neg: rgb(22,187,204);
       --scorebar-w: calc(var(--height) / 15);
       --scorebar-h: calc(var(--width) / 50);
-      --scorebar-offset: 20px;
+      --scorebar-offset: 20px; */
 
       --border-w: 10px;
-      --border: var(--border-w) solid red;
+      --border: var(--border-w) solid orange;
       --s-menu: 35px;
+      --s-menu-icon: 25px;
       --s-0: min(calc(100vw - var(--s-menu) - var(--border-w)), calc(50vh - var(--border-w)/2));
       --s-1: calc(var(--s-0)/2);
       --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
       --window-h: calc(var(--s-0)*2 + var(--border-w));
+      --vs-fsize: 25px;
+      --ox-fsize: 100px;
+      --color-pos: rgb(241,20,15);
+      --color-neg: rgb(22,187,204);
     }
 
     * {
@@ -63,11 +64,10 @@
       height: 100%;
       border: var(--border);
       box-sizing: border-box;
-      z-index: 5;
       pointer-events: none;
     }
 
-    #slides {
+    #posts {
       width: 100%;
       height: 100%;
     }
@@ -78,57 +78,51 @@
       top: 0;
       width: 100%;
       height: 100%;
+      z-index: 0;
+    }
+
+    .swiper-wrapper {
+      z-index: 0;
     }
 
     .menublock {
       position: absolute;
-      width: var(--menu);
-      height: var(--menu);
+      width: calc(var(--s-menu) - var(--border-w));
+      height: calc(var(--s-menu) - var(--border-w));
+      border: var(--border);
       background: white;
-      z-index: 2;
-      border: var(--border) solid black;
-      line-height: var(--menu);
-      text-align: center;
-      box-sizing: content-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* text-align: center;
+      line-height: calc(var(--s-menu) - var(--border-w)); */
     }
 
-    .menublock img.full {
-      position: absolute;
+    .menublock.author {
       top: 0;
-      left: 0;
+      right: 0;
+    }
+
+    .menublock.my {
+      bottom: 0;
+      right: 0;
+    }
+
+    .menublock.posting {
+      bottom: calc(var(--s-menu));;
+      right: 0;
+    }
+
+    .menublock img.fit {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
     .menublock img.icon {
-      width: var(--menu-img);
-      height: var(--menu-img);
-      vertical-align: middle;
-    }
-
-    .author.menublock {
-      top: calc(var(--menu));
-      right: calc(var(--border)*(-1));
-    }
-
-    .logo.menublock {
-      top: 0;
-      right: 0;
-    }
-
-    .logo.menublock img.full {
-      /* object-fit: contain; */
-    }
-
-    .posting.menublock {
-      bottom: calc(var(--menu) + var(--border));
-      right: 0;
-    }
-
-    .my.menublock {
-      bottom: 0;
-      right: 0;
+      object-fit: contain;
+      width: var(--s-menu-icon);
+      height: var(--s-menu-icon);
     }
   </style>
 </head>
@@ -136,16 +130,19 @@
 
 <body style='background:lightgray;margin:0;'>
   <div id='window'>
-    <div id='slides'>
+    <div id='posts'>
       {% include 'getch/posts.html' %}
-      <!-- <div class="swiper-container">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide" style='background:orange;'>1</div>
-          <div class="swiper-slide" style='background:lightblue;'>2</div>
-          <div class="swiper-slide" style='background:lightpink;'>3</div>
-        </div>
-      </div> -->
     </div>
+
+    <div class='posting menublock'>
+      <img class='icon' src="{% static 'materials/icons/plus.png' %}">
+    </div>
+
+    <div class='my menublock'>
+      <img class='icon' src="{% static 'materials/icons/profile.png' %}">
+    </div>
+
+    {% include 'getch/pager.html' %}
 
     <div class='border'></div>
   </div>
@@ -183,60 +180,60 @@
     });
 
 
-    function radio_toggle(radio) {
-      let status = radio.prop('checked');
-
-      if (status) {
-        radio.prop('checked', false);
-      } else {
-        radio.prop('checked', true);
-      }
-    }
-
-    function vote_here(obj, type) {
-      let radio = $(obj).closest('table.post').siblings('input.' + type);
-      radio_toggle(radio);
-
-      let post_id = $(obj).closest('table.post').attr('id');
-      let action;
-
-      if (type=='o' | type=='a') {
-        action = '0';
-
-      } else if (type=='x' | type=='b') {
-        action = '1';
-      }
-
-      let api = 'post/' + post_id + '/vote?action=' + action;
-
-      fetch(api).then(x => x.json())
-                .then(js => {
-                  console.log(js);
-                })
-    }
+    // function radio_toggle(radio) {
+    //   let status = radio.prop('checked');
+    //
+    //   if (status) {
+    //     radio.prop('checked', false);
+    //   } else {
+    //     radio.prop('checked', true);
+    //   }
+    // }
+    //
+    // function vote_here(obj, type) {
+    //   let radio = $(obj).closest('table.post').siblings('input.' + type);
+    //   radio_toggle(radio);
+    //
+    //   let post_id = $(obj).closest('table.post').attr('id');
+    //   let action;
+    //
+    //   if (type=='o' | type=='a') {
+    //     action = '0';
+    //
+    //   } else if (type=='x' | type=='b') {
+    //     action = '1';
+    //   }
+    //
+    //   let api = 'post/' + post_id + '/vote?action=' + action;
+    //
+    //   fetch(api).then(x => x.json())
+    //             .then(js => {
+    //               console.log(js);
+    //             })
+    // }
 
 
     $('.my.menublock').click(function() {
       {% if user.is_authenticated %}
-      $('#mypage .toggle').prop('checked', true);
+      $('#mypage .page-toggler').prop('checked', true);
       {% else %}
-      $('#loginpage .toggle').prop('checked', true);
+      $('#loginpage .page-toggler').prop('checked', true);
       {% endif %}
     });
-
-    $('.posting.menublock').click(function() {
-      $('input.postype-select').prop('checked', true);
-    });
-
-    $('input.postype-select + .shade').click(function() {
-      $('input.postype-select').prop('checked', false);
-    })
-
-
-    $('#profiler .mask-guide').draggable({
-      axis: 'y',
-      containment: 'parent'
-    });
+    //
+    // $('.posting.menublock').click(function() {
+    //   $('input.postype-select').prop('checked', true);
+    // });
+    //
+    // $('input.postype-select + .shade').click(function() {
+    //   $('input.postype-select').prop('checked', false);
+    // })
+    //
+    //
+    // $('#profiler .mask-guide').draggable({
+    //   axis: 'y',
+    //   containment: 'parent'
+    // });
   </script>
 
 </body>

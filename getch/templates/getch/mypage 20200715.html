@@ -1,0 +1,106 @@
+{% extends "getch/basepage.html" %}
+
+{% block style %}
+{{ block.super }}
+<style>
+  .userpage-grid {
+    background: white;
+    position: absolute;
+    top: calc(var(--border)*(-1));
+    left: calc(var(--border)*(-1));
+    width: var(--width) !important;
+    /* bottom: -5px; */
+    border-radius: 0 !important;
+    margin: 0 !important;
+    border: var(--border) solid black !important;
+  }
+
+  .userpage-grid td {
+    width: 25% !important;
+    padding-top: 25% !important;
+  }
+
+  .userpage-grid tr:not(:last-child) td {
+    border-bottom: var(--border) solid black !important;
+  }
+
+  .userpage-grid a.logout {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .userpage-grid .follow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: rgb(255,132,9);
+    border-bottom: var(--border) solid black;
+  }
+
+  .userpage-grid .follow span {
+    background: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-weight: bold;
+  }
+
+  .userpage-grid .fa-barcode {
+    font-size: 50px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    background: none;
+    transform: translate(-50%,0) scale(1,0.5);
+    transform-origin: center bottom;
+    color: rgb(255,132,9)
+  }
+</style>
+{% endblock style %}
+
+{% block page %}
+{% with user.boo as myboo %}
+<table class='userpage-grid ui unstackable celled four column table'>
+  <tbody>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+      </td>
+    </tr>
+
+    <tr>
+      <td></td>
+      <td>
+        <img class='myboo' src="{{ myboo.profile.pix.url }}" style="position:absolute;top:0;left:0;object-fit:cover;width:100%;height:100%;" onclick='goto_boochooser()'>
+      </td>
+      <td>
+        <i class="fa fa-barcode" onclick='goto_profiler()'></i>
+      </td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>
+        <div style='position:absolute;top:50%;right:0;width:400%;background:none;transform:translate(0,-50%);'>
+          <span style='background:black;color:white;'>@{{myboo.nick}}</span><br>
+          <span style='background:black;color:white;line-height:15px;'>{{myboo.text|linebreaksbr}}</span>
+        </div>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+{% endwith %}
+{% endblock page %}

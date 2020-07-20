@@ -1,4 +1,5 @@
 import getch.models as m
+from django_currentuser.middleware import get_current_user, get_current_authenticated_user
 from django import template
 register = template.Library()
 
@@ -27,6 +28,11 @@ def voted(post, user):#boo_id):
 
     try:
         return post.voted(user.boo.pk)
-        
+
     except:
         return None
+
+# @register.simple_tag
+# def tag_test():
+#     kkk = get_current_user()
+#     return kkk.boo.nick;

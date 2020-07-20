@@ -4,17 +4,16 @@
 {{ block.super }}
 <style>
   :root {
-    --canvas-size: calc(var(--window-w) * 0.7)
+    --canvas-size: calc(var(--width) * 0.7)
   }
 
-  .profiler .top {
-    height: 20%;
+  .profiler-top {
+    height: 30%;
     width: 100%;
     position: relative;
-    background: none;
   }
 
-  .profiler .nick {
+  .profiler-name {
     position: absolute;
     bottom: 7px;
     left: 50%;
@@ -23,7 +22,7 @@
     text-align: left;
   }
 
-  .profiler .nick span {
+  .profiler-name span {
     background: black;
     color: white;
     font-size: 25px;
@@ -31,88 +30,7 @@
     line-height: 30px;
   }
 
-  .profiler .mid {
-    background: lightyellow;
-    height: var(--canvas-size);
-    text-align: center;
-  }
-
-  .profiler .profile-canvas {
-    position: relative;
-    width: var(--canvas-size);
-    height: 100%;
-    background: lightpink;
-    display: inline-block;
-    overflow: hidden;
-  }
-
-  .profiler .bottom {
-    padding-top: 20px;
-    position: relative;
-    background: lightblue;
-  }
-
-  .profiler .selector {
-    background: lightgreen;
-    /* height: 50px; */
-    border: var(--border-w) solid black;
-  }
-
-  .profiler .selector table.selectbase {
-    border-collapse: collapse;
-    width: 100%;
-    height: 100%;
-    table-layout: fixed;
-  }
-
-  .profiler .selector table.selectbase td {
-    position: relative;
-    padding: 0;
-    border: none;
-    height: 50px;
-    overflow: scroll;
-    white-space: nowrap;
-    font-size:0;
-    background: white;
-    /* span.inline-block 사이에 여백을 줄이기 위함
-    https://norux.me/63 */
-  }
-
-  .profiler .selector table.selectbase td.pixloader,
-  .profiler .selector table.selectbase td.txtloader {
-    width: 50px;
-  }
-
-  .profiler .selector table.selectbase td .item {
-    width: 50px;
-    height: 50px;
-    display: inline-block;
-    text-align: center;
-    line-height: 50px;
-  }
-
-  .profiler .selector table.selectbase td .item img.icon {
-    width: 35px;
-    height: 35px;
-    object-fit: contain;
-    vertical-align: middle;
-  }
-
-  .profiler .selector table.selectbase td .item img.fit {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    vertical-align: middle;
-  }
-
-  .profiler .selector table.selectbase td .item span.txt {
-    background: black;
-    color: white;
-    font-size: 20px;
-  }
-
-
-  /* .profiler-mid {
+  .profiler-mid {
     background: lightyellow;
     height: var(--canvas-size);
     text-align: center;
@@ -124,6 +42,7 @@
     height: 100%;
     background: lightpink;
     display: inline-block;
+    /* border: var(--border) solid black; */
     overflow: hidden;
   }
 
@@ -169,10 +88,14 @@
     background: none;
     border: var(--border) solid black;
     pointer-events: none;
-  } */
+  }
 
+  .profiler-bottom {
+    padding-top: 20px;
+    position: relative;
+  }
 
-  /* .selector {
+  .selector {
     border-top: var(--border) solid black !important;
     border-bottom: var(--border) solid black !important;
     position: relative;
@@ -196,6 +119,34 @@
     left: 0;
     width: 100%;
     transition: bottom 0.2s;
+  }
+
+  .selector td {
+    border: 0 !important;
+    width: 20% !important;
+    padding-top: 20% !important;
+    background: none;
+    position: relative;
+  }
+
+  .selector td .item {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .selector td .item.img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+  }
+
+  .selector td .item.txt {
+    background: black;
+    color: white;
+    font-size: 25px;
+    line-height: 30px;
   }
 
   .options {
@@ -222,73 +173,20 @@
 
   .options td:last-child {
     width: calc(var(--menu) + var(--border)) !important;
-  } */
+  }
 </style>
 {% endblock style %}
 
 {% block page %}
-<div class='profiler' style='background:white;width:100%;height:100%;position:relative;"'>
+<div style='background:white;width:100%;height:100%;position:relative;"'>
 
-  <div class='top'>
-    <div class='nick'>
-      <!-- <span>CHARACTER NAME</span> -->
+  <div class='profiler-top'>
+    <div class='profiler-name'>
+      <span>CHARACTER NAME</span>
     </div>
   </div>
 
-  <div class='mid'>
-    <div class='profile-canvas'>
-    </div>
-  </div>
-
-  <div class='bottom'>
-    <div class='selector'>
-      <table class='selectbase'>
-        <tbody>
-          <tr>
-            <td class='pixloader'>
-              <div class='item'>
-                <img class='icon' src='/static/materials/icons/pix.png'>
-              </div>
-            </td>
-            <td class='txtloader'>
-              <div class='item'>
-                <span class='txt'>히</span>
-              </div>
-            </td>
-            <td>
-              <!-- for _ in ''|center:9 %}
-              <div class='item'>
-                <img class='fit' src='/static/materials/imgs/characters/charac{{forloop.counter}}.png' onclick='characterize(this)'>
-              </div>
-              endfor %} -->
-
-              {% for chimg in charac_imgs %}
-              <div class='item'>
-                <img class='fit' src='/static/materials/imgs/characters/{{chimg}}' onclick='characterize(this)'>
-              </div>
-              {% endfor %}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <table class='selectbase'>
-        <tbody>
-          <tr>
-            <td>
-              {% for emask in eye_masks %}
-              <div class='item'>
-                <img class='fit' src='/static/materials/imgs/masks/eyes/{{emask}}' style='width:90%;height:90%;'>
-              </div>
-              {% endfor %}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- <div class='profiler-mid'>
+  <div class='profiler-mid'>
     <div class='profiler-canvas'>
       <input type="file" name="image" accept="image/*" style="display:none;" id="imageuploader0" onchange="load_img(this)">
       <img class='charac' src='{{user.boo.profile.pix.url}}'>
@@ -302,10 +200,11 @@
       </div>
       <div class='border'></div>
     </div>
-  </div> -->
+  </div>
 
+  <div class='profiler-mid-margin'></div>
 
-  <!-- <div class='profiler-bottom'>
+  <div class='profiler-bottom'>
     <div class='selector'>
       <table class='base ui unstackable table'>
         <tbody>
@@ -358,7 +257,7 @@
         </tr>
       </tbody>
     </table>
-  </div> -->
+  </div>
 
 </div>
 {% endblock page %}

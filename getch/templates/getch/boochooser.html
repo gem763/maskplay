@@ -5,7 +5,7 @@
 <style>
   .boo-candidate-pair {
     background: white;
-    width: 100%;
+    /* width: 100%; */
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
@@ -44,8 +44,8 @@
 {% endblock style %}
 
 {% block page %}
-<div style='background:white;width:100%;height:100%;overflow:auto;padding:15%;'>
-  <div style='background:none;width:100%;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
+<div style='background:white;height:100%;overflow:auto;padding:15%;'>
+  <div style='background:none;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
     <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
   </div>
 
@@ -93,13 +93,13 @@
         .then(js => {
           if (js.success) {
             $('#mypage').load('/mypage', function() {
-              $('#mypage .toggle').prop('checked', true);
-              $('#boochooser .toggle').prop('checked', false);
+              $('#mypage .page-toggle').prop('checked', true);
+              $('#boochooser .page-toggle').prop('checked', false);
             });
 
             $('#profiler').load('/profiler');
             $('#boochooser').load('/boochooser');
-            $('#slides').load('/slides');
+            $('#posts').load('/posts');
           }
         });
     }

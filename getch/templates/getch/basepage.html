@@ -47,7 +47,7 @@
   }
 
   .basepage input.page-toggler:checked ~ .shader {
-    background: rgba(0,0,0,0.5) !important;
+    background: rgba(0,0,0,0.5);
   }
 
   .basepage input.page-toggler:checked ~ .drawer {
@@ -58,7 +58,7 @@
 
 
 <div class='basepage'>
-  <input class='page-toggler' type='checkbox'>
+  <input class='page-toggler' type='checkbox' {% if open == 1 %}checked{% endif %}>
   <div class='shader'></div>
 
   <div class='drawer'>

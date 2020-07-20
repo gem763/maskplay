@@ -1,18 +1,27 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+import os
+from django.conf import settings
 import getch.models as m
+
+# https://brownbears.tistory.com/259
+# https://stackoverflow.com/questions/37270170/iterate-through-a-static-image-folder-in-django
+charac_imgs = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\characters"))
+eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\masks\eyes"))
+# charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
 
 def play(request):
     posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    ctx = {'posts': posts}
+    ctx = {'posts': posts, 'charac_imgs':charac_imgs, 'eye_masks':eye_masks}
     return render(request, 'getch/play.html', ctx)
 
 
-def slides(request):
-    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    ctx = {'posts': posts}
-    return render(request, 'getch/slides.html', ctx)
+def posts(request):
+    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
+    ctx = {'posts': _posts}
+    return render(request, 'getch/posts.html', ctx)
+
 
 def vote(request, post_id):
     action = request.GET.get('action', None)

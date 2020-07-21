@@ -1,243 +1,50 @@
-<style>
-  .post {
-    background: white;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+{% extends "getch/basepost.html" %}
 
-  .post .backbone {
-    border-collapse: collapse;
-  }
-
-  .post .backbone td{
-    position: relative;
-    padding: 0;
-    box-sizing: border-box;
-    border: var(--border-w) solid black;
-    text-align: center;
-  }
-
-  .post .backbone td.full {
-    width: var(--s-0);
-  }
-
-  .post .backbone td.half {
-    width: var(--s-1);
-  }
-
-  .post .backbone td.side {
-    width: var(--s-menu);
-    border-top: none;
-    border-bottom: none;
-  }
-
-  .post .backbone td.top {
-    height: var(--s-0);
-  }
-
-  .post .backbone td.bottom {
-    border-bottom: none;
-    height: calc(var(--s-0) + var(--border-w)/2);
-    /* td.bottom의 아래경계선을 지워주면서, 그만큼 높이를 늘렸다 */
-  }
-
-  .post .backbone img.pix {
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .post .text {
-    text-align: right;
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    width: 50%;
-    transform: translate(0,-50%);
-    font-size: 12px;
-    line-height: 15px;
-  }
-
-  .post .text span {
-    background: black;
-    color: white;
-    line-height: 15px;
-  }
-
-  .post span.vs {
-    position: absolute;
-    background: var(--color-pos);
-    color: black;
-    font-size: var(--vs-fsize);
-    line-height: calc(var(--vs-fsize) + 8px);
-    font-weight: bold;
-  }
-
-  .post.postvoteox span.vs {
-    bottom: var(--s-1);
-    left: calc(var(--s-1) + var(--border-w)/2);
-    transform: translate(-50%,50%);
-  }
-
-  .post.postvoteab span.vs {
-    top: calc(var(--s-0) + var(--border-w)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
-    transform: translate(-50%,-50%);
-  }
-
-  .post.postvoteox .backbone .ox {
-    width: 100%;
-    height: 100%;
-    color: black;
-    background: none;
-    font-weight: bold;
-    font-size: var(--ox-fsize);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* display: inline-block; */
-  }
-
-  .post input.vote-toggler {
-    display: none;
-    visibility: hidden;
-  }
-
-  .post input.vote-toggler:checked ~ .scores {
-    opacity: 1;
-  }
-
-  .post input.vote-toggler[vote='o']:checked ~ .backbone td[vote='o'] {
-    background: var(--color-pos);
-  }
-
-  .post input.vote-toggler[vote='x']:checked ~ .backbone td[vote='x'] {
-    background: var(--color-neg);
-  }
-
-  .post input.vote-toggler[vote='a']:checked ~ .backbone td[vote='b'],
-  .post input.vote-toggler[vote='b']:checked ~ .backbone td[vote='a'] {
-    filter: grayscale(1);
-  }
-
-  .post .scores {
-    font-size: 40px;
-    font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.1s;
-    pointer-events: none;
-  }
-
-  .post .scores .score {
-    position: absolute;
-    background: none;
-    transform: translate(-50%,-50%);
-  }
-
-  .post.postvoteox .scores .score.up {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2 - var(--s-1)/2);
-  }
-
-  .post.postvoteox .scores .score.down {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2 + var(--s-1)/2);
-  }
-
-  .post.postvoteab .scores .score.up {
-    top: calc(var(--s-0) - var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
-  }
-
-  .post.postvoteab .scores .score.down {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
-  }
-</style>
-
-{% load ctags %}
-{% with voted=post|voted:user %}
-
-<div class='post {{post.type}}'>
-  {% if post.type == 'postvoteox' %}
-  <input vote='o' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 0 %}checked{% endif %}>
-  <input vote='x' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 1 %}checked{% endif %}>
-
-  <table class='backbone'>
-    <tbody>
-      <tr>
-        <td class='top full' colspan='2'><img class='pix' src='{{post.pix.url}}'></td>
-        <td class='top side'></td>
-      </tr>
-
-      <tr>
-        <td class='bottom half' vote='o' onclick='vote_toggle(this)'><div class='ox'>O</div></td>
-        <td class='bottom half' vote='x' onclick='vote_toggle(this)'><div class='ox'>X</div></td>
-        <td class='bottom side'></td>
-      </tr>
-    </tbody>
-  </table>
-
-
-  {% elif post.type == 'postvoteab' %}
-  <input vote='a' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 0 %}checked{% endif %}>
-  <input vote='b' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if voted == 1 %}checked{% endif %}>
-
-  <table class='backbone'>
-    <tbody>
-      <tr>
-        <td class='top full' vote='a' onclick='vote_toggle(this)'><img class='pix' src='{{post.pix_a.url}}'></td>
-        <td class='top side'></td>
-      </tr>
-
-      <tr>
-        <td class='bottom full' vote='b' onclick='vote_toggle(this)'><img class='pix' src='{{post.pix_b.url}}'></td>
-        <td class='bottom side'></td>
-      </tr>
-    </tbody>
-  </table>
-  {% endif %}
-
-
-  <div class='author menublock'>
-    <img class='fit' src={{post.boo.profile.pix.url}}>
+{% block post-pix %}
+<input type="file" name="image" accept="image/*" style="display:none;" id="pix-loader-{{post.pk}}" onchange="load_pix(this)">
+<label for='pix-loader-{{post.pk}}'>
+  <div class='pix-space'>
+    <img src='/static/materials/icons/pix.png'>
   </div>
+  <img class='pix' src='{{post.pix.url}}' onerror='imgerr(this)'>
+</label>
+{% endblock post-pix %}
 
-  <div class='text'>
-    <span>@{{post.boo.nick}}</span><br>
-    <span>{{post.text|linebreaksbr}}</span>
+
+{% block post-pix-a %}
+<input type="file" name="image" accept="image/*" style="display:none;" id="pix-a-loader-{{post.pk}}" onchange="load_pix(this)">
+<label for='pix-a-loader-{{post.pk}}'>
+  <div class='pix-space'>
+    <img src='/static/materials/icons/pix.png'>
   </div>
+  <img class='pix' src='{{post.pix_a.url}}' onerror='imgerr(this)'>
+</label>
+{% endblock post-pix-a %}
 
-  <div class='scores'>
-    <div class='score up'>{{post.num_vote_up}}</div>
-    <div class='score down'>{{post.num_vote_down}}</div>
+
+{% block post-pix-b %}
+<input type="file" name="image" accept="image/*" style="display:none;" id="pix-b-loader-{{post.pk}}" onchange="load_pix(this)">
+<label for='pix-b-loader-{{post.pk}}'>
+  <div class='pix-space'>
+    <img src='/static/materials/icons/pix.png'>
   </div>
+  <img class='pix' src='{{post.pix_b.url}}' onerror='imgerr(this)'>
+</label>
+{% endblock post-pix-b %}
 
-  <span class='vs'>VS</span>
+
+{% block post-etc %}
+<div class='author menublock' author='{{post.boo.pk}}'>
+  <img class='fit' src='{{post.boo.profile.pix.url}}'>
 </div>
 
-{% endwith %}
+<div class='text'>
+  <span>@{{post.boo.nick}}</span><br>
+  <span>{{post.text|linebreaksbr}}</span>
+</div>
 
-<script>
-  function vote_toggle(td) {
-    let voted_to = td.getAttribute('vote');
-    let toggler = td.closest('.post').querySelector(`input.vote-toggler[vote=${voted_to}]`);
-
-    if (toggler.checked) {
-      toggler.checked = false;
-    } else {
-      toggler.checked = true;
-    }
-  }
-
-  // function test() {
-  //   let kkk = 'tag_test %}';
-  //   console.log(kkk);
-  // }
-</script>
+<div class='scores'>
+  <div class='score up'>{{post.num_vote_up}}</div>
+  <div class='score down'>{{post.num_vote_down}}</div>
+</div>
+{% endblock post-etc %}

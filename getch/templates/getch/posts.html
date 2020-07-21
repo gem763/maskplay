@@ -6,7 +6,7 @@
 
     {% for post in posts %}
     <div class="swiper-slide">
-      {% include "getch/post.html" with post=post %}
+      {% include "getch/post.html" with post=post type=post.type %}
     </div>
     {% endfor %}
 
@@ -18,12 +18,20 @@
 <script>
   var swiper = new Swiper('.swiper-container', {
     direction: 'vertical',
-    // on: {
-    //   slideChangeTransitionEnd: function() {
-    //     let current_post = document.querySelector('.swiper-slide-active');
-    //     console.log(current_post);
-    //   },
-    // }
+    on: {
+      slideChangeTransitionEnd: function() {
+        let cpost = document.querySelector('.swiper-slide-active');
+        let author = cpost.querySelector('.author.menublock').getAttribute('author');
+        let cboo = '{{user.boo.pk}}';
+        if (cboo==author) {
+          cpost.querySelector('input.show-edit-button-toggler').checked = true;
+        }
+      },
+      slideChange: function() {
+        let prepost = document.querySelector('.swiper-slide-active');
+        prepost.querySelector('input.show-edit-button-toggler').checked = false;
+      },
+    }
 
     // spaceBetween: '-10'
     // loop: true

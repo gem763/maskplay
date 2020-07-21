@@ -18,6 +18,7 @@ def boo_regroup(boos):
     return [boo_list[i:i+2] for i in range(0, len(boo_list), 2)]
 
 
+# 요거는 안쓴다: post.voted를 @property로 만들었다
 @register.filter
 def voted(post, user):#boo_id):
     # print(type(post))

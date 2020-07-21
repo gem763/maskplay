@@ -3,6 +3,7 @@ from custom_user.models import AbstractEmailUser
 from model_utils.managers import InheritanceManager
 from vote.models import VoteModel
 from datetime import datetime
+from django_currentuser.middleware import get_current_user, get_current_authenticated_user
 
 # Create your models here.
 
@@ -83,7 +84,20 @@ class Post(BigIdAbstract, VoteModel):
     # def voted_down(self, boo_id):
     #     return self.votes.exists(boo_id, action=1)
 
-    def voted(self, boo_id):
+    # def voted(self, boo_id):
+    #     if self.votes.exists(boo_id, action=0):
+    #         return 0
+    #
+    #     elif self.votes.exists(boo_id, action=1):
+    #         return 1
+    #
+    #     else:
+    #         return None
+
+    @property
+    def voted(self):
+        boo_id = get_current_user().boo.pk
+
         if self.votes.exists(boo_id, action=0):
             return 0
 
@@ -92,6 +106,7 @@ class Post(BigIdAbstract, VoteModel):
 
         else:
             return None
+
 
     @property
     def nvotes(self):

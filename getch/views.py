@@ -6,14 +6,19 @@ import getch.models as m
 
 # https://brownbears.tistory.com/259
 # https://stackoverflow.com/questions/37270170/iterate-through-a-static-image-folder-in-django
-charac_imgs = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\characters"))
+characters = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\characters"))
 eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\masks\eyes"))
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
+
+imgs = {
+    'characters': characters,
+    'eye_masks': eye_masks,
+}
 
 
 def play(request):
     posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    ctx = {'posts': posts, 'charac_imgs':charac_imgs, 'eye_masks':eye_masks}
+    ctx = {'posts': posts, 'imgs':imgs}
     return render(request, 'getch/play.html', ctx)
 
 
@@ -35,7 +40,7 @@ def vote(request, post_id):
         print('down vote: ', post.votes.user_ids(action=1))
         print('up voted: ', post.votes.exists(boo_id, action=0))
         print('down voted: ', post.votes.exists(boo_id, action=1))
-        print('voted: ', post.voted(boo_id))
+        print('voted: ', post.voted(boo_id)) # post.voted 를 바꿨다... 이부분을 고쳐야함
 
         return JsonResponse({'success':True}, safe=False)
 
@@ -55,7 +60,8 @@ def mypage(request):
 
 
 def profiler(request):
-    return render(request, 'getch/profiler.html')
+    ctx = {'imgs':imgs}
+    return render(request, 'getch/profiler.html', ctx)
 
 
 def boochooser(request):

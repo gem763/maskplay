@@ -31,7 +31,7 @@
       --scorebar-offset: 20px; */
 
       --border-w: 10px;
-      --border: var(--border-w) solid orange;
+      --border: var(--border-w) solid black;
       --s-menu: 35px;
       --s-menu-icon: 25px;
       --s-0: min(calc(100vw - var(--s-menu) - var(--border-w)), calc(50vh - var(--border-w)/2));
@@ -143,6 +143,7 @@
     </div>
 
     {% include 'getch/pager.html' %}
+    {% include 'getch/popup.html' %}
 
     <div class='border'></div>
   </div>
@@ -216,20 +217,15 @@
       $('#loginpage .page-toggler').prop('checked', true);
       {% endif %}
     });
-    //
-    // $('.posting.menublock').click(function() {
-    //   $('input.postype-select').prop('checked', true);
-    // });
-    //
-    // $('input.postype-select + .shade').click(function() {
-    //   $('input.postype-select').prop('checked', false);
-    // })
-    //
-    //
-    // $('#profiler .mask-guide').draggable({
-    //   axis: 'y',
-    //   containment: 'parent'
-    // });
+
+    $('.posting.menublock').click(function() {
+      $('.popup input.toggler').prop('checked', true);
+    });
+
+    $('#profiler .maskbar').draggable({
+      axis: 'y',
+      containment: 'parent'
+    });
   </script>
 
 </body>

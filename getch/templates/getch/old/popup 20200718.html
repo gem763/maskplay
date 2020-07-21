@@ -1,0 +1,89 @@
+<style>
+  .popup .toggle.postype-select:checked ~ div.postype-select {
+    bottom: 0 !important;
+  }
+
+  .popup .toggle.postype-select:checked ~ div.shade {
+    background: rgba(0,0,0,0.5) !important;
+    pointer-events: auto;
+  }
+
+  .popup .postype {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    background: none;
+    text-align: center;
+    pointer-events: auto;
+  }
+
+  .popup .postype.ab {
+    left: calc(50% - 70px);
+  }
+
+  .popup .postype.ox {
+    left: 50%;
+  }
+
+  .popup .postype.salmal {
+    left: calc(50% + 70px);
+  }
+
+  .popup .postype table {
+    width: 40px;
+    height: 40px;
+    border-radius: 0;
+    border: 1px solid black;
+    background: none;
+    margin: 0;
+  }
+
+  .popup .postype span.txt {
+    background: none;
+  }
+</style>
+
+
+<div class='popup'>
+  <input class='toggle postype-select' type='checkbox'>
+  <div class='shade' style='transition:0.1s;background:none;width:100%;height:100%;'></div>
+  <div class='postype-select' style='position:absolute;bottom:-100px;left:0;width:100%;height:100px;background:white;transition:0.1s;border-top:1px solid black;font-size:10px;'>
+
+    <div class='postype ab' onclick='goto_posting("ab")'>
+      <table class='ui unstackable celled table'>
+        <tbody>
+          <tr><td style='border-bottom:1px solid black;'>A</td></tr>
+          <tr><td>B</td></tr>
+        </tbody>
+      </table>
+      <span class='txt'>골라주라</span>
+    </div>
+
+    <div class='postype ox' onclick='goto_posting("ox")'>
+      <table class='ui unstackable celled table'>
+        <tbody>
+          <tr><td colspan='2' style='border-bottom:1px solid black;height:20px;'></td></tr>
+          <tr>
+            <td>O</td>
+            <td>X</td>
+          </tr>
+        </tbody>
+      </table>
+      <span class='txt'>좋아싫어</span>
+    </div>
+
+    <div class='postype salmal' onclick='goto_posting("salmal")'>
+      <table class='ui unstackable celled table'>
+        <tbody>
+          <tr><td colspan='2' style='border-bottom:1px solid black;height:20px;'></td></tr>
+          <tr>
+            <td>살</td>
+            <td>말</td>
+          </tr>
+        </tbody>
+      </table>
+      <span class='txt'>살말</span>
+    </div>
+
+  </div>
+</div>

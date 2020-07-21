@@ -4,11 +4,26 @@
 {{ block.super }}
 <style>
   :root {
-    --canvas-size: calc(var(--window-w) * 0.7)
+    --canvas-size: calc(var(--window-w) * 0.7);
+    --profiler-top: 20%;
+    --profiler-mid: var(--canvas-size);
+    --profiler-bottom: calc(100% - var(--profiler-top) - var(--profiler-mid));
+  }
+
+  .profiler {
+    background: white;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .profiler input.toggler {
+    display: none;
+    visibility: hidden;
   }
 
   .profiler .top {
-    height: 20%;
+    height: var(--profiler-top);
     width: 100%;
     position: relative;
     background: none;
@@ -23,6 +38,11 @@
     text-align: left;
   }
 
+
+  [contenteditable]:focus {
+    outline: none;
+  }
+
   .profiler .nick span {
     background: black;
     color: white;
@@ -32,8 +52,8 @@
   }
 
   .profiler .mid {
-    background: lightyellow;
-    height: var(--canvas-size);
+    background: none;
+    height: var(--profiler-mid);
     text-align: center;
   }
 
@@ -41,21 +61,63 @@
     position: relative;
     width: var(--canvas-size);
     height: 100%;
-    background: lightpink;
+    background: none;
     display: inline-block;
     overflow: hidden;
   }
 
+  .profiler .profile-canvas .maskbar {
+    position: absolute;
+    top: 20%;
+    left: 0;
+    right: 0;
+    height: 20%;
+    background: white;
+    border: var(--border);
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  .profiler .profile-canvas .toggler:checked + .maskbar {
+    opacity: 1;
+  }
+
+  .profiler .profile-canvas .maskbar .eye-mask {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profiler .profile-canvas .canvas-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: none;
+    border: var(--border);
+    pointer-events: none;
+  }
+
+  .profiler .profile-canvas img.profilepix {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .profiler .bottom {
+    /* height: var(--profiler-bottom); */
     padding-top: 20px;
     position: relative;
-    background: lightblue;
+    background: none;
   }
 
   .profiler .selector {
-    background: lightgreen;
-    /* height: 50px; */
-    border: var(--border-w) solid black;
+    background: none;
+    border: var(--border);
+    position: relative;
+    overflow: hidden;
   }
 
   .profiler .selector table.selectbase {
@@ -65,6 +127,12 @@
     table-layout: fixed;
   }
 
+  .profiler .selector table.selectbase.eye-masks {
+    position: absolute;
+    top: 100%;
+    transition: top 0.1s;
+  }
+
   .profiler .selector table.selectbase td {
     position: relative;
     padding: 0;
@@ -72,15 +140,15 @@
     height: 50px;
     overflow: scroll;
     white-space: nowrap;
-    font-size:0;
+    font-size: 0;
+    /* span.inline-block 사이에 여백을 줄이기 위함: https://norux.me/63 */
     background: white;
-    /* span.inline-block 사이에 여백을 줄이기 위함
-    https://norux.me/63 */
   }
 
   .profiler .selector table.selectbase td.pixloader,
   .profiler .selector table.selectbase td.txtloader {
     width: 50px;
+    overflow: hidden;
   }
 
   .profiler .selector table.selectbase td .item {
@@ -91,18 +159,30 @@
     line-height: 50px;
   }
 
+  .profiler .selector table.selectbase td .item.wide {
+    width: 120px;
+  }
+
+  .profiler .selector table.selectbase td .item img {
+    vertical-align: middle;
+  }
+
   .profiler .selector table.selectbase td .item img.icon {
     width: 35px;
     height: 35px;
     object-fit: contain;
-    vertical-align: middle;
   }
 
   .profiler .selector table.selectbase td .item img.fit {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    vertical-align: middle;
+  }
+
+  .profiler .selector table.selectbase td .item img.mask {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .profiler .selector table.selectbase td .item span.txt {
@@ -111,132 +191,80 @@
     font-size: 20px;
   }
 
+  .profiler .selector .toggler:checked + table.selectbase {
+    top: 0;
+  }
 
-  /* .profiler-mid {
-    background: lightyellow;
-    height: var(--canvas-size);
+  .profiler table.options {
+    border-collapse: collapse;
+    width: 80%;
+    position: absolute;
+    top: calc(100% - var(--border-w));
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .profiler table.options td.option {
+    width: 40px;
+    height: 40px;
+    border: var(--border);
+    text-align: center;
+    padding: 0;
+  }
+
+  .profiler table.options td.option.coloring {
+    background: rgb(241,20,15);
+  }
+
+  .profiler table.options td.option img.icon {
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    object-fit: contain;
+  }
+
+  .profiler table.options td.option.texting span {
+    background: black;
+    color: white;
+    font-size: 15px;
+  }
+
+  .profiler .save {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    width: 80%;
+    height: 45px;
+    background: black;
+    transform: translateX(-50%);
+    border: var(--border);
+    box-sizing: border-box;
+    color: white;
     text-align: center;
   }
-
-  .profiler-canvas {
-    position: relative;
-    width: var(--canvas-size);
-    height: 100%;
-    background: lightpink;
-    display: inline-block;
-    overflow: hidden;
-  }
-
-  .profiler-canvas img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-  }
-
-  .profiler-canvas .mask-layer {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: none;
-    transition: bottom 0.2s;
-  }
-
-  .profiler-canvas .mask-layer .mask-guide {
-    position: absolute;
-    background: white;
-    top: 25%;
-    left: 0;
-    width: 100%;
-    height: 25%;
-    border: var(--border) solid black;
-  }
-
-  .profiler-canvas .toggle:checked + .mask-layer {
-    bottom: 0;
-  }
-
-  .profiler-canvas .border {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: none;
-    border: var(--border) solid black;
-    pointer-events: none;
-  } */
-
-
-  /* .selector {
-    border-top: var(--border) solid black !important;
-    border-bottom: var(--border) solid black !important;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .selector table {
-    margin: 0 !important;
-    border-radius: 0 !important;
-    border: 0 !important;
-  }
-
-  .profiler-bottom .toggle:checked + .masks {
-    bottom: 0;
-  }
-
-
-  .selector .masks {
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    width: 100%;
-    transition: bottom 0.2s;
-  }
-
-  .options {
-    position: absolute !important;
-    top: calc(100% - var(--border)) !important;
-    margin: 0 !important;
-    border: var(--border) solid black !important;
-    border-radius: 0 !important;
-  }
-
-  .options.left {
-    left: var(--menu) !important;
-  }
-
-  .options.right {
-    right: var(--menu) !important;
-  }
-
-  .options td {
-    width:var(--menu) !important;
-    height: var(--menu) !important;
-    line-height: var(--menu) !important;
-  }
-
-  .options td:last-child {
-    width: calc(var(--menu) + var(--border)) !important;
-  } */
 </style>
 {% endblock style %}
 
 {% block page %}
-<div class='profiler' style='background:white;width:100%;height:100%;position:relative;"'>
+<div class='profiler'>
 
   <div class='top'>
     <div class='nick'>
-      <!-- <span>CHARACTER NAME</span> -->
+      <span>{{user.boo.nick}}</span>
     </div>
   </div>
 
   <div class='mid'>
     <div class='profile-canvas'>
+      <input type="file" name="image" accept="image/*" style="display:none;" id="profilepix-load" onchange="load_img(this)">
+      <img class='profilepix' src='{{user.boo.profile.pix.url}}'>
+
+      <input class='maskbar toggler' type='checkbox'>
+      <div class='maskbar'>
+        <img class='eye-mask' src='/static/materials/imgs/masks/eyes/{{imgs.eye_masks.0}}'>
+      </div>
+
+      <div class='canvas-border'></div>
     </div>
   </div>
 
@@ -246,9 +274,9 @@
         <tbody>
           <tr>
             <td class='pixloader'>
-              <div class='item'>
+              <label class='item' for='profilepix-load'>
                 <img class='icon' src='/static/materials/icons/pix.png'>
-              </div>
+              </label>
             </td>
             <td class='txtloader'>
               <div class='item'>
@@ -256,15 +284,9 @@
               </div>
             </td>
             <td>
-              <!-- for _ in ''|center:9 %}
-              <div class='item'>
-                <img class='fit' src='/static/materials/imgs/characters/charac{{forloop.counter}}.png' onclick='characterize(this)'>
-              </div>
-              endfor %} -->
-
-              {% for chimg in charac_imgs %}
-              <div class='item'>
-                <img class='fit' src='/static/materials/imgs/characters/{{chimg}}' onclick='characterize(this)'>
+              {% for ch in imgs.characters %}
+              <div class='item' onclick='characterize(this)'>
+                <img class='fit' src='/static/materials/imgs/characters/{{ch}}'>
               </div>
               {% endfor %}
             </td>
@@ -272,13 +294,14 @@
         </tbody>
       </table>
 
-      <table class='selectbase'>
+      <input class='selmask toggler' type='checkbox'>
+      <table class='selectbase eye-masks'>
         <tbody>
           <tr>
             <td>
-              {% for emask in eye_masks %}
-              <div class='item'>
-                <img class='fit' src='/static/materials/imgs/masks/eyes/{{emask}}' style='width:90%;height:90%;'>
+              {% for emask in imgs.eye_masks %}
+              <div class='item wide' onclick='eye_maskup(this)'>
+                <img class='mask' src='/static/materials/imgs/masks/eyes/{{emask}}'>
               </div>
               {% endfor %}
             </td>
@@ -286,80 +309,21 @@
         </tbody>
       </table>
     </div>
+
+    <table class='options'>
+      <tbody>
+        <tr>
+          <td class='option masking' onclick='toggle_masking()'><img class='icon' src='/static/materials/icons/mask4.png'></td>
+          <td class='option coloring'></td>
+          <td></td>
+          <td class='option texting'><span>Aa</span></td>
+          <td class='option clipping'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- <div class='profiler-mid'>
-    <div class='profiler-canvas'>
-      <input type="file" name="image" accept="image/*" style="display:none;" id="imageuploader0" onchange="load_img(this)">
-      <img class='charac' src='{{user.boo.profile.pix.url}}'>
-      <input class='toggle' type='checkbox'>
-      <div class='mask-layer'>
-        <div class='mask-guide'>
-          <div style='position:absolute;top:0;left:30%;width:40%;height:100%;background:lightpink;'>
-            <img class='mask' src='/static/materials/imgs/eye1.png' style='height:100%;width:100%;object-fit:cover;'>
-          </div>
-        </div>
-      </div>
-      <div class='border'></div>
-    </div>
-  </div> -->
-
-
-  <!-- <div class='profiler-bottom'>
-    <div class='selector'>
-      <table class='base ui unstackable table'>
-        <tbody>
-          <tr>
-            <td>
-              <label for='imageuploader0'>
-                <img class='item img' src='/static/materials/icons/img_select.png'>
-              </label>
-            </td>
-            <td><span class='item txt'>히</span></td>
-            <td><img class='item img charac' src='/static/materials/imgs/boocha1.png' onclick='characterize(this)'></td>
-            <td><img class='item img charac' src='/static/materials/imgs/boocha2.png' onclick='characterize(this)'></td>
-            <td><img class='item img charac' src='/static/materials/imgs/boocha3.png' onclick='characterize(this)'></td>
-          </tr>
-        </tbody>
-      </table>
-
-      <input class='toggle' type='checkbox'>
-      <table class='masks ui unstackable table'>
-        <tbody>
-          <tr>
-            <td><img class='item img mask eye' src='/static/materials/imgs/eye1.png' onclick='eye_mask(this)'></td>
-            <td><img class='item img mask eye' src='/static/materials/imgs/eye2.png' onclick='eye_mask(this)'></td>
-            <td><img class='item img mask eye' src='/static/materials/imgs/eye3.png' onclick='eye_mask(this)'></td>
-            <td><img class='item img mask eye' src='/static/materials/imgs/eye4.png' onclick='eye_mask(this)'></td>
-            <td><img class='item img mask eye' src='/static/materials/imgs/eye5.png' onclick='eye_mask(this)'></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <table class='options left ui collapsing unstackable table'>
-      <tbody>
-        <tr>
-          <td class='mask-put' onclick='show_mask_put()'>
-            <img src='/static/materials/icons/mask4.png' style='width:30px;height:30px;object-fit:cover;vertical-align:middle;'>
-          </td>
-          <td style='background:rgb(241,20,15);'></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <table class='options right ui collapsing unstackable table'>
-      <tbody>
-        <tr>
-          <td><span style='background:black;color:white;font-size:15px;'>Aa</span></td>
-          <td>
-            <img src='/static/materials/icons/arrow_down.png' style='width:25px;height:25px;object-fit:cover;vertical-align:middle;'>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div> -->
-
+  <div class='save' onclick='save()'>SAVE</div>
 </div>
 {% endblock page %}
 
@@ -367,6 +331,8 @@
 {% block js %}
 {{ block.super }}
 <script>
+  document.querySelector('.profiler .nick span').contentEditable = 'true';
+
   function load_img(input) {
     if (input.files && input.files[0]) {
       let reader = new FileReader();
@@ -384,24 +350,29 @@
   function eye_mask(mask_img) {
     let src = mask_img.src;
     document.querySelector('.profiler-canvas img.mask').src = src;
-    // $('.profiler-canvas img.mask').prop('src', src);
   }
 
-  function characterize(charac_img) {
-    let src = charac_img.src;
-    document.querySelector('.profiler-canvas img.charac').src = src;
+  function eye_maskup(td) {
+    let src = td.querySelector('img').src;
+    document.querySelector('.profile-canvas .maskbar img.eye-mask').src = src;
+  }
+
+  function characterize(td) {
+    let src = td.querySelector('img').src;
+    document.querySelector('.profile-canvas img.profilepix').src = src;
   }
 
 
-  function show_mask_put() {
-    var status = $('.profiler-canvas .toggle').prop('checked');
-    if (status) {
-      $('.profiler-canvas .toggle').prop('checked', false);
-      $('.profiler-bottom .toggle').prop('checked', false);
-    } else {
-      $('.profiler-canvas .toggle').prop('checked', true);
-      $('.profiler-bottom .toggle').prop('checked', true);
-    }
+  function toggle_masking() {
+    let selmask = document.querySelector('input.toggler.selmask')
+    selmask.checked = !selmask.checked;
+
+    let maskbar = document.querySelector('input.toggler.maskbar')
+    maskbar.checked = !maskbar.checked;
+  }
+
+  function save() {
+    console.log(1234)
   }
 
 </script>

@@ -1,50 +1,93 @@
 {% extends "getch/basepost.html" %}
 
+
 {% block post-pix %}
-<input type="file" name="image" accept="image/*" style="display:none;" id="pix-loader-{{post.pk}}" onchange="load_pix(this)">
-<label for='pix-loader-{{post.pk}}'>
-  <div class='pix-space'>
-    <img src='/static/materials/icons/pix.png'>
-  </div>
-  <img class='pix' src='{{post.pix.url}}' onerror='imgerr(this)'>
-</label>
+  {% if post %}
+  <input type="file" name="image" accept="image/*" id="pix-loader-{{post.pk}}" onchange="load_pix(this)">
+  <label class='loader' for='pix-loader-{{post.pk}}'>
+    <div class='pix-space'>
+      <img src='/static/materials/icons/pix.png'>
+    </div>
+    <img class='pix' src='{{post.pix.url}}' onerror='imgerr(this)'>
+  </label>
+  {% else %}
+  <input type="file" name="image" accept="image/*" id="pix-loader" onchange="load_pix(this)">
+  <label class='loader' for='pix-loader'>
+    <div class='pix-space'>
+      <img src='/static/materials/icons/pix.png'>
+    </div>
+    <img class='pix' src='' onerror='imgerr(this)'>
+  </label>
+  {% endif %}
 {% endblock post-pix %}
 
 
 {% block post-pix-a %}
-<input type="file" name="image" accept="image/*" style="display:none;" id="pix-a-loader-{{post.pk}}" onchange="load_pix(this)">
-<label for='pix-a-loader-{{post.pk}}'>
-  <div class='pix-space'>
-    <img src='/static/materials/icons/pix.png'>
-  </div>
-  <img class='pix' src='{{post.pix_a.url}}' onerror='imgerr(this)'>
-</label>
+  {% if post %}
+  <input type="file" name="image" accept="image/*" id="pix-a-loader-{{post.pk}}" onchange="load_pix(this)">
+  <label class='loader' for='pix-a-loader-{{post.pk}}'>
+    <div class='pix-space'>
+      <img src='/static/materials/icons/pix.png'>
+    </div>
+    <img class='pix' src='{{post.pix_a.url}}' onerror='imgerr(this)'>
+  </label>
+  {% else %}
+  <input type="file" name="image" accept="image/*" id="pix-a-loader" onchange="load_pix(this)">
+  <label class='loader' for='pix-a-loader'>
+    <div class='pix-space'>
+      <img src='/static/materials/icons/pix.png'>
+    </div>
+    <img class='pix' src='' onerror='imgerr(this)'>
+  </label>
+  {% endif %}
 {% endblock post-pix-a %}
 
 
 {% block post-pix-b %}
-<input type="file" name="image" accept="image/*" style="display:none;" id="pix-b-loader-{{post.pk}}" onchange="load_pix(this)">
-<label for='pix-b-loader-{{post.pk}}'>
-  <div class='pix-space'>
-    <img src='/static/materials/icons/pix.png'>
-  </div>
-  <img class='pix' src='{{post.pix_b.url}}' onerror='imgerr(this)'>
-</label>
+  {% if post %}
+  <input type="file" name="image" accept="image/*" id="pix-b-loader-{{post.pk}}" onchange="load_pix(this)">
+  <label class='loader' for='pix-b-loader-{{post.pk}}'>
+    <div class='pix-space'>
+      <img src='/static/materials/icons/pix.png'>
+    </div>
+    <img class='pix' src='{{post.pix_b.url}}' onerror='imgerr(this)'>
+  </label>
+  {% else %}
+  <input type="file" name="image" accept="image/*" id="pix-b-loader" onchange="load_pix(this)">
+  <label class='loader' for='pix-b-loader'>
+    <div class='pix-space'>
+      <img src='/static/materials/icons/pix.png'>
+    </div>
+    <img class='pix' src='' onerror='imgerr(this)'>
+  </label>
+  {% endif %}
 {% endblock post-pix-b %}
 
 
 {% block post-etc %}
-<div class='author menublock' author='{{post.boo.pk}}'>
-  <img class='fit' src='{{post.boo.profile.pix.url}}'>
-</div>
+  {% if post %}
+  <div class='author menublock' author='{{post.boo.pk}}'>
+    <img class='fit' src='{{post.boo.profile.pix.url}}'>
+  </div>
 
-<div class='text'>
-  <span>@{{post.boo.nick}}</span><br>
-  <span>{{post.text|linebreaksbr}}</span>
-</div>
+  <div class='description'>
+    <span class='nick'>@{{post.boo.nick}}</span><br>
+    <span class='text'>{{post.text|linebreaksbr}}</span>
+  </div>
 
-<div class='scores'>
-  <div class='score up'>{{post.num_vote_up}}</div>
-  <div class='score down'>{{post.num_vote_down}}</div>
-</div>
+  <div class='scores'>
+    <div class='score up'>{{post.num_vote_up}}</div>
+    <div class='score down'>{{post.num_vote_down}}</div>
+  </div>
+
+  {% else %}
+  <div class='author menublock' author='{{user.boo.pk}}'>
+    <img class='fit' src='{{user.boo.profile.pix.url}}'>
+  </div>
+
+  <div class='description'>
+    <span class='nick'>@{{user.boo.nick}}</span><br>
+    <span class='text'>COMMENT HERE</span>
+  </div>
+  {% endif %}
 {% endblock post-etc %}

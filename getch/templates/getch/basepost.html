@@ -6,6 +6,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
   .post .backbone {
@@ -53,7 +54,7 @@
     height: 100%;
   }
 
-  .post .text {
+  .post .description {
     text-align: right;
     position: absolute;
     top: 50%;
@@ -64,7 +65,7 @@
     line-height: 15px;
   }
 
-  .post .text span {
+  .post .description span {
     background: black;
     color: white;
     line-height: 15px;
@@ -104,41 +105,32 @@
     /* display: inline-block; */
   }
 
-  .post input.vote-toggler {
+  .post input.toggler,
+  .post input[type='file'] {
     display: none;
     visibility: hidden;
   }
 
-  .post input.edit-toggler {
-    display: none;
-    visibility: hidden;
-  }
-
-  .post input.show-edit-button-toggler {
-    display: none;
-    visibility: hidden;
-  }
-
-  .post input.vote-toggler:checked ~ .scores {
+  .post input.vote.toggler:checked ~ .scores {
     opacity: 1;
   }
 
-  .post.postvoteox input.vote-toggler[vote='up']:checked ~ .backbone td[vote='up'] {
+  .post.postvoteox input.vote.toggler[vote='up']:checked ~ .backbone td[vote='up'] {
     background: var(--color-pos);
   }
 
-  .post.postvoteox input.vote-toggler[vote='down']:checked ~ .backbone td[vote='down'] {
+  .post.postvoteox input.vote.toggler[vote='down']:checked ~ .backbone td[vote='down'] {
     background: var(--color-neg);
   }
 
-  .post.postvoteab input.vote-toggler[vote='up']:checked ~ .backbone td[vote='down'],
-  .post.postvoteab input.vote-toggler[vote='down']:checked ~ .backbone td[vote='up'] {
+  .post.postvoteab input.vote.toggler[vote='up']:checked ~ .backbone td[vote='down'],
+  .post.postvoteab input.vote.toggler[vote='down']:checked ~ .backbone td[vote='up'] {
     filter: grayscale(1);
   }
 
-  .post input.show-edit-button-toggler:checked ~ .edit {
+  .post input.show-edit-button.toggler:checked ~ .edit.button,
+  .post input.show-newpost-button.toggler:checked ~ .newpost.button {
     bottom: 30px;
-    opacity: 1;
   }
 
   .post .scores {
@@ -175,20 +167,6 @@
     left: calc(var(--s-1) + var(--border-w)/2);
   }
 
-  .post .edit {
-    position: absolute;
-    bottom: -40px;
-    left: 30px;
-    width: calc(var(--s-0) + var(--border-w) - 60px);
-    height: 35px;
-    background: orange;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: all 0.1s;
-  }
-
   .post .pix-space {
     position: absolute;
     top: 20%;
@@ -210,84 +188,172 @@
     opacity: 0.3;
   }
 
-  .post input.edit-toggler:checked input[type='file'] {
-    /* pointer-events: auto; */
-    여기가 안되네.....
+  .post .edit.button,
+  .post .newpost.button {
+    position: absolute;
+    bottom: -40px;
+    left: 30px;
+    width: calc(var(--s-0) + var(--border-w) - 60px);
+    height: 35px;
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.1s;
+    font-size: 12px;
   }
 
-  input[type='file'] {
+  .post .newpost.button:after {
+    content: 'SAVE NEWPOST';
+  }
+
+  .post .edit.button:after {
+    content: 'EDIT';
+    transition: bottom 0.1s;
+  }
+
+  .post input.edit.toggler:checked ~ table.backbone label.loader {
+    pointer-events: auto;
+  }
+
+  .post input.edit.toggler:checked ~ .edit.button {
+    background: orange;
+  }
+
+  .post input.edit.toggler:checked ~ .edit.button:after {
+    content: 'ON EDITING';
+  }
+
+  .post table.backbone label.loader {
     pointer-events: none;
   }
+
+  /* [contenteditable="true"] {
+    color: yellow !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+  } */
 </style>
 
 
-<div class='post {{type}}'>
-  <input class='edit-toggler' type="checkbox">
+<div class='post {{type}}' id='{{post.pk}}'>
+  <input class='edit toggler' type="checkbox" {% if not post %}checked{% endif %}>
+  <!-- <input mode='show' class='mode toggler' type="radio" name='mode-{{post.pk}}' {% if mode == 'show' %}checked{% endif %}>
+  <input mode='edit' class='mode toggler' type="radio" name='mode-{{post.pk}}' {% if mode == 'edit' %}checked{% endif %}>
+  <input mode='new' class='mode toggler' type="radio" name='mode-{{post.pk}}' {% if mode == 'new' %}checked{% endif %}> -->
 
   {% if post %}
-  <input vote='up' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
-  <input vote='down' class='vote-toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}>
+  <input vote='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
+  <input vote='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}>
   {% endif %}
 
-  {% if type == 'postvoteox' %}
-  <table class='backbone'>
-    <tbody>
-      <tr>
-        <td class='top full' colspan='2'>{% block post-pix %}{% endblock post-pix %}</td>
-        <td class='top side'></td>
-      </tr>
+  <!-- <form method="post" enctype="multipart/form-data"> -->
 
-      <tr>
-        <td class='bottom half' vote='up' onclick='vote_toggle(this)'><div class='ox'>O</div></td>
-        <td class='bottom half' vote='down' onclick='vote_toggle(this)'><div class='ox'>X</div></td>
-        <td class='bottom side'></td>
-      </tr>
-    </tbody>
-  </table>
+    {% if type == 'postvoteox' %}
+    <table class='backbone'>
+      <tbody>
+        <tr>
+          <td class='top full' colspan='2'>{% block post-pix %}{% endblock post-pix %}</td>
+          <td class='top side'></td>
+        </tr>
 
-
-  {% elif type == 'postvoteab' %}
-  <table class='backbone'>
-    <tbody>
-      <tr>
-        <td class='top full' vote='up' onclick='vote_toggle(this)'>{% block post-pix-a %}{% endblock post-pix-a %}</td>
-        <td class='top side'></td>
-      </tr>
-
-      <tr>
-        <td class='bottom full' vote='down' onclick='vote_toggle(this)'>{% block post-pix-b %}{% endblock post-pix-b %}</td>
-        <td class='bottom side'></td>
-      </tr>
-    </tbody>
-  </table>
-  {% endif %}
+        <tr>
+          <td class='bottom half' vote='up' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
+          <td class='bottom half' vote='down' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
+          <td class='bottom side'></td>
+        </tr>
+      </tbody>
+    </table>
 
 
-  {% block post-etc %}
-  {% endblock post-etc %}
+    {% elif type == 'postvoteab' %}
+    <table class='backbone'>
+      <tbody>
+        <tr>
+          <td class='top full' vote='up' onclick='toggle_vote(this)'>{% block post-pix-a %}{% endblock post-pix-a %}</td>
+          <td class='top side'></td>
+        </tr>
 
+        <tr>
+          <td class='bottom full' vote='down' onclick='toggle_vote(this)'>{% block post-pix-b %}{% endblock post-pix-b %}</td>
+          <td class='bottom side'></td>
+        </tr>
+      </tbody>
+    </table>
+    {% endif %}
+
+
+    {% block post-etc %}
+    {% endblock post-etc %}
+  <!-- </form> -->
+
+  <!-- <span class='vs' contenteditable="true" onclick='this.focus();console.log(1234);'>VS</span> -->
+  <!-- contenteditable이 swiperjs에서은 안먹히는거 같다 -->
   <span class='vs'>VS</span>
-  <input class='show-edit-button-toggler' type='checkbox'>
-  <div class='edit' onclick='toggle_edit(this)'>EDIT</div>
+  <input class='show-edit-button toggler' type='checkbox'>
+  <div class='edit button' onclick='toggle_edit(this)'></div>
+
+  <input class='show-newpost-button toggler' type='checkbox' {% if not post %}checked{% endif %}>
+  <div class='newpost button' onclick='save_newpost(this)'></div>
 </div>
 
 
 <script>
-  function vote_toggle(td) {
+  function toggle_vote(td) {
+    // 처음에는 label로 처리했는데, label로 하면 deselect가 안된다
     let voted_to = td.getAttribute('vote');
     // 나중에 이부분을 예외처리 해야할듯 하다: vote-toggler가 없는 경우
-    let toggler = td.closest('.post').querySelector(`input.vote-toggler[vote=${voted_to}]`);
+    let toggler = td.closest('.post').querySelector(`input.vote.toggler[vote=${voted_to}]`);
+    toggler.checked = !toggler.checked;
+  }
+
+  function save_post() {}
+
+  function toggle_edit(div) {
+    let post = div.closest('.post');
+    let toggler = post.querySelector('input.edit.toggler');
 
     if (toggler.checked) {
       toggler.checked = false;
+
+      let formData = new FormData();
+      formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+      formData.append('post_id', post.id);
+      formData.append('text', post.querySelector('span.text').innerHTML.replace(/<br>/gi,'\n'));
+
+      let pix_files;
+
+      if (post.classList.contains('postvoteox')) {
+        formData.append('type', 'postvoteox');
+        pix_files = post.querySelector('input[id^="pix-loader"]').files;
+        if (pix_files.length>0) {
+          formData.append('pix', pix_files[0]);
+        }
+
+      } else if ((post.classList.contains('postvoteab'))) {
+        formData.append('type', 'postvoteab');
+        pix_files = post.querySelector('input[id^="pix-a-loader"]').files;
+        if (pix_files.length>0) {
+          formData.append('pix_a', pix_files[0]);
+        }
+
+        pix_files = post.querySelector('input[id^="pix-b-loader"]').files;
+        if (pix_files.length>0) {
+          formData.append('pix_b', pix_files[0]);
+        }
+      }
+
+      fetch('post/save/', {
+        method: 'POST',
+        body: formData
+      }).then(res => res.json()).then(js => {
+        console.log(js);
+      });
+
     } else {
       toggler.checked = true;
     }
-  }
-
-  function toggle_edit(div) {
-    let toggler = div.closest('.post').querySelector('input.edit-toggler');
-    toggler.checked = !toggler.checked;
   }
 
 

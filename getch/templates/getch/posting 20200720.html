@@ -1,0 +1,170 @@
+{% extends "getch/basepage.html" %}
+
+{% block style %}
+{{ block.super }}
+<style>
+  [contenteditable="true"] {
+    color: yellow !important;
+  }
+</style>
+{% endblock style %}
+
+{% block page %}
+{% if type == 'ox' %}
+<table class="post ox ui unstackable very basic celled table">
+  <tbody>
+    <tr>
+      <td class='top full' colspan='2'>
+        <input type="file" name="image" accept="image/*" style="display:none;" id="posting-ox-imgloader" onchange="load_img(this)">
+        <label for='posting-ox-imgloader'>
+          <div style='position:absolute;top:20%;left:20%;bottom:20%;right:20%;background:none;border:5px dashed silver;'>
+            <img src='/static/materials/icons/pix.png' style='position:absolute;top:50%;left:50%;width:40px;height:40px;object-fit:contain;transform:translate(-50%,-50%);opacity:0.3;'>
+          </div>
+          <img class='postimg' src='' onerror='imgerr(this)'>
+        </label>
+      </td>
+
+      <td class='top menu'>
+        <div class='author menublock' style=''>
+          <img class='full' src={{user.boo.profile.pix.url}}>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class='o vote bottom half'>
+        <span class='ox'>O</span>
+        <span class='vs'>VS</span>
+      </td>
+
+      <td class='x vote'>
+        <span class='ox'>X</span>
+      </td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+{% elif type == 'salmal' %}
+<table class="post salmal ui unstackable very basic celled table">
+  <tbody>
+    <tr>
+      <td class='top full' colspan='2'>
+        <input type="file" name="image" accept="image/*" style="display:none;" id="posting-salmal-imgloader" onchange="load_img(this)">
+        <label for='posting-salmal-imgloader'>
+          <div style='position:absolute;top:20%;left:20%;bottom:20%;right:20%;background:none;border:5px dashed silver;'>
+            <img src='/static/materials/icons/pix.png' style='position:absolute;top:50%;left:50%;width:40px;height:40px;object-fit:contain;transform:translate(-50%,-50%);opacity:0.3;'>
+          </div>
+          <img class='postimg' src='' onerror='imgerr(this)'>
+        </label>
+      </td>
+
+      <td class='top menu'>
+        <div class='author menublock' style=''>
+          <img class='full' src={{user.boo.profile.pix.url}}>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class='o vote bottom half'>
+        <span class='ox' style='font-size:80px;'>살</span>
+        <span class='vs'>VS</span>
+      </td>
+
+      <td class='x vote'>
+        <span class='ox' style='font-size:80px;'>말</span>
+      </td>
+
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+{% elif type == 'ab' %}
+<table class="post ab ui unstackable very basic celled table">
+   <!-- style='top:-5px;left:-5px;width:var(--width);height:var(--height)'> -->
+  <tbody>
+    <tr>
+      <td class='a vote top full'>
+        <input type="file" name="image" accept="image/*" style="display:none;" id="posting-a-imgloader" onchange="load_img(this)">
+        <label for='posting-a-imgloader'>
+          <div style='position:absolute;top:20%;left:20%;bottom:20%;right:20%;background:none;border:5px dashed rgba(0,0,0,0.1);'>
+            <img src='/static/materials/icons/pix.png' style='position:absolute;top:50%;left:50%;width:40px;height:40px;object-fit:contain;transform:translate(-50%,-50%);opacity:0.1;'>
+          </div>
+          <img class='postimg' src='' onerror='imgerr(this)'>
+        </label>
+      </td>
+
+      <td class='top menu'>
+        <div class='author menublock'>
+          <img class='full' src='{{user.boo.profile.pix.url}}'>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td class='b vote bottom full'>
+        <input type="file" name="image" accept="image/*" style="display:none;" id="posting-b-imgloader" onchange="load_img(this)">
+        <label for='posting-b-imgloader'>
+          <div style='position:absolute;top:20%;left:20%;bottom:20%;right:20%;background:none;border:5px dashed rgba(0,0,0,0.1);'>
+            <img src='/static/materials/icons/pix.png' style='position:absolute;top:50%;left:50%;width:40px;height:40px;object-fit:contain;transform:translate(-50%,-50%);opacity:0.1;'>
+          </div>
+          <img class='postimg' src='' onerror='imgerr(this)'>
+        </label>
+        <span class='vs'>VS</span>
+      </td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+{% endif %}
+
+
+
+<div style='text-align:right;position:absolute;top:50%;right:10px;width:50%;transform:translate(0,-50%);font-size:15px;line-height:18px;'>
+  <span style='background:black;color:white;' onclick='editing(this)' onfocusout='stop_editing(this)'>ADD<br>COMMENT<br>HERE</span>
+</div>
+
+<!-- <div style='text-align:right;position:absolute;top:50%;right:10px;width:50%;transform:translate(0,-50%);font-size:15px;line-height:18px;' onclick='editing(this)' onfocusout='stop_editing(this)'>
+  <span style='background:black;color:white;'>ADD</span><br>
+  <span style='background:black;color:white;'>COMMENT</span><br>
+  <span style='background:black;color:white;'>HERE</span>
+</div> -->
+
+{% endblock page %}
+
+
+{% block js %}
+{{ block.super }}
+<script>
+  function load_img(input) {
+    if (input.files && input.files[0]) {
+      let reader = new FileReader();
+
+      reader.onload = function(e) {
+        let img = $(input).siblings('label').children('img');  // 여기서는 jquery가 되네; 희안하다 (함수 안에서는 되는듯)
+        img.css('display', 'block');
+        img.attr("src", e.target.result);
+        // img.parent().css("display", "block");
+      }
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function imgerr(img) {
+    img.style.display = 'none';
+    // $(img).css('display', 'none');
+  }
+
+  function editing(obj) {
+    obj.focus();
+    obj.contentEditable = 'true';
+  }
+
+  function stop_editing(obj) {
+    obj.contentEditable = 'false';
+  }
+</script>
+{% endblock js %}

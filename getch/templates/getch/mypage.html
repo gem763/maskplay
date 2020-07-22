@@ -11,10 +11,10 @@
   <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
   <i class="fa fa-barcode" onclick='goto_profiler()'></i>
 
-  <div style='position:absolute;top:50%;right:0;width:400%;background:none;transform:translate(0,-50%);'>
+  <!-- <div style='position:absolute;top:50%;right:0;width:400%;background:none;transform:translate(0,-50%);'>
     <span style='background:black;color:white;'>@{{myboo.nick}}</span><br>
     <span style='background:black;color:white;line-height:15px;'>{{myboo.text|linebreaksbr}}</span>
-  </div>
+  </div> -->
 </div>
 {% endwith %}
 {% endblock page %}

@@ -19,23 +19,34 @@
   var swiper = new Swiper('.swiper-container', {
     direction: 'vertical',
     on: {
+      init: function() {
+        init_post();
+      },
       slideChangeTransitionEnd: function() {
-        let cpost = document.querySelector('.swiper-slide-active');
-        let author = cpost.querySelector('.author.menublock').getAttribute('author');
-        let cboo = '{{user.boo.pk}}';
-        if (cboo==author) {
-          cpost.querySelector('input.show-edit-button-toggler').checked = true;
-        }
+        init_post();
       },
       slideChange: function() {
-        let prepost = document.querySelector('.swiper-slide-active');
-        prepost.querySelector('input.show-edit-button-toggler').checked = false;
+        close_post();
       },
-    }
-
+    },
     // spaceBetween: '-10'
     // loop: true
     // preventClicks: false,
     // preventClicksPropagation: false
   });
+
+  function init_post() {
+    let cpost = document.querySelector('.swiper-slide-active');
+    let author = cpost.querySelector('.author.menublock').getAttribute('author');
+    let cboo = '{{user.boo.pk}}';
+    if (cboo==author) {
+      cpost.querySelector('input.show-edit-button.toggler').checked = true;
+    }
+  }
+
+  function close_post() {
+    let cpost = document.querySelector('.swiper-slide-active');
+    cpost.querySelector('input.show-edit-button.toggler').checked = false;
+    cpost.querySelector('input.edit.toggler').checked = false;
+  }
 </script>

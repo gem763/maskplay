@@ -26,20 +26,16 @@
   </div>
 
   <div id='profiler'>
-    {% include 'getch/profiler.html' with open=0 %}
+    {% include 'getch/profiler.html' %}
   </div>
 
-  <!-- <div id='posting' class='ab'>
-    % include 'getch/posting.html' with type='ab' %}
+  <div id='posting-voteox'>
+    {% include 'getch/posting.html' with type='postvoteox' %}
   </div>
 
-  <div id='posting' class='ox'>
-    % include 'getch/posting.html' with type='ox' %}
+  <div id='posting-voteab'>
+    {% include 'getch/posting.html' with type='postvoteab' %}
   </div>
-
-  <div id='posting' class='salmal'>
-    % include 'getch/posting.html' with type='salmal' %}
-  </div> -->
 
 </div>
 
@@ -59,6 +55,7 @@
   }
 
   function goto_posting(type) {
-    document.querySelector('#posting.' + type + ' .page-toggler').checked = true;
+    $('.popup input.toggler').prop('checked', false);
+    document.querySelector('#posting-vote' + type + ' .page-toggler').checked = true;
   }
 </script>

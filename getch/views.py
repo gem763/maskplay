@@ -74,5 +74,25 @@ def set_boo(request, user_id, boo_id):
     user.set_boo(boo_id)
     return JsonResponse({'success':True}, safe=False)
 
-# def test(request, state):
-#     print(state, '******************************')
+
+def post_save(request):
+    if request.method=='POST':
+        post_id = request.POST.get('post_id', None)
+        post_type = request.POST.get('type', None)
+        text = request.POST.get('text', None)
+        pix = request.FILES.get('pix', None)
+        pix_a = request.FILES.get('pix_a', None)
+        pix_b = request.FILES.get('pix_b', None)
+
+        if post_id:
+            post = m.Post.objects.get_subclass(pk=post_id)
+            post.text = text
+
+            if pix:
+                post.pix = pix
+
+        else:
+            pass
+
+        post.save()
+        return JsonResponse({'success':True}, safe=False)

@@ -1,0 +1,56 @@
+{% extends "getch/basepost.html" %}
+
+{% block post-pix %}
+  {% if post %}
+    {% include "getch/comp_pix.html" with pixfield='pix' %}
+  {% else %}
+    {% include "getch/comp_pix.html" with pixfield='pix' %}
+  {% endif %}
+{% endblock post-pix %}
+
+
+{% block post-pix-a %}
+  {% if post %}
+    {% include "getch/comp_pix.html" with pixfield='pix_a' %}
+  {% else %}
+    {% include "getch/comp_pix.html" with pixfield='pix_a' %}
+  {% endif %}
+{% endblock post-pix-a %}
+
+
+{% block post-pix-b %}
+  {% if post %}
+    {% include "getch/comp_pix.html" with pixfield='pix_b' %}
+  {% else %}
+    {% include "getch/comp_pix.html" with pixfield='pix_b' %}
+  {% endif %}
+{% endblock post-pix-b %}
+
+
+{% block post-etc %}
+  {% if post %}
+  <div class='author menublock' author='{{post.boo.pk}}'>
+    <img class='fit' src='{{post.boo.profile.pix.url}}'>
+  </div>
+
+  <div class='description'>
+    <span class='nick'>@{{post.boo.nick}}</span><br>
+    <span class='text'>{{post.text|linebreaksbr}}</span>
+  </div>
+
+  <div class='scores'>
+    <div class='score up'>{{post.num_vote_up}}</div>
+    <div class='score down'>{{post.num_vote_down}}</div>
+  </div>
+
+  {% else %}
+  <div class='author menublock' author='{{user.boo.pk}}'>
+    <img class='fit' src='{{user.boo.profile.pix.url}}'>
+  </div>
+
+  <div class='description'>
+    <span class='nick'>@{{user.boo.nick}}</span><br>
+    <span class='text'>COMMENT HERE</span>
+  </div>
+  {% endif %}
+{% endblock post-etc %}

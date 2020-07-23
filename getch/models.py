@@ -167,8 +167,8 @@ class PostVoteOX(Post):
 
 
 class PostVoteAB(Post):
-    pix_a = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
-    pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
+    pix_a = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
+    pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
     def __str__(self):
         return 'AB | ' + self.boo.nick

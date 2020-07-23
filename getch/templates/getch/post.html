@@ -1,93 +1,389 @@
-{% extends "getch/basepost.html" %}
+<style>
+  .post {
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .post .backbone {
+    border-collapse: collapse;
+  }
+
+  .post .backbone td{
+    position: relative;
+    padding: 0;
+    box-sizing: border-box;
+    border: var(--border-w) solid black;
+    text-align: center;
+  }
+
+  .post .backbone td.full {
+    width: var(--s-0);
+  }
+
+  .post .backbone td.half {
+    width: var(--s-1);
+  }
+
+  .post .backbone td.side {
+    width: var(--s-menu);
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .post .backbone td.top {
+    height: var(--s-0);
+  }
+
+  .post .backbone td.bottom {
+    border-bottom: none;
+    height: calc(var(--s-0) + var(--border-w)/2);
+    /* td.bottom의 아래경계선을 지워주면서, 그만큼 높이를 늘렸다 */
+  }
+
+  .post .backbone img.pix {
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .post .description {
+    text-align: right;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 50%;
+    transform: translate(0,-50%);
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  .post .description span {
+    background: black;
+    color: white;
+    line-height: 15px;
+  }
+
+  .post span.vs {
+    position: absolute;
+    background: var(--color-pos);
+    color: black;
+    font-size: var(--vs-fsize);
+    line-height: calc(var(--vs-fsize) + 8px);
+    font-weight: bold;
+  }
+
+  .post[type='postvoteox'] span.vs {
+    bottom: var(--s-1);
+    left: calc(var(--s-1) + var(--border-w)/2);
+    transform: translate(-50%,50%);
+  }
+
+  .post[type='postvoteab'] span.vs {
+    top: calc(var(--s-0) + var(--border-w)/2);
+    left: calc(var(--s-1) + var(--border-w)/2);
+    transform: translate(-50%,-50%);
+  }
+
+  .post[type='postvoteox'] .backbone .ox {
+    width: 100%;
+    height: 100%;
+    color: black;
+    background: none;
+    font-weight: bold;
+    font-size: var(--ox-fsize);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* display: inline-block; */
+  }
+
+  .post input.toggler,
+  .post input[type='file'] {
+    display: none;
+    visibility: hidden;
+  }
+
+  .post input.vote.toggler:checked ~ .scores {
+    opacity: 1;
+  }
+
+  .post[type='postvoteox'] input.vote.toggler[vote='up']:checked ~ .backbone td[vote='up'] {
+    background: var(--color-pos);
+  }
+
+  .post[type='postvoteox'] input.vote.toggler[vote='down']:checked ~ .backbone td[vote='down'] {
+    background: var(--color-neg);
+  }
+
+  .post[type='postvoteab'] input.vote.toggler[vote='up']:checked ~ .backbone td[vote='down'],
+  .post[type='postvoteab'] input.vote.toggler[vote='down']:checked ~ .backbone td[vote='up'] {
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+
+  .post input.show-edit-button.toggler:checked ~ .edit.button,
+  .post input.show-newpost-button.toggler:checked ~ .newpost.button {
+    bottom: 30px;
+  }
+
+  .post .scores {
+    font-size: 40px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.1s;
+    pointer-events: none;
+  }
+
+  .post .scores .score {
+    position: absolute;
+    background: none;
+    transform: translate(-50%,-50%);
+  }
+
+  .post[type='postvoteox'] .scores .score.up {
+    top: calc(var(--s-0) + var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2 - var(--s-1)/2);
+  }
+
+  .post[type='postvoteox'] .scores .score.down {
+    top: calc(var(--s-0) + var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2 + var(--s-1)/2);
+  }
+
+  .post[type='postvoteab'] .scores .score.up {
+    top: calc(var(--s-0) - var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2);
+  }
+
+  .post[type='postvoteab'] .scores .score.down {
+    top: calc(var(--s-0) + var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2);
+  }
+
+  .post .pixloader-icon {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    bottom: 20%;
+    right: 20%;
+    background: none;
+    border: 5px dashed silver;
+  }
+
+  .post .pixloader-icon img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    transform: translate(-50%,-50%);
+    opacity: 0.3;
+  }
+
+  .post .edit.button,
+  .post .newpost.button {
+    position: absolute;
+    bottom: -40px;
+    left: 30px;
+    width: calc(var(--s-0) + var(--border-w) - 60px);
+    height: 35px;
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.1s;
+    font-size: 12px;
+  }
+
+  .post .newpost.button:after {
+    content: 'SAVE NEWPOST';
+  }
+
+  .post .edit.button:after {
+    content: 'EDIT';
+    transition: bottom 0.1s;
+  }
+
+  .post input.edit.toggler:checked ~ table.backbone label.pixloader {
+    pointer-events: auto;
+  }
+
+  .post input.edit.toggler:checked ~ .edit.button {
+    background: orange;
+  }
+
+  .post input.edit.toggler:checked ~ .edit.button:after {
+    content: 'ON EDITING';
+  }
+
+  .post table.backbone label.pixloader {
+    pointer-events: none;
+  }
+</style>
 
 
-{% block post-pix %}
+
+<div class='post' type='{{type}}'>
+
   {% if post %}
-  <input type="file" name="image" accept="image/*" id="pix-loader-{{post.pk}}" onchange="load_pix(this)">
-  <label class='loader' for='pix-loader-{{post.pk}}'>
-    <div class='pix-space'>
-      <img src='/static/materials/icons/pix.png'>
-    </div>
-    <img class='pix' src='{{post.pix.url}}' onerror='imgerr(this)'>
-  </label>
+  <input vote='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
+  <input vote='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}>
+  <input class='edit toggler' type="checkbox">
   {% else %}
-  <input type="file" name="image" accept="image/*" id="pix-loader" onchange="load_pix(this)">
-  <label class='loader' for='pix-loader'>
-    <div class='pix-space'>
-      <img src='/static/materials/icons/pix.png'>
-    </div>
-    <img class='pix' src='' onerror='imgerr(this)'>
-  </label>
+  <input class='edit toggler' type="checkbox" checked>
   {% endif %}
-{% endblock post-pix %}
 
+  {% if type == 'postvoteox' %}
+  <table class='backbone'>
+    <tbody>
+      <tr>
+        <td class='top full' colspan='2'>{% include "getch/comp_postpix.html" with post=post pixfield='pix' %}</td>
+        <td class='top side'></td>
+      </tr>
 
-{% block post-pix-a %}
+      <tr>
+        <td class='bottom half' vote='up' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
+        <td class='bottom half' vote='down' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
+        <td class='bottom side'></td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% elif type == 'postvoteab' %}
+  <table class='backbone'>
+    <tbody>
+      <tr>
+        <td class='top full' vote='up' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_a' %}</td>
+        <td class='top side'></td>
+      </tr>
+
+      <tr>
+        <td class='bottom full' vote='down' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_b' %}</td>
+        <td class='bottom side'></td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% include "getch/comp_postback.html" with post=post %}
+
   {% if post %}
-  <input type="file" name="image" accept="image/*" id="pix-a-loader-{{post.pk}}" onchange="load_pix(this)">
-  <label class='loader' for='pix-a-loader-{{post.pk}}'>
-    <div class='pix-space'>
-      <img src='/static/materials/icons/pix.png'>
-    </div>
-    <img class='pix' src='{{post.pix_a.url}}' onerror='imgerr(this)'>
-  </label>
+  <input class='show-edit-button toggler' type='checkbox'>
+  <div class='edit button' post_id='{{post.id}}' onclick='toggle_edit(this)'></div>
   {% else %}
-  <input type="file" name="image" accept="image/*" id="pix-a-loader" onchange="load_pix(this)">
-  <label class='loader' for='pix-a-loader'>
-    <div class='pix-space'>
-      <img src='/static/materials/icons/pix.png'>
-    </div>
-    <img class='pix' src='' onerror='imgerr(this)'>
-  </label>
+  <input class='show-newpost-button toggler' type='checkbox' checked>
+  <div class='newpost button' onclick='save_newpost(this)'></div>
   {% endif %}
-{% endblock post-pix-a %}
+
+  <!-- <span class='vs' contenteditable="true" onclick='this.focus();console.log(1234);'>VS</span> -->
+  <!-- contenteditable이 swiperjs에서은 안먹히는거 같다 -->
+  <span class='vs'>VS</span>
+</div>
 
 
-{% block post-pix-b %}
-  {% if post %}
-  <input type="file" name="image" accept="image/*" id="pix-b-loader-{{post.pk}}" onchange="load_pix(this)">
-  <label class='loader' for='pix-b-loader-{{post.pk}}'>
-    <div class='pix-space'>
-      <img src='/static/materials/icons/pix.png'>
-    </div>
-    <img class='pix' src='{{post.pix_b.url}}' onerror='imgerr(this)'>
-  </label>
-  {% else %}
-  <input type="file" name="image" accept="image/*" id="pix-b-loader" onchange="load_pix(this)">
-  <label class='loader' for='pix-b-loader'>
-    <div class='pix-space'>
-      <img src='/static/materials/icons/pix.png'>
-    </div>
-    <img class='pix' src='' onerror='imgerr(this)'>
-  </label>
-  {% endif %}
-{% endblock post-pix-b %}
+<script>
+  function toggle_vote(td) {
+    // 처음에는 label로 처리했는데, label로 하면 deselect가 안된다
+    try {
+      let voted_to = td.getAttribute('vote');
+      let toggler = td.closest('.post').querySelector(`input.vote.toggler[vote=${voted_to}]`);
+      toggler.checked = !toggler.checked;
+
+    } catch(e) {
+      console.log('not voting mode');
+    }
+  }
 
 
-{% block post-etc %}
-  {% if post %}
-  <div class='author menublock' author='{{post.boo.pk}}'>
-    <img class='fit' src='{{post.boo.profile.pix.url}}'>
-  </div>
+  function save_post(post, post_id) {
+    let type = post.getAttribute('type');
+    let text = post.querySelector('span.text');
+    let pixloaders = post.querySelectorAll('input[type="file"]');
+    let formData = new FormData();
 
-  <div class='description'>
-    <span class='nick'>@{{post.boo.nick}}</span><br>
-    <span class='text'>{{post.text|linebreaksbr}}</span>
-  </div>
+    // text가 바뀌는 경우
+    if (text.getAttribute('asis')!=text.innerHTML) {
+      formData.append('text', text.innerHTML.replace(/<br>/gi,'\n'));
+      text.setAttribute('asis', text.innerHTML);
+    }
 
-  <div class='scores'>
-    <div class='score up'>{{post.num_vote_up}}</div>
-    <div class='score down'>{{post.num_vote_down}}</div>
-  </div>
+    // pix가 선택된 경우
+    pixloaders.forEach(input => {
+      if (input.files.length > 0) {
+        formData.append(input.getAttribute('field'), input.files[0]);
+        input.value = '';
+      }
+    });
 
-  {% else %}
-  <div class='author menublock' author='{{user.boo.pk}}'>
-    <img class='fit' src='{{user.boo.profile.pix.url}}'>
-  </div>
+    if (formData.has('text') | formData.has('pix') | formData.has('pix_a') | formData.has('pix_b')) {
+      formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+      formData.append('type', type);
 
-  <div class='description'>
-    <span class='nick'>@{{user.boo.nick}}</span><br>
-    <span class='text'>COMMENT HERE</span>
-  </div>
-  {% endif %}
-{% endblock post-etc %}
+      // 포스트를 수정하는 경우
+      if (post_id) formData.append('post_id', post_id);
+      fetch('post/save/', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(js => {
+          console.log(js);
+          let where = swiper.realIndex + 1;
+          swiper.addSlide(where, `<div class="swiper-slide">${js.saved}</div>`);
+          swiper.slideTo(where);
+          close_page(post);
+        });
+    }
+  }
+
+  function toggle_edit(div) {
+    let post = div.closest('.post');
+    let toggler = post.querySelector('input.edit.toggler');
+
+    if (toggler.checked) {
+      toggler.checked = false;
+      save_post(post, post.querySelector('.edit.button').getAttribute('post_id'));
+
+    } else {
+      toggler.checked = true;
+    }
+  }
+
+
+  function save_newpost(div) {
+    let post = div.closest('.post');
+    save_post(post);
+    // let where = swiper.realIndex + 1;
+    // swiper.addSlide(where, `<div class="swiper-slide">${post.outerHTML}</div>`);
+    // swiper.slideTo(where);
+    // close_page(div);
+  }
+
+
+  function load_pix(input) {
+    if (input.files && input.files[0]) {
+      let reader = new FileReader();
+
+      reader.onload = function(e) {
+        let img = $(input).siblings('label').children('img');  // 여기서는 jquery가 되네; 희안하다 (함수 안에서는 되는듯)
+        img.css('display', 'block');
+        img.attr("src", e.target.result);
+        // img.parent().css("display", "block");
+      }
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+
+  function imgerr(img) {
+    img.style.display = 'none';
+  }
+</script>

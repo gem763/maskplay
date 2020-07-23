@@ -1,0 +1,25 @@
+{% if post %}
+<div class='author menublock' author='{{post.boo.pk}}'>
+  <img class='fit' src='{{post.boo.profile.pix.url}}'>
+</div>
+
+<div class='description'>
+  <span class='nick'>@{{post.boo.nick}}</span><br>
+  <span class='text' asis='{{post.text|linebreaksbr}}'>{{post.text|linebreaksbr}}</span>
+</div>
+
+<div class='scores'>
+  <div class='score up'>{{post.num_vote_up}}</div>
+  <div class='score down'>{{post.num_vote_down}}</div>
+</div>
+
+{% else %}
+<div class='author menublock' author='{{user.boo.pk}}'>
+  <img class='fit' src='{{user.boo.profile.pix.url}}'>
+</div>
+
+<div class='description'>
+  <span class='nick'>@{{user.boo.nick}}</span><br>
+  <span class='text' asis='COMMENT HERE'>COMMENT HERE</span>
+</div>
+{% endif %}

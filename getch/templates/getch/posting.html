@@ -2,9 +2,38 @@
 
 {% block style %}
 {{ block.super }}
+<style>
+  .posting input.posting-type.toggler {
+    display: none;
+    visibility: hidden;
+  }
+
+  .posting .postvoteox,
+  .posting .postvoteab {
+    display: none;
+  }
+
+  .posting input.posting-type.toggler[posting-type='postvoteox']:checked ~ .postvoteox,
+  .posting input.posting-type.toggler[posting-type='postvoteab']:checked ~ .postvoteab {
+    display: block;
+  }
+</style>
 {% endblock style %}
 
 {% block page %}
 {{ block.super }}
-{% include "getch/post.html" with type=type %}
+
+<div class='posting'>
+  <input posting-type='postvoteox' class='posting-type toggler' type="radio" name='posting-type'>
+  <input posting-type='postvoteab' class='posting-type toggler' type="radio" name='posting-type'>
+
+  <div class='postvoteox'>
+    {% include "getch/post.html" with type='postvoteox' %}
+  </div>
+
+  <div class='postvoteab'>
+    {% include "getch/post.html" with type='postvoteab' %}
+  </div>
+</div>
+
 {% endblock page %}

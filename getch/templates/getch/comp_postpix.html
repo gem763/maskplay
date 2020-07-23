@@ -1,0 +1,20 @@
+{% if post %}
+{% load ctags %}
+<input field='{{pixfield}}' type="file" accept="image/*" id="{{pixfield}}_{{post.id}}" onchange="load_pix(this)">
+<label class='pixloader' for='{{pixfield}}_{{post.id}}'>
+  <div class='pixloader-icon'>
+    <img src='/static/materials/icons/pix.png'>
+  </div>
+  <img class='pix' src='{{post|pix_src:pixfield}}' onerror='imgerr(this)'>
+</label>
+
+{% else %}
+{% now 'c' as pixloader_id %}
+<input field='{{pixfield}}' type="file" accept="image/*" id="{{pixfield}}_{{pixloader_id}}" onchange="load_pix(this)">
+<label class='pixloader' for='{{pixfield}}_{{pixloader_id}}'>
+  <div class='pixloader-icon'>
+    <img src='/static/materials/icons/pix.png'>
+  </div>
+  <img class='pix' src='' onerror='imgerr(this)'>
+</label>
+{% endif %}

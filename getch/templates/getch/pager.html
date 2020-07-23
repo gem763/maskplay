@@ -29,12 +29,8 @@
     {% include 'getch/profiler.html' %}
   </div>
 
-  <div id='posting-voteox'>
-    {% include 'getch/posting.html' with type='postvoteox' %}
-  </div>
-
-  <div id='posting-voteab'>
-    {% include 'getch/posting.html' with type='postvoteab' %}
+  <div id='posting'>
+    {% include 'getch/posting.html' %}
   </div>
 
 </div>
@@ -47,7 +43,6 @@
 
   function goto_boochooser() {
     document.querySelector('#boochooser .page-toggler').checked = true;
-    // $('#boochooser .toggle').prop('checked', true);
   }
 
   function goto_profiler() {
@@ -56,6 +51,7 @@
 
   function goto_posting(type) {
     $('.popup input.toggler').prop('checked', false);
-    document.querySelector('#posting-vote' + type + ' .page-toggler').checked = true;
+    document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
+    document.querySelector('#posting .page-toggler').checked = true;
   }
 </script>

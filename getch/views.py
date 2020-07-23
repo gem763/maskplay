@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-import os
+from django.apps import apps
 from django.conf import settings
+from django.template.loader import render_to_string
 import getch.models as m
+import os
 
 # https://brownbears.tistory.com/259
 # https://stackoverflow.com/questions/37270170/iterate-through-a-static-image-folder-in-django
@@ -86,13 +88,18 @@ def post_save(request):
 
         if post_id:
             post = m.Post.objects.get_subclass(pk=post_id)
-            post.text = text
-
-            if pix:
-                post.pix = pix
 
         else:
-            pass
+            postmodel = apps.get_model(app_label='getch', model_name=post_type)
+            post = postmodel()
+            post.boo = request.user.boo
 
+        if text:    post.text = text
+        if pix:     post.pix = pix
+        if pix_a:   post.pix_a = pix_a
+        if pix_b:   post.pix_b = pix_b
         post.save()
-        return JsonResponse({'success':True}, safe=False)
+
+        print(request.POST, request.FILES)
+        saved = render_to_string('getch/post.html', {'post':post, 'type':post_type})
+        return JsonResponse({'success':True, 'saved':saved}, safe=False)

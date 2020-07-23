@@ -33,6 +33,10 @@ def voted(post, user):#boo_id):
     except:
         return None
 
+@register.filter
+def pix_src(post, field):
+    return getattr(post, field).url
+
 # @register.simple_tag
 # def tag_test():
 #     kkk = get_current_user()

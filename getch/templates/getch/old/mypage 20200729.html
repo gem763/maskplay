@@ -1,0 +1,37 @@
+{% extends "getch/basepage.html" %}
+
+{% block style %}
+{{ block.super }}
+{% endblock style %}
+
+{% block page %}
+<div style='width:100%;height:100%;background:lightpink;'>
+  <img class='myboo' src="{{ myboo.profile.pix.url }}" style="object-fit:cover;width:100px;height:100px;" onclick='goto_boochooser()'>
+
+  <br>
+  <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+  <i class="fa fa-barcode" onclick='goto_profiler()'></i>
+
+  <!-- <p>
+  나를 추총하는 부캐들
+  </p>
+  <p>
+    {% for follower in myboo.followers %}
+      <img class='follower' src="{{ follower.user.profile.pix.url }}" style="object-fit:cover;width:70px;height:70px;">
+    {% endfor %}
+  </p>
+
+  <p>
+  내가 추종하는 부캐들
+  </p>
+  <p>
+    {% for followee in myboo.followees %}
+      <img class='followee' src="{{ followee.user.profile.pix.url }}" style="object-fit:cover;width:70px;height:70px;">
+    {% endfor %}
+  </p> -->
+</div>
+{% endblock page %}
+
+
+{% block js %}
+{% endblock js %}

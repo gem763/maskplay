@@ -94,8 +94,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* text-align: center;
-      line-height: calc(var(--s-menu) - var(--border-w)); */
     }
 
     .menublock.author {
@@ -134,11 +132,11 @@
       {% include 'getch/posts.html' %}
     </div>
 
-    <div class='posting menublock'>
+    <div class='posting menublock' onclick='show_posting_selector()'>
       <img class='icon' src="{% static 'materials/icons/plus.png' %}">
     </div>
 
-    <div class='my menublock'>
+    <div class='my menublock' onclick='goto_mypage()'>
       <img class='icon' src="{% static 'materials/icons/profile.png' %}">
     </div>
 
@@ -154,10 +152,83 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
   <!-- <script src="{% static 'semantic/semantic.min.js' %}"></script> -->
   <!-- <script src="{% static 'vue/vue.js' %}"></script> -->
-  <script src="{% static 'swiper/swiper.js' %}"></script>
+  <!-- <script src="{% static 'swiper/swiper.js' %}"></script> -->
 
 
   <script>
+    class Session {
+      constructor(cuser) {
+        this.id = Number(cuser.id);
+        this.email = cuser.email;
+        this.boo_selected = Number(cuser.boo_selected);
+        this.boos = this._init_boos(cuser.boos);
+        this.cpost = {};
+      }
+
+      _init_boos(boos) {
+        for (let k in boos) {
+          boos[k].followers_id = new Set(boos[k].followers_id);
+          boos[k].followees_id = new Set(boos[k].followees_id);
+        }
+        return boos
+      }
+
+      refresh() {
+        set_post();
+        set_mypage();
+        set_boochooser();
+        set_posting();
+      }
+
+      set myboo(boo_id) {
+        this.boo_selected = Number(boo_id);
+        this.refresh();
+      }
+
+      get boo() {
+        return this.boos[this.boo_selected];
+      }
+
+      get nfollowers() {
+        return this.boo.followers_id.size;
+      }
+
+      get nfollowees() {
+        return this.boo.followees_id.size;
+      }
+
+      get is_following() {
+        // return this.boo.followees_id.includes(Number(boo_id));
+        return this.boo.followees_id.has(this.cpost.author.id);
+      }
+
+      unfollow() {
+        const boo_id = this.cpost.author.id;
+        fetch(`boo/${boo_id}/unfollow`).then(x => x.json()).then(js => {console.log(js)});
+
+        // 내 followees에서 지우기
+        this.boo.followees_id.delete(boo_id);
+
+        // 그 부캐의 followers에서 나를 지우기
+        if (boo_id in this.boos) {
+          this.boos[boo_id].followers_id.delete(this.boo_selected);
+        }
+      }
+
+      follow() {
+        const boo_id = this.cpost.author.id;
+        fetch(`boo/${boo_id}/follow`).then(x => x.json()).then(js => {console.log(js)});
+
+        // 내 followees에 추가하기
+        this.boo.followees_id.add(boo_id);
+
+        // 그 부캐의 followers에도 나를 추가하기
+        if (boo_id in this.boos) {
+          this.boos[boo_id].followers_id.add(this.boo_selected);
+        }
+      }
+    }
+
     // https://docs.djangoproject.com/en/2.2/ref/csrf/
     function csrfSafeMethod(method) {
       // these HTTP methods do not require CSRF protection
@@ -175,6 +246,13 @@
         }
       });
     });
+
+    let session;
+
+    {% if user.is_authenticated %}
+    session = new Session({{user.serialized|safe}});
+    session.refresh();
+    {% endif %}
 
 
     // function radio_toggle(radio) {
@@ -208,19 +286,6 @@
     //               console.log(js);
     //             })
     // }
-
-
-    $('.my.menublock').click(function() {
-      {% if user.is_authenticated %}
-      $('#mypage .page-toggler').prop('checked', true);
-      {% else %}
-      $('#loginpage .page-toggler').prop('checked', true);
-      {% endif %}
-    });
-
-    $('.posting.menublock').click(function() {
-      $('.popup input.toggler').prop('checked', true);
-    });
 
     $('#profiler .maskbar').draggable({
       axis: 'y',

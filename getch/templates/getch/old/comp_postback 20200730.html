@@ -1,6 +1,11 @@
 {% if post %}
-<div class='author menublock' author='{{post.boo.pk}}' nfollowers='{{post.boo.nfollowers}}' nfollowees='{{post.boo.nfollowees}}' onclick='goto_authorpage()'>
+<div class='author menublock' author='{{post.boo.pk}}' onclick='goto_authorpage(this)'>
   <img class='fit' src='{{post.boo.profile.pix.url}}'>
+  <div class='followers' style='display:none;visibility:hidden;'>
+    {% for follower in post.boo.followers %}
+    <img class='follower' src="{{ follower.profile.pix.url }}" style="object-fit:cover;width:70px;height:70px;">
+    {% endfor %}
+  </div>
 </div>
 
 <div class='description'>

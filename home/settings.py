@@ -47,8 +47,11 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.naver',
     'allauth.socialaccount.providers.facebook',
     'custom_user',
+    'rest_framework',
 
     'vote',
+    'siteflags',
+    # 'friendship',
 ]
 
 MIDDLEWARE = [
@@ -72,6 +75,7 @@ MIDDLEWARE = [
 #Q60jbPX1POJFmqb0dgGl:5RnWiWQnmln
 #671339125678-c9in180buoiu79t797tppifmm8qk24ja.apps.googleusercontent.com:JPgwwfpI5lnlC4M7IgqFaUpTg
 
+SITEFLAGS_FLAG_MODEL = 'getch.Flager'
 
 AUTH_USER_MODEL = 'getch.User'
 

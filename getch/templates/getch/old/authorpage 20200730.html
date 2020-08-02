@@ -1,0 +1,49 @@
+{% extends "getch/basepage.html" %}
+
+{% block style %}
+{{ block.super }}
+{% endblock style %}
+
+{% block page %}
+{% if author %}
+  {% with author as boo %}
+  <div style='width:100%;height:100%;background:lightpink;'>
+    <img class='myboo' src="{{ boo.profile.pix.url }}" style="object-fit:cover;width:100px;height:100px;">
+
+    <br>
+
+    {% if boo.is_followed %}
+    <div class='unfollow' onclick='unfollow({{boo.id}})'><span style='background:black;color:white;'>UNFOLLOW</span></div>
+    {% else %}
+    <div class='follow' onclick='follow({{boo.id}})'><span style='background:black;color:white;'>FOLLOW</span></div>
+    {% endif %}
+
+    <p>
+      {% for follower in boo.followers %}
+        <img class='follower' src="{{ follower.user.profile.pix.url }}" style="object-fit:cover;width:100px;height:100px;">
+      {% endfor %}
+    </p>
+  </div>
+  {% endwith %}
+{% endif %}
+
+{% endblock page %}
+
+
+{% block js %}
+<script>
+  function set_authorpage(div) {
+    let author_id = div.getAttribute('author');
+    let author_profile = div.querySelector('img.fit').src;
+    let followers = div.querySelector('.followers').innerHTML;
+  }
+
+  function follow(boo_id) {
+    fetch(`boo/${boo_id}/follow`).then(x => x.json()).then(js => {console.log(js)})
+  }
+
+  function unfollow(boo_id) {
+    fetch(`boo/${boo_id}/unfollow`).then(x => x.json()).then(js => {console.log(js)})
+  }
+</script>
+{% endblock js %}

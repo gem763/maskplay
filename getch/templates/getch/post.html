@@ -54,21 +54,25 @@
     height: 100%;
   }
 
+
   .post .description {
     text-align: right;
     position: absolute;
-    top: 50%;
+    top: 20%;
     right: 10px;
-    width: 50%;
-    transform: translate(0,-50%);
+    width: 70%;
+    /* transform: translate(0,-50%); */
     font-size: 12px;
-    line-height: 15px;
+    line-height: 1.4;
+    pointer-events: none;
   }
 
   .post .description span {
     background: black;
     color: white;
-    line-height: 15px;
+    padding-left: 2px;
+    padding-right: 2px;
+    pointer-events: auto;
   }
 
   .post span.vs {
@@ -129,10 +133,6 @@
     opacity: 0.5;
   }
 
-  .post input.show-edit-button.toggler:checked ~ .edit.button,
-  .post input.show-newpost-button.toggler:checked ~ .newpost.button {
-    bottom: 30px;
-  }
 
   .post .scores {
     font-size: 40px;
@@ -189,14 +189,20 @@
     opacity: 0.3;
   }
 
-  .post .edit.button,
+
+  .post input.show-modify-button.toggler:checked ~ .modify.button,
+  .post input.show-newpost-button.toggler:checked ~ .newpost.button {
+    bottom: 30px;
+  }
+
+  .post .modify.button,
   .post .newpost.button {
     position: absolute;
     bottom: -40px;
     left: 30px;
     width: calc(var(--s-0) + var(--border-w) - 60px);
     height: 35px;
-    background: black;
+    /* background: lightgreen; */
     color: white;
     display: flex;
     align-items: center;
@@ -205,35 +211,81 @@
     font-size: 12px;
   }
 
-  .post .newpost.button:after {
-    content: 'SAVE NEWPOST';
+  .post .modify.button div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
 
-  .post .edit.button:after {
+  .post .modify.button div.edit-post {
+    background: black;
+    flex-grow: 1
+  }
+
+  .post .modify.button div.delete-post {
+    background: var(--color-pos);
+    width: 35px;
+    margin-left: 5px;
+  }
+
+  .post .modify.button div.edit-post:after {
+    content: 'EDIT';
+    /* transition: content 1s; */
+  }
+
+  .post .modify.button div.delete-post img {
+    width:20px;
+    height: 20px;
+    object-fit: contain;
+    filter: invert(100%);
+  }
+
+  /* .post .edit.button:after {
     content: 'EDIT';
     transition: bottom 0.1s;
+  } */
+
+  .post .newpost.button {
+    background: black;
+  }
+
+  .post .newpost.button:after {
+    content: 'SAVE NEWPOST';
   }
 
   .post input.edit.toggler:checked ~ table.backbone label.pixloader {
     pointer-events: auto;
   }
 
-  .post input.edit.toggler:checked ~ .edit.button {
+  .post input.edit.toggler:checked ~ .modify.button .edit-post {
     background: orange;
   }
 
-  .post input.edit.toggler:checked ~ .edit.button:after {
+  .post input.edit.toggler:checked ~ .modify.button .edit-post:after {
     content: 'ON EDITING';
   }
 
   .post table.backbone label.pixloader {
     pointer-events: none;
   }
+
+  .post .description span.text[contenteditable=true]:focus {
+    font-size: 20px;
+    line-height: 1.3;
+    display: inline-flex;
+    justify-content: flex-end;
+    /* caret-color: red; */
+  }
+
+  .post .description span.text[contentEditable=true]:empty::before {
+    content: attr(placeholder);
+    color: gray;
+  }
 </style>
 
 
-
-<div class='post' type='{{type}}'>
+<div class='post' type='{{type}}' post_id='{{post.id}}'>
 
   {% if post %}
   <input vote='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
@@ -278,15 +330,18 @@
   {% include "getch/comp_postback.html" with post=post %}
 
   {% if post %}
-  <input class='show-edit-button toggler' type='checkbox'>
-  <div class='edit button' post_id='{{post.id}}' onclick='toggle_edit(this)'></div>
+  <input class='show-modify-button toggler' type='checkbox'>
+  <div class='modify button' post_id='{{post.id}}'>
+    <div class='edit-post' onclick='toggle_edit(this)'></div>
+    <div class='delete-post' onclick='delete_post(this)'>
+      <img src='/static/materials/icons/delete.png'>
+    </div>
+  </div>
   {% else %}
   <input class='show-newpost-button toggler' type='checkbox' checked>
   <div class='newpost button' onclick='save_newpost(this)'></div>
   {% endif %}
 
-  <!-- <span class='vs' contenteditable="true" onclick='this.focus();console.log(1234);'>VS</span> -->
-  <!-- contenteditable이 swiperjs에서은 안먹히는거 같다 -->
   <span class='vs'>VS</span>
 </div>
 
@@ -304,6 +359,21 @@
     }
   }
 
+
+  function delete_post(div) {
+    let post_id = div.closest('.modify.button').getAttribute('post_id');
+    console.log(post_id);
+    fetch('post/' + post_id + '/delete')
+      .then(res => res.json())
+      .then(js => {
+        console.log(js);
+      });
+
+    // 경고메시지가 있어야할듯하다
+    // 삭제후 액션이 약간 어색한듯
+    swiper.slideTo(swiper.realIndex - 1);
+    swiper.removeSlide(swiper.realIndex + 1);
+    }
 
   function save_post(post, post_id) {
     let type = post.getAttribute('type');
@@ -331,14 +401,18 @@
 
       // 포스트를 수정하는 경우
       if (post_id) formData.append('post_id', post_id);
+
       fetch('post/save/', { method: 'POST', body: formData })
         .then(res => res.json())
         .then(js => {
           console.log(js);
-          let where = swiper.realIndex + 1;
-          swiper.addSlide(where, `<div class="swiper-slide">${js.saved}</div>`);
-          swiper.slideTo(where);
-          close_page(post);
+
+          if (js.mode=='created') {
+            let where = swiper.realIndex + 1;
+            swiper.addSlide(where, `<div class="swiper-slide">${js.post_created}</div>`);
+            swiper.slideTo(where);
+            close_page(post);
+          }
         });
     }
   }
@@ -349,10 +423,12 @@
 
     if (toggler.checked) {
       toggler.checked = false;
-      save_post(post, post.querySelector('.edit.button').getAttribute('post_id'));
+      swiper.attachEvents();
+      save_post(post, post.querySelector('.modify.button').getAttribute('post_id'));
 
     } else {
       toggler.checked = true;
+      swiper.detachEvents();
     }
   }
 
@@ -360,10 +436,6 @@
   function save_newpost(div) {
     let post = div.closest('.post');
     save_post(post);
-    // let where = swiper.realIndex + 1;
-    // swiper.addSlide(where, `<div class="swiper-slide">${post.outerHTML}</div>`);
-    // swiper.slideTo(where);
-    // close_page(div);
   }
 
 

@@ -1,6 +1,3 @@
-<style>
-</style>
-
 <div class="swiper-container">
   <div class="swiper-wrapper">
 
@@ -20,10 +17,10 @@
     direction: 'vertical',
     on: {
       init: function() {
-        init_post();
+        // init_post();
       },
       slideChangeTransitionEnd: function() {
-        init_post();
+        set_post();
       },
       slideChange: function() {
         close_post();
@@ -35,18 +32,33 @@
     // preventClicksPropagation: false
   });
 
-  function init_post() {
+  function set_post() {
     let cpost = document.querySelector('.swiper-slide-active');
-    let author = cpost.querySelector('.author.menublock').getAttribute('author');
-    let cboo = '{{user.boo.pk}}';
-    if (cboo==author) {
-      cpost.querySelector('input.show-edit-button.toggler').checked = true;
+    let cpost_id = cpost.querySelector('.post').getAttribute('post_id');
+    let author_id = cpost.querySelector('.author.menublock').getAttribute('author');
+    let author_nfollowers = cpost.querySelector('.author.menublock').getAttribute('nfollowers');
+    let author_nfollowees = cpost.querySelector('.author.menublock').getAttribute('nfollowees');
+    let author_profile = cpost.querySelector('.author.menublock img.fit').src;
+
+    if (author_id==session.boo_selected) {
+      cpost.querySelector('input.show-modify-button.toggler').checked = true;
+    } else {
+      cpost.querySelector('input.show-modify-button.toggler').checked = false;
+    }
+
+    session.cpost = {
+      id: Number(cpost_id),
+      author: {
+        id: Number(author_id),
+        nfollowers: Number(author_nfollowers),
+        nfollowees: Number(author_nfollowees),
+        profile: author_profile,
+      }
     }
   }
 
   function close_post() {
     let cpost = document.querySelector('.swiper-slide-active');
-    cpost.querySelector('input.show-edit-button.toggler').checked = false;
-    // cpost.querySelector('input.edit.toggler').checked = false;
+    cpost.querySelector('input.show-modify-button.toggler').checked = false;
   }
 </script>

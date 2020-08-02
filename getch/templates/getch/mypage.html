@@ -5,16 +5,35 @@
 {% endblock style %}
 
 {% block page %}
-{% with user.boo as myboo %}
 <div style='width:100%;height:100%;background:lightpink;'>
-  <img class='myboo' src="{{ myboo.profile.pix.url }}" style="object-fit:cover;width:100px;height:100px;" onclick='goto_boochooser()'>
+  <img class='myboo' src='' style="object-fit:cover;width:100px;height:100px;" onclick='goto_boochooser()'>
+
+  <br>
   <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
   <i class="fa fa-barcode" onclick='goto_profiler()'></i>
 
-  <!-- <div style='position:absolute;top:50%;right:0;width:400%;background:none;transform:translate(0,-50%);'>
-    <span style='background:black;color:white;'>@{{myboo.nick}}</span><br>
-    <span style='background:black;color:white;line-height:15px;'>{{myboo.text|linebreaksbr}}</span>
-  </div> -->
+  <br><br>
+  <span class='network' style='background:black;color:white;padding:5px;' boo_id='' onclick='goto_network(this)'>
+    팔로워 <span class='nfollowers'></span> | 팔로잉 <span class='nfollowees'></span>
+  </span>
 </div>
-{% endwith %}
 {% endblock page %}
+
+
+{% block js %}
+<script>
+  function set_mypage() {
+    let mypage = document.querySelector('#mypage');
+    mypage.querySelector('img.myboo').src = session.boo.profile;
+    mypage.querySelector('span.network').setAttribute('boo_id', session.boo_selected);
+    mypage.querySelector('span.nfollowers').innerHTML = session.nfollowers;
+    mypage.querySelector('span.nfollowees').innerHTML = session.nfollowees;
+
+    // let followers = session.boo.followers.map(follower => `<img class='follower' boo_id='${follower.id}' src='${follower.profile}' style="object-fit:cover;width:70px;height:70px;">`).join('');
+    // mypage.querySelector('p.followers').innerHTML = followers;
+    //
+    // let followees = session.boo.followees.map(followee => `<img class='followee' boo_id='${followee.id}' src='${followee.profile}' style="object-fit:cover;width:70px;height:70px;">`).join('');
+    // mypage.querySelector('p.followees').innerHTML = followees;
+  }
+</script>
+{% endblock js %}

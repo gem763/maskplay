@@ -95,9 +95,9 @@
 
   function select_this_boo(boo) {
     let boo_id = $(boo).attr('boo_id');
+    if (boo_id=='') {
 
-    if (boo_id=='') { }
-    else {
+    } else {
       session.myboo = boo_id;
       $('#boochooser .page-toggler').prop('checked', false);
 
@@ -106,7 +106,19 @@
         .then(x => x.json())
         .then(js => {
           console.log(js);
-          if (js.success) { }
+
+          if (js.success) {
+            // cuser.boo = js.boo;
+            // $('#mypage').load('/mypage', function() {
+            //   $('#mypage .page-toggler').prop('checked', true);
+            //   $('#boochooser .page-toggler').prop('checked', false);
+            // });
+            //
+            // $('#profiler').load('/profiler');
+            // $('#boochooser').load('/boochooser');
+            // $('#posts').load('/posts');
+            // $('#posting').load('/posting');
+          }
         });
     }
   }

@@ -17,8 +17,16 @@
     {% include 'getch/loginpage.html' %}
   </div>
 
+  <div id='authorpage'>
+    {% include 'getch/authorpage.html' %}
+  </div>
+
   <div id='mypage'>
     {% include 'getch/mypage.html' %}
+  </div>
+
+  <div id='network'>
+    {% include 'getch/network.html' %}
   </div>
 
   <div id='boochooser'>
@@ -41,6 +49,29 @@
     bt.closest('.basepage').querySelector('.page-toggler').checked = false;
   }
 
+  function goto_mypage() {
+    if (session) {
+      document.querySelector('#mypage .page-toggler').checked = true;
+    } else {
+      goto_loginpage();
+    }
+  }
+
+  function goto_loginpage() {
+    document.querySelector('#loginpage .page-toggler').checked = true;
+  }
+
+  function goto_authorpage() {
+    set_authorpage();
+    document.querySelector('#authorpage .page-toggler').checked = true;
+  }
+
+  function goto_network(btn) {
+    let boo_id = btn.getAttribute('boo_id');
+    document.querySelector('#network .page-toggler').checked = true;
+    $('#network').load(`/boo/${boo_id}/network`);
+  }
+
   function goto_boochooser() {
     document.querySelector('#boochooser .page-toggler').checked = true;
   }
@@ -52,6 +83,9 @@
   function goto_posting(type) {
     $('.popup input.toggler').prop('checked', false);
     document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
+    document.querySelector(`#posting .${type} .description span.text`).innerHTML = '';
+    document.querySelectorAll(`#posting .${type} input[type='file']`).forEach(input => { input.value = ''; });
+    document.querySelectorAll(`#posting .${type} img.pix`).forEach(img => { img.src = ''; });
     document.querySelector('#posting .page-toggler').checked = true;
   }
 </script>

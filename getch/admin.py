@@ -1,7 +1,7 @@
 from django.contrib import admin
 # from getch.models import User
 import getch.models as m
-from vote.models import VoteModel
+# from vote.models import VoteModel
 
 
 admin.site.register(m.Profile)

@@ -45,57 +45,62 @@
 
 
 <script>
-  function close_page(bt) {
-    bt.closest('.basepage').querySelector('.page-toggler').checked = false;
+  function close_page(obj) {
+    session.checkout();
+    obj.closest('.basepage').querySelector('.page-toggler').checked = false;
   }
 
-  function goto_mypage() {
+  function open_page(pagename) {
+    session.checkin(pagename);
+    document.querySelector(`#${pagename} .page-toggler`).checked = true;
+  }
+
+  function open_mypage() {
     if (session) {
-      document.querySelector('#mypage .page-toggler').checked = true;
+      open_page('mypage');
+
     } else {
-      goto_loginpage();
+      open_loginpage();
     }
   }
 
-  function goto_loginpage() {
-    document.querySelector('#loginpage .page-toggler').checked = true;
+  function open_loginpage() {
+    open_page('loginpage');
   }
 
-  function goto_authorpage() {
+  function open_authorpage() {
     set_authorpage();
-    document.querySelector('#authorpage .page-toggler').checked = true;
+    open_page('authorpage');
   }
 
-  function goto_network(who) {
-    // let boo_id = btn.getAttribute('boo_id');
+  function open_network() {
     let boo_id;
 
-    if (who=='my') {
+    if (session.mode.on=='mypage') {
       boo_id = session.boo_selected;
 
-    } else if (who=='author') {
+    } else if (session.mode.on=='authorpage') {
       boo_id = session.cpost.author.id;
     }
 
-    document.querySelector('#network .page-toggler').checked = true;
+    open_page('network');
     $('#network').load(`/boo/${boo_id}/network`);
   }
 
-  function goto_boochooser() {
-    document.querySelector('#boochooser .page-toggler').checked = true;
+  function open_boochooser() {
+    open_page('boochooser');
   }
 
-  function goto_profiler() {
-    document.querySelector('#profiler .page-toggler').checked = true;
+  function open_profiler() {
+    open_page('profiler');
   }
 
-  function goto_posting(type) {
-    session.mode.on = 'posting';
+  function open_posting(type) {
     $('.popup input.toggler').prop('checked', false);
     document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
     document.querySelector(`#posting .${type} .description span.text`).innerHTML = '';
     document.querySelectorAll(`#posting .${type} input[type='file']`).forEach(input => { input.value = ''; });
     document.querySelectorAll(`#posting .${type} img.pix`).forEach(img => { img.src = ''; });
-    document.querySelector('#posting .page-toggler').checked = true;
+    open_page('posting');
   }
 </script>

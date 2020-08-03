@@ -23,7 +23,7 @@
         set_post();
       },
       slideChange: function() {
-        close_post();
+        unset_post();
       },
     },
     // spaceBetween: '-10'
@@ -48,6 +48,7 @@
 
     session.cpost = {
       id: Number(cpost_id),
+      voted: -1,
       author: {
         id: Number(author_id),
         nfollowers: Number(author_nfollowers),
@@ -57,7 +58,7 @@
     }
   }
 
-  function close_post() {
+  function unset_post() {
     let cpost = document.querySelector('.swiper-slide-active');
     cpost.querySelector('input.show-modify-button.toggler').checked = false;
   }

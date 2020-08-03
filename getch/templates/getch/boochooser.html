@@ -54,22 +54,21 @@
 
   {% for boos in boo_pairs %}
   <div class='boo-candidate-pair'>
+
     {% for boo in boos %}
+    <div class='boo-candidate' boo_id='{{boo.pk}}' onclick='select_this_boo(this)'>
+      {% if boo %}
+      <img class='pix' src='{{boo.profile.pix.url}}'>
+      {% else %}
+      <img class='icon' src='/static/materials/icons/boo_plus.png'>
+      {% endif %}
 
-      <!-- <div class='boo-candidate {% if boo.pk == user.boo_selected %}selected{% endif %}' boo_id='{{boo.pk}}' onclick='select_this_boo(this)'> -->
-      <div class='boo-candidate' boo_id='{{boo.pk}}' onclick='select_this_boo(this)'>
-        {% if boo %}
-        <img class='pix' src='{{boo.profile.pix.url}}'>
-        {% else %}
-        <img class='icon' src='/static/materials/icons/boo_plus.png'>
-        {% endif %}
-
-        <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
-          {{boo.nick}}
-        </span>
-      </div>
-
+      <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+        {{boo.nick}}
+      </span>
+    </div>
     {% endfor %}
+
   </div>
   {% endfor %}
   {% endwith %}
@@ -93,21 +92,14 @@
     })
   }
 
-  function select_this_boo(boo) {
-    let boo_id = $(boo).attr('boo_id');
+  function select_this_boo(div) {
+    let boo_id = div.getAttribute('boo_id');
 
-    if (boo_id=='') { }
-    else {
+    if (boo_id=='') {
+
+    } else {
       session.myboo = boo_id;
-      $('#boochooser .page-toggler').prop('checked', false);
-
-      let api = `/boo/${boo_id}/set/`;
-      fetch(api)
-        .then(x => x.json())
-        .then(js => {
-          console.log(js);
-          if (js.success) { }
-        });
+      close_page(div);
     }
   }
 </script>

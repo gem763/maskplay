@@ -5,7 +5,6 @@ from model_utils.managers import InheritanceManager
 from siteflags.models import ModelWithFlag, FlagBase
 from datetime import datetime
 from django_currentuser.middleware import get_current_user, get_current_authenticated_user
-from django.db.models import Q
 
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
@@ -48,6 +47,8 @@ class User(AbstractEmailUser):
 
 
 class Boo(BigIdAbstract, ModelWithFlag):
+    # FLAG_FOLLOW = 10
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nick = models.CharField(max_length=100)
     text = models.TextField(max_length=500, blank=True, null=True)
@@ -122,7 +123,7 @@ class Profile(BigIdAbstract):
         return self.boo.nick + ' | ' + self.boo.user.email
 
 
-class Post(BigIdAbstract, ModelWithFlag):#, VoteModel):
+class Post(BigIdAbstract):#, VoteModel):
     boo = models.ForeignKey(Boo, on_delete=models.CASCADE)
     text = models.TextField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -135,47 +136,37 @@ class Post(BigIdAbstract, ModelWithFlag):#, VoteModel):
     def type(self):
         return self.__class__.__name__.lower()
 
-    def vote(self, action, boo=None):
-        if boo is None:
-            boo = get_current_user().boo
+    def vote(self, action, boo_id):
+        # cancel
+        if action==-1:
+            self.votes.delete(boo_id)
 
         # up
-        if action==VOTE_UP:
-            self.set_flag(boo, status=VOTE_UP)
-            self.remove_flag(boo, status=VOTE_DOWN)
+        if action==0:
+            self.votes.up(boo_id)
 
         # down
-        elif action==VOTE_DOWN:
-            self.remove_flag(boo, status=VOTE_UP)
-            self.set_flag(boo, status=VOTE_DOWN)
+        elif action==1:
+            self.votes.down(boo_id)
 
-        # clear
-        else:
-            self.remove_flag(boo, status=VOTE_UP)
-            self.remove_flag(boo, status=VOTE_DOWN)
 
     @property
-    def voters(self):
-        q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
-        return Flager.objects.filter(q)
+    def voted(self):
+        boo_id = get_current_user().boo.pk
 
-    # @property
-    # def voted(self):
-    #     boo_id = get_current_user().boo.pk
-    #
-    #     if self.votes.exists(boo_id, action=0):
-    #         return 0
-    #
-    #     elif self.votes.exists(boo_id, action=1):
-    #         return 1
-    #
-    #     else:
-    #         return None
+        if self.votes.exists(boo_id, action=0):
+            return 0
+
+        elif self.votes.exists(boo_id, action=1):
+            return 1
+
+        else:
+            return None
 
 
-    # @property
-    # def nvotes(self):
-    #     return self.num_vote_up + self.num_vote_down
+    @property
+    def nvotes(self):
+        return self.num_vote_up + self.num_vote_down
 
     # def score(self, what, alpha=0, beta=0):
     #     try:

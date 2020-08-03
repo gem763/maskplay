@@ -136,7 +136,7 @@
       <img class='icon' src="{% static 'materials/icons/plus.png' %}">
     </div>
 
-    <div class='my menublock' onclick='goto_mypage()'>
+    <div class='my menublock' onclick='open_mypage()'>
       <img class='icon' src="{% static 'materials/icons/profile.png' %}">
     </div>
 
@@ -174,6 +174,32 @@
         return boos
       }
 
+      api_get(url) {
+        fetch(url)
+          .then(x => x.json())
+          .then(js => {
+            console.log(js)
+          });
+      }
+
+      set vote(action) {
+        if (this.cpost.voted!=action) {
+          this.cpost.voted = action;
+          this.api_get(`post/${this.cpost.id}/vote?action=${action}`);
+        }
+      }
+
+      checkin(on) {
+        console.log(`check-in to ${on}`);
+        this.mode.prev = {...this.mode};
+        this.mode.on = on;
+      }
+
+      checkout() {
+        console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
+        this.mode = this.mode.prev;
+      }
+
       refresh() {
         set_post();
         set_mypage();
@@ -182,8 +208,10 @@
       }
 
       set myboo(boo_id) {
+        console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);
         this.boo_selected = Number(boo_id);
         this.refresh();
+        this.api_get(`/boo/${boo_id}/set/`);
       }
 
       get boo() {
@@ -205,12 +233,16 @@
 
       unfollow() {
         const boo_id = this.cpost.author.id;
-        fetch(`boo/${boo_id}/unfollow`).then(x => x.json()).then(js => {console.log(js)});
+        this.api_get(`boo/${boo_id}/unfollow`);
 
         // 내 followees에서 지우기
         this.boo.followees_id.delete(boo_id);
 
-        // 그 부캐의 followers에서 나를 지우기
+        // author의 followers에서 나를 지우기
+        this.cpost.author.nfollowers -= 1;
+        // this.cpost.author.followers_id.delete(this.boo_selected);
+
+        // 만약 author가 내 부캐라면, 해당 부캐의 followers에서도 나를 지우기
         if (boo_id in this.boos) {
           this.boos[boo_id].followers_id.delete(this.boo_selected);
         }
@@ -218,12 +250,15 @@
 
       follow() {
         const boo_id = this.cpost.author.id;
-        fetch(`boo/${boo_id}/follow`).then(x => x.json()).then(js => {console.log(js)});
+        this.api_get(`boo/${boo_id}/follow`);
 
         // 내 followees에 추가하기
         this.boo.followees_id.add(boo_id);
 
-        // 그 부캐의 followers에도 나를 추가하기
+        // author의 followers에 나를 추가하기
+        this.cpost.author.nfollowers += 1;
+
+        // 만약 author가 내 부캐라면, 해당 부캐의 followers에도 나를 추가하기
         if (boo_id in this.boos) {
           this.boos[boo_id].followers_id.add(this.boo_selected);
         }

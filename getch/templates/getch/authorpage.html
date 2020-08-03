@@ -37,7 +37,7 @@
   <img class='boo' src='' style="object-fit:cover;width:100px;height:100px;">
 
   <br><br>
-  <span class='network' style='background:black;color:white;padding:5px;' onclick='goto_network("author")'>
+  <span class='network' style='background:black;color:white;padding:5px;' onclick='open_network()'>
     팔로워 <span class='nfollowers'></span> | 팔로잉 <span class='nfollowees'></span>
   </span>
 
@@ -46,14 +46,6 @@
   <label for='authorfollow'>
     <div class='follow-button' onclick='toggle_follow()'></div>
   </label>
-
-  <!-- {% if boo.is_followed %}
-  <div class='unfollow' onclick='unfollow({{boo.id}})'><span style='background:black;color:white;'>UNFOLLOW</span></div>
-  {% else %}
-  <div class='follow' onclick='follow({{boo.id}})'><span style='background:black;color:white;'>FOLLOW</span></div>
-  {% endif %} -->
-
-  <!-- <p class='followers'></p> -->
 </div>
 {% endblock page %}
 
@@ -76,19 +68,21 @@
   function toggle_follow() {
     if (session.is_following) {
       session.unfollow();
-      update_network_dash(-1);
 
     } else {
       session.follow();
-      update_network_dash(1)
     }
+    
+    update_network_dash();
+
     // 내페이지에서도 network dash를 업데이트한다
     set_mypage();
   }
 
-  function update_network_dash(inc) {
+  function update_network_dash() {
     let nfollowers = document.querySelector('#authorpage span.nfollowers');
-    nfollowers.innerHTML = Number(nfollowers.innerHTML) + inc
+    nfollowers.innerHTML = session.cpost.author.nfollowers;
+    // nfollowers.innerHTML = Number(nfollowers.innerHTML) + inc
   }
 </script>
 {% endblock js %}

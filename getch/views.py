@@ -27,25 +27,19 @@ def play(request):
     return render(request, 'getch/play.html', ctx)
 
 
-# def posts(request):
-#     _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-#     ctx = {'posts': _posts}
-#     return render(request, 'getch/posts.html', ctx)
-
-
 def vote(request, post_id):
     action = request.GET.get('action', None)
 
     if action:
-        boo_id = request.user.boo.pk
-        post = m.Post.objects.get_subclass(pk=post_id)
-        post.vote(int(action), boo_id)
-        #
-        print('up vote: ', post.votes.user_ids(action=0))
-        print('down vote: ', post.votes.user_ids(action=1))
-        print('up voted: ', post.votes.exists(boo_id, action=0))
-        print('down voted: ', post.votes.exists(boo_id, action=1))
-        # print('voted: ', post.voted(boo_id)) # post.voted 를 바꿨다... 이부분을 고쳐야함
+        # boo_id = request.user.boo.pk
+        post = m.Post.objects.get(pk=post_id)
+        post.vote(int(action))
+
+        # print('up vote: ', post.votes.user_ids(action=0))
+        # print('down vote: ', post.votes.user_ids(action=1))
+        # print('up voted: ', post.votes.exists(boo_id, action=0))
+        # print('down voted: ', post.votes.exists(boo_id, action=1))
+        print(post.voters)
 
         return JsonResponse({'success':True, 'action':action}, safe=False)
 
@@ -53,37 +47,16 @@ def vote(request, post_id):
         return JsonResponse({'success':False}, safe=False)
 
 
-# def vote_cancel(request, post_id):
-#     pass
-    # boo_id = request.user.boo.pk
-    # post = m.Post.objects.get_subclass(pk=post_id)
-    # post.vote(int(action), boo_id)
-
-
-# def mypage(request):
-#     return render(request, 'getch/mypage.html')
-
 def authorpage(request, boo_id):
     boo = m.Boo.objects.get(pk=boo_id)
     return render(request, 'getch/authorpage.html', {'author':boo})
 
 
-# def profiler(request):
-#     ctx = {'imgs':imgs}
-#     return render(request, 'getch/profiler.html', ctx)
-#
-#
-# def boochooser(request):
-#     return render(request, 'getch/boochooser.html')
-#
-#
-# def posting(request):
-#     return render(request, 'getch/posting.html')
-
-
 def set_boo(request, boo_id):
     try:
         request.user.set_boo(boo_id)
+        print(m.Post.votes.all(request.user.boo.id, action=0))
+        print(m.Post.votes.all(request.user.boo.id, action=1))
         return JsonResponse({'success':True}, safe=False)
 
     except:
@@ -106,8 +79,6 @@ def unfollow(request, boo_id):
 
     except:
         return JsonResponse({'success':False}, safe=False)
-
-
 
 
 def post_delete(request, post_id):

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'custom_user',
     'rest_framework',
 
-    'vote',
+    # 'vote',
     'siteflags',
     # 'friendship',
 ]

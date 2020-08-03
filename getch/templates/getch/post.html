@@ -342,6 +342,22 @@
 
 
 <script>
+  function vote_action(post) {
+    try {
+      const vote_value = post.querySelector('input.vote.toggler:checked').value;
+
+      if (vote_value=='up') {
+        return 0;
+
+      } else if (vote_value=='down') {
+        return 1;
+      }
+
+    } catch(e) {
+      return -1;
+    }
+  }
+
   function toggle_vote(td) {
     // 처음에는 label로 처리했는데, label로 하면 deselect가 안된다
     if (session.mode.on=='journey') {
@@ -350,15 +366,7 @@
       const toggler = post.querySelector(`input.vote.toggler[value=${voted_to}]`);
       toggler.checked = !toggler.checked;
 
-      try {
-        console.log(post.querySelector('input.vote.toggler:checked').value);
-
-      } catch(e) {
-        console.log('no selection');
-      }    
-
-    } else {
-      console.log('not voting mode');
+      session.vote = vote_action(post);
     }
   }
 
@@ -427,7 +435,6 @@
       toggler.checked = false;
       swiper.attachEvents();
       save_post(post, session.cpost.id);
-      // save_post(post, post.querySelector('.modify.button').getAttribute('post_id'));
 
     } else {
       toggler.checked = true;

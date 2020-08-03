@@ -119,16 +119,16 @@
     opacity: 1;
   }
 
-  .post[type='postvoteox'] input.vote.toggler[vote='up']:checked ~ .backbone td[vote='up'] {
+  .post[type='postvoteox'] input.vote.toggler[value='up']:checked ~ .backbone td[vote='up'] {
     background: var(--color-pos);
   }
 
-  .post[type='postvoteox'] input.vote.toggler[vote='down']:checked ~ .backbone td[vote='down'] {
+  .post[type='postvoteox'] input.vote.toggler[value='down']:checked ~ .backbone td[vote='down'] {
     background: var(--color-neg);
   }
 
-  .post[type='postvoteab'] input.vote.toggler[vote='up']:checked ~ .backbone td[vote='down'],
-  .post[type='postvoteab'] input.vote.toggler[vote='down']:checked ~ .backbone td[vote='up'] {
+  .post[type='postvoteab'] input.vote.toggler[value='up']:checked ~ .backbone td[vote='down'],
+  .post[type='postvoteab'] input.vote.toggler[value='down']:checked ~ .backbone td[vote='up'] {
     filter: grayscale(1);
     opacity: 0.5;
   }
@@ -241,11 +241,6 @@
     filter: invert(100%);
   }
 
-  /* .post .edit.button:after {
-    content: 'EDIT';
-    transition: bottom 0.1s;
-  } */
-
   .post .newpost.button {
     background: black;
   }
@@ -288,8 +283,8 @@
 <div class='post' type='{{type}}' post_id='{{post.id}}'>
 
   {% if post %}
-  <input vote='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
-  <input vote='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}>
+  <input value='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
+  <input value='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}>
   <input class='edit toggler' type="checkbox">
   {% else %}
   <input class='edit toggler' type="checkbox" checked>
@@ -331,9 +326,9 @@
 
   {% if post %}
   <input class='show-modify-button toggler' type='checkbox'>
-  <div class='modify button' post_id='{{post.id}}'>
+  <div class='modify button'>
     <div class='edit-post' onclick='toggle_edit(this)'></div>
-    <div class='delete-post' onclick='delete_post(this)'>
+    <div class='delete-post' onclick='delete_post()'>
       <img src='/static/materials/icons/delete.png'>
     </div>
   </div>
@@ -349,21 +344,27 @@
 <script>
   function toggle_vote(td) {
     // 처음에는 label로 처리했는데, label로 하면 deselect가 안된다
-    try {
-      let voted_to = td.getAttribute('vote');
-      let toggler = td.closest('.post').querySelector(`input.vote.toggler[vote=${voted_to}]`);
+    if (session.mode.on=='journey') {
+      const voted_to = td.getAttribute('vote');
+      const post = td.closest('.post');
+      const toggler = post.querySelector(`input.vote.toggler[value=${voted_to}]`);
       toggler.checked = !toggler.checked;
 
-    } catch(e) {
+      try {
+        console.log(post.querySelector('input.vote.toggler:checked').value);
+
+      } catch(e) {
+        console.log('no selection');
+      }    
+
+    } else {
       console.log('not voting mode');
     }
   }
 
 
-  function delete_post(div) {
-    let post_id = div.closest('.modify.button').getAttribute('post_id');
-    console.log(post_id);
-    fetch('post/' + post_id + '/delete')
+  function delete_post() {
+    fetch(`post/${session.cpost.id}/delete`)
       .then(res => res.json())
       .then(js => {
         console.log(js);
@@ -371,9 +372,10 @@
 
     // 경고메시지가 있어야할듯하다
     // 삭제후 액션이 약간 어색한듯
-    swiper.slideTo(swiper.realIndex - 1);
-    swiper.removeSlide(swiper.realIndex + 1);
+    swiper.slideTo(swiper.realIndex + 1);
+    swiper.removeSlide(swiper.realIndex - 1);
     }
+
 
   function save_post(post, post_id) {
     let type = post.getAttribute('type');
@@ -424,7 +426,8 @@
     if (toggler.checked) {
       toggler.checked = false;
       swiper.attachEvents();
-      save_post(post, post.querySelector('.modify.button').getAttribute('post_id'));
+      save_post(post, session.cpost.id);
+      // save_post(post, post.querySelector('.modify.button').getAttribute('post_id'));
 
     } else {
       toggler.checked = true;

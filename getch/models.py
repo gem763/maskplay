@@ -140,6 +140,10 @@ class Post(BigIdAbstract, VoteModel):
         return self.__class__.__name__.lower()
 
     def vote(self, action, boo_id):
+        # cancel
+        if action==-1:
+            self.votes.delete(boo_id)
+
         # up
         if action==0:
             self.votes.up(boo_id)

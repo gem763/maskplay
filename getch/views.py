@@ -37,14 +37,14 @@ def vote(request, post_id):
     action = request.GET.get('action', None)
 
     if action:
-        # boo_id = request.user.boo.pk
-        # post = m.Post.objects.get_subclass(pk=post_id)
-        # post.vote(int(action), boo_id)
+        boo_id = request.user.boo.pk
+        post = m.Post.objects.get_subclass(pk=post_id)
+        post.vote(int(action), boo_id)
         #
-        # print('up vote: ', post.votes.user_ids(action=0))
-        # print('down vote: ', post.votes.user_ids(action=1))
-        # print('up voted: ', post.votes.exists(boo_id, action=0))
-        # print('down voted: ', post.votes.exists(boo_id, action=1))
+        print('up vote: ', post.votes.user_ids(action=0))
+        print('down vote: ', post.votes.user_ids(action=1))
+        print('up voted: ', post.votes.exists(boo_id, action=0))
+        print('down voted: ', post.votes.exists(boo_id, action=1))
         # print('voted: ', post.voted(boo_id)) # post.voted 를 바꿨다... 이부분을 고쳐야함
 
         return JsonResponse({'success':True, 'action':action}, safe=False)
@@ -53,8 +53,8 @@ def vote(request, post_id):
         return JsonResponse({'success':False}, safe=False)
 
 
-def vote_cancel(request, post_id):
-    pass
+# def vote_cancel(request, post_id):
+#     pass
     # boo_id = request.user.boo.pk
     # post = m.Post.objects.get_subclass(pk=post_id)
     # post.vote(int(action), boo_id)

@@ -158,6 +158,7 @@
   <script>
     class Session {
       constructor(cuser) {
+        this.mode = {on:'journey', prev:undefined};
         this.id = Number(cuser.id);
         this.email = cuser.email;
         this.boo_selected = Number(cuser.boo_selected);

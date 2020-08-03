@@ -66,8 +66,17 @@
     document.querySelector('#authorpage .page-toggler').checked = true;
   }
 
-  function goto_network(btn) {
-    let boo_id = btn.getAttribute('boo_id');
+  function goto_network(who) {
+    // let boo_id = btn.getAttribute('boo_id');
+    let boo_id;
+
+    if (who=='my') {
+      boo_id = session.boo_selected;
+
+    } else if (who=='author') {
+      boo_id = session.cpost.author.id;
+    }
+
     document.querySelector('#network .page-toggler').checked = true;
     $('#network').load(`/boo/${boo_id}/network`);
   }
@@ -81,6 +90,7 @@
   }
 
   function goto_posting(type) {
+    session.mode.on = 'posting';
     $('.popup input.toggler').prop('checked', false);
     document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
     document.querySelector(`#posting .${type} .description span.text`).innerHTML = '';

@@ -13,7 +13,7 @@ urlpatterns = [
     # path('posting/', v.posting, name='posting'),
     # path('user/<int:user_id>/boo/set/<int:boo_id>/', v.set_boo),
     path('post/<int:post_id>/vote/', v.vote, name='vote'),
-    path('post/<int:post_id>/vote/cancel/', v.vote_cancel, name='vote_cancel'),
+    # path('post/<int:post_id>/vote/cancel/', v.vote_cancel, name='vote_cancel'),
     path('post/save/', v.post_save, name='post_save'),
     path('post/<int:post_id>/delete/', v.post_delete, name='post_delete'),
     path('boo/<int:boo_id>/follow/', v.follow, name='follow'),

@@ -20,7 +20,7 @@ urlpatterns = [
     path('boo/<int:boo_id>/unfollow/', v.unfollow, name='unfollow'),
     path('boo/<int:boo_id>/set/', v.set_boo, name='set_boo'),
     path('boo/<int:boo_id>/network/', v.network, name='network'),
-    # path('test/<str:state>/', v.test)
+    path('boo/profile/save/', v.profile_save, name='profile_save'),
 
     # path('cuser/', v.cuser, name='cuser'),
 ]

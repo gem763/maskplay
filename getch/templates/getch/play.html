@@ -147,12 +147,14 @@
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="{% static 'html2canvas/html2canvas.js' %}"></script>
   <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
   <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
   <!-- <script src="{% static 'semantic/semantic.min.js' %}"></script> -->
   <!-- <script src="{% static 'vue/vue.js' %}"></script> -->
   <!-- <script src="{% static 'swiper/swiper.js' %}"></script> -->
+
 
 
   <script>
@@ -307,42 +309,11 @@
     {% endif %}
 
 
-    // function radio_toggle(radio) {
-    //   let status = radio.prop('checked');
-    //
-    //   if (status) {
-    //     radio.prop('checked', false);
-    //   } else {
-    //     radio.prop('checked', true);
-    //   }
-    // }
-    //
-    // function vote_here(obj, type) {
-    //   let radio = $(obj).closest('table.post').siblings('input.' + type);
-    //   radio_toggle(radio);
-    //
-    //   let post_id = $(obj).closest('table.post').attr('id');
-    //   let action;
-    //
-    //   if (type=='o' | type=='a') {
-    //     action = '0';
-    //
-    //   } else if (type=='x' | type=='b') {
-    //     action = '1';
-    //   }
-    //
-    //   let api = 'post/' + post_id + '/vote?action=' + action;
-    //
-    //   fetch(api).then(x => x.json())
-    //             .then(js => {
-    //               console.log(js);
-    //             })
-    // }
-
     $('#profiler .maskbar').draggable({
       axis: 'y',
       containment: 'parent'
     });
+
   </script>
 
 </body>

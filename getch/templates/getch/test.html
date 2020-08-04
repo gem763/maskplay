@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+
+{% load static %}
+<head>
+  <title>GET.CH</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
+  <!-- <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}"> -->
+  <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css"> -->
+  <link rel="stylesheet" href="{% static 'swiper/swiper.min.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.min.css' %}">
+
+  <!-- favicon.ico 404 Not found error -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <style>
+    :root {
+      /* --border: 5px; */
+      /* --menu: 35px;
+      --menu-img: 25px;
+      --height: min(100vh, calc(2*100vw - 2*var(--menu)));
+      --width: min(100vw, calc(50vh + var(--menu)));
+      --scorebar-w: calc(var(--height) / 15);
+      --scorebar-h: calc(var(--width) / 50);
+      --scorebar-offset: 20px; */
+
+      --border-w: 1px;
+      --border: var(--border-w) solid black;
+      --s-menu: 35px;
+      --s-menu-icon: 25px;
+      --s-0: min(calc(100vw - var(--s-menu) - var(--border-w)), calc(50vh - var(--border-w)/2));
+      --s-1: calc(var(--s-0)/2);
+      --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
+      --window-h: calc(var(--s-0)*2 + var(--border-w));
+      --vs-fsize: 25px;
+      --ox-fsize: 100px;
+      --color-pos: rgb(241,20,15);
+      --color-neg: rgb(22,187,204);
+    }
+
+    * {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    #window {
+      width: var(--window-w);
+      height: var(--window-h);
+      background: none;
+      position: relative;
+    }
+
+    #window .border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: none;
+      width: 100%;
+      height: 100%;
+      border: var(--border);
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+
+    #posts {
+      width: 100%;
+      height: 100%;
+    }
+
+    .swiper-container {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .swiper-wrapper {
+      z-index: 0;
+    }
+
+    .menublock {
+      position: absolute;
+      width: calc(var(--s-menu) - var(--border-w));
+      height: calc(var(--s-menu) - var(--border-w));
+      border: var(--border);
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menublock.author {
+      top: 0;
+      right: 0;
+    }
+
+    .menublock.my {
+      bottom: 0;
+      right: 0;
+    }
+
+    .menublock.posting {
+      bottom: calc(var(--s-menu));;
+      right: 0;
+    }
+
+    .menublock img.fit {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .menublock img.icon {
+      object-fit: contain;
+      width: var(--s-menu-icon);
+      height: var(--s-menu-icon);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id='window'>
+    {% include 'getch/pager_test.html' %}
+  </div>
+
+
+
+<a id="target" style="display: none"></a>
+<img id='myimg' src='/static/materials/icons/arrow_down.png'>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src='https://html2canvas.hertzen.com/dist/html2canvas.min.js'></script>
+<script src="/static/jquery-ui/jquery-ui.min.js"></script>
+<script src="/static/jquery-ui/jquery.ui.touch-punch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+
+<script>
+  html2canvas(document.querySelector('#myimg')).then(function(canvas) {
+    if (navigator.msSaveBlob) {
+      var blob = canvas.msToBlob();
+      return navigator.msSaveBlob(blob, '파일명.jpg');
+    } else {
+      var el = document.getElementById("target");
+      el.href = canvas.toDataURL("image/jpeg");
+      el.download = '파일명.jpg';
+      el.click();
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -64,6 +64,7 @@
     background: none;
     display: inline-block;
     overflow: hidden;
+    /* border: 5px solid red; */
   }
 
   .profiler .profile-canvas .maskbar {
@@ -73,7 +74,7 @@
     right: 0;
     height: 20%;
     background: white;
-    border: var(--border);
+    /* border: var(--border); */
     text-align: center;
     opacity: 0;
     transition: opacity 0.1s;
@@ -255,6 +256,7 @@
     </div>
   </div>
 
+
   <div class='mid'>
     <div class='profile-canvas'>
       <input type="file" name="image" accept="image/*" style="display:none;" id="profilepix-load" onchange="load_img(this)">
@@ -265,7 +267,7 @@
         <img class='eye-mask' src='/static/materials/imgs/masks/eyes/{{imgs.eye_masks.0}}'>
       </div>
 
-      <div class='canvas-border'></div>
+      <!-- <div class='canvas-border'></div> -->
     </div>
   </div>
 
@@ -325,6 +327,9 @@
   </div>
 
   <div class='save' onclick='save()'>SAVE</div>
+  <a id="target" style="display: none"></a>
+
+  <img id='testimg' src='/static/materials/imgs/마블리.jpg' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'>
 </div>
 {% endblock page %}
 
@@ -333,6 +338,10 @@
 {{ block.super }}
 <script>
   document.querySelector('.profiler .nick span').contentEditable = 'true';
+
+  function imgerr(img) {
+    img.style.display = 'none';
+  }
 
   function load_img(input) {
     if (input.files && input.files[0]) {
@@ -373,7 +382,28 @@
   }
 
   function save() {
-    console.log(1234)
+    html2canvas(document.querySelector('.profile-canvas')).then(function(canvas) {
+      document.querySelector('#testimg').src = canvas.toDataURL("image/png");
+      // if (navigator.msSaveBlob) {
+      //   var blob = canvas.msToBlob();
+      //   return navigator.msSaveBlob(blob, '파일명.png');
+      // } else {
+      //   var el = document.getElementById("target");
+      //   el.href = canvas.toDataURL("image/png");
+      //   el.download = '파일명.jpg';
+      //   el.click();
+      // }
+
+      canvas.toBlob(function(blob) {
+        const formData = new FormData();
+        formData.append('pix', blob, 'mypix.png');
+        formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+
+        fetch('boo/profile/save/', { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(js => { console.log(js); });
+      });
+    });
   }
 
 </script>

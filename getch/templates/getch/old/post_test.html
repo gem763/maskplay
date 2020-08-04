@@ -1,0 +1,434 @@
+<style>
+  .post {
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .post .backbone {
+    border-collapse: collapse;
+  }
+
+  .post .backbone td {
+    position: relative;
+    padding: 0;
+    box-sizing: border-box;
+    border: var(--border-w) solid black;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .post .backbone td.full {
+    width: var(--s-0);
+  }
+
+  .post .backbone td.half {
+    width: var(--s-1);
+  }
+
+  .post .backbone td.side {
+    width: var(--s-menu);
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .post .backbone td.top {
+    height: var(--s-0);
+  }
+
+  .post .backbone td.bottom {
+    border-bottom: none;
+    height: calc(var(--s-0) + var(--border-w)/2);
+    /* td.bottom의 아래경계선을 지워주면서, 그만큼 높이를 늘렸다 */
+  }
+
+  .post .backbone img.pix {
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+
+  .post .description {
+    text-align: right;
+    position: absolute;
+    top: 20%;
+    right: 10px;
+    width: 70%;
+    /* transform: translate(0,-50%); */
+    font-size: 12px;
+    line-height: 1.4;
+    pointer-events: none;
+  }
+
+  .post .description span {
+    background: black;
+    color: white;
+    padding-left: 2px;
+    padding-right: 2px;
+    pointer-events: auto;
+  }
+
+  .post span.vs {
+    position: absolute;
+    background: var(--color-pos);
+    color: black;
+    font-size: var(--vs-fsize);
+    line-height: calc(var(--vs-fsize) + 8px);
+    font-weight: bold;
+  }
+
+  .post[type='postvoteox'] span.vs {
+    bottom: var(--s-1);
+    left: calc(var(--s-1) + var(--border-w)/2);
+    transform: translate(-50%,50%);
+  }
+
+  .post[type='postvoteab'] span.vs {
+    top: calc(var(--s-0) + var(--border-w)/2);
+    left: calc(var(--s-1) + var(--border-w)/2);
+    transform: translate(-50%,-50%);
+  }
+
+  .post[type='postvoteox'] .backbone .ox {
+    width: 100%;
+    height: 100%;
+    color: black;
+    background: none;
+    font-weight: bold;
+    font-size: var(--ox-fsize);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* display: inline-block; */
+  }
+
+  .post input.toggler,
+  .post input[type='file'] {
+    display: none;
+    visibility: hidden;
+  }
+
+  .post input.vote.toggler:checked ~ .scores {
+    opacity: 1;
+  }
+
+  .post[type='postvoteox'] input.vote.toggler[value='0']:checked ~ .backbone td[vote='0'] {
+    background: var(--color-pos);
+  }
+
+  .post[type='postvoteox'] input.vote.toggler[value='1']:checked ~ .backbone td[vote='1'] {
+    background: var(--color-neg);
+  }
+
+  .post[type='postvoteab'] input.vote.toggler[value='0']:checked ~ .backbone td[vote='1'],
+  .post[type='postvoteab'] input.vote.toggler[value='1']:checked ~ .backbone td[vote='0'] {
+    filter: grayscale(1);
+    opacity: 0.5;
+  }
+
+
+  .post .scores {
+    font-size: 40px;
+    font-weight: bold;
+    opacity: 1;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .post .scores .score {
+    position: absolute;
+    background: none;
+    transform: translate(-50%,-50%);
+  }
+
+  .post[type='postvoteox'] .scores .score.vote-0 {
+    top: calc(var(--s-0) + var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2 - var(--s-1)/2);
+  }
+
+  .post[type='postvoteox'] .scores .score.vote-1 {
+    top: calc(var(--s-0) + var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2 + var(--s-1)/2);
+  }
+
+  .post[type='postvoteab'] .scores .score.vote-0 {
+    top: calc(var(--s-0) - var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2);
+  }
+
+  .post[type='postvoteab'] .scores .score.vote-1 {
+    top: calc(var(--s-0) + var(--s-1)/2);
+    left: calc(var(--s-1) + var(--border-w)/2);
+  }
+
+  .post .pixloader-icon {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    bottom: 20%;
+    right: 20%;
+    background: none;
+    border: 5px dashed silver;
+  }
+
+  .post .pixloader-icon img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    transform: translate(-50%,-50%);
+    opacity: 0.3;
+  }
+
+
+  .post input.show-modify-button.toggler:checked ~ .modify.button,
+  .post input.show-newpost-button.toggler:checked ~ .newpost.button {
+    bottom: 30px;
+  }
+
+  .post .modify.button,
+  .post .newpost.button {
+    position: absolute;
+    bottom: -40px;
+    left: 30px;
+    width: calc(var(--s-0) + var(--border-w) - 60px);
+    height: 35px;
+    /* background: lightgreen; */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: bottom 0.1s;
+    font-size: 12px;
+  }
+
+  .post .modify.button div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .post .modify.button div.edit-post {
+    background: black;
+    flex-grow: 1
+  }
+
+  .post .modify.button div.delete-post {
+    background: var(--color-pos);
+    width: 35px;
+    margin-left: 5px;
+  }
+
+  .post .modify.button div.edit-post:after {
+    content: 'EDIT';
+    /* transition: content 1s; */
+  }
+
+  .post .modify.button div.delete-post img {
+    width:20px;
+    height: 20px;
+    object-fit: contain;
+    filter: invert(100%);
+  }
+
+  .post .newpost.button {
+    background: black;
+  }
+
+  .post .newpost.button:after {
+    content: 'SAVE NEWPOST';
+  }
+
+  .post input.edit.toggler:checked ~ table.backbone label.pixloader {
+    pointer-events: auto;
+  }
+
+  .post input.edit.toggler:checked ~ .modify.button .edit-post {
+    background: orange;
+  }
+
+  .post input.edit.toggler:checked ~ .modify.button .edit-post:after {
+    content: 'ON EDITING';
+  }
+
+  .post table.backbone label.pixloader {
+    pointer-events: none;
+  }
+
+  .post .description span.text[contenteditable=true]:focus {
+    font-size: 20px;
+    line-height: 1.3;
+    display: inline-flex;
+    justify-content: flex-end;
+    /* caret-color: red; */
+  }
+
+  .post .description span.text[contentEditable=true]:empty::before {
+    content: attr(placeholder);
+    color: gray;
+  }
+</style>
+
+
+<div class='post' type='{{type}}' post_id='{{post.id}}'>
+
+  {% if type == 'postvoteox' %}
+
+  {% elif type == 'postvoteab' %}
+  {% include "getch/comp_postpix_test.html" with post=post pixfield='pix_a' %}
+
+  {% endif %}
+</div>
+
+
+<script>
+  function vote_action(post) {
+    try {
+      return Number(post.querySelector('input.vote.toggler:checked').value)
+
+    } catch(e) {
+      return -1;
+    }
+  }
+
+  function toggle_vote(td) {
+    // 처음에는 label로 처리했는데, label로 하면 deselect가 안된다
+    if (session.mode.on=='journey') {
+      const voted_to = td.getAttribute('vote');
+      const post = td.closest('.post');
+      const toggler = post.querySelector(`input.vote.toggler[value='${voted_to}']`);
+      toggler.checked = !toggler.checked;
+
+      const action = vote_action(post);
+      let score;
+
+      if (action==-1) {
+        score = post.querySelector(`.score.vote-${voted_to}`);
+        score.innerHTML = Number(score.innerHTML) - 1;
+
+      } else if (session.has_voted) {
+        score = post.querySelector(`.score.vote-${voted_to}`);
+        score.innerHTML = Number(score.innerHTML) + 1;
+
+        score = post.querySelector(`.score.vote-${1-Number(voted_to)}`);
+        score.innerHTML = Number(score.innerHTML) - 1;
+
+      } else {
+        score = post.querySelector(`.score.vote-${voted_to}`);
+        score.innerHTML = Number(score.innerHTML) + 1;
+      }
+
+      session.vote = action;
+    }
+  }
+
+
+  function delete_post() {
+    fetch(`post/${session.cpost.post_id}/delete`)
+      .then(res => res.json())
+      .then(js => {
+        console.log(js);
+      });
+
+    // 경고메시지가 있어야할듯하다
+    // 삭제후 액션이 약간 어색한듯
+    swiper.slideTo(swiper.realIndex + 1);
+    swiper.removeSlide(swiper.realIndex - 1);
+    }
+
+
+  function save_post(post, post_id) {
+    let type = post.getAttribute('type');
+    let text = post.querySelector('span.text');
+    let pixloaders = post.querySelectorAll('input[type="file"]');
+    let formData = new FormData();
+
+    // text가 바뀌는 경우
+    if (text.getAttribute('asis')!=text.innerHTML) {
+      formData.append('text', text.innerHTML.replace(/<br>/gi,'\n'));
+      text.setAttribute('asis', text.innerHTML);
+    }
+
+    // pix가 선택된 경우
+    pixloaders.forEach(input => {
+      if (input.files.length > 0) {
+        formData.append(input.getAttribute('field'), input.files[0]);
+        input.value = '';
+      }
+    });
+
+    if (formData.has('text') | formData.has('pix') | formData.has('pix_a') | formData.has('pix_b')) {
+      formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+      formData.append('type', type);
+
+      // 포스트를 수정하는 경우
+      if (post_id) formData.append('post_id', post_id);
+
+      fetch('post/save/', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(js => {
+          console.log(js);
+
+          if (js.mode=='created') {
+            let where = swiper.realIndex + 1;
+            swiper.addSlide(where, `<div class="swiper-slide">${js.post_created}</div>`);
+            swiper.slideTo(where);
+            close_page(post);
+          }
+        });
+    }
+  }
+
+  function toggle_edit(div) {
+    let post = div.closest('.post');
+    let toggler = post.querySelector('input.edit.toggler');
+
+    if (toggler.checked) {
+      toggler.checked = false;
+      swiper.attachEvents();
+      save_post(post, session.cpost.post_id);
+
+    } else {
+      toggler.checked = true;
+      swiper.detachEvents();
+    }
+  }
+
+
+  function save_newpost(div) {
+    let post = div.closest('.post');
+    save_post(post);
+  }
+
+
+  function load_pix(input) {
+    if (input.files && input.files[0]) {
+      let reader = new FileReader();
+
+      reader.onload = function(e) {
+        let img = $(input).siblings('label').children('img');  // 여기서는 jquery가 되네; 희안하다 (함수 안에서는 되는듯)
+        img.css('display', 'block');
+        img.attr("src", e.target.result);
+        // img.parent().css("display", "block");
+      }
+
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+
+  function imgerr(img) {
+    img.style.display = 'none';
+  }
+</script>

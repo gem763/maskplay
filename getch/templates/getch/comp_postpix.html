@@ -15,6 +15,13 @@
   <div class='pixloader-icon'>
     <img src='/static/materials/icons/pix.png'>
   </div>
-  <img class='pix' src='' onerror='imgerr(this)'>
+  <img class='pix' onerror='imgerr(this)'>
+  <!-- <img src=''> 이런식으로 src에 빈칸 들어가면 안된다 에러다! -->
 </label>
 {% endif %}
+
+
+<script>
+  function imgerr(img) {
+    img.style.display = 'none';
+  }</script>

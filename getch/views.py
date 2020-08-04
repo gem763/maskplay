@@ -25,6 +25,7 @@ def play(request):
     posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
     ctx = {'posts': posts, 'imgs':imgs}
     return render(request, 'getch/play.html', ctx)
+    # return render(request, 'getch/test.html')
 
 
 def vote(request, post_id):
@@ -89,6 +90,17 @@ def post_delete(request, post_id):
 
     except:
         return JsonResponse({'success':False}, safe=False)
+
+
+def profile_save(request):
+    if request.method=='POST':
+        print(request.POST, request.FILES)
+        pix = request.FILES.get('pix', None)
+
+        profile = request.user.boo.profile
+        profile.pix = pix
+        profile.save()
+        return JsonResponse({'success':True}, safe=False)
 
 
 def post_save(request):

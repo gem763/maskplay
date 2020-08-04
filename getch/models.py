@@ -58,6 +58,11 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return self.nick + ' | ' + self.user.email
 
     @property
+    def serialized(self):
+        _boo = BooSerializer([self], many=True).data[0]
+        return json.dumps(_boo)
+
+    @property
     def profile(self):
         return Profile.objects.get(pk=self.profile_selected, boo=self)
 
@@ -104,6 +109,11 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def nfollowees(self):
         return len(self.followees_id)
+
+    @property
+    def voting_record(self):
+        q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+        return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
 
 def _profilepix_path(instance, fname):
@@ -159,61 +169,13 @@ class Post(BigIdAbstract, ModelWithFlag):#, VoteModel):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
         return Flager.objects.filter(q)
 
-    # @property
-    # def voted(self):
-    #     boo_id = get_current_user().boo.pk
-    #
-    #     if self.votes.exists(boo_id, action=0):
-    #         return 0
-    #
-    #     elif self.votes.exists(boo_id, action=1):
-    #         return 1
-    #
-    #     else:
-    #         return None
+    @property
+    def nvotes_up(self):
+        return Flager.objects.filter(status=VOTE_UP, object_id=self.id).count()
 
-
-    # @property
-    # def nvotes(self):
-    #     return self.num_vote_up + self.num_vote_down
-
-    # def score(self, what, alpha=0, beta=0):
-    #     try:
-    #         if what=='up':
-    #             num_vote = self.num_vote_up + alpha
-    #
-    #         elif what=='down':
-    #             num_vote = self.num_vote_down + alpha
-    #
-    #         nvotes = self.nvotes + beta
-    #         return int(num_vote / nvotes * 100)
-    #
-    #     except:
-    #         return 0
-    #
-    # @property
-    # def score_up(self):
-    #     return self.score('up')
-    #
-    # @property
-    # def score_down(self):
-    #     return self.score('down')
-    #
-    # @property
-    # def score_up_new(self):
-    #     return self.score('up', alpha=1, beta=1)
-    #
-    # @property
-    # def score_down_new(self):
-    #     return self.score('down', alpha=1, beta=1)
-    #
-    # @property
-    # def score_up_change(self):
-    #     return self.score('up', alpha=1)
-    #
-    # @property
-    # def score_down_change(self):
-    #     return self.score('down', alpha=1)
+    @property
+    def nvotes_down(self):
+        return Flager.objects.filter(status=VOTE_DOWN, object_id=self.id).count()
 
 
 def _postpix_path(instance, fname):
@@ -256,7 +218,7 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'followers_id', 'followees_id', 'profile']
+        fields = ['id', 'nick', 'text', 'followers_id', 'followees_id', 'profile', 'voting_record']
         read_only_fields = fields
 
 

@@ -34,12 +34,14 @@ def vote(request, post_id):
         # boo_id = request.user.boo.pk
         post = m.Post.objects.get(pk=post_id)
         post.vote(int(action))
+        # print(post.get_flags(status=0).count())
 
         # print('up vote: ', post.votes.user_ids(action=0))
         # print('down vote: ', post.votes.user_ids(action=1))
         # print('up voted: ', post.votes.exists(boo_id, action=0))
         # print('down voted: ', post.votes.exists(boo_id, action=1))
-        print(post.voters)
+        # print(post.voters)
+        # print(request.user.boo.voting_record)
 
         return JsonResponse({'success':True, 'action':action}, safe=False)
 
@@ -55,9 +57,7 @@ def authorpage(request, boo_id):
 def set_boo(request, boo_id):
     try:
         request.user.set_boo(boo_id)
-        print(m.Post.votes.all(request.user.boo.id, action=0))
-        print(m.Post.votes.all(request.user.boo.id, action=1))
-        return JsonResponse({'success':True}, safe=False)
+        return JsonResponse({'success':True, 'voting_record':request.user.boo.voting_record}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)

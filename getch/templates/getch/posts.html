@@ -1,9 +1,29 @@
+<script>
+  let authors = {};
+  let author_id;
+</script>
+
 <div class="swiper-container">
   <div class="swiper-wrapper">
 
     {% for post in posts %}
-    <div class="swiper-slide">
+    <div class="swiper-slide" post_id='{{post.id}}' author_id='{{post.boo.id}}'>
       {% include "getch/post.html" with post=post type=post.type %}
+
+      <script>
+        author_id = {{post.boo.id}};
+        if (!(author_id in authors)) {
+          const author = {{post.boo.serialized|safe}};
+          authors[author_id] = {
+            nick: author.nick,
+            text: author.text,
+            profile: author.profile,
+            followers_id: author.followers_id,
+            followees_id: author.followees_id,
+            voting_record: author.voting_record,
+          };
+        }
+      </script>
     </div>
     {% endfor %}
 
@@ -13,11 +33,10 @@
 
 <script src="/static/swiper/swiper.js"></script>
 <script>
-  var swiper = new Swiper('.swiper-container', {
+  const swiper = new Swiper('.swiper-container', {
     direction: 'vertical',
     on: {
       init: function() {
-        // init_post();
       },
       slideChangeTransitionEnd: function() {
         set_post();
@@ -33,33 +52,36 @@
   });
 
   function set_post() {
-    let cpost = document.querySelector('.swiper-slide-active');
-    let cpost_id = cpost.querySelector('.post').getAttribute('post_id');
-    let author_id = cpost.querySelector('.author.menublock').getAttribute('author');
-    let author_nfollowers = cpost.querySelector('.author.menublock').getAttribute('nfollowers');
-    let author_nfollowees = cpost.querySelector('.author.menublock').getAttribute('nfollowees');
-    let author_profile = cpost.querySelector('.author.menublock img.fit').src;
+    const cpost = document.querySelector('.swiper-slide-active');
+    const cpost_id = cpost.getAttribute('post_id');
+    const author_id = cpost.getAttribute('author_id');
 
     if (author_id==session.boo_selected) {
       cpost.querySelector('input.show-modify-button.toggler').checked = true;
+      
     } else {
       cpost.querySelector('input.show-modify-button.toggler').checked = false;
     }
 
+    if (cpost_id in session.boo.voting_record) {
+      const vote_action = session.boo.voting_record[cpost_id];
+      cpost.querySelector(`input.vote.toggler[value='${vote_action}']`).checked = true;
+
+    } else {
+      cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
+      cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
+    }
+
     session.cpost = {
-      id: Number(cpost_id),
-      voted: -1,
-      author: {
-        id: Number(author_id),
-        nfollowers: Number(author_nfollowers),
-        nfollowees: Number(author_nfollowees),
-        profile: author_profile,
-      }
+      post_id: Number(cpost_id),
+      author_id: Number(author_id)
     }
   }
 
   function unset_post() {
     let cpost = document.querySelector('.swiper-slide-active');
     cpost.querySelector('input.show-modify-button.toggler').checked = false;
+    cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
+    cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
   }
 </script>

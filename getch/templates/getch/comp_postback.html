@@ -1,5 +1,5 @@
 {% if post %}
-<div class='author menublock' author='{{post.boo.pk}}' nfollowers='{{post.boo.nfollowers}}' nfollowees='{{post.boo.nfollowees}}' onclick='open_authorpage()'>
+<div class='author menublock' author='{{post.boo.pk}}' onclick='open_authorpage()'>
   <img class='fit' src='{{post.boo.profile.pix.url}}'>
 </div>
 
@@ -9,8 +9,8 @@
 </div>
 
 <div class='scores'>
-  <div class='score up'>{{post.num_vote_up}}</div>
-  <div class='score down'>{{post.num_vote_down}}</div>
+  <div class='score vote-0'>{{post.nvotes_up}}</div>
+  <div class='score vote-1'>{{post.nvotes_down}}</div>
 </div>
 
 {% else %}

@@ -54,9 +54,9 @@
 <script>
   function set_authorpage() {
     let authorpage = document.querySelector('#authorpage');
-    authorpage.querySelector('span.nfollowers').innerHTML = session.cpost.author.nfollowers;
-    authorpage.querySelector('span.nfollowees').innerHTML = session.cpost.author.nfollowees;
-    authorpage.querySelector('img.boo').src = session.cpost.author.profile;
+    authorpage.querySelector('span.nfollowers').innerHTML = session.author_nfollowers;
+    authorpage.querySelector('span.nfollowees').innerHTML = session.author_nfollowees;
+    authorpage.querySelector('img.boo').src = session.author.profile;
 
     if (session.is_following) {
       authorpage.querySelector('.follow.toggler').checked = true;
@@ -72,7 +72,7 @@
     } else {
       session.follow();
     }
-    
+
     update_network_dash();
 
     // 내페이지에서도 network dash를 업데이트한다
@@ -81,8 +81,7 @@
 
   function update_network_dash() {
     let nfollowers = document.querySelector('#authorpage span.nfollowers');
-    nfollowers.innerHTML = session.cpost.author.nfollowers;
-    // nfollowers.innerHTML = Number(nfollowers.innerHTML) + inc
+    nfollowers.innerHTML = session.author_nfollowers;
   }
 </script>
 {% endblock js %}

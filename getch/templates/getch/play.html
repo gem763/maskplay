@@ -167,6 +167,9 @@
       }
 
       _init_boos(boos) {
+        boos = {...boos, ...authors};
+        authors = undefined;
+
         for (let k in boos) {
           boos[k].followers_id = new Set(boos[k].followers_id);
           boos[k].followees_id = new Set(boos[k].followees_id);
@@ -183,9 +186,21 @@
       }
 
       set vote(action) {
-        if (this.cpost.voted!=action) {
-          this.cpost.voted = action;
-          this.api_get(`post/${this.cpost.id}/vote?action=${action}`);
+        if (action==-1) {
+          delete this.boo.voting_record[this.cpost.post_id];
+
+        } else {
+          this.boo.voting_record[this.cpost.post_id] = action;
+        }
+
+        this.api_get(`post/${this.cpost.post_id}/vote?action=${action}`);
+      }
+
+      get has_voted() {
+        if (this.cpost.post_id in this.boo.voting_record) {
+          return true
+        } else {
+          return false
         }
       }
 
@@ -228,40 +243,41 @@
 
       get is_following() {
         // return this.boo.followees_id.includes(Number(boo_id));
-        return this.boo.followees_id.has(this.cpost.author.id);
+        return this.boo.followees_id.has(this.cpost.author_id);
+      }
+
+      get author() {
+        return this.boos[this.cpost.author_id];
+      }
+
+      get author_nfollowers() {
+        return this.author.followers_id.size;
+      }
+
+      get author_nfollowees() {
+        return this.author.followees_id.size;
       }
 
       unfollow() {
-        const boo_id = this.cpost.author.id;
+        const boo_id = this.cpost.author_id;
         this.api_get(`boo/${boo_id}/unfollow`);
 
         // 내 followees에서 지우기
         this.boo.followees_id.delete(boo_id);
 
         // author의 followers에서 나를 지우기
-        this.cpost.author.nfollowers -= 1;
-        // this.cpost.author.followers_id.delete(this.boo_selected);
-
-        // 만약 author가 내 부캐라면, 해당 부캐의 followers에서도 나를 지우기
-        if (boo_id in this.boos) {
-          this.boos[boo_id].followers_id.delete(this.boo_selected);
-        }
+        this.author.followers_id.delete(this.boo_selected);
       }
 
       follow() {
-        const boo_id = this.cpost.author.id;
+        const boo_id = this.cpost.author_id;
         this.api_get(`boo/${boo_id}/follow`);
 
         // 내 followees에 추가하기
         this.boo.followees_id.add(boo_id);
 
         // author의 followers에 나를 추가하기
-        this.cpost.author.nfollowers += 1;
-
-        // 만약 author가 내 부캐라면, 해당 부캐의 followers에도 나를 추가하기
-        if (boo_id in this.boos) {
-          this.boos[boo_id].followers_id.add(this.boo_selected);
-        }
+        this.author.followers_id.add(this.boo_selected);
       }
     }
 

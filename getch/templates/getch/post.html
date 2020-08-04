@@ -13,12 +13,13 @@
     border-collapse: collapse;
   }
 
-  .post .backbone td{
+  .post .backbone td {
     position: relative;
     padding: 0;
     box-sizing: border-box;
     border: var(--border-w) solid black;
     text-align: center;
+    transition: all 0.2s;
   }
 
   .post .backbone td.full {
@@ -119,16 +120,16 @@
     opacity: 1;
   }
 
-  .post[type='postvoteox'] input.vote.toggler[value='up']:checked ~ .backbone td[vote='up'] {
+  .post[type='postvoteox'] input.vote.toggler[value='0']:checked ~ .backbone td[vote='0'] {
     background: var(--color-pos);
   }
 
-  .post[type='postvoteox'] input.vote.toggler[value='down']:checked ~ .backbone td[vote='down'] {
+  .post[type='postvoteox'] input.vote.toggler[value='1']:checked ~ .backbone td[vote='1'] {
     background: var(--color-neg);
   }
 
-  .post[type='postvoteab'] input.vote.toggler[value='up']:checked ~ .backbone td[vote='down'],
-  .post[type='postvoteab'] input.vote.toggler[value='down']:checked ~ .backbone td[vote='up'] {
+  .post[type='postvoteab'] input.vote.toggler[value='0']:checked ~ .backbone td[vote='1'],
+  .post[type='postvoteab'] input.vote.toggler[value='1']:checked ~ .backbone td[vote='0'] {
     filter: grayscale(1);
     opacity: 0.5;
   }
@@ -137,8 +138,8 @@
   .post .scores {
     font-size: 40px;
     font-weight: bold;
-    opacity: 0;
-    transition: opacity 0.1s;
+    opacity: 1;
+    transition: opacity 0.2s;
     pointer-events: none;
   }
 
@@ -148,22 +149,22 @@
     transform: translate(-50%,-50%);
   }
 
-  .post[type='postvoteox'] .scores .score.up {
+  .post[type='postvoteox'] .scores .score.vote-0 {
     top: calc(var(--s-0) + var(--s-1)/2);
     left: calc(var(--s-1) + var(--border-w)/2 - var(--s-1)/2);
   }
 
-  .post[type='postvoteox'] .scores .score.down {
+  .post[type='postvoteox'] .scores .score.vote-1 {
     top: calc(var(--s-0) + var(--s-1)/2);
     left: calc(var(--s-1) + var(--border-w)/2 + var(--s-1)/2);
   }
 
-  .post[type='postvoteab'] .scores .score.up {
+  .post[type='postvoteab'] .scores .score.vote-0 {
     top: calc(var(--s-0) - var(--s-1)/2);
     left: calc(var(--s-1) + var(--border-w)/2);
   }
 
-  .post[type='postvoteab'] .scores .score.down {
+  .post[type='postvoteab'] .scores .score.vote-1 {
     top: calc(var(--s-0) + var(--s-1)/2);
     left: calc(var(--s-1) + var(--border-w)/2);
   }
@@ -283,8 +284,10 @@
 <div class='post' type='{{type}}' post_id='{{post.id}}'>
 
   {% if post %}
-  <input value='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
-  <input value='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}>
+  <input value='0' class='vote toggler' type="radio" name='vote-{{post.pk}}'>
+  <input value='1' class='vote toggler' type="radio" name='vote-{{post.pk}}'>
+  <!-- <input value='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
+  <input value='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}> -->
   <input class='edit toggler' type="checkbox">
   {% else %}
   <input class='edit toggler' type="checkbox" checked>
@@ -299,8 +302,8 @@
       </tr>
 
       <tr>
-        <td class='bottom half' vote='up' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
-        <td class='bottom half' vote='down' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
+        <td class='bottom half' vote='0' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
+        <td class='bottom half' vote='1' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
         <td class='bottom side'></td>
       </tr>
     </tbody>
@@ -310,12 +313,12 @@
   <table class='backbone'>
     <tbody>
       <tr>
-        <td class='top full' vote='up' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_a' %}</td>
+        <td class='top full' vote='0' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_a' %}</td>
         <td class='top side'></td>
       </tr>
 
       <tr>
-        <td class='bottom full' vote='down' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_b' %}</td>
+        <td class='bottom full' vote='1' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_b' %}</td>
         <td class='bottom side'></td>
       </tr>
     </tbody>
@@ -344,14 +347,7 @@
 <script>
   function vote_action(post) {
     try {
-      const vote_value = post.querySelector('input.vote.toggler:checked').value;
-
-      if (vote_value=='up') {
-        return 0;
-
-      } else if (vote_value=='down') {
-        return 1;
-      }
+      return Number(post.querySelector('input.vote.toggler:checked').value)
 
     } catch(e) {
       return -1;
@@ -363,16 +359,35 @@
     if (session.mode.on=='journey') {
       const voted_to = td.getAttribute('vote');
       const post = td.closest('.post');
-      const toggler = post.querySelector(`input.vote.toggler[value=${voted_to}]`);
+      const toggler = post.querySelector(`input.vote.toggler[value='${voted_to}']`);
       toggler.checked = !toggler.checked;
 
-      session.vote = vote_action(post);
+      const action = vote_action(post);
+      let score;
+
+      if (action==-1) {
+        score = post.querySelector(`.score.vote-${voted_to}`);
+        score.innerHTML = Number(score.innerHTML) - 1;
+
+      } else if (session.has_voted) {
+        score = post.querySelector(`.score.vote-${voted_to}`);
+        score.innerHTML = Number(score.innerHTML) + 1;
+
+        score = post.querySelector(`.score.vote-${1-Number(voted_to)}`);
+        score.innerHTML = Number(score.innerHTML) - 1;
+
+      } else {
+        score = post.querySelector(`.score.vote-${voted_to}`);
+        score.innerHTML = Number(score.innerHTML) + 1;
+      }
+
+      session.vote = action;
     }
   }
 
 
   function delete_post() {
-    fetch(`post/${session.cpost.id}/delete`)
+    fetch(`post/${session.cpost.post_id}/delete`)
       .then(res => res.json())
       .then(js => {
         console.log(js);
@@ -434,7 +449,7 @@
     if (toggler.checked) {
       toggler.checked = false;
       swiper.attachEvents();
-      save_post(post, session.cpost.id);
+      save_post(post, session.cpost.post_id);
 
     } else {
       toggler.checked = true;

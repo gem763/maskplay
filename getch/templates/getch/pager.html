@@ -65,12 +65,18 @@
   }
 
   function open_loginpage() {
-    open_page('loginpage');
+    // 로그인 페이지는 session 체크를 해서는 안된다
+    document.querySelector('#loginpage .page-toggler').checked = true;
   }
 
   function open_authorpage() {
-    set_authorpage();
-    open_page('authorpage');
+    if (session.boo_selected==session.cpost.author_id) {
+      open_mypage();
+      
+    } else {
+      set_authorpage();
+      open_page('authorpage');
+    }
   }
 
   function open_network() {
@@ -80,7 +86,7 @@
       boo_id = session.boo_selected;
 
     } else if (session.mode.on=='authorpage') {
-      boo_id = session.cpost.author.id;
+      boo_id = session.cpost.author_id;
     }
 
     open_page('network');

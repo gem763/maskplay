@@ -260,11 +260,13 @@
   <div class='mid'>
     <div class='profile-canvas'>
       <input type="file" name="image" accept="image/*" style="display:none;" id="profilepix-load" onchange="load_img(this)">
-      <img class='profilepix' src='{{user.boo.profile.pix.url}}'>
+      <img class='profilepix' onerror='imgerr(this)'>
+      <!-- <img class='profilepix' src='{{user.boo.profile.pix.url}}'> -->
 
       <input class='maskbar toggler' type='checkbox'>
-      <div class='maskbar'>
-        <img class='eye-mask' src='/static/materials/imgs/masks/eyes/{{imgs.eye_masks.0}}'>
+      <div class='eye maskbar'>
+        <img class='eye-mask' maskbase='' onerror='imgerr(this)'>
+        <!-- <img class='eye-mask' src='/static/materials/imgs/masks/eyes/{{imgs.eye_masks.0}}'> -->
       </div>
 
       <!-- <div class='canvas-border'></div> -->
@@ -303,8 +305,8 @@
           <tr>
             <td>
               {% for emask in imgs.eye_masks %}
-              <div class='item wide' onclick='eye_maskup(this)'>
-                <img class='mask' src='/static/materials/imgs/masks/eyes/{{emask}}'>
+              <div class='item wide' maskbase='{{emask.id}}' onclick='eye_maskup(this)'>
+                <img class='mask' src='{{emask.pix.url}}'>
               </div>
               {% endfor %}
             </td>
@@ -326,10 +328,10 @@
     </table>
   </div>
 
-  <div class='save' onclick='save()'>SAVE</div>
-  <a id="target" style="display: none"></a>
+  <div class='save' onclick='save(this)'>SAVE</div>
+  <a id="downloader" style="display:none"></a>
 
-  <img id='testimg' src='/static/materials/imgs/마블리.jpg' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'>
+  <!-- <img id='testimg' src='/static/materials/imgs/마블리.jpg' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'> -->
 </div>
 {% endblock page %}
 
@@ -339,9 +341,25 @@
 <script>
   document.querySelector('.profiler .nick span').contentEditable = 'true';
 
-  function imgerr(img) {
-    img.style.display = 'none';
+  function set_profiler() {
+    if (session.boo.profile.type=='PIX') {
+      document.querySelector('.profile-canvas img.profilepix').src = session.boo.profile.pix_base;
+
+      if (session.boo.profile.eye_mask) {
+        let maskbase = session.boo.profile.eye_mask.maskbase;
+        let eye_maskbar = document.querySelector('.profile-canvas .eye.maskbar');
+        let masksrc = document.querySelector(`.eye-masks [maskbase='${maskbase}'] img.mask`).src;
+
+        eye_maskbar.querySelector('img.eye-mask').src = masksrc;
+        eye_maskbar.style.width = session.boo.profile.eye_mask.width + '%';
+        eye_maskbar.style.height = session.boo.profile.eye_mask.height + '%';
+        eye_maskbar.style.top = session.boo.profile.eye_mask.top + '%';
+        eye_maskbar.style.left = session.boo.profile.eye_mask.left + '%';
+        toggle_masking(1);
+      }
+    }
   }
+
 
   function load_img(input) {
     if (input.files && input.files[0]) {
@@ -357,10 +375,10 @@
     }
   }
 
-  function eye_mask(mask_img) {
-    let src = mask_img.src;
-    document.querySelector('.profiler-canvas img.mask').src = src;
-  }
+  // function eye_mask(mask_img) {
+  //   let src = mask_img.src;
+  //   document.querySelector('.profiler-canvas img.mask').src = src;
+  // }
 
   function eye_maskup(td) {
     let src = td.querySelector('img').src;
@@ -373,15 +391,25 @@
   }
 
 
-  function toggle_masking() {
+  function toggle_masking(what) {
     let selmask = document.querySelector('input.toggler.selmask')
-    selmask.checked = !selmask.checked;
-
     let maskbar = document.querySelector('input.toggler.maskbar')
-    maskbar.checked = !maskbar.checked;
+
+    if (what && what==0) {
+      selmask.checked = false;
+      maskbar.checked = false;
+
+    } else if (what && what==1) {
+      selmask.checked = true;
+      maskbar.checked = true;
+
+    } else {
+      selmask.checked = !selmask.checked;
+      maskbar.checked = !maskbar.checked;
+    }
   }
 
-  function save() {
+  function save(div) {
     html2canvas(document.querySelector('.profile-canvas')).then(function(canvas) {
       document.querySelector('#testimg').src = canvas.toDataURL("image/png");
       // if (navigator.msSaveBlob) {
@@ -401,9 +429,20 @@
 
         fetch('boo/profile/save/', { method: 'POST', body: formData })
           .then(res => res.json())
-          .then(js => { console.log(js); });
+          .then(js => {
+            console.log(js);
+
+            if (js.success) {
+              session.myprofile = js.pix_url;
+              close_page(div);
+            }
+          });
       });
     });
+  }
+
+  function imgerr(img) {
+    img.style.display = 'none';
   }
 
 </script>

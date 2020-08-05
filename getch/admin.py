@@ -8,6 +8,8 @@ admin.site.register(m.Profile)
 admin.site.register(m.Post)
 admin.site.register(m.PostVoteAB)
 admin.site.register(m.PostVoteOX)
+admin.site.register(m.Mask)
+admin.site.register(m.MaskBase)
 
 
 class BooInline(admin.TabularInline):
@@ -32,5 +34,16 @@ class BooAdmin(admin.ModelAdmin):
     ]
 
 
+# class MaskInline(admin.TabularInline):
+#     model = m.Mask
+#     fk_name = 'profile'
+#
+#
+# class ProfileAdmin(admin.ModelAdmin):
+#     inlines = [
+#         MaskInline,
+#     ]
+
 admin.site.register(m.User, UserAdmin)
 admin.site.register(m.Boo, BooAdmin)
+# admin.site.register(m.Profile, ProfileAdmin)

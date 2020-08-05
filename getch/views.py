@@ -17,7 +17,7 @@ eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "material
 
 imgs = {
     'characters': characters,
-    'eye_masks': eye_masks,
+    'eye_masks': m.MaskBase.objects.filter(type='EYE') #eye_masks,
 }
 
 
@@ -100,7 +100,7 @@ def profile_save(request):
         profile = request.user.boo.profile
         profile.pix = pix
         profile.save()
-        return JsonResponse({'success':True}, safe=False)
+        return JsonResponse({'success':True, 'pix_url':profile.pix.url}, safe=False)
 
 
 def post_save(request):

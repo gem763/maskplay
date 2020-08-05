@@ -10,6 +10,7 @@ from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 import json
+import os
 
 
 VOTE_UP = 0
@@ -123,10 +124,52 @@ def _profilepix_path(instance, fname):
     return fmt.format(user=user, fname=fname)
 
 
+def _maskpix_path(instance, fname):
+    type = instance.type.lower()
+    fname = str(datetime.now()) + fname
+    fmt = 'mask/{type}/{fname}'
+    return fmt.format(type=type, fname=fname)
+
+
+class MaskBase(BigIdAbstract):
+    MASK_TYPES = (
+        ('EYE', 'eye'),
+        ('MOUTH', 'mouth')
+    )
+
+    type = models.CharField(max_length=5, choices=MASK_TYPES, default='EYE')
+    category = models.CharField(max_length=50, null=False, blank=False, default='base')
+    pix = models.ImageField(upload_to=_maskpix_path, max_length=500, null=False, blank=False)
+
+    def __str__(self):
+        return self.type + ' | ' + self.category + ' | ' + os.path.basename(self.pix.name)
+
+
+class Mask(BigIdAbstract):
+    maskbase = models.ForeignKey(MaskBase, null=True, blank=True, on_delete=models.CASCADE)
+    top = models.FloatField(default=0)
+    left = models.FloatField(default=0)
+    width = models.FloatField(default=100)
+    height = models.FloatField(default=20)
+
+    # def __str__(self):
+    #     return self.mask
+
+
 class Profile(BigIdAbstract):
+    PROFILE_TYPES = (
+        ('PIX', 'pix'),
+        ('TXT', 'txt')
+    )
+
+    type = models.CharField(max_length=5, choices=PROFILE_TYPES, default='PIX')
     boo = models.ForeignKey(Boo, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     pix = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
+    pix_base = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
+    txt = models.CharField(max_length=10, null=True, blank=True)
+    eye_mask = models.OneToOneField(Mask, null=True, blank=True, on_delete=models.SET_NULL, related_name='eye')
+    mouth_mask = models.OneToOneField(Mask, null=True, blank=True, on_delete=models.SET_NULL, related_name='mouth')
 
     def __str__(self):
         return self.boo.nick + ' | ' + self.boo.user.email
@@ -210,11 +253,28 @@ class PostVoteAB(Post):
 #         fields = ['id', 'profile']
 #         read_only_fields = fields
 
+class MaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mask
+        fields = ['id', 'maskbase', 'top', 'left', 'width', 'height']
+        read_only_fields = fields
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    eye_mask = MaskSerializer()
+    mouth_mask = MaskSerializer()
+
+    class Meta:
+        model = Profile
+        fields = ['id', 'type', 'eye_mask', 'mouth_mask', 'pix', 'pix_base', 'txt']
+        read_only_fields = fields
+
 
 class BooSerializer(serializers.ModelSerializer):
     # followers = FollowSerializer(many=True)
     # followees = FollowSerializer(many=True)
-    profile = serializers.CharField(source='profile.pix.url')
+    # profile2 = serializers.CharField(source='profile.pix.url')
+    profile = ProfileSerializer()
 
     class Meta:
         model = Boo

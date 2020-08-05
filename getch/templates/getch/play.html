@@ -213,15 +213,27 @@
       }
 
       checkout() {
-        console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
-        this.mode = this.mode.prev;
+        try {
+          console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
+          this.mode = this.mode.prev;
+
+        } catch(e) {
+          console.log('abnormal access')
+        }
       }
 
       refresh() {
         set_post();
         set_mypage();
         set_boochooser();
+        set_profiler();
         set_posting();
+      }
+
+      set myprofile(pix_url) {
+        console.log(`profile changed to [${pix_url}]`);
+        this.boo.profile = pix_url;
+        this.refresh();
       }
 
       set myboo(boo_id) {
@@ -309,9 +321,19 @@
     {% endif %}
 
 
-    $('#profiler .maskbar').draggable({
+    $('#profiler .eye.maskbar').draggable({
       axis: 'y',
-      containment: 'parent'
+      containment: 'parent',
+      stop: function(event, ui) {
+        const canvas = document.querySelector('#profiler .profile-canvas');
+        const maskbar = document.querySelector('#profiler .profile-canvas .eye.maskbar');
+        session.mode.eye_mask_pos = {
+          top: ui.position.top / canvas.offsetHeight * 100,
+          left: ui.position.left / canvas.offsetWidth * 100,
+          height: maskbar.offsetHeight / canvas.offsetHeight * 100,
+          width: maskbar.offsetWidth / canvas.offsetWidth * 100
+        }
+      }
     });
 
   </script>

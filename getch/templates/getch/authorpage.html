@@ -56,7 +56,7 @@
     let authorpage = document.querySelector('#authorpage');
     authorpage.querySelector('span.nfollowers').innerHTML = session.author_nfollowers;
     authorpage.querySelector('span.nfollowees').innerHTML = session.author_nfollowees;
-    authorpage.querySelector('img.boo').src = session.author.profile;
+    authorpage.querySelector('img.boo').src = session.author.profile.pix;
 
     if (session.is_following) {
       authorpage.querySelector('.follow.toggler').checked = true;

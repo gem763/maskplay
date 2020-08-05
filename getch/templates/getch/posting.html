@@ -45,7 +45,7 @@
     let postings = document.querySelectorAll('#posting .post');
     postings.forEach(posting => {
       posting.querySelector('.author.menublock').setAttribute('author', session.boo_selected);
-      posting.querySelector('.author.menublock img.fit').src = session.boo.profile;
+      posting.querySelector('.author.menublock img.fit').src = session.boo.profile.pix;
       posting.querySelector('.description span.nick').innerHTML = '@' + session.boo.nick;
     })
   }

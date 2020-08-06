@@ -1,6 +1,7 @@
 {% if post %}
 <div class='author menublock' author='{{post.boo.pk}}' onclick='open_authorpage()'>
-  <img class='fit' src='{{post.boo.profile.pix.url}}'>
+  <img class='fit'>
+   <!-- src='{{post.boo.profile.pix.url}}'> -->
 </div>
 
 <div class='description'>
@@ -14,8 +15,8 @@
 </div>
 
 {% else %}
-<div class='author menublock' author='{{user.boo.pk}}'>
-  <img class='fit' src='{{user.boo.profile.pix.url}}'>
+<div class='author menublock' author=''>
+  <img class='fit'>
 </div>
 
 <div class='description' style='pointer-events:none;'>

@@ -8,6 +8,7 @@ import getch.models as m
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
 import os
+import json
 
 # https://brownbears.tistory.com/259
 # https://stackoverflow.com/questions/37270170/iterate-through-a-static-image-folder-in-django
@@ -94,13 +95,33 @@ def post_delete(request, post_id):
 
 def profile_save(request):
     if request.method=='POST':
-        print(request.POST, request.FILES)
-        pix = request.FILES.get('pix', None)
+        # print(request.POST, request.FILES)
+        _profile = json.loads(request.POST.get('profile', None))
+        _nick = request.POST.get('nick', None)
+        _pix = request.FILES.get('pix', None)
+        _pix_base = request.FILES.get('pix_base', None)
+        print(_profile, _nick, _pix, _pix_base)
 
-        profile = request.user.boo.profile
-        profile.pix = pix
-        profile.save()
-        return JsonResponse({'success':True, 'pix_url':profile.pix.url}, safe=False)
+        boo = request.user.boo
+        # profile = request.user.boo.profile
+
+        if _nick:
+            boo.nick = _nick
+            # profile.boo.nick = _nick
+
+        if _pix:
+            boo.profile.pix = _pix
+
+        if _pix_base:
+            boo.profile.pix_base = _pix_base
+
+        if _profile:
+            boo.profile.type = _profile['type']
+            boo.profile.txt = _profile['txt']
+
+        boo.profile.save()
+        boo.save()
+        return JsonResponse({'success':True, 'profile':boo.profile.serialized, 'boo':boo.serialized}, safe=False)
 
 
 def post_save(request):

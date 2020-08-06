@@ -174,6 +174,11 @@ class Profile(BigIdAbstract):
     def __str__(self):
         return self.boo.nick + ' | ' + self.boo.user.email
 
+    @property
+    def serialized(self):
+        _profile = ProfileSerializer([self], many=True).data[0]
+        return json.dumps(_profile)
+
 
 class Post(BigIdAbstract, ModelWithFlag):#, VoteModel):
     boo = models.ForeignKey(Boo, on_delete=models.CASCADE)

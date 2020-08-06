@@ -261,12 +261,10 @@
     <div class='profile-canvas'>
       <input type="file" name="image" accept="image/*" style="display:none;" id="profilepix-load" onchange="load_img(this)">
       <img class='profilepix' onerror='imgerr(this)'>
-      <!-- <img class='profilepix' src='{{user.boo.profile.pix.url}}'> -->
 
       <input class='maskbar toggler' type='checkbox'>
       <div class='eye maskbar'>
         <img class='eye-mask' maskbase='' onerror='imgerr(this)'>
-        <!-- <img class='eye-mask' src='/static/materials/imgs/masks/eyes/{{imgs.eye_masks.0}}'> -->
       </div>
 
       <!-- <div class='canvas-border'></div> -->
@@ -331,7 +329,7 @@
   <div class='save' onclick='save(this)'>SAVE</div>
   <a id="downloader" style="display:none"></a>
 
-  <!-- <img id='testimg' src='/static/materials/imgs/마블리.jpg' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'> -->
+  <!-- <img id='testimg' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'> -->
 </div>
 {% endblock page %}
 
@@ -341,9 +339,25 @@
 <script>
   document.querySelector('.profiler .nick span').contentEditable = 'true';
 
+  function imgblob(url) {
+    var img = `<img src='${url}'>`
+    var blob = new Blob([img], { type: "text/html" });
+    return URL.createObjectURL(blob)
+
+    // let reader = new FileReader();
+    // reader.onload = function(e) {
+    //   let img = $(input).next('img');
+    //   img.attr("src", e.target.result);
+    // }
+    //
+    // reader.readAsDataURL(input.files[0]);
+  }
+
+
   function set_profiler() {
     if (session.boo.profile.type=='PIX') {
-      document.querySelector('.profile-canvas img.profilepix').src = session.boo.profile.pix_base;
+      document.querySelector('.profiler .top .nick span').innerHTML = session.boo.nick;
+      document.querySelector('.profiler .profile-canvas img.profilepix').src = session.boo.profile.pix_base;
 
       if (session.boo.profile.eye_mask) {
         let maskbase = session.boo.profile.eye_mask.maskbase;
@@ -355,6 +369,8 @@
         eye_maskbar.style.height = session.boo.profile.eye_mask.height + '%';
         eye_maskbar.style.top = session.boo.profile.eye_mask.top + '%';
         eye_maskbar.style.left = session.boo.profile.eye_mask.left + '%';
+
+        session.boo.profile.has_eye_mask = true;
         toggle_masking(1);
       }
     }
@@ -369,25 +385,25 @@
         let img = $(input).next('img');  // 여기서는 jquery가 되네; 희안하다 (함수 안에서는 되는듯)
         img.attr("src", e.target.result);
         // img.parent().css("display", "block");
+        // session.boo.profile.pix_base = e.target.result;
       }
 
       reader.readAsDataURL(input.files[0]);
     }
   }
 
-  // function eye_mask(mask_img) {
-  //   let src = mask_img.src;
-  //   document.querySelector('.profiler-canvas img.mask').src = src;
-  // }
 
   function eye_maskup(td) {
     let src = td.querySelector('img').src;
+    let maskbase = td.getAttribute('maskbase');
     document.querySelector('.profile-canvas .maskbar img.eye-mask').src = src;
+    session.boo.profile.eye_mask.maskbase = Number(maskbase);
   }
 
   function characterize(td) {
     let src = td.querySelector('img').src;
     document.querySelector('.profile-canvas img.profilepix').src = src;
+    // session.boo.profile.pix_base = src;
   }
 
 
@@ -398,47 +414,55 @@
     if (what && what==0) {
       selmask.checked = false;
       maskbar.checked = false;
+      session.boo.profile.has_eye_mask = false;
 
     } else if (what && what==1) {
       selmask.checked = true;
       maskbar.checked = true;
+      session.boo.profile.has_eye_mask = true;
 
     } else {
       selmask.checked = !selmask.checked;
       maskbar.checked = !maskbar.checked;
+      session.boo.profile.has_eye_mask = !session.boo.profile.has_eye_mask;
     }
   }
 
   function save(div) {
-    html2canvas(document.querySelector('.profile-canvas')).then(function(canvas) {
-      document.querySelector('#testimg').src = canvas.toDataURL("image/png");
-      // if (navigator.msSaveBlob) {
-      //   var blob = canvas.msToBlob();
-      //   return navigator.msSaveBlob(blob, '파일명.png');
-      // } else {
-      //   var el = document.getElementById("target");
-      //   el.href = canvas.toDataURL("image/png");
-      //   el.download = '파일명.jpg';
-      //   el.click();
-      // }
+    html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
+      .then(function(canvas) {
+        // document.querySelector('#testimg').src = canvas.toDataURL("image/png");
 
-      canvas.toBlob(function(blob) {
-        const formData = new FormData();
-        formData.append('pix', blob, 'mypix.png');
-        formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        // if (navigator.msSaveBlob) {
+        //   var blob = canvas.msToBlob();
+        //   return navigator.msSaveBlob(blob, '파일명.png');
+        // } else {
+        //   var el = document.getElementById("target");
+        //   el.href = canvas.toDataURL("image/png");
+        //   el.download = '파일명.jpg';
+        //   el.click();
+        // }
 
-        fetch('boo/profile/save/', { method: 'POST', body: formData })
-          .then(res => res.json())
-          .then(js => {
-            console.log(js);
+        canvas.toBlob(function(blob) {
+          const formData = new FormData();
+          formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+          formData.append('pix', blob, 'myprofile_pix.png');
+          formData.append('pix_base', document.querySelector('.profiler input[type="file"]').files[0]); // 캐릭터로 넣는경우에는 어떻게 할것인가...
+          formData.append('profile', JSON.stringify(session.boo.profile));
+          formData.append('nick', document.querySelector('.profiler .top .nick span').innerHTML);
 
-            if (js.success) {
-              session.myprofile = js.pix_url;
-              close_page(div);
-            }
-          });
+          fetch('boo/profile/save/', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(js => {
+              console.log(JSON.parse(js.profile), JSON.parse(js.boo));
+
+              if (js.success) {
+                session.myprofile = JSON.parse(js.profile);
+                close_page(div);
+              }
+            });
+        });
       });
-    });
   }
 
   function imgerr(img) {

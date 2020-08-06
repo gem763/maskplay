@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,6 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'custom_user',
     'rest_framework',
+    # 'corsheaders',
 
     # 'vote',
     'siteflags',
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,6 +67,7 @@ MIDDLEWARE = [
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
 ]
 
+# CORS_ORIGIN_ALLOW_ALL = True
 
 # 소셜로그인 기능 사용하기
 # https://django-allauth.readthedocs.io/en/latest/installation.html#django

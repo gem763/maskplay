@@ -230,9 +230,9 @@
         set_posting();
       }
 
-      set myprofile(pix_url) {
-        console.log(`profile changed to [${pix_url}]`);
-        this.boo.profile = pix_url;
+      set myprofile(profile) {
+        console.log(`profile changed to [${profile.pix}]`);
+        this.boo.profile = profile;
         this.refresh();
       }
 
@@ -327,12 +327,17 @@
       stop: function(event, ui) {
         const canvas = document.querySelector('#profiler .profile-canvas');
         const maskbar = document.querySelector('#profiler .profile-canvas .eye.maskbar');
-        session.mode.eye_mask_pos = {
-          top: ui.position.top / canvas.offsetHeight * 100,
-          left: ui.position.left / canvas.offsetWidth * 100,
-          height: maskbar.offsetHeight / canvas.offsetHeight * 100,
-          width: maskbar.offsetWidth / canvas.offsetWidth * 100
-        }
+        // session.mode.eye_mask_pos = {
+        //   top: ui.position.top / canvas.offsetHeight * 100,
+        //   left: ui.position.left / canvas.offsetWidth * 100,
+        //   height: maskbar.offsetHeight / canvas.offsetHeight * 100,
+        //   width: maskbar.offsetWidth / canvas.offsetWidth * 100
+        // }
+
+        session.boo.profile.eye_mask.top = ui.position.top / canvas.offsetHeight * 100;
+        session.boo.profile.eye_mask.left = ui.position.left / canvas.offsetWidth * 100;
+        session.boo.profile.eye_mask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
+        session.boo.profile.eye_mask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
       }
     });
 

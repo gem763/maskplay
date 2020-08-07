@@ -47,12 +47,16 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'custom_user',
     'rest_framework',
+    'django_extensions',
     # 'corsheaders',
 
     # 'vote',
     'siteflags',
     # 'friendship',
 ]
+
+# 주피터노트북에서 장고 연결하려면 다음줄이 반드시 필요: 2020.08.07
+os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

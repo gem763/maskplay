@@ -9,24 +9,26 @@ import os
 # admin.site.register(m.PostVoteOX)
 #
 #
-# @admin.register(m.User)
-# class UserAdmin(admin.ModelAdmin):
-#     class BooInline(admin.TabularInline):
-#         model = m.Boo
-#         fk_name = 'user'
-#
-#     inlines = ( BooInline, )
-#     list_display = ['email', 'boo_selected', 'boo']
-#     list_display_links = ['email']
-#     list_editable = ['boo_selected']
+@admin.register(m.User)
+class UserAdmin(admin.ModelAdmin):
+    pass
+    # class BooInline(admin.TabularInline):
+    #     model = m.Boo
+    #     fk_name = 'user'
+    #
+    # inlines = ( BooInline, )
+    # list_display = ['email', 'boo_selected', 'boo']
+    # list_display_links = ['email']
+    # list_editable = ['boo_selected']
 
 
-# @admin.register(m.Boo)
-# class BooAdmin(admin.ModelAdmin):
-#     list_display = ['user', 'nick', 'text', 'profile']
-#     list_display_links = ['user']
-#     list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
-#     # list_editable = ['profile']
+@admin.register(m.Boo)
+class BooAdmin(admin.ModelAdmin):
+    pass
+    # list_display = ['user', 'nick', 'text', 'profile']
+    # list_display_links = ['user']
+    # list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
+    # # list_editable = ['profile']
 
 
 @admin.register(m.MaskBase)
@@ -39,9 +41,19 @@ class MaskBaseAdmin(admin.ModelAdmin):
         return os.path.basename(obj.pix.name)
 
 
-@admin.register(m.Mask)
-class MaskAdmin(admin.ModelAdmin):
-    list_display = ['maskbase', 'top', 'left', 'width', 'height']
+@admin.register(m.EyeMask)
+class EyeMaskAdmin(admin.ModelAdmin):
+    list_display = ['maskbase', 'masked', 'top', 'left', 'width', 'height', 'profile']
+    list_display_links = ['maskbase']
+
+    def owned_by(self, obj):
+        if obj.profile:
+            return obj.profile.
+
+
+@admin.register(m.MouthMask)
+class MouthMaskAdmin(admin.ModelAdmin):
+    list_display = ['maskbase', 'masked', 'top', 'left', 'width', 'height', 'profile']
     list_display_links = ['maskbase']
 
 

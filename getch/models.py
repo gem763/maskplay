@@ -57,7 +57,6 @@ def _maskpix_path(instance, fname):
 
 class MaskBase(BigIdAbstract):
     MASK_TYPES = ( ('EYE', 'eye'), ('MOUTH', 'mouth') )
-
     type = models.CharField(max_length=5, choices=MASK_TYPES, default='EYE')
     category = models.CharField(max_length=50, null=False, blank=False, default='base')
     pix = models.ImageField(upload_to=_maskpix_path, max_length=500, null=False, blank=False)
@@ -66,21 +65,32 @@ class MaskBase(BigIdAbstract):
         return self.type + ' | ' + self.category + ' | ' + os.path.basename(self.pix.name)
 
 
+
 class Mask(BigIdAbstract):
-    maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE)
+    masked = models.BooleanField(default=False, null=False, blank=False)
     top = models.FloatField(default=0, null=False, blank=False)
     left = models.FloatField(default=0, null=False, blank=False)
     width = models.FloatField(default=100, null=False, blank=False)
     height = models.FloatField(default=20, null=False, blank=False)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         fmt = '{maskbase} | T={top}, L={left}, W={width}, H={height}'
         return fmt.format(maskbase=self.maskbase, top=self.top, left=self.left, width=self.width, height=self.height)
 
 
+class EyeMask(Mask):
+    maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE, default=1)
+
+
+class MouthMask(Mask):
+    maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE, default=35)
+
 
 def _profilepix_path(instance, fname):
-    user = 'test'#instance.boo.user.email
+    user = instance.boo.user.email
     fname = str(datetime.now()) + '__' + fname
     fmt = 'user/{user}/{fname}'
     return fmt.format(user=user, fname=fname)
@@ -88,18 +98,32 @@ def _profilepix_path(instance, fname):
 
 class Profile(BigIdAbstract):
     PROFILE_TYPES = ( ('IMAGE', 'image'), ('TEXT', 'text') )
-
     type = models.CharField(max_length=5, choices=PROFILE_TYPES, default='IMAGE', null=False, blank=False)
-    pix = models.ImageField(upload_to=_profilepix_path, max_length=500, null=False, blank=False, default='material/profile.png')
-    # image = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
-    # text = models.CharField(max_length=10, null=True, blank=True)
-    # eye_mask = models.OneToOneField(Mask, null=True, blank=True, on_delete=models.SET_NULL, related_name='eye')
-    # mouth_mask = models.OneToOneField(Mask, null=True, blank=True, on_delete=models.SET_NULL, related_name='mouth')
+    pix = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
+    image = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
+    text = models.CharField(max_length=10, null=True, blank=True)
+    eyemask = models.OneToOneField(EyeMask, null=True, blank=True, on_delete=models.SET_NULL)# SET_NULL을 미리정의된 mask로 교체하게 만들어야한다...
+    mouthmask = models.OneToOneField(MouthMask, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.id)
-        # return self.type + ' | ' + os.path.basename(self.pix.name)
+        return self.type + ' | ' + os.path.basename(self.pix.name)
+
+    def save(self, *args, **kwargs):
+        if self.eyemask is None:
+            self.eyemask = EyeMask.objects.create()
+
+        if self.mouthmask is None:
+            self.mouthmask = MouthMask.objects.create()
+
+        if not self.pix:
+            self.pix = 'material/profile.png'
+
+        if not self.image:
+            self.image = 'material/profile.png'
+
+        super().save(*args, **kwargs)
+
     #
     # @property
     # def serialized(self):
@@ -107,15 +131,21 @@ class Profile(BigIdAbstract):
     #     return json.dumps(_profile)
 
 
-# class Boo(BigIdAbstract, ModelWithFlag):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     nick = models.CharField(max_length=100)
-#     text = models.TextField(max_length=200, blank=True, null=True)
-#     profile = models.OneToOneField(Profile, null=True, blank=True, on_delete=models.SET_NULL) # SET_NULL을 미리정의된 프로파일로 교체하게 만들어야한다...
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     def __str__(self):
-#         return self.nick + ' | ' + self.user.email
+class Boo(BigIdAbstract, ModelWithFlag):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    nick = models.CharField(max_length=100, blank=True, null=True)
+    text = models.TextField(max_length=200, blank=True, null=True)
+    profile = models.OneToOneField(Profile, null=True, blank=True, on_delete=models.SET_NULL) # SET_NULL을 미리정의된 프로파일로 교체하게 만들어야한다...
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nick + ' | ' + self.user.email
+
+    def save(self, *args, **kwargs):
+        if (self.nick is None) or (self.nick.strip() == ''):
+            self.nick = self.user.email.split('@')[0]
+
+        super().save(*args, **kwargs)
 #
 #     @property
 #     def serialized(self):

@@ -14,19 +14,22 @@
   .boo-candidate {
     width: 75px;
     height: 75px;
-    outline: 1px solid black;
+    /* outline: 1px solid black; */
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    /* overflow: hidden; */
+    /* border-radius: 50%; */
   }
 
   .boo-candidate:hover {
     outline: 5px solid rgb(241,20,15);
   }
 
-  .boo-candidate.selected {
-    outline: 5px solid black;
+  .boo-candidate.selected img {
+    /* outline: 5px solid black; */
+    box-shadow: 0 0 0 5px black !important;
   }
 
   .boo-candidate .pix {
@@ -49,7 +52,7 @@
     <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
   </div>
 
-  {% load ctags %}
+  <!-- {% load ctags %}
   {% with user.boo_set.all|boo_regroup as boo_pairs %}
 
   {% for boos in boo_pairs %}
@@ -71,7 +74,18 @@
 
   </div>
   {% endfor %}
-  {% endwith %}
+  {% endwith %} -->
+
+  <div class='myboos' style='display:flex;flex-wrap:wrap;'>
+    <!-- {% for boo in user.boo_set.all %}
+    <div class='boo-candidate' boo_id='{{boo.pk}}' style='margin:10px;' onclick='select_this_boo(this)'>
+      <img class='pix' src='{{boo.profile.pix.url}}'>
+      <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+        {{boo.nick}}
+      </span>
+    </div>
+    {% endfor %} -->
+  </div>
 
 </div>
 {% endblock page %}
@@ -81,6 +95,23 @@
 {{ block.super }}
 <script>
   function set_boochooser() {
+    let booblocks = session.myboos.map((key) => `
+      <div class='boo-candidate' boo_id='${key}' style='margin:10px;' onclick='select_this_boo(this)'>
+        <img class='pix' src='${session.boos[key].profile.pix}' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+        <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+          ${session.boos[key].nick}
+        </span>
+      </div>
+    `).join('');
+
+    let add = `
+      <div class='boo-candidate' style='margin:10px;' onclick='make_boo()'>
+        <img class='icon' src='/static/materials/icons/boo_plus.png' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+      </div>
+    `
+
+    document.querySelector('.myboos').innerHTML = [booblocks, add].join('');
+
     let boos = document.querySelectorAll('#boochooser .boo-candidate');
     boos.forEach(boo => {
       let boo_id = boo.getAttribute('boo_id');
@@ -89,7 +120,7 @@
       } else {
         boo.classList.remove('selected');
       }
-    })
+    });
   }
 
   function select_this_boo(div) {
@@ -99,8 +130,27 @@
 
     } else {
       session.myboo = boo_id;
-      close_page(div);
+      // close_page(div);
+      // close 가 왜 안먹히지????
+      session.checkout();
+      document.querySelector('#boochooser .page-toggler').checked = false;
     }
+  }
+
+  function make_boo() {
+    fetch('boo/new/')
+      .then(res => res.json())
+      .then(js => {
+        console.log(JSON.parse(js.boo));
+
+        let boo = JSON.parse(js.boo);
+        boo.followers_id = new Set(boo.followers_id);
+        boo.followees_id = new Set(boo.followees_id);
+        session.boos[boo.id] = boo;
+        session.myboos.push(boo.id);
+        session.myboo = boo.id;
+        open_profiler();
+      })
   }
 </script>
 {% endblock %}

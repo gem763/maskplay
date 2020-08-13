@@ -17,8 +17,8 @@ eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "material
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
 imgs = {
-    'characters': characters,
-    'eye_masks': m.MaskBase.objects.filter(type='EYE') #eye_masks,
+    'characters': m.Character.objects.all(),
+    'eyemasks': m.MaskBase.objects.filter(type='EYE') #eye_masks,
 }
 
 
@@ -95,33 +95,66 @@ def post_delete(request, post_id):
 
 def profile_save(request):
     if request.method=='POST':
-        # print(request.POST, request.FILES)
-        _profile = json.loads(request.POST.get('profile', None))
+        print(request.POST, request.FILES)
         _nick = request.POST.get('nick', None)
+        _type = request.POST.get('type', None)
         _pix = request.FILES.get('pix', None)
-        _pix_base = request.FILES.get('pix_base', None)
-        print(_profile, _nick, _pix, _pix_base)
+        _character = request.POST.get('character', None)
+        _image = request.FILES.get('image', None)
+        _text = request.POST.get('text', None)
+        _eyemask = request.POST.get('eyemask', None)
 
-        boo = request.user.boo
-        # profile = request.user.boo.profile
+        user = request.user
+        boo_data = { 'profile': {} }
 
         if _nick:
-            boo.nick = _nick
-            # profile.boo.nick = _nick
+            boo_data['nick'] = _nick
+
+        if _type:
+            boo_data['profile']['type'] = _type
 
         if _pix:
-            boo.profile.pix = _pix
+            boo_data['profile']['pix'] = _pix
 
-        if _pix_base:
-            boo.profile.pix_base = _pix_base
+        if _character:
+            boo_data['profile']['character'] = _character
 
-        if _profile:
-            boo.profile.type = _profile['type']
-            boo.profile.txt = _profile['txt']
+        if _image:
+            boo_data['profile']['image'] = _image
 
-        boo.profile.save()
-        boo.save()
-        return JsonResponse({'success':True, 'profile':boo.profile.serialized, 'boo':boo.serialized}, safe=False)
+        if _text:
+            boo_data['profile']['text'] = _text
+
+        if _eyemask:
+            print(json.loads(_eyemask))
+            boo_data['profile']['eyemask'] = json.loads(_eyemask)
+
+        ser = m.BooSerializer(user.boo, data=boo_data)
+
+        if ser.is_valid():
+            boo = ser.save()
+            return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
+
+        else:
+            return JsonResponse({'success':False}, safe=False)
+
+        #
+        # if _nick:
+        #     boo.nick = _nick
+        #
+        # if _pix:
+        #     boo.profile.pix = _pix
+        #
+        # if _pix_base:
+        #     boo.profile.pix_base = _pix_base
+        #
+        # if _profile:
+        #     boo.profile.type = _profile['type']
+        #     boo.profile.txt = _profile['txt']
+        #
+        # boo.profile.save()
+        # boo.save()
+        # return JsonResponse({'success':True, 'profile':boo.profile.serialized, 'boo':boo.serialized}, safe=False)
 
 
 def post_save(request):
@@ -156,7 +189,7 @@ def post_save(request):
 
         elif mode == 'created':
             post_created = render_to_string('getch/post.html', {'post':post, 'type':post_type})
-            js = {'success':True, 'mode':mode, 'post_created':post_created}
+            js = {'success':True, 'mode':mode, 'post_id':post.id, 'post_created':post_created}
 
         return JsonResponse(js, safe=False)
 
@@ -165,6 +198,10 @@ def network(request, boo_id):
     boo = m.Boo.objects.get(pk=boo_id)
     return render(request, 'getch/network.html', {'boo':boo, 'open':1})
 
+
+def boo_new(request):
+    boo = m.Boo.objects.create(user=request.user)
+    return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
 
 # def cuser(request):
 #     # cuser = ser.UserSerializer([request.user], many=True).data[0]

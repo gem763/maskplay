@@ -21,6 +21,7 @@ urlpatterns = [
     path('boo/<int:boo_id>/set/', v.set_boo, name='set_boo'),
     path('boo/<int:boo_id>/network/', v.network, name='network'),
     path('boo/profile/save/', v.profile_save, name='profile_save'),
+    path('boo/new/', v.boo_new, name='boo_new'), 
 
     # path('cuser/', v.cuser, name='cuser'),
 ]

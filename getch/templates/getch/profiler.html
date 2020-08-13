@@ -17,7 +17,8 @@
     position: relative;
   }
 
-  .profiler input.toggler {
+  .profiler input.toggler,
+  .profiler input.pixsrc-toggler {
     display: none;
     visibility: hidden;
   }
@@ -64,6 +65,7 @@
     background: none;
     display: inline-block;
     overflow: hidden;
+    /* background-size: cover; */
     /* border: 5px solid red; */
   }
 
@@ -101,11 +103,11 @@
     pointer-events: none;
   }
 
-  .profiler .profile-canvas img.profilepix {
+  /* .profiler .profile-canvas img.profile-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
+  } */
 
   .profiler .bottom {
     /* height: var(--profiler-bottom); */
@@ -244,6 +246,34 @@
     text-align: center;
     line-height: 45px;
   }
+
+  .profile-canvas .profile-character,
+  .profile-canvas .profile-image,
+  .profile-canvas .profile-text {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-canvas .profile-text {
+    font-size: 30vw;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: black;
+    color: white;
+  }
+
+  .profile-canvas input.pixsrc-toggler[value='character']:checked ~ .profile-character,
+  .profile-canvas input.pixsrc-toggler[value='image']:checked ~ .profile-image,
+  .profile-canvas input.pixsrc-toggler[value='text']:checked ~ .profile-text {
+    opacity: 1 !important;
+  }
 </style>
 {% endblock style %}
 
@@ -252,15 +282,21 @@
 
   <div class='top'>
     <div class='nick'>
-      <span>{{user.boo.nick}}</span>
+      <span onblur='session.boo.nick=this.innerHTML'>{{user.boo.nick}}</span>
     </div>
   </div>
 
 
   <div class='mid'>
     <div class='profile-canvas'>
-      <input type="file" name="image" accept="image/*" style="display:none;" id="profilepix-load" onchange="load_img(this)">
-      <img class='profilepix' onerror='imgerr(this)'>
+      <input value='character' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
+      <input value='image' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
+      <input value='text' class='pixsrc-toggler' type="radio" name='pixsrc-toggler' checked>
+
+      <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" onchange="load_img(this)">
+      <img class='profile-character' onerror='imgerr(this)' style='background:none;'>
+      <img class='profile-image' onerror='imgerr(this)' style='background:none;'>
+      <div class='profile-text' onblur='session.boo.profile.text=this.innerHTML;'></div>
 
       <input class='maskbar toggler' type='checkbox'>
       <div class='eye maskbar'>
@@ -277,19 +313,20 @@
         <tbody>
           <tr>
             <td class='pixloader'>
-              <label class='item' for='profilepix-load'>
+              <label class='item' for='profile-image-load'>
                 <img class='icon' src='/static/materials/icons/pix.png'>
               </label>
             </td>
             <td class='txtloader'>
-              <div class='item'>
+              <div class='item' onclick='textize()'>
                 <span class='txt'>히</span>
               </div>
             </td>
             <td>
               {% for ch in imgs.characters %}
-              <div class='item' onclick='characterize(this)'>
-                <img class='fit' src='/static/materials/imgs/characters/{{ch}}'>
+              <div class='item' character='{{ch.id}}' onclick='characterize(this)'>
+                <!-- <img class='fit' src='/static/materials/imgs/characters/{{ch}}'> -->
+                <img class='fit' src='{{ch.pix.url}}'>
               </div>
               {% endfor %}
             </td>
@@ -302,9 +339,9 @@
         <tbody>
           <tr>
             <td>
-              {% for emask in imgs.eye_masks %}
-              <div class='item wide' maskbase='{{emask.id}}' onclick='eye_maskup(this)'>
-                <img class='mask' src='{{emask.pix.url}}'>
+              {% for eyemask in imgs.eyemasks %}
+              <div class='item wide' maskbase='{{eyemask.id}}' onclick='eye_maskup(this)'>
+                <img class='mask' src='{{eyemask.pix.url}}'>
               </div>
               {% endfor %}
             </td>
@@ -320,7 +357,7 @@
           <td class='option coloring'></td>
           <td></td>
           <td class='option texting'><span>Aa</span></td>
-          <td class='option clipping'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
+          <td class='option clipping' onclick='download()'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
         </tr>
       </tbody>
     </table>
@@ -329,7 +366,7 @@
   <div class='save' onclick='save(this)'>SAVE</div>
   <a id="downloader" style="display:none"></a>
 
-  <!-- <img id='testimg' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'> -->
+  <!-- <img id='download' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'> -->
 </div>
 {% endblock page %}
 
@@ -338,6 +375,7 @@
 {{ block.super }}
 <script>
   document.querySelector('.profiler .nick span').contentEditable = 'true';
+  document.querySelector('.profiler .profile-text').contentEditable = 'true';
 
   function imgblob(url) {
     var img = `<img src='${url}'>`
@@ -353,26 +391,66 @@
     // reader.readAsDataURL(input.files[0]);
   }
 
+  function pixmode(what) {
+    document.querySelector(`.profiler input.pixsrc-toggler[value='${what}']`).checked = true;
+    session.boo.profile.type = what.toUpperCase();
+  }
+
+
+  function set_character(charac_id) {
+    if (charac_id) {
+      let charac_src = document.querySelector(`.profiler .item[character='${charac_id}'] img.fit`).src;
+      document.querySelector('.profiler .profile-canvas .profile-character').src = charac_src;
+      session.boo.profile.character = Number(charac_id);
+    }
+  }
+
+  function set_image(image_src) {
+    if (image_src) {
+      document.querySelector('.profiler .profile-canvas img.profile-image').src = image_src;
+      session.boo.profile.image = image_src;
+    }
+  }
+
+  function set_text(text) {
+    if (text) {
+      document.querySelector('.profiler .profile-canvas .profile-text').innerHTML = text;
+      session.boo.profile.text = text;
+    }
+  }
+
+  function set_eyemask(maskbase) {
+    if (maskbase) {
+      let maskbase_src = document.querySelector(`.profiler .item[maskbase='${maskbase}'] img.mask`).src;
+      let eye_maskbar = document.querySelector('.profile-canvas .eye.maskbar');
+
+      eye_maskbar.querySelector('img.eye-mask').src = maskbase_src;
+      eye_maskbar.style.width = session.boo.profile.eyemask.width + '%';
+      eye_maskbar.style.height = session.boo.profile.eyemask.height + '%';
+      eye_maskbar.style.top = session.boo.profile.eyemask.top + '%';
+      eye_maskbar.style.left = session.boo.profile.eyemask.left + '%';
+
+      session.boo.profile.eyemask.maskbase = Number(maskbase);
+      // session.boo.profile.eyemask.top = Number(top);
+      // session.boo.profile.eyemask.left = Number(left);
+      // session.boo.profile.eyemask.width = Number(width);
+      // session.boo.profile.eyemask.height = Number(height);
+    }
+  }
 
   function set_profiler() {
-    if (session.boo.profile.type=='PIX') {
-      document.querySelector('.profiler .top .nick span').innerHTML = session.boo.nick;
-      document.querySelector('.profiler .profile-canvas img.profilepix').src = session.boo.profile.pix_base;
+    document.querySelector('.profiler .top .nick span').innerHTML = session.boo.nick;
 
-      if (session.boo.profile.eye_mask) {
-        let maskbase = session.boo.profile.eye_mask.maskbase;
-        let eye_maskbar = document.querySelector('.profile-canvas .eye.maskbar');
-        let masksrc = document.querySelector(`.eye-masks [maskbase='${maskbase}'] img.mask`).src;
+    set_character(session.boo.profile.character);
+    set_image(session.boo.profile.image);
+    set_text(session.boo.profile.text);
+    set_eyemask(session.boo.profile.eyemask.maskbase);
+    pixmode(session.boo.profile.type.toLowerCase());
 
-        eye_maskbar.querySelector('img.eye-mask').src = masksrc;
-        eye_maskbar.style.width = session.boo.profile.eye_mask.width + '%';
-        eye_maskbar.style.height = session.boo.profile.eye_mask.height + '%';
-        eye_maskbar.style.top = session.boo.profile.eye_mask.top + '%';
-        eye_maskbar.style.left = session.boo.profile.eye_mask.left + '%';
-
-        session.boo.profile.has_eye_mask = true;
-        toggle_masking(1);
-      }
+    if (session.boo.profile.eyemask.masked) {
+      toggle_masking(1);
+    } else {
+      toggle_masking(0);
     }
   }
 
@@ -382,10 +460,13 @@
       let reader = new FileReader();
 
       reader.onload = function(e) {
-        let img = $(input).next('img');  // 여기서는 jquery가 되네; 희안하다 (함수 안에서는 되는듯)
-        img.attr("src", e.target.result);
-        // img.parent().css("display", "block");
-        // session.boo.profile.pix_base = e.target.result;
+        set_image(e.target.result);
+        // set_image(input.files[0]);
+        pixmode('image');
+        // input.closest('.profile-canvas').querySelector('img.profile-image').src = e.target.result;
+        // input.closest('.profile-canvas').style.backgroundImage = `url('${e.target.result}')`;
+        // console.log(e.target.result);
+
       }
 
       reader.readAsDataURL(input.files[0]);
@@ -394,18 +475,26 @@
 
 
   function eye_maskup(td) {
-    let src = td.querySelector('img').src;
+    // let src = td.querySelector('img').src;
     let maskbase = td.getAttribute('maskbase');
-    document.querySelector('.profile-canvas .maskbar img.eye-mask').src = src;
-    session.boo.profile.eye_mask.maskbase = Number(maskbase);
+    set_eyemask(maskbase);
+    // document.querySelector('.profile-canvas .maskbar img.eye-mask').src = src;
+    // session.boo.profile.eyemask.maskbase = Number(maskbase);
   }
 
   function characterize(td) {
-    let src = td.querySelector('img').src;
-    document.querySelector('.profile-canvas img.profilepix').src = src;
-    // session.boo.profile.pix_base = src;
+    charac_id = td.getAttribute('character');
+    set_character(charac_id);
+    pixmode('character');
+
+    // let src = td.querySelector('img').src;
+    // document.querySelector('.profile-canvas img.profile-image').src = src;
   }
 
+
+  function textize() {
+    pixmode('text');
+  }
 
   function toggle_masking(what) {
     let selmask = document.querySelector('input.toggler.selmask')
@@ -414,19 +503,58 @@
     if (what && what==0) {
       selmask.checked = false;
       maskbar.checked = false;
-      session.boo.profile.has_eye_mask = false;
+      // session.boo.profile.has_eye_mask = false;
+      session.boo.profile.eyemask.masked = false;
 
     } else if (what && what==1) {
       selmask.checked = true;
       maskbar.checked = true;
-      session.boo.profile.has_eye_mask = true;
+      session.boo.profile.eyemask.masked = true;
+      // session.boo.profile.has_eye_mask = true;
 
     } else {
       selmask.checked = !selmask.checked;
       maskbar.checked = !maskbar.checked;
-      session.boo.profile.has_eye_mask = !session.boo.profile.has_eye_mask;
+      session.boo.profile.eyemask.masked = !session.boo.profile.eyemask.masked;
+      // session.boo.profile.has_eye_mask = !session.boo.profile.has_eye_mask;
     }
   }
+
+
+  // function save(div) {
+  //   const formData = new FormData();
+  //   formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+  //   formData.append('pix', document.querySelector('.profiler input[type="file"]').files[0]); // 캐릭터로 넣는경우에는 어떻게 할것인가...
+  //   formData.append('nick', document.querySelector('.profiler .top .nick span').innerHTML);
+  //
+  //   fetch('boo/profile/save/', { method: 'POST', body: formData })
+  //     .then(res => res.json())
+  //     .then(js => {
+  //       console.log(JSON.parse(js.boo));
+  //
+  //       if (js.success) {
+  //         session.myprofile = JSON.parse(js.boo);
+  //         close_page(div);
+  //       }
+  //     });
+  // }
+
+
+  function download() {
+    html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
+      .then(function(canvas) {
+        if (navigator.msSaveBlob) {
+          var blob = canvas.msToBlob();
+          return navigator.msSaveBlob(blob, 'mypix.png');
+        } else {
+          var el = document.createElement("a");
+          el.href = canvas.toDataURL("image/png");
+          el.download = '파일명.jpg';
+          el.click();
+        }
+      });
+    }
+
 
   function save(div) {
     html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
@@ -446,19 +574,35 @@
         canvas.toBlob(function(blob) {
           const formData = new FormData();
           formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
-          formData.append('pix', blob, 'myprofile_pix.png');
-          formData.append('pix_base', document.querySelector('.profiler input[type="file"]').files[0]); // 캐릭터로 넣는경우에는 어떻게 할것인가...
-          formData.append('profile', JSON.stringify(session.boo.profile));
-          formData.append('nick', document.querySelector('.profiler .top .nick span').innerHTML);
+          formData.append('pix', blob, `${session.email}_mypix.png`);
+          // formData.append('image', document.querySelector('.profiler input[type="file"]').files[0]);
+          formData.append('nick', session.boo.nick);
+          formData.append('type', session.boo.profile.type);
+          formData.append('eyemask', JSON.stringify(session.boo.profile.eyemask));
+          // console.log(session.boo.profile.eyemask);
+
+          if (session.boo.profile.character) {
+            formData.append('character', session.boo.profile.character)
+          }
+
+          if (session.boo.profile.image) {
+            formData.append('image', document.querySelector('.profiler input[type="file"]').files[0])
+          }
+
+          if (session.boo.profile.text) {
+            formData.append('text', session.boo.profile.text)
+          }
 
           fetch('boo/profile/save/', { method: 'POST', body: formData })
             .then(res => res.json())
             .then(js => {
-              console.log(JSON.parse(js.profile), JSON.parse(js.boo));
+              console.log(JSON.parse(js.boo));
 
               if (js.success) {
-                session.myprofile = JSON.parse(js.profile);
+                // session.myprofile = JSON.parse(js.boo);
+                session.set_myprofile(JSON.parse(js.boo));
                 close_page(div);
+                session.refresh();
               }
             });
         });

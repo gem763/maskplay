@@ -21,23 +21,28 @@
 
   <style>
     :root {
-      /* --border: 5px; */
-      /* --menu: 35px;
-      --menu-img: 25px;
-      --height: min(100vh, calc(2*100vw - 2*var(--menu)));
-      --width: min(100vw, calc(50vh + var(--menu)));
-      --scorebar-w: calc(var(--height) / 15);
-      --scorebar-h: calc(var(--width) / 50);
-      --scorebar-offset: 20px; */
+      --border-w: 0px;
+      --border: var(--border-w) solid white;
 
-      --border-w: 1px;
-      --border: var(--border-w) solid black;
-      --s-menu: 35px;
+      --x1: calc((100vw - var(--border-w))/572);
+      --x2: calc((100vh - var(--border-w))/988);
+      --x: min(var(--x1), var(--x2));
+
+      --s-menu: calc(78 * var(--x));
+      --s-menu-icon: calc(var(--s-menu) * 25/35);
+      --s-0: calc(494 * var(--x));
+      --s-1: calc(var(--s-0)/2);
+
+
+
+      /* --s-menu: 35px;
       --s-menu-icon: 25px;
       --s-0: min(calc(100vw - var(--s-menu) - var(--border-w)), calc(50vh - var(--border-w)/2));
-      --s-1: calc(var(--s-0)/2);
+      --s-1: calc(var(--s-0)/2);*/
+
       --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
       --window-h: calc(var(--s-0)*2 + var(--border-w));
+
       --vs-fsize: 25px;
       --ox-fsize: 100px;
       --color-pos: rgb(241,20,15);
@@ -51,7 +56,7 @@
     #window {
       width: var(--window-w);
       height: var(--window-h);
-      background: none;
+      background: white;
       position: relative;
     }
 
@@ -122,12 +127,33 @@
       width: var(--s-menu-icon);
       height: var(--s-menu-icon);
     }
+
+    .back {
+      position: absolute;
+      top: calc(352 * var(--x));
+      left: 0;
+      width: 100%;
+      height: calc(572 * var(--x));
+      background: rgba(255,242,204,0.25);
+    }
+
+    .back img.logo {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: calc(90 * var(--x));
+      height: calc(90 * var(--x));
+    }
   </style>
 </head>
 
 
 <body style='background:lightgray;margin:0;'>
   <div id='window'>
+    <div class='back'>
+      <img class='logo' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
+    </div>
+
     <div id='posts'>
       {% include 'getch/posts.html' %}
     </div>
@@ -151,7 +177,7 @@
   <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
   <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-  <!-- <script src="{% static 'semantic/semantic.min.js' %}"></script> -->
+  <script src="https://unpkg.com/merge-images"></script>
   <!-- <script src="{% static 'vue/vue.js' %}"></script> -->
   <!-- <script src="{% static 'swiper/swiper.js' %}"></script> -->
 
@@ -165,7 +191,18 @@
         this.email = cuser.email;
         this.boo_selected = Number(cuser.boo_selected);
         this.boos = this._init_boos(cuser.boos);
+        this.myboos = Object.keys(cuser.boos); //this._init_myboos(cuser.boos);
         this.cpost = {};
+      }
+
+      _init_myboos(boos) {
+        boos = {...boos};
+
+        for (let k in boos) {
+          boos[k].followers_id = new Set(boos[k].followers_id);
+          boos[k].followees_id = new Set(boos[k].followees_id);
+        }
+        return boos
       }
 
       _init_boos(boos) {
@@ -230,9 +267,15 @@
         set_posting();
       }
 
-      set myprofile(profile) {
-        console.log(`profile changed to [${profile.pix}]`);
-        this.boo.profile = profile;
+      // set myprofile(profile) {
+      set_myprofile(boo) {
+        console.log(`profile changed to [${boo.profile.pix}]`);
+        // this.boo.profile = profile;
+        boo.followers_id = new Set(boo.followers_id);
+        boo.followees_id = new Set(boo.followees_id);
+        // this.boos[this.boo_selected] = {}//{...this.boos[this.boo_selected], ...boo};
+        this.boos[this.boo_selected] = boo;
+        // test11 = boo;
         this.refresh();
       }
 
@@ -318,6 +361,7 @@
     {% if user.is_authenticated %}
     session = new Session({{user.serialized|safe}});
     session.refresh();
+    // console.log({{user.serialized|safe}});
     {% endif %}
 
 
@@ -334,10 +378,10 @@
         //   width: maskbar.offsetWidth / canvas.offsetWidth * 100
         // }
 
-        session.boo.profile.eye_mask.top = ui.position.top / canvas.offsetHeight * 100;
-        session.boo.profile.eye_mask.left = ui.position.left / canvas.offsetWidth * 100;
-        session.boo.profile.eye_mask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
-        session.boo.profile.eye_mask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
+        session.boo.profile.eyemask.top = ui.position.top / canvas.offsetHeight * 100;
+        session.boo.profile.eyemask.left = ui.position.left / canvas.offsetWidth * 100;
+        session.boo.profile.eyemask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
+        session.boo.profile.eyemask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
       }
     });
 

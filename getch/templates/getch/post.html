@@ -1,6 +1,6 @@
 <style>
   .post {
-    background: white;
+    background: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -17,7 +17,7 @@
     position: relative;
     padding: 0;
     box-sizing: border-box;
-    border: var(--border-w) solid black;
+    border: var(--border);
     text-align: center;
     transition: all 0.2s;
   }
@@ -53,6 +53,9 @@
     left: 0;
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
+    border: calc(12 * var(--x)) solid transparent;
+    /* background: white; */
   }
 
 
@@ -60,7 +63,7 @@
     text-align: right;
     position: absolute;
     top: 20%;
-    right: 10px;
+    right: calc(80 * var(--x));
     width: 70%;
     /* transform: translate(0,-50%); */
     font-size: 12px;
@@ -434,7 +437,7 @@
 
           if (js.mode=='created') {
             let where = swiper.realIndex + 1;
-            swiper.addSlide(where, `<div class="swiper-slide">${js.post_created}</div>`);
+            swiper.addSlide(where, `<div class="swiper-slide" post_id='${js.post_id}' author_id='${session.boo_selected}'>${js.post_created}</div>`);
             swiper.slideTo(where);
             close_page(post);
           }

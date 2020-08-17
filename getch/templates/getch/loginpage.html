@@ -1,7 +1,5 @@
-{% extends "getch/basepage.html" %}
+{% include "getch/page.html" %}
 
-{% block style %}
-{{ block.super }}
 <style>
   .login-bt {
     box-sizing: border-box;
@@ -21,33 +19,50 @@
     background: black;
   }
 </style>
-{% endblock style %}
 
 
-{% block page %}
 {% load socialaccount %}
-<div style="margin-top:20vh;font-size:50px;font-weight:bold;font-family: 'Source Code Pro', monospace;">
-  <!-- SIDE B -->
-  <img src='/static/materials/imgs/logo0.png' style='height:120px;width:120px;object-fit:contain;'>
-</div>
+<script type='text/x-template' id='loginpage-template'>
+  <page class='loginpage' :open='open' @close='$emit("close")'>
 
-<div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:30px;'>
-  <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
-    <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
-  </div>
+    <div style="margin-top:20vh;font-size:50px;font-weight:bold;font-family: 'Source Code Pro', monospace;">
+      <!-- SIDE B -->
+      <img src='/static/materials/imgs/logo0.png' style='height:120px;width:120px;object-fit:contain;'>
+    </div>
 
-  <a href="{% provider_login_url 'facebook' method='oauth2' %}">
-    <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
-  </a>
+    <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:30px;'>
+      <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
+        <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
+      </div>
 
-  <a href="{% provider_login_url 'google' method='oauth2' %}">
-    <div class='google login-bt'>LOGIN WITH GOOGLE</div>
-  </a>
+      <a href="{% provider_login_url 'facebook' method='oauth2' %}">
+        <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
+      </a>
 
-  <div style='font-size:8px;text-align:left;padding:10px;'>
-    <p>
-      BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
-    </p>
-  </div>
-</div>
-{% endblock page %}
+      <a href="{% provider_login_url 'google' method='oauth2' %}">
+        <div class='google login-bt'>LOGIN WITH GOOGLE</div>
+      </a>
+
+      <div style='font-size:8px;text-align:left;padding:10px;'>
+        <p>
+          BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
+        </p>
+      </div>
+    </div>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('loginpage', {
+    template: '#loginpage-template',
+    delimiters: ['[[', ']]'],
+    props: ['open'],
+    data: function() {
+      return { }
+    },
+
+    methods: { }
+  });
+</script>

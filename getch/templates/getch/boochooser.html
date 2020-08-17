@@ -1,16 +1,6 @@
-{% extends "getch/basepage.html" %}
+{% include "getch/page.html" %}
 
-{% block style %}
-{{ block.super }}
 <style>
-  .boo-candidate-pair {
-    background: white;
-    /* width: 100%; */
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-  }
-
   .boo-candidate {
     width: 75px;
     height: 75px;
@@ -29,7 +19,7 @@
 
   .boo-candidate.selected img {
     /* outline: 5px solid black; */
-    box-shadow: 0 0 0 5px black !important;
+    box-shadow: 0 0 0 5px orange !important;
   }
 
   .boo-candidate .pix {
@@ -44,98 +34,68 @@
     object-fit: contain;
   }
 </style>
-{% endblock style %}
 
-{% block page %}
-<div style='background:white;height:100%;overflow:auto;padding:15%;'>
-  <div style='background:none;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
-    <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
-  </div>
 
-  <!-- {% load ctags %}
-  {% with user.boo_set.all|boo_regroup as boo_pairs %}
+<script type='text/x-template' id='boochooser-template'>
+  <page class='boochooser' :open='open' @close='$emit("close")'>
+    <div style='background:white;height:100%;overflow:auto;padding:15%;'>
+      <div style='background:none;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
+        <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
+      </div>
 
-  {% for boos in boo_pairs %}
-  <div class='boo-candidate-pair'>
+      <div class='myboos' style='display:flex;flex-wrap:wrap;'>
+        <template v-if='session'>
+          <div class='boo-candidate' :class='{ selected: boo_id==session.boo_selected }' v-for='boo_id in session.myboos' style='margin:10px' @click='set_myboo(boo_id)'>
+            <img class='pix' :src='session.boos[boo_id].profile.pix' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+            <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+              [[ session.boos[boo_id].nick ]]
+            </span>
+          </div>
+        </template>
 
-    {% for boo in boos %}
-    <div class='boo-candidate' boo_id='{{boo.pk}}' onclick='select_this_boo(this)'>
-      {% if boo %}
-      <img class='pix' src='{{boo.profile.pix.url}}'>
-      {% else %}
-      <img class='icon' src='/static/materials/icons/boo_plus.png'>
-      {% endif %}
-
-      <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
-        {{boo.nick}}
-      </span>
+        <div class='boo-candidate' style='margin:10px' onclick='make_boo()'>
+          <img class='icon' src='/static/materials/icons/boo_plus.png' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+        </div>
+      </div>
     </div>
-    {% endfor %}
-
-  </div>
-  {% endfor %}
-  {% endwith %} -->
-
-  <div class='myboos' style='display:flex;flex-wrap:wrap;'>
-    <!-- {% for boo in user.boo_set.all %}
-    <div class='boo-candidate' boo_id='{{boo.pk}}' style='margin:10px;' onclick='select_this_boo(this)'>
-      <img class='pix' src='{{boo.profile.pix.url}}'>
-      <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
-        {{boo.nick}}
-      </span>
-    </div>
-    {% endfor %} -->
-  </div>
-
-</div>
-{% endblock page %}
+  </page>
+</script>
 
 
-{% block js %}
-{{ block.super }}
 <script>
-  function set_boochooser() {
-    let booblocks = session.myboos.map((key) => `
-      <div class='boo-candidate' boo_id='${key}' style='margin:10px;' onclick='select_this_boo(this)'>
-        <img class='pix' src='${session.boos[key].profile.pix}' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
-        <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
-          ${session.boos[key].nick}
-        </span>
-      </div>
-    `).join('');
+  Vue.component('boochooser', {
+    template: '#boochooser-template',
+    delimiters: ['[[', ']]'],
+    props: ['open', 'session'],
+    data: function() {
+      return { }
+    },
 
-    let add = `
-      <div class='boo-candidate' style='margin:10px;' onclick='make_boo()'>
-        <img class='icon' src='/static/materials/icons/boo_plus.png' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
-      </div>
-    `
-
-    document.querySelector('.myboos').innerHTML = [booblocks, add].join('');
-
-    let boos = document.querySelectorAll('#boochooser .boo-candidate');
-    boos.forEach(boo => {
-      let boo_id = boo.getAttribute('boo_id');
-      if (boo_id==session.boo_selected) {
-        boo.classList.add('selected');
-      } else {
-        boo.classList.remove('selected');
+    methods: {
+      set_myboo: function(boo_id) {
+        this.session.myboo = boo_id;
+        this.$emit('close');
       }
-    });
-  }
-
-  function select_this_boo(div) {
-    let boo_id = div.getAttribute('boo_id');
-
-    if (boo_id=='') {
-
-    } else {
-      session.myboo = boo_id;
-      // close_page(div);
-      // close 가 왜 안먹히지????
-      session.checkout();
-      document.querySelector('#boochooser .page-toggler').checked = false;
     }
-  }
+  });
+
+
+  // function set_boochooser() {
+  // }
+  //
+  // function select_this_boo(div) {
+  //   let boo_id = div.getAttribute('boo_id');
+  //
+  //   if (boo_id=='') {
+  //
+  //   } else {
+  //     session.myboo = boo_id;
+  //     // close_page(div);
+  //     // close 가 왜 안먹히지????
+  //     session.checkout();
+  //     document.querySelector('#boochooser .page-toggler').checked = false;
+  //   }
+  // }
 
   function make_boo() {
     fetch('boo/new/')
@@ -151,6 +111,5 @@
         session.myboo = boo.id;
         open_profiler();
       })
-  }
-</script>
-{% endblock %}
+    }
+  </script>

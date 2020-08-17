@@ -162,7 +162,7 @@
       <img class='icon' src="{% static 'materials/icons/plus.png' %}">
     </div>
 
-    <div class='my menublock' onclick='open_mypage()'>
+    <div class='my menublock' onclick='pager.open_mypage()'>
       <img class='icon' src="{% static 'materials/icons/profile.png' %}">
     </div>
 
@@ -178,12 +178,19 @@
   <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
   <script src="https://unpkg.com/merge-images"></script>
-  <!-- <script src="{% static 'vue/vue.js' %}"></script> -->
+  <script src="{% static 'vue/vue.js' %}"></script>
   <!-- <script src="{% static 'swiper/swiper.js' %}"></script> -->
 
 
 
   <script>
+    // const sideb = new Vue({
+    //   el: '#window',
+    //   delimiters: ['[[', ']]'],
+    //   data: {}
+    // });
+
+
     class Session {
       constructor(cuser) {
         this.mode = {on:'journey', prev:undefined};
@@ -191,7 +198,7 @@
         this.email = cuser.email;
         this.boo_selected = Number(cuser.boo_selected);
         this.boos = this._init_boos(cuser.boos);
-        this.myboos = Object.keys(cuser.boos); //this._init_myboos(cuser.boos);
+        this.myboos = Object.keys(cuser.boos).map(Number); //this._init_myboos(cuser.boos);
         this.cpost = {};
       }
 
@@ -282,7 +289,7 @@
       set myboo(boo_id) {
         console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);
         this.boo_selected = Number(boo_id);
-        this.refresh();
+        // this.refresh();
         this.api_get(`/boo/${boo_id}/set/`);
       }
 
@@ -360,8 +367,13 @@
 
     {% if user.is_authenticated %}
     session = new Session({{user.serialized|safe}});
-    session.refresh();
+    // session.refresh();
+    console.log('session made')
+    pager.session = session;
     // console.log({{user.serialized|safe}});
+
+    // console.log({{characters|safe}})
+    // console.log({{maskbases|safe}})
     {% endif %}
 
 

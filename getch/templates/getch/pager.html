@@ -11,63 +11,118 @@
   }
 </style>
 
-
+<div id='pager'>
 <div class='pager'>
-  <div id='loginpage'>
-    {% include 'getch/loginpage.html' %}
-  </div>
+  <loginpage
+    :open='loginpage_open'
+    @close='close_page("loginpage")'
+  ></loginpage>
 
-  <div id='authorpage'>
-    {% include 'getch/authorpage.html' %}
-  </div>
+  <mypage
+    v-if='session'
+    :open='mypage_open'
+    :session='session'
+    @close='close_page("mypage")'
+    @open='open_page($event)'
+  ></mypage>
 
-  <div id='mypage'>
-    {% include 'getch/mypage.html' %}
-  </div>
+  <boochooser
+    v-if='session'
+    :open='boochooser_open'
+    :session='session'
+    @close='close_page("boochooser")'
+  ></boochooser>
 
-  <div id='network'>
-    {% include 'getch/network.html' %}
-  </div>
-
-  <div id='boochooser'>
-    {% include 'getch/boochooser.html' with open=0 %}
-  </div>
-
-  <div id='profiler'>
-    {% include 'getch/profiler.html' with open=0 %}
-  </div>
-
-  <div id='posting'>
-    {% include 'getch/posting.html' %}
-  </div>
-
+  <profiler
+    v-if='session'
+    :open='profiler_open'
+    :session='session'
+    @close='close_page("profiler")'
+  ></profiler>
+</div>
 </div>
 
 
+<script src='/static/vue/vue.js'></script>
+
+{% include "getch/loginpage.html" %}
+{% include "getch/mypage.html" %}
+{% include "getch/boochooser.html" %}
+{% include "getch/profiler.html" %}
+
 <script>
-  function close_page(obj) {
-    session.checkout();
-    obj.closest('.basepage').querySelector('.page-toggler').checked = false;
-  }
+  const pager = new Vue({
+    el: '#pager',
+    delimiters: ['[[', ']]'],
+    data: {
+      session: undefined,
+      mypage_open: false,
+      loginpage_open: false,
+      boochooser_open: false,
+      profiler_open: false,
+    },
 
-  function open_page(pagename) {
-    session.checkin(pagename);
-    document.querySelector(`#${pagename} .page-toggler`).checked = true;
-  }
+    created: function() {
+      console.log('created');
+    },
 
-  function open_mypage() {
-    if (session) {
-      open_page('mypage');
+    methods: {
+      close_page: function(pagename) {
+        this[pagename + '_open'] = false;
+        this.session.checkout();
+      },
 
-    } else {
-      open_loginpage();
+      open_page: function(pagename) {
+        this[pagename + '_open'] = true;
+        this.session.checkin(pagename);
+      },
+
+      open_loginpage: function() {
+        // 로그인 페이지는 session 체크를 해서는 안된다
+        this['loginpage_open'] = true;
+      },
+
+      open_mypage: function() {
+        if (session) {
+          this.open_page('mypage');
+        } else {
+          this.open_loginpage();
+        }
+      },
+
+      open_boochooser: function() {
+        this.open_page('boochooser');
+      },
+
+      open_profiler: function() {
+        this.open_page('profiler');
+      }
     }
-  }
+  });
 
-  function open_loginpage() {
-    // 로그인 페이지는 session 체크를 해서는 안된다
-    document.querySelector('#loginpage .page-toggler').checked = true;
-  }
+  // function close_page(obj) {
+  //   session.checkout();
+  //   obj.closest('.basepage').querySelector('.page-toggler').checked = false;
+  // }
+  //
+  // function open_page(pagename) {
+  //   session.checkin(pagename);
+  //   document.querySelector(`#${pagename} .page-toggler`).checked = true;
+  // }
+  //
+  // function open_mypage() {
+  //   if (session) {
+  //     open_page('mypage');
+  //
+  //   } else {
+  //     open_loginpage();
+  //   }
+  // }
+  //
+  // function open_loginpage() {
+  //   // 로그인 페이지는 session 체크를 해서는 안된다
+  //   document.querySelector('#loginpage .page-toggler').checked = true;
+  // }
 
   function open_authorpage() {
     if (session.boo_selected==session.cpost.author_id) {

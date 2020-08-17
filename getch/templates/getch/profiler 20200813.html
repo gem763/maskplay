@@ -1,5 +1,7 @@
-{% include "getch/page.html" %}
+{% extends "getch/basepage.html" %}
 
+{% block style %}
+{{ block.super }}
 <style>
   :root {
     --canvas-size: calc(var(--window-w) * 0.7);
@@ -8,12 +10,12 @@
     --profiler-bottom: calc(100% - var(--profiler-top) - var(--profiler-mid));
   }
 
-  /* .profiler {
+  .profiler {
     background: white;
     width: 100%;
     height: 100%;
     position: relative;
-  } */
+  }
 
   .profiler input.toggler,
   .profiler input.pixsrc-toggler {
@@ -38,7 +40,7 @@
   }
 
 
-  .profiler [contenteditable]:focus {
+  [contenteditable]:focus {
     outline: none;
   }
 
@@ -248,7 +250,7 @@
   .profile-canvas .profile-character,
   .profile-canvas .profile-image,
   .profile-canvas .profile-text {
-    /* opacity: 0; */
+    opacity: 0;
     position: absolute;
     top: 0;
     left: 0;
@@ -267,145 +269,127 @@
     color: white;
   }
 
-  /* .profile-canvas input.pixsrc-toggler[value='character']:checked ~ .profile-character,
+  .profile-canvas input.pixsrc-toggler[value='character']:checked ~ .profile-character,
   .profile-canvas input.pixsrc-toggler[value='image']:checked ~ .profile-image,
   .profile-canvas input.pixsrc-toggler[value='text']:checked ~ .profile-text {
     opacity: 1 !important;
-  } */
+  }
 </style>
+{% endblock style %}
 
+{% block page %}
+<div class='profiler'>
 
-<script type='text/x-template' id='profiler-template'>
-  <page class='profiler' :open='open' @close='$emit("close")'>
-
-    <div class='top'>
-      <div class='nick'>
-        <span v-if='session' onblur='session.boo.nick=this.innerHTML' contenteditable>[[ session.boo.nick ]]</span>
-      </div>
+  <div class='top'>
+    <div class='nick'>
+      <span onblur='session.boo.nick=this.innerHTML'>{{user.boo.nick}}</span>
     </div>
+  </div>
 
 
-    <div class='mid'>
-      <div class='profile-canvas'>
-        <!-- <input value='character' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
-        <input value='image' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
-        <input value='text' class='pixsrc-toggler' type="radio" name='pixsrc-toggler' checked> -->
+  <div class='mid'>
+    <div class='profile-canvas'>
+      <input value='character' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
+      <input value='image' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
+      <input value='text' class='pixsrc-toggler' type="radio" name='pixsrc-toggler' checked>
 
-        <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" onchange="load_img(this)">
-        <img v-show='session.boo.profile.type=="CHARACTER"' class='profile-character' :src='characters[session.boo.profile.character].pix' onerror='imgerr(this)' style='background:none;'>
-        <img v-show='session.boo.profile.type=="IMAGE"' class='profile-image' :src='session.boo.profile.image' onerror='imgerr(this)' style='background:none;'>
-        <div v-show='session.boo.profile.type=="TEXT"' class='profile-text' onblur='session.boo.profile.text=this.innerHTML;' contenteditable>[[ session.boo.profile.text ]]</div>
+      <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" onchange="load_img(this)">
+      <img class='profile-character' onerror='imgerr(this)' style='background:none;'>
+      <img class='profile-image' onerror='imgerr(this)' style='background:none;'>
+      <div class='profile-text' onblur='session.boo.profile.text=this.innerHTML;'></div>
 
-        <input class='maskbar toggler' type='checkbox'>
-        <div class='eye maskbar'>
-          <img class='eye-mask' maskbase='' onerror='imgerr(this)'>
-        </div>
+      <input class='maskbar toggler' type='checkbox'>
+      <div class='eye maskbar'>
+        <img class='eye-mask' maskbase='' onerror='imgerr(this)'>
       </div>
+
+      <!-- <div class='canvas-border'></div> -->
     </div>
+  </div>
 
-    <div class='bottom'>
-      <div class='selector'>
-        <table class='selectbase'>
-          <tbody>
-            <tr>
-              <td class='pixloader'>
-                <label class='item' for='profile-image-load'>
-                  <img class='icon' src='/static/materials/icons/pix.png'>
-                </label>
-              </td>
-              <td class='txtloader'>
-                <div class='item' onclick='textize()'>
-                  <span class='txt'>히</span>
-                </div>
-              </td>
-              <td ref='characters'>
-                <div class='item' v-for='(ch, ch_id) in characters' :character='ch_id' onclick='characterize(this)'>
-                  <img class='fit' :src='ch.pix'>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <input class='selmask toggler' type='checkbox'>
-        <table class='selectbase eye-masks'>
-          <tbody>
-            <tr>
-              <td>
-                {% for eyemask in imgs.eyemasks %}
-                <div class='item wide' maskbase='{{eyemask.id}}' onclick='eye_maskup(this)'>
-                  <img class='mask' src='{{eyemask.pix.url}}'>
-                </div>
-                {% endfor %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <table class='options'>
+  <div class='bottom'>
+    <div class='selector'>
+      <table class='selectbase'>
         <tbody>
           <tr>
-            <td class='option masking' onclick='toggle_masking()'><img class='icon' src='/static/materials/icons/mask4.png'></td>
-            <td class='option coloring'></td>
-            <td></td>
-            <td class='option texting'><span>Aa</span></td>
-            <td class='option clipping' onclick='download()'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
+            <td class='pixloader'>
+              <label class='item' for='profile-image-load'>
+                <img class='icon' src='/static/materials/icons/pix.png'>
+              </label>
+            </td>
+            <td class='txtloader'>
+              <div class='item' onclick='textize()'>
+                <span class='txt'>히</span>
+              </div>
+            </td>
+            <td>
+              {% for ch in imgs.characters %}
+              <div class='item' character='{{ch.id}}' onclick='characterize(this)'>
+                <!-- <img class='fit' src='/static/materials/imgs/characters/{{ch}}'> -->
+                <img class='fit' src='{{ch.pix.url}}'>
+              </div>
+              {% endfor %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <input class='selmask toggler' type='checkbox'>
+      <table class='selectbase eye-masks'>
+        <tbody>
+          <tr>
+            <td>
+              {% for eyemask in imgs.eyemasks %}
+              <div class='item wide' maskbase='{{eyemask.id}}' onclick='eye_maskup(this)'>
+                <img class='mask' src='{{eyemask.pix.url}}'>
+              </div>
+              {% endfor %}
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class='save' onclick='save(this)'>SAVE</div>
-    <a id="downloader" style="display:none"></a>
+    <table class='options'>
+      <tbody>
+        <tr>
+          <td class='option masking' onclick='toggle_masking()'><img class='icon' src='/static/materials/icons/mask4.png'></td>
+          <td class='option coloring'></td>
+          <td></td>
+          <td class='option texting'><span>Aa</span></td>
+          <td class='option clipping' onclick='download()'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  </page>
-</script>
+  <div class='save' onclick='save(this)'>SAVE</div>
+  <a id="downloader" style="display:none"></a>
+
+  <!-- <img id='download' style='position:absolute;top:5px;right:5px;width:150px;height:150px;object-fit:cover;'> -->
+</div>
+{% endblock page %}
 
 
+{% block js %}
+{{ block.super }}
 <script>
-  Vue.component('profiler', {
-    template: '#profiler-template',
-    delimiters: ['[[', ']]'],
-    props: ['open', 'session'],
-    data: function() {
-      return {
-        characters: undefined,
-        maskbases: undefined
-      }
-    },
+  document.querySelector('.profiler .nick span').contentEditable = 'true';
+  document.querySelector('.profiler .profile-text').contentEditable = 'true';
 
-    created: function() {
-      this.characters = {{ characters|safe }};
-      this.maskbases = {{ maskbases|safe }};
-    },
+  function imgblob(url) {
+    var img = `<img src='${url}'>`
+    var blob = new Blob([img], { type: "text/html" });
+    return URL.createObjectURL(blob)
 
-    // mounted: function() {
-    //   console.log(this.$refs.characters);
-    // },
-
-    computed: {
-      // character_src: function() {
-        // if (this.open) {
-        //   this.$nextTick(function() {
-        //     charac_id = this.session.boo.profile.character;
-        //     return this.$refs['charac-' + charac_id].src
-        //   });
-        // return 1
-
-
-        // if (this.open && this.is_mounted) {
-          // charac_id = this.session.boo.profile.character;
-          // console.log(this.$refs.characters);
-          // return 1//this.$refs.characters.querySelector(`.item[character='${charac_id}'] img.fit`).src
-          // return this.$refs[`charac-${charac_id}`].src
-        // }
-      // }
-    },
-
-    methods: {  }
-  });
-
+    // let reader = new FileReader();
+    // reader.onload = function(e) {
+    //   let img = $(input).next('img');
+    //   img.attr("src", e.target.result);
+    // }
+    //
+    // reader.readAsDataURL(input.files[0]);
+  }
 
   function pixmode(what) {
     document.querySelector(`.profiler input.pixsrc-toggler[value='${what}']`).checked = true;
@@ -421,12 +405,12 @@
     }
   }
 
-  // function set_image(image_src) {
-  //   if (image_src) {
-  //     document.querySelector('.profiler .profile-canvas img.profile-image').src = image_src;
-  //     session.boo.profile.image = image_src;
-  //   }
-  // }
+  function set_image(image_src) {
+    if (image_src) {
+      document.querySelector('.profiler .profile-canvas img.profile-image').src = image_src;
+      session.boo.profile.image = image_src;
+    }
+  }
 
   function set_text(text) {
     if (text) {
@@ -447,6 +431,10 @@
       eye_maskbar.style.left = session.boo.profile.eyemask.left + '%';
 
       session.boo.profile.eyemask.maskbase = Number(maskbase);
+      // session.boo.profile.eyemask.top = Number(top);
+      // session.boo.profile.eyemask.left = Number(left);
+      // session.boo.profile.eyemask.width = Number(width);
+      // session.boo.profile.eyemask.height = Number(height);
     }
   }
 
@@ -473,7 +461,12 @@
 
       reader.onload = function(e) {
         set_image(e.target.result);
+        // set_image(input.files[0]);
         pixmode('image');
+        // input.closest('.profile-canvas').querySelector('img.profile-image').src = e.target.result;
+        // input.closest('.profile-canvas').style.backgroundImage = `url('${e.target.result}')`;
+        // console.log(e.target.result);
+
       }
 
       reader.readAsDataURL(input.files[0]);
@@ -528,6 +521,25 @@
   }
 
 
+  // function save(div) {
+  //   const formData = new FormData();
+  //   formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+  //   formData.append('pix', document.querySelector('.profiler input[type="file"]').files[0]); // 캐릭터로 넣는경우에는 어떻게 할것인가...
+  //   formData.append('nick', document.querySelector('.profiler .top .nick span').innerHTML);
+  //
+  //   fetch('boo/profile/save/', { method: 'POST', body: formData })
+  //     .then(res => res.json())
+  //     .then(js => {
+  //       console.log(JSON.parse(js.boo));
+  //
+  //       if (js.success) {
+  //         session.myprofile = JSON.parse(js.boo);
+  //         close_page(div);
+  //       }
+  //     });
+  // }
+
+
   function download() {
     html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
       .then(function(canvas) {
@@ -547,10 +559,23 @@
   function save(div) {
     html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
       .then(function(canvas) {
+        // document.querySelector('#testimg').src = canvas.toDataURL("image/png");
+
+        // if (navigator.msSaveBlob) {
+        //   var blob = canvas.msToBlob();
+        //   return navigator.msSaveBlob(blob, '파일명.png');
+        // } else {
+        //   var el = document.getElementById("target");
+        //   el.href = canvas.toDataURL("image/png");
+        //   el.download = '파일명.jpg';
+        //   el.click();
+        // }
+
         canvas.toBlob(function(blob) {
           const formData = new FormData();
           formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
           formData.append('pix', blob, `${session.email}_mypix.png`);
+          // formData.append('image', document.querySelector('.profiler input[type="file"]').files[0]);
           formData.append('nick', session.boo.nick);
           formData.append('type', session.boo.profile.type);
           formData.append('eyemask', JSON.stringify(session.boo.profile.eyemask));
@@ -574,6 +599,7 @@
               console.log(JSON.parse(js.boo));
 
               if (js.success) {
+                // session.myprofile = JSON.parse(js.boo);
                 session.set_myprofile(JSON.parse(js.boo));
                 close_page(div);
                 session.refresh();
@@ -586,4 +612,6 @@
   function imgerr(img) {
     img.style.display = 'none';
   }
+
 </script>
+{% endblock js %}

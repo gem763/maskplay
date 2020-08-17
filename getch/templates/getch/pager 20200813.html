@@ -1,0 +1,112 @@
+<style>
+  .pager {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    pointer-events: none;
+    overflow: hidden;
+  }
+</style>
+
+
+<div class='pager'>
+  <div id='loginpage'>
+    {% include 'getch/loginpage.html' %}
+  </div>
+
+  <div id='authorpage'>
+    {% include 'getch/authorpage.html' %}
+  </div>
+
+  <div id='mypage'>
+    {% include 'getch/mypage.html' %}
+  </div>
+
+  <div id='network'>
+    {% include 'getch/network.html' %}
+  </div>
+
+  <div id='boochooser'>
+    {% include 'getch/boochooser.html' with open=0 %}
+  </div>
+
+  <div id='profiler'>
+    {% include 'getch/profiler.html' with open=0 %}
+  </div>
+
+  <div id='posting'>
+    {% include 'getch/posting.html' %}
+  </div>
+
+</div>
+
+
+<script>
+  function close_page(obj) {
+    session.checkout();
+    obj.closest('.basepage').querySelector('.page-toggler').checked = false;
+  }
+
+  function open_page(pagename) {
+    session.checkin(pagename);
+    document.querySelector(`#${pagename} .page-toggler`).checked = true;
+  }
+
+  function open_mypage() {
+    if (session) {
+      open_page('mypage');
+
+    } else {
+      open_loginpage();
+    }
+  }
+
+  function open_loginpage() {
+    // 로그인 페이지는 session 체크를 해서는 안된다
+    document.querySelector('#loginpage .page-toggler').checked = true;
+  }
+
+  function open_authorpage() {
+    if (session.boo_selected==session.cpost.author_id) {
+      open_mypage();
+
+    } else {
+      set_authorpage();
+      open_page('authorpage');
+    }
+  }
+
+  function open_network() {
+    let boo_id;
+
+    if (session.mode.on=='mypage') {
+      boo_id = session.boo_selected;
+
+    } else if (session.mode.on=='authorpage') {
+      boo_id = session.cpost.author_id;
+    }
+
+    open_page('network');
+    $('#network').load(`/boo/${boo_id}/network`);
+  }
+
+  function open_boochooser() {
+    open_page('boochooser');
+  }
+
+  function open_profiler() {
+    open_page('profiler');
+  }
+
+  function open_posting(type) {
+    $('.popup input.toggler').prop('checked', false);
+    document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
+    document.querySelector(`#posting .${type} .description span.text`).innerHTML = '';
+    document.querySelectorAll(`#posting .${type} input[type='file']`).forEach(input => { input.value = ''; });
+    document.querySelectorAll(`#posting .${type} img.pix`).forEach(img => { img.src = ''; });
+    open_page('posting');
+  }
+</script>

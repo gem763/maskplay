@@ -12,19 +12,43 @@ import json
 
 # https://brownbears.tistory.com/259
 # https://stackoverflow.com/questions/37270170/iterate-through-a-static-image-folder-in-django
-characters = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\characters"))
-eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\masks\eyes"))
+# characters = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\characters"))
+# eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\masks\eyes"))
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
 imgs = {
     'characters': m.Character.objects.all(),
-    'eyemasks': m.MaskBase.objects.filter(type='EYE') #eye_masks,
+    'eyemasks': m.MaskBase.objects.filter(type='EYE'),
 }
+
+# characters = {}
+# for ch in m.Character.objects.all():
+#     if ch.category in characters:
+#         characters[ch.category][ch.id] = ch.pix.url
+#     else:
+#         characters[ch.category] = { ch.id: ch.pix.url }
+#
+# maskbases = {}
+# for mb in m.MaskBase.objects.all():
+#     mb_type = mb.get_type_display()
+#
+#     if mb_type in maskbases:
+#         if mb.category in maskbases[mb_type]:
+#             maskbases[mb_type][mb.category][mb.id] = mb.pix.url
+#         else:
+#             maskbases[mb_type][mb.category] = { mb.id: mb.pix.url }
+#
+#     else:
+#         maskbases[mb_type] = { mb.category: { mb.id: mb.pix.url } }
+
+
+characters = {ch.id:{'category':ch.category, 'pix':ch.pix.url} for ch in m.Character.objects.all()}
+maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
 
 def play(request):
-    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    ctx = {'posts': posts, 'imgs':imgs}
+    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:2]
+    ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
     return render(request, 'getch/play.html', ctx)
     # return render(request, 'getch/test.html')
 

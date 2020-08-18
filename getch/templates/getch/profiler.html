@@ -8,13 +8,6 @@
     --profiler-bottom: calc(100% - var(--profiler-top) - var(--profiler-mid));
   }
 
-  /* .profiler {
-    background: white;
-    width: 100%;
-    height: 100%;
-    position: relative;
-  } */
-
   .profiler input.toggler,
   .profiler input.pixsrc-toggler {
     display: none;
@@ -71,24 +64,20 @@
     position: absolute;
     top: 20%;
     left: 0;
-    right: 0;
     height: 20%;
-    background: white;
-    /* border: var(--border); */
+    width: 100%;
+    background: none;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
     text-align: center;
-    opacity: 0;
-    transition: opacity 0.1s;
   }
 
-  .profiler .profile-canvas .toggler:checked + .maskbar {
-    opacity: 1;
-  }
-
-  .profiler .profile-canvas .maskbar .eye-mask {
+  /* .profiler .profile-canvas .maskbar .eye-mask {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
+  } */
 
   .profiler .profile-canvas .canvas-border {
     position: absolute;
@@ -101,14 +90,7 @@
     pointer-events: none;
   }
 
-  /* .profiler .profile-canvas img.profile-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  } */
-
   .profiler .bottom {
-    /* height: var(--profiler-bottom); */
     padding-top: 20px;
     position: relative;
     background: none;
@@ -130,8 +112,7 @@
 
   .profiler .selector table.selectbase.eye-masks {
     position: absolute;
-    top: 100%;
-    transition: top 0.1s;
+    top: 0;
   }
 
   .profiler .selector table.selectbase td {
@@ -192,10 +173,6 @@
     font-size: 20px;
   }
 
-  .profiler .selector .toggler:checked + table.selectbase {
-    top: 0;
-  }
-
   .profiler table.options {
     border-collapse: collapse;
     width: 80%;
@@ -248,14 +225,31 @@
   .profile-canvas .profile-character,
   .profile-canvas .profile-image,
   .profile-canvas .profile-text {
-    /* opacity: 0; */
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    background-size: cover;
+    /* object-fit: cover; */
+    /* object-fit으로 하면 html2canvas가 capture 못한다 */
   }
+
+  /* .profile-canvas .profile-text {
+    font-size: 30vw;
+    font-weight: bold;
+    background: black;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .profile-canvas .profile-text span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } */
 
   .profile-canvas .profile-text {
     font-size: 30vw;
@@ -265,13 +259,30 @@
     justify-content: center;
     background: black;
     color: white;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
-  /* .profile-canvas input.pixsrc-toggler[value='character']:checked ~ .profile-character,
-  .profile-canvas input.pixsrc-toggler[value='image']:checked ~ .profile-image,
-  .profile-canvas input.pixsrc-toggler[value='text']:checked ~ .profile-text {
-    opacity: 1 !important;
-  } */
+  .profiler .show-eyemask-enter-active,
+  .profiler .show-eyemask-leave-active {
+    transition: opacity .1s;
+  }
+
+  .profiler .show-eyemask-enter,
+  .profiler .show-eyemask-leave-to {
+    opacity: 0;
+  }
+
+  .profiler .show-eyemasks-enter-active,
+  .profiler .show-eyemasks-leave-active {
+    transition: all .1s;
+  }
+
+  .profiler .show-eyemasks-enter,
+  .profiler .show-eyemasks-leave-to {
+    top: 100% !important;
+  }
 </style>
 
 
@@ -280,26 +291,25 @@
 
     <div class='top'>
       <div class='nick'>
-        <span v-if='session' onblur='session.boo.nick=this.innerHTML' contenteditable>[[ session.boo.nick ]]</span>
+        <span v-if='session' onblur='session.boo.nick=this.textContent' contenteditable>[[ session.boo.nick ]]</span>
       </div>
     </div>
 
 
     <div class='mid'>
-      <div class='profile-canvas'>
-        <!-- <input value='character' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
-        <input value='image' class='pixsrc-toggler' type="radio" name='pixsrc-toggler'>
-        <input value='text' class='pixsrc-toggler' type="radio" name='pixsrc-toggler' checked> -->
+      <div class='profile-canvas' ref='canvas'>
 
-        <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" onchange="load_img(this)">
-        <img v-show='session.boo.profile.type=="CHARACTER"' class='profile-character' :src='characters[session.boo.profile.character].pix' onerror='imgerr(this)' style='background:none;'>
-        <img v-show='session.boo.profile.type=="IMAGE"' class='profile-image' :src='session.boo.profile.image' onerror='imgerr(this)' style='background:none;'>
-        <div v-show='session.boo.profile.type=="TEXT"' class='profile-text' onblur='session.boo.profile.text=this.innerHTML;' contenteditable>[[ session.boo.profile.text ]]</div>
+        <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" @change="imagize">
+        <div v-show='session.boo.profile.type=="CHARACTER"' class='profile-character' onerror='imgerr(this)' :style='profile_character_style'></div>
+        <div v-show='session.boo.profile.type=="IMAGE"' class='profile-image' onerror='imgerr(this)' :style='profile_image_style'></div>
+        <div v-show='session.boo.profile.type=="TEXT"' class='profile-text' onblur='session.boo.profile.text=this.textContent;' contenteditable>[[ session.boo.profile.text ]]</div>
+        <!-- <div v-show='session.boo.profile.type=="TEXT"' class='profile-text'>
+          <span onblur='session.boo.profile.text=this.textContent' contenteditable>[[ session.boo.profile.text ]]</span>
+        </div> -->
 
-        <input class='maskbar toggler' type='checkbox'>
-        <div class='eye maskbar'>
-          <img class='eye-mask' maskbase='' onerror='imgerr(this)'>
-        </div>
+        <transition name='show-eyemask'>
+          <div class='eye maskbar' ref='eyemaskbar' v-show='session.boo.profile.eyemask.masked && (session.boo.profile.type!="TEXT")' :style='eyemask_style'></div>
+        </transition>
       </div>
     </div>
 
@@ -314,12 +324,12 @@
                 </label>
               </td>
               <td class='txtloader'>
-                <div class='item' onclick='textize()'>
+                <div class='item' @click='textize()'>
                   <span class='txt'>히</span>
                 </div>
               </td>
-              <td ref='characters'>
-                <div class='item' v-for='(ch, ch_id) in characters' :character='ch_id' onclick='characterize(this)'>
+              <td>
+                <div class='item' v-for='(ch, ch_id) in characters' @click='characterize(ch_id)'>
                   <img class='fit' :src='ch.pix'>
                 </div>
               </td>
@@ -327,36 +337,35 @@
           </tbody>
         </table>
 
-        <input class='selmask toggler' type='checkbox'>
-        <table class='selectbase eye-masks'>
-          <tbody>
-            <tr>
-              <td>
-                {% for eyemask in imgs.eyemasks %}
-                <div class='item wide' maskbase='{{eyemask.id}}' onclick='eye_maskup(this)'>
-                  <img class='mask' src='{{eyemask.pix.url}}'>
-                </div>
-                {% endfor %}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <transition name='show-eyemasks'>
+          <table v-show='eyemasks_showing' class='selectbase eye-masks'>
+            <tbody>
+              <tr>
+                <td>
+                  <div class='item wide' v-for='(mb, mb_id) in maskbases' @click='eyemask_up(mb_id)'>
+                    <img class='mask' :src='mb.pix'>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </transition>
       </div>
 
       <table class='options'>
         <tbody>
           <tr>
-            <td class='option masking' onclick='toggle_masking()'><img class='icon' src='/static/materials/icons/mask4.png'></td>
+            <td class='option masking' @click='eyemasks_showing=!eyemasks_showing'><img class='icon' src='/static/materials/icons/mask4.png'></td>
             <td class='option coloring'></td>
             <td></td>
             <td class='option texting'><span>Aa</span></td>
-            <td class='option clipping' onclick='download()'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
+            <td class='option clipping' @click='download()'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class='save' onclick='save(this)'>SAVE</div>
+    <div class='save' @click='save'>SAVE</div>
     <a id="downloader" style="display:none"></a>
 
   </page>
@@ -371,7 +380,9 @@
     data: function() {
       return {
         characters: undefined,
-        maskbases: undefined
+        maskbases: undefined,
+        image_file: undefined,
+        eyemasks_showing: false,
       }
     },
 
@@ -380,11 +391,46 @@
       this.maskbases = {{ maskbases|safe }};
     },
 
-    // mounted: function() {
-    //   console.log(this.$refs.characters);
-    // },
+    mounted: function() {
+      const self = this;
+      $(this.$refs.eyemaskbar).draggable({
+        axis: 'y',
+        containment: 'parent',
+        stop: function(event, ui) {
+          const canvas = self.$refs.canvas;
+          const maskbar = self.$refs.eyemaskbar;
+
+          self.session.boo.profile.eyemask.top = ui.position.top / canvas.offsetHeight * 100;
+          self.session.boo.profile.eyemask.left = ui.position.left / canvas.offsetWidth * 100;
+          self.session.boo.profile.eyemask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
+          self.session.boo.profile.eyemask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
+        }
+      });
+    },
 
     computed: {
+      eyemask_style: function() {
+        return {
+          backgroundImage: `url(${this.maskbases[this.session.boo.profile.eyemask.maskbase].pix})`,
+          top: this.session.boo.profile.eyemask.top + '%',
+          left: this.session.boo.profile.eyemask.left + '%',
+          width: this.session.boo.profile.eyemask.width + '%',
+          height: this.session.boo.profile.eyemask.height + '%'
+        }
+      },
+
+      profile_image_style: function() {
+        return {
+          backgroundImage: `url(${this.session.boo.profile.image})`
+        }
+      },
+
+      profile_character_style: function() {
+        return {
+          backgroundImage: `url(${this.characters[this.session.boo.profile.character].pix})`
+        }
+      }
+
       // character_src: function() {
         // if (this.open) {
         //   this.$nextTick(function() {
@@ -392,196 +438,103 @@
         //     return this.$refs['charac-' + charac_id].src
         //   });
         // return 1
-
-
-        // if (this.open && this.is_mounted) {
-          // charac_id = this.session.boo.profile.character;
-          // console.log(this.$refs.characters);
-          // return 1//this.$refs.characters.querySelector(`.item[character='${charac_id}'] img.fit`).src
-          // return this.$refs[`charac-${charac_id}`].src
-        // }
-      // }
     },
 
-    methods: {  }
+    methods: {
+      eyemask_up: function(maskbase_id) {
+        this.session.boo.profile.eyemask.maskbase = Number(maskbase_id);
+        this.session.boo.profile.eyemask.masked = true;
+      },
+
+      imagize: function(event) {
+        const input = event.target;
+        const self = this;
+
+        if (input.files && input.files[0]) {
+          let reader = new FileReader();
+
+          reader.onload = function(e) {
+            self.session.boo.profile.type = 'IMAGE';
+            self.session.boo.profile.image = e.target.result;
+            self.image_file = input.files[0];
+            // console.log(input.files[0]);
+            // console.log(e.target);
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      },
+
+      characterize: function(character_id) {
+        this.session.boo.profile.character = Number(character_id);
+        this.session.boo.profile.type = 'CHARACTER';
+      },
+
+      textize: function() {
+        this.session.boo.profile.type = 'TEXT'
+      },
+
+      download: function() {
+        html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
+          .then(function(canvas) {
+            if (navigator.msSaveBlob) {
+              const blob = canvas.msToBlob();
+              return navigator.msSaveBlob(blob, 'mypix.png');
+
+            } else {
+              const el = document.createElement("a");
+              el.href = canvas.toDataURL("image/png");
+              el.download = 'mypix.png';
+              el.click();
+            }
+          });
+      },
+
+      save: function() {
+        const self = this;
+        html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
+          .then(function(canvas) {
+            canvas.toBlob(function(blob) {
+              console.log(blob);
+              self.session.boo.profile.pix = URL.createObjectURL(blob);
+              self.$emit('close');
+
+              const formData = new FormData();
+              formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
+              formData.append('pix', blob, `${self.session.email}_mypix.png`);
+              formData.append('nick', self.session.boo.nick);
+              formData.append('type', self.session.boo.profile.type);
+
+              if (self.session.boo.profile.type=='CHARACTER' && self.session.boo.profile.character) {
+                formData.append('character', self.session.boo.profile.character);
+
+              } else if (self.session.boo.profile.type=='IMAGE' && self.image_file) {
+                formData.append('image', self.image_file);
+
+              } else if (self.session.boo.profile.type=='TEXT' && self.session.boo.profile.text) {
+                formData.append('text', self.session.boo.profile.text);
+              }
+
+              if (self.session.boo.profile.eyemask.masked && self.session.boo.profile.type!='TEXT') {
+                formData.append('eyemask', JSON.stringify(self.session.boo.profile.eyemask));
+              }
+
+              if (self.session.boo.profile.mouthmask.masked && self.session.boo.profile.type!='TEXT') {
+                formData.append('eyemask', JSON.stringify(self.session.boo.profile.mouthmask));
+              }
+
+              fetch('boo/profile/save/', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(js => {
+                  if (js.success) {
+                    console.log(JSON.parse(js.boo));
+                  }
+                });
+            });
+          });
+      }
+    }
   });
 
-
-  function pixmode(what) {
-    document.querySelector(`.profiler input.pixsrc-toggler[value='${what}']`).checked = true;
-    session.boo.profile.type = what.toUpperCase();
-  }
-
-
-  function set_character(charac_id) {
-    if (charac_id) {
-      let charac_src = document.querySelector(`.profiler .item[character='${charac_id}'] img.fit`).src;
-      document.querySelector('.profiler .profile-canvas .profile-character').src = charac_src;
-      session.boo.profile.character = Number(charac_id);
-    }
-  }
-
-  // function set_image(image_src) {
-  //   if (image_src) {
-  //     document.querySelector('.profiler .profile-canvas img.profile-image').src = image_src;
-  //     session.boo.profile.image = image_src;
-  //   }
-  // }
-
-  function set_text(text) {
-    if (text) {
-      document.querySelector('.profiler .profile-canvas .profile-text').innerHTML = text;
-      session.boo.profile.text = text;
-    }
-  }
-
-  function set_eyemask(maskbase) {
-    if (maskbase) {
-      let maskbase_src = document.querySelector(`.profiler .item[maskbase='${maskbase}'] img.mask`).src;
-      let eye_maskbar = document.querySelector('.profile-canvas .eye.maskbar');
-
-      eye_maskbar.querySelector('img.eye-mask').src = maskbase_src;
-      eye_maskbar.style.width = session.boo.profile.eyemask.width + '%';
-      eye_maskbar.style.height = session.boo.profile.eyemask.height + '%';
-      eye_maskbar.style.top = session.boo.profile.eyemask.top + '%';
-      eye_maskbar.style.left = session.boo.profile.eyemask.left + '%';
-
-      session.boo.profile.eyemask.maskbase = Number(maskbase);
-    }
-  }
-
-  function set_profiler() {
-    document.querySelector('.profiler .top .nick span').innerHTML = session.boo.nick;
-
-    set_character(session.boo.profile.character);
-    set_image(session.boo.profile.image);
-    set_text(session.boo.profile.text);
-    set_eyemask(session.boo.profile.eyemask.maskbase);
-    pixmode(session.boo.profile.type.toLowerCase());
-
-    if (session.boo.profile.eyemask.masked) {
-      toggle_masking(1);
-    } else {
-      toggle_masking(0);
-    }
-  }
-
-
-  function load_img(input) {
-    if (input.files && input.files[0]) {
-      let reader = new FileReader();
-
-      reader.onload = function(e) {
-        set_image(e.target.result);
-        pixmode('image');
-      }
-
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-
-
-  function eye_maskup(td) {
-    // let src = td.querySelector('img').src;
-    let maskbase = td.getAttribute('maskbase');
-    set_eyemask(maskbase);
-    // document.querySelector('.profile-canvas .maskbar img.eye-mask').src = src;
-    // session.boo.profile.eyemask.maskbase = Number(maskbase);
-  }
-
-  function characterize(td) {
-    charac_id = td.getAttribute('character');
-    set_character(charac_id);
-    pixmode('character');
-
-    // let src = td.querySelector('img').src;
-    // document.querySelector('.profile-canvas img.profile-image').src = src;
-  }
-
-
-  function textize() {
-    pixmode('text');
-  }
-
-  function toggle_masking(what) {
-    let selmask = document.querySelector('input.toggler.selmask')
-    let maskbar = document.querySelector('input.toggler.maskbar')
-
-    if (what && what==0) {
-      selmask.checked = false;
-      maskbar.checked = false;
-      // session.boo.profile.has_eye_mask = false;
-      session.boo.profile.eyemask.masked = false;
-
-    } else if (what && what==1) {
-      selmask.checked = true;
-      maskbar.checked = true;
-      session.boo.profile.eyemask.masked = true;
-      // session.boo.profile.has_eye_mask = true;
-
-    } else {
-      selmask.checked = !selmask.checked;
-      maskbar.checked = !maskbar.checked;
-      session.boo.profile.eyemask.masked = !session.boo.profile.eyemask.masked;
-      // session.boo.profile.has_eye_mask = !session.boo.profile.has_eye_mask;
-    }
-  }
-
-
-  function download() {
-    html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
-      .then(function(canvas) {
-        if (navigator.msSaveBlob) {
-          var blob = canvas.msToBlob();
-          return navigator.msSaveBlob(blob, 'mypix.png');
-        } else {
-          var el = document.createElement("a");
-          el.href = canvas.toDataURL("image/png");
-          el.download = '파일명.jpg';
-          el.click();
-        }
-      });
-    }
-
-
-  function save(div) {
-    html2canvas(document.querySelector('.profile-canvas'), { allowTaint: false, useCORS: true, logging: true })
-      .then(function(canvas) {
-        canvas.toBlob(function(blob) {
-          const formData = new FormData();
-          formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
-          formData.append('pix', blob, `${session.email}_mypix.png`);
-          formData.append('nick', session.boo.nick);
-          formData.append('type', session.boo.profile.type);
-          formData.append('eyemask', JSON.stringify(session.boo.profile.eyemask));
-          // console.log(session.boo.profile.eyemask);
-
-          if (session.boo.profile.character) {
-            formData.append('character', session.boo.profile.character)
-          }
-
-          if (session.boo.profile.image) {
-            formData.append('image', document.querySelector('.profiler input[type="file"]').files[0])
-          }
-
-          if (session.boo.profile.text) {
-            formData.append('text', session.boo.profile.text)
-          }
-
-          fetch('boo/profile/save/', { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(js => {
-              console.log(JSON.parse(js.boo));
-
-              if (js.success) {
-                session.set_myprofile(JSON.parse(js.boo));
-                close_page(div);
-                session.refresh();
-              }
-            });
-        });
-      });
-  }
 
   function imgerr(img) {
     img.style.display = 'none';

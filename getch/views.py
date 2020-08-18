@@ -123,10 +123,11 @@ def profile_save(request):
         _nick = request.POST.get('nick', None)
         _type = request.POST.get('type', None)
         _pix = request.FILES.get('pix', None)
-        _character = request.POST.get('character', None)
         _image = request.FILES.get('image', None)
+        _character = request.POST.get('character', None)
         _text = request.POST.get('text', None)
         _eyemask = request.POST.get('eyemask', None)
+        _mouthmask = request.POST.get('mouthmask', None)
 
         user = request.user
         boo_data = { 'profile': {} }
@@ -150,8 +151,10 @@ def profile_save(request):
             boo_data['profile']['text'] = _text
 
         if _eyemask:
-            print(json.loads(_eyemask))
             boo_data['profile']['eyemask'] = json.loads(_eyemask)
+
+        if _mouthmask:
+            boo_data['profile']['mouthmask'] = json.loads(_mouthmask)
 
         ser = m.BooSerializer(user.boo, data=boo_data)
 

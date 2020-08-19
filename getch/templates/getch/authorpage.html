@@ -1,13 +1,6 @@
-{% extends "getch/basepage.html" %}
+{% include "getch/page.html" %}
 
-{% block style %}
-{{ block.super }}
 <style>
-  .authorpage .follow.toggler {
-    display: none;
-    visibility: hidden;
-  }
-
   .authorpage .follow-button {
     background: black;
     color: white;
@@ -17,71 +10,53 @@
     align-items: center;
     justify-content: center;
   }
-
-  .authorpage .follow-button:after {
-    content: '팔로우하기';
-  }
-
-  .authorpage .follow.toggler:checked ~ label .follow-button:after {
-    content: '팔로우중';
-  }
-
-  .authorpage .follow.toggler:checked ~ label .follow-button {
-    background: var(--color-pos);
-  }
 </style>
-{% endblock style %}
 
-{% block page %}
-<div class='authorpage' style='width:100%;height:100%;background:lightpink;'>
-  <img class='boo' src='' style="object-fit:cover;width:100px;height:100px;">
+<script type='text/x-template' id='authorpage-template'>
+  <page class='authorpage' :open='open' @close='$emit("close")'>
+    <img class='boo' :src='profile_src' style="object-fit:cover;width:100px;height:100px;">
+    <br>
 
-  <br><br>
-  <span class='network' style='background:black;color:white;padding:5px;' onclick='open_network()'>
-    팔로워 <span class='nfollowers'></span> | 팔로잉 <span class='nfollowees'></span>
-  </span>
+    <br><br>
+    <span class='network' style='background:black;color:white;padding:5px;' onclick='open_network()'>
+      팔로워 <span class='nfollowers'>[[ nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ nfollowees ]]</span>
+    </span>
 
-  <br><br>
-  <input id='authorfollow' class='follow toggler' type="checkbox">
-  <label for='authorfollow'>
-    <div class='follow-button' onclick='toggle_follow()'></div>
-  </label>
-</div>
-{% endblock page %}
-
-
-{% block js %}
-<script>
-  function set_authorpage() {
-    let authorpage = document.querySelector('#authorpage');
-    authorpage.querySelector('span.nfollowers').innerHTML = session.author_nfollowers;
-    authorpage.querySelector('span.nfollowees').innerHTML = session.author_nfollowees;
-    authorpage.querySelector('img.boo').src = session.author.profile.pix;
-
-    if (session.is_following) {
-      authorpage.querySelector('.follow.toggler').checked = true;
-    } else {
-      authorpage.querySelector('.follow.toggler').checked = false;
-    }
-  }
-
-  function toggle_follow() {
-    if (session.is_following) {
-      session.unfollow();
-
-    } else {
-      session.follow();
-    }
-
-    update_network_dash();
-
-    // 내페이지에서도 network dash를 업데이트한다
-    set_mypage();
-  }
-
-  function update_network_dash() {
-    let nfollowers = document.querySelector('#authorpage span.nfollowers');
-    nfollowers.innerHTML = session.author_nfollowers;
-  }
+    <br></br>
+    <div class='follow-button'>팔로우하기</div>
+  </page>
 </script>
-{% endblock js %}
+
+
+<script>
+  Vue.component('authorpage', {
+    template: '#authorpage-template',
+    delimiters: ['[[', ']]'],
+    props: ['open', 'session'],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      profile_src: function() {
+        if (this.session) {
+          return this.session.boo.profile.pix;
+        }
+      },
+
+      nfollowers: function() {
+        if (this.session) {
+          return this.session.nfollowers;
+        }
+      },
+
+      nfollowees: function() {
+        if (this.session) {
+          return this.session.nfollowees;
+        }
+      }
+    },
+
+    methods: { }
+  });
+</script>

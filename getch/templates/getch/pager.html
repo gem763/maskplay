@@ -36,9 +36,15 @@
   <profiler
     v-if='session'
     :open='profiler_open'
-    :session='session'
+    :boo='session.boo'
     @close='close_page("profiler")'
   ></profiler>
+
+  <authorpage
+    :open='authorpage_open'
+    :session='session'
+    @close='close_page("authorpage")'
+  ></authorpage>
 </div>
 </div>
 
@@ -49,6 +55,7 @@
 {% include "getch/mypage.html" %}
 {% include "getch/boochooser.html" %}
 {% include "getch/profiler.html" %}
+{% include "getch/authorpage.html" %}
 
 <script>
   const pager = new Vue({
@@ -60,6 +67,7 @@
       loginpage_open: false,
       boochooser_open: false,
       profiler_open: false,
+      authorpage_open: false,
     },
 
     created: function() {
@@ -79,7 +87,7 @@
 
       open_loginpage: function() {
         // 로그인 페이지는 session 체크를 해서는 안된다
-        this['loginpage_open'] = true;
+        this.loginpage_open = true;
       },
 
       open_mypage: function() {
@@ -96,43 +104,19 @@
 
       open_profiler: function() {
         this.open_page('profiler');
+      },
+
+      open_authorpage: function() {
+        if (session && session.boo_selected==session.cpost.author_id) {
+          this.open_mypage();
+
+        } else {
+          this.open_page('authorpage');
+        }
       }
     }
   });
 
-  // function close_page(obj) {
-  //   session.checkout();
-  //   obj.closest('.basepage').querySelector('.page-toggler').checked = false;
-  // }
-  //
-  // function open_page(pagename) {
-  //   session.checkin(pagename);
-  //   document.querySelector(`#${pagename} .page-toggler`).checked = true;
-  // }
-  //
-  // function open_mypage() {
-  //   if (session) {
-  //     open_page('mypage');
-  //
-  //   } else {
-  //     open_loginpage();
-  //   }
-  // }
-  //
-  // function open_loginpage() {
-  //   // 로그인 페이지는 session 체크를 해서는 안된다
-  //   document.querySelector('#loginpage .page-toggler').checked = true;
-  // }
-
-  function open_authorpage() {
-    if (session.boo_selected==session.cpost.author_id) {
-      open_mypage();
-
-    } else {
-      set_authorpage();
-      open_page('authorpage');
-    }
-  }
 
   function open_network() {
     let boo_id;
@@ -148,13 +132,6 @@
     $('#network').load(`/boo/${boo_id}/network`);
   }
 
-  function open_boochooser() {
-    open_page('boochooser');
-  }
-
-  function open_profiler() {
-    open_page('profiler');
-  }
 
   function open_posting(type) {
     $('.popup input.toggler').prop('checked', false);

@@ -238,7 +238,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
 
 
 class Post(BigIdAbstract, ModelWithFlag):
-    boo = models.ForeignKey(Boo, on_delete=models.CASCADE)
+    boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
     text = models.TextField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     objects = InheritanceManager()
@@ -284,7 +284,11 @@ class Post(BigIdAbstract, ModelWithFlag):
 
 
 def _postpix_path(instance, fname):
-    user = instance.boo.user.email
+    try:
+        user = instance.boo.user.email
+    except:
+        user = 'anonymous'
+
     now = datetime.now()
     fname = str(now) + '__' + fname
     fmt = 'post/{year}/{month}/{day}/{user}/{fname}'
@@ -292,15 +296,15 @@ def _postpix_path(instance, fname):
 
 
 class PostVoteOX(Post):
-    pix = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
+    pix = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
     def __str__(self):
         return 'OX | '# + self.boo
 
 
 class PostVoteAB(Post):
-    pix_a = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
-    pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=True, blank=True)
+    pix_a = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
+    pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
     def __str__(self):
         return 'AB | '# + self.boo

@@ -8,12 +8,6 @@
     --profiler-bottom: calc(100% - var(--profiler-top) - var(--profiler-mid));
   }
 
-  .profiler input.toggler,
-  .profiler input.pixsrc-toggler {
-    display: none;
-    visibility: hidden;
-  }
-
   .profiler .top {
     height: var(--profiler-top);
     width: 100%;
@@ -56,8 +50,6 @@
     background: none;
     display: inline-block;
     overflow: hidden;
-    /* background-size: cover; */
-    /* border: 5px solid red; */
   }
 
   .profiler .profile-canvas .maskbar {
@@ -73,22 +65,6 @@
     text-align: center;
   }
 
-  /* .profiler .profile-canvas .maskbar .eye-mask {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  } */
-
-  .profiler .profile-canvas .canvas-border {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: none;
-    border: var(--border);
-    pointer-events: none;
-  }
 
   .profiler .bottom {
     padding-top: 20px;
@@ -291,7 +267,7 @@
 
     <div class='top'>
       <div class='nick'>
-        <span v-if='session' onblur='session.boo.nick=this.textContent' contenteditable>[[ session.boo.nick ]]</span>
+        <span onblur='boo.nick=this.textContent' contenteditable>[[ boo.nick ]]</span>
       </div>
     </div>
 
@@ -300,15 +276,12 @@
       <div class='profile-canvas' ref='canvas'>
 
         <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" @change="imagize">
-        <div v-show='session.boo.profile.type=="CHARACTER"' class='profile-character' onerror='imgerr(this)' :style='profile_character_style'></div>
-        <div v-show='session.boo.profile.type=="IMAGE"' class='profile-image' onerror='imgerr(this)' :style='profile_image_style'></div>
-        <div v-show='session.boo.profile.type=="TEXT"' class='profile-text' onblur='session.boo.profile.text=this.textContent;' contenteditable>[[ session.boo.profile.text ]]</div>
-        <!-- <div v-show='session.boo.profile.type=="TEXT"' class='profile-text'>
-          <span onblur='session.boo.profile.text=this.textContent' contenteditable>[[ session.boo.profile.text ]]</span>
-        </div> -->
+        <div v-show='is_characterized' class='profile-character' onerror='imgerr(this)' :style='profile_character_style'></div>
+        <div v-show='is_imagized' class='profile-image' onerror='imgerr(this)' :style='profile_image_style'></div>
+        <div v-show='is_textized' class='profile-text' onblur='boo.profile.text=this.textContent;' contenteditable>[[ boo.profile.text ]]</div>
 
         <transition name='show-eyemask'>
-          <div class='eye maskbar' ref='eyemaskbar' v-show='session.boo.profile.eyemask.masked && (session.boo.profile.type!="TEXT")' :style='eyemask_style'></div>
+          <div class='eye maskbar' ref='eyemaskbar' v-show='is_eyemasked && (!is_textized)' :style='eyemask_style'></div>
         </transition>
       </div>
     </div>
@@ -376,7 +349,7 @@
   Vue.component('profiler', {
     template: '#profiler-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'session'],
+    props: ['open', 'boo'],
     data: function() {
       return {
         characters: undefined,
@@ -400,34 +373,54 @@
           const canvas = self.$refs.canvas;
           const maskbar = self.$refs.eyemaskbar;
 
-          self.session.boo.profile.eyemask.top = ui.position.top / canvas.offsetHeight * 100;
-          self.session.boo.profile.eyemask.left = ui.position.left / canvas.offsetWidth * 100;
-          self.session.boo.profile.eyemask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
-          self.session.boo.profile.eyemask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
+          self.boo.profile.eyemask.top = ui.position.top / canvas.offsetHeight * 100;
+          self.boo.profile.eyemask.left = ui.position.left / canvas.offsetWidth * 100;
+          self.boo.profile.eyemask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
+          self.boo.profile.eyemask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
         }
       });
     },
 
     computed: {
+      is_characterized: function() {
+        return (this.boo.profile.type=="CHARACTER")
+      },
+
+      is_imagized: function() {
+        return (this.boo.profile.type=="IMAGE")
+      },
+
+      is_textized: function() {
+        return (this.boo.profile.type=="TEXT")
+      },
+
+      is_eyemasked: function() {
+        return this.boo.profile.eyemask.masked
+      },
+
+      is_mouthmasked: function() {
+        return this.boo.profile.mouthmask.masked
+      },
+
       eyemask_style: function() {
         return {
-          backgroundImage: `url(${this.maskbases[this.session.boo.profile.eyemask.maskbase].pix})`,
-          top: this.session.boo.profile.eyemask.top + '%',
-          left: this.session.boo.profile.eyemask.left + '%',
-          width: this.session.boo.profile.eyemask.width + '%',
-          height: this.session.boo.profile.eyemask.height + '%'
+          backgroundImage: `url(${this.maskbases[this.boo.profile.eyemask.maskbase].pix})`,
+          top: this.boo.profile.eyemask.top + '%',
+          left: this.boo.profile.eyemask.left + '%',
+          width: this.boo.profile.eyemask.width + '%',
+          height: this.boo.profile.eyemask.height + '%'
         }
       },
 
       profile_image_style: function() {
         return {
-          backgroundImage: `url(${this.session.boo.profile.image})`
+          backgroundImage: `url(${this.boo.profile.image})`
         }
       },
 
       profile_character_style: function() {
         return {
-          backgroundImage: `url(${this.characters[this.session.boo.profile.character].pix})`
+          backgroundImage: `url(${this.characters[this.boo.profile.character].pix})`
         }
       }
 
@@ -442,8 +435,8 @@
 
     methods: {
       eyemask_up: function(maskbase_id) {
-        this.session.boo.profile.eyemask.maskbase = Number(maskbase_id);
-        this.session.boo.profile.eyemask.masked = true;
+        this.boo.profile.eyemask.maskbase = Number(maskbase_id);
+        this.boo.profile.eyemask.masked = true;
       },
 
       imagize: function(event) {
@@ -454,8 +447,8 @@
           let reader = new FileReader();
 
           reader.onload = function(e) {
-            self.session.boo.profile.type = 'IMAGE';
-            self.session.boo.profile.image = e.target.result;
+            self.boo.profile.type = 'IMAGE';
+            self.boo.profile.image = e.target.result;
             self.image_file = input.files[0];
             // console.log(input.files[0]);
             // console.log(e.target);
@@ -465,12 +458,12 @@
       },
 
       characterize: function(character_id) {
-        this.session.boo.profile.character = Number(character_id);
-        this.session.boo.profile.type = 'CHARACTER';
+        this.boo.profile.character = Number(character_id);
+        this.boo.profile.type = 'CHARACTER';
       },
 
       textize: function() {
-        this.session.boo.profile.type = 'TEXT'
+        this.boo.profile.type = 'TEXT'
       },
 
       download: function() {
@@ -495,31 +488,31 @@
           .then(function(canvas) {
             canvas.toBlob(function(blob) {
               console.log(blob);
-              self.session.boo.profile.pix = URL.createObjectURL(blob);
+              self.boo.profile.pix = URL.createObjectURL(blob);
               self.$emit('close');
 
               const formData = new FormData();
               formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
-              formData.append('pix', blob, `${self.session.email}_mypix.png`);
-              formData.append('nick', self.session.boo.nick);
-              formData.append('type', self.session.boo.profile.type);
+              formData.append('pix', blob, 'mypix.png');
+              formData.append('nick', self.boo.nick);
+              formData.append('type', self.boo.profile.type);
 
-              if (self.session.boo.profile.type=='CHARACTER' && self.session.boo.profile.character) {
-                formData.append('character', self.session.boo.profile.character);
+              if (self.is_characterized && self.boo.profile.character) {
+                formData.append('character', self.boo.profile.character);
 
-              } else if (self.session.boo.profile.type=='IMAGE' && self.image_file) {
+              } else if (self.is_imagized && self.image_file) {
                 formData.append('image', self.image_file);
 
-              } else if (self.session.boo.profile.type=='TEXT' && self.session.boo.profile.text) {
-                formData.append('text', self.session.boo.profile.text);
+              } else if (self.is_textized && self.boo.profile.text) {
+                formData.append('text', self.boo.profile.text);
               }
 
-              if (self.session.boo.profile.eyemask.masked && self.session.boo.profile.type!='TEXT') {
-                formData.append('eyemask', JSON.stringify(self.session.boo.profile.eyemask));
+              if (self.is_eyemasked && (!self.is_textized)) {
+                formData.append('eyemask', JSON.stringify(self.boo.profile.eyemask));
               }
 
-              if (self.session.boo.profile.mouthmask.masked && self.session.boo.profile.type!='TEXT') {
-                formData.append('eyemask', JSON.stringify(self.session.boo.profile.mouthmask));
+              if (self.is_mouthmasked && (!self.is_textized)) {
+                formData.append('eyemask', JSON.stringify(self.boo.profile.mouthmask));
               }
 
               fetch('boo/profile/save/', { method: 'POST', body: formData })

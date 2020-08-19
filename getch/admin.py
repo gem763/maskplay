@@ -1,14 +1,7 @@
 from django.contrib import admin
 import getch.models as m
 import os
-# from vote.models import VoteModel
 
-
-# admin.site.register(m.Post)
-# admin.site.register(m.PostVoteAB)
-# admin.site.register(m.PostVoteOX)
-#
-#
 
 @admin.register(m.Post)
 class PostAdmin(admin.ModelAdmin):

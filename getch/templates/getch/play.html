@@ -3,7 +3,7 @@
 
 {% load static %}
 <head>
-  <title>GET.CH</title>
+  <title>SIDE.B</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -154,9 +154,9 @@
       <img class='logo' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
     </div>
 
-    <div id='posts'>
+    <!-- <div id='posts'> -->
       {% include 'getch/posts.html' %}
-    </div>
+    <!-- </div> -->
 
     <div class='posting menublock' onclick='show_posting_selector()'>
       <img class='icon' src="{% static 'materials/icons/plus.png' %}">
@@ -213,8 +213,8 @@
       }
 
       _init_boos(boos) {
-        boos = {...boos, ...authors};
-        authors = undefined;
+        // boos = {...boos, ...authors};
+        // authors = undefined;
 
         for (let k in boos) {
           boos[k].followers_id = new Set(boos[k].followers_id);
@@ -370,10 +370,11 @@
     // session.refresh();
     console.log('session made')
     pager.session = session;
+    posts.session = session;
     // console.log({{user.serialized|safe}});
 
     // console.log({{characters|safe}})
-    // console.log({{maskbases|safe}})
+    console.log({{posts_serialized|safe}})
     {% endif %}
 
 

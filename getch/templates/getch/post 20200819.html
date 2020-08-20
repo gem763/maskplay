@@ -113,7 +113,7 @@
     /* display: inline-block; */
   }
 
-  /* .post input.toggler, */
+  .post input.toggler,
   .post input[type='file'] {
     display: none;
     visibility: hidden;
@@ -281,125 +281,73 @@
     content: attr(placeholder);
     color: gray;
   }
-
-  .post[type='postvoteab'] .backbone td.devoted {
-    filter: grayscale(1);
-    opacity: 0.5;
-  }
-
-  .post[type='postvoteox'] .backbone td.vote-0.voted {
-    background: var(--color-pos);
-  }
-
-  .post[type='postvoteox'] .backbone td.vote-1.voted {
-    background: var(--color-neg);
-  }
 </style>
 
 
-<script type='text/x-template' id='post-template'>
-  <div class='post' :type='post.type' :post_id='post.id'>
+<div class='post' type='{{type}}' post_id='{{post.id}}'>
 
-    <!-- {% if post %}
-    <input value='0' class='vote toggler' type="radio" name='vote-{{post.pk}}'>
-    <input value='1' class='vote toggler' type="radio" name='vote-{{post.pk}}'>
-    <input class='edit toggler' type="checkbox">
-    {% else %}
-    <input class='edit toggler' type="checkbox" checked>
-    {% endif %} -->
+  {% if post %}
+  <input value='0' class='vote toggler' type="radio" name='vote-{{post.pk}}'>
+  <input value='1' class='vote toggler' type="radio" name='vote-{{post.pk}}'>
+  <!-- <input value='up' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 0 %}checked{% endif %}>
+  <input value='down' class='vote toggler' type="radio" name='vote-{{post.pk}}' {% if post.voted == 1 %}checked{% endif %}> -->
+  <input class='edit toggler' type="checkbox">
+  {% else %}
+  <input class='edit toggler' type="checkbox" checked>
+  {% endif %}
 
-    <table v-if='post.type=="postvoteox"' class='backbone'>
-      <tbody>
-        <tr>
-          <td class='top full' colspan='2'><img class='pix' :src='post.pix' onerror='this.style.display="none"'></td>
-          <td class='top side'></td>
-        </tr>
+  {% if type == 'postvoteox' %}
+  <table class='backbone'>
+    <tbody>
+      <tr>
+        <td class='top full' colspan='2'>{% include "getch/comp_postpix.html" with post=post pixfield='pix' %}</td>
+        <td class='top side'></td>
+      </tr>
 
-        <tr>
-          <td class='bottom half vote-0' :class='voted_0_class' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
-          <td class='bottom half vote-1' :class='voted_1_class' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
-          <td class='bottom side'></td>
-        </tr>
-      </tbody>
-    </table>
+      <tr>
+        <td class='bottom half' vote='0' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
+        <td class='bottom half' vote='1' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
+        <td class='bottom side'></td>
+      </tr>
+    </tbody>
+  </table>
 
-    <table v-if='post.type=="postvoteab"' class='backbone'>
-      <tbody>
-        <tr>
-          <td class='top full vote-0' :class='voted_0_class' onclick='toggle_vote(this)'><img class='pix' :src='post.pix_a' onerror='this.style.display="none"'></td>
-          <td class='top side'></td>
-        </tr>
+  {% elif type == 'postvoteab' %}
+  <table class='backbone'>
+    <tbody>
+      <tr>
+        <td class='top full' vote='0' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_a' %}</td>
+        <td class='top side'></td>
+      </tr>
 
-        <tr>
-          <td class='bottom full vote-1' :class='voted_1_class' onclick='toggle_vote(this)'><img class='pix' :src='post.pix_b' onerror='this.style.display="none"'></td>
-          <td class='bottom side'></td>
-        </tr>
-      </tbody>
-    </table>
+      <tr>
+        <td class='bottom full' vote='1' onclick='toggle_vote(this)'>{% include "getch/comp_postpix.html" with post=post pixfield='pix_b' %}</td>
+        <td class='bottom side'></td>
+      </tr>
+    </tbody>
+  </table>
+  {% endif %}
 
-    <div class='author menublock' :author='post.boo.pk' onclick='pager.open_authorpage()'>
-      <img class='fit' :src='post.boo.pix'>
+  {% include "getch/comp_postback.html" with post=post %}
+
+  {% if post %}
+  <input class='show-modify-button toggler' type='checkbox'>
+  <div class='modify button'>
+    <div class='edit-post' onclick='toggle_edit(this)'></div>
+    <div class='delete-post' onclick='delete_post()'>
+      <img src='/static/materials/icons/delete.png'>
     </div>
-
-    <div class='description'>
-      <span class='nick'>@[[ post.boo.nick ]]</span><br>
-      <span class='text' :asis='post.text' contenteditable="true" spellcheck='false' placeholder='COMMENT HERE'>[[ post.text ]]</span>
-    </div>
-
-    <div class='scores'>
-      <div class='score vote-0'>[[ post.nvotes_up ]]</div>
-      <div class='score vote-1'>[[ post.nvotes_down ]]</div>
-    </div>
-
-    <!-- {% if post %}
-    <input class='show-modify-button toggler' type='checkbox'>
-    <div class='modify button'>
-      <div class='edit-post' onclick='toggle_edit(this)'></div>
-      <div class='delete-post' onclick='delete_post()'>
-        <img src='/static/materials/icons/delete.png'>
-      </div>
-    </div>
-    {% else %}
-    <input class='show-newpost-button toggler' type='checkbox' checked>
-    <div class='newpost button' onclick='save_newpost(this)'></div>
-    {% endif %} -->
-
-    <span class='vs'>VS</span>
   </div>
-</script>
+  {% else %}
+  <input class='show-newpost-button toggler' type='checkbox' checked>
+  <div class='newpost button' onclick='save_newpost(this)'></div>
+  {% endif %}
+
+  <span class='vs'>VS</span>
+</div>
 
 
 <script>
-  Vue.component('post', {
-    template: '#post-template',
-    delimiters: ['[[', ']]'],
-    props: ['post', 'session'],
-    data: function() {
-      return {
-        vote_state: -1
-      }
-    },
-
-    computed: {
-      voted_0_class: function() {
-        return {
-          voted: this.vote_state == 0,
-          devoted: this.vote_state == 1
-        }
-      },
-
-      voted_1_class: function() {
-        return {
-          voted: this.vote_state == 1,
-          devoted: this.vote_state == 0
-        }
-      },
-    },
-
-    methods: { }
-  });
-
-
   function vote_action(post) {
     try {
       return Number(post.querySelector('input.vote.toggler:checked').value)

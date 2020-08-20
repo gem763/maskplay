@@ -1,38 +1,39 @@
-<script>
-  let authors = {};
-  let author_id;
-</script>
-
+<div id='posts'>
 <div class="swiper-container">
   <div class="swiper-wrapper">
 
-    {% for post in posts %}
-    <div class="swiper-slide" post_id='{{post.id}}' author_id='{{post.boo.id}}'>
-      {% include "getch/post.html" with post=post type=post.type %}
-
-      <script>
-        author_id = {{post.boo.id}};
-        if (!(author_id in authors)) {
-          const author = {{post.boo.serialized|safe}};
-          authors[author_id] = {
-            nick: author.nick,
-            text: author.text,
-            profile: author.profile,
-            followers_id: author.followers_id,
-            followees_id: author.followees_id,
-            voting_record: author.voting_record,
-          };
-        }
-      </script>
+    <div class="swiper-slide" v-for='post in posts' :post_id='post.id' :author_id='post.boo.id'>
+      <post
+        :post=post
+        :session=session
+      ></post>
     </div>
-    {% endfor %}
 
   </div>
+</div>
 </div>
 
 
 <script src="/static/swiper/swiper.js"></script>
+<script src='/static/vue/vue.js'></script>
+
+{% include "getch/post.html" %}
+
 <script>
+  const posts = new Vue({
+    el: '#posts',
+    delimiters: ['[[', ']]'],
+    data: {
+      posts: undefined,
+      session: undefined
+    },
+
+    created: function() {
+      this.posts = {{ posts_serialized|safe }};
+    }
+  });
+
+
   const swiper = new Swiper('.swiper-container', {
     direction: 'vertical',
     on: {
@@ -41,7 +42,7 @@
         set_post();
       },
       slideChange: function() {
-        unset_post();
+        // unset_post();
       },
     },
     // spaceBetween: '-10'
@@ -60,31 +61,31 @@
       author_id: Number(author_id)
     }
 
-    cpost.querySelector('.author.menublock').setAttribute('author', author_id);
-    cpost.querySelector('.author.menublock img.fit').src = session.author.profile.pix;
-    cpost.querySelector('.description span.nick').innerHTML = '@' + session.author.nick;
-
-    if (author_id==session.boo_selected) {
-      cpost.querySelector('input.show-modify-button.toggler').checked = true;
-
-    } else {
-      cpost.querySelector('input.show-modify-button.toggler').checked = false;
-    }
-
-    if (cpost_id in session.boo.voting_record) {
-      const vote_action = session.boo.voting_record[cpost_id];
-      cpost.querySelector(`input.vote.toggler[value='${vote_action}']`).checked = true;
-
-    } else {
-      cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
-      cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
-    }
+    // cpost.querySelector('.author.menublock').setAttribute('author', author_id);
+    // cpost.querySelector('.author.menublock img.fit').src = session.author.profile.pix;
+    // cpost.querySelector('.description span.nick').innerHTML = '@' + session.author.nick;
+    //
+    // if (author_id==session.boo_selected) {
+    //   cpost.querySelector('input.show-modify-button.toggler').checked = true;
+    //
+    // } else {
+    //   cpost.querySelector('input.show-modify-button.toggler').checked = false;
+    // }
+    //
+    // if (cpost_id in session.boo.voting_record) {
+    //   const vote_action = session.boo.voting_record[cpost_id];
+    //   cpost.querySelector(`input.vote.toggler[value='${vote_action}']`).checked = true;
+    //
+    // } else {
+    //   cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
+    //   cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
+    // }
   }
-
-  function unset_post() {
-    let cpost = document.querySelector('.swiper-slide-active');
-    cpost.querySelector('input.show-modify-button.toggler').checked = false;
-    cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
-    cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
-  }
+  //
+  // function unset_post() {
+  //   let cpost = document.querySelector('.swiper-slide-active');
+  //   cpost.querySelector('input.show-modify-button.toggler').checked = false;
+  //   cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
+  //   cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
+  // }
 </script>

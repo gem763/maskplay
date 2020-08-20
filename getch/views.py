@@ -47,8 +47,9 @@ maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} fo
 
 
 def play(request):
-    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:2]
-    ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
+    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
+    posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)
+    ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases, 'posts_serialized':posts_serialized}
     return render(request, 'getch/play.html', ctx)
     # return render(request, 'getch/test.html')
 

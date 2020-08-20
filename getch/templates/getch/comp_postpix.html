@@ -5,7 +5,7 @@
   <div class='pixloader-icon'>
     <img src='/static/materials/icons/pix.png'>
   </div>
-  <img class='pix' src='{{post|pix_src:pixfield}}' onerror='imgerr(this)'>
+  <img class='pix' src='{{post|pix_src:pixfield}}' onerror='this.style.display="none"'>
 </label>
 
 {% else %}
@@ -19,9 +19,3 @@
   <!-- <img src=''> 이런식으로 src에 빈칸 들어가면 안된다 에러다! -->
 </label>
 {% endif %}
-
-
-<script>
-  function imgerr(img) {
-    img.style.display = 'none';
-  }</script>

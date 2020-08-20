@@ -5,7 +5,10 @@ import os
 
 @admin.register(m.Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['boo', 'text', 'nvotes_up', 'nvotes_down']
+    list_display = ['type', 'boo', 'text', 'nvotes_up', 'nvotes_down']
+
+    def type(self, obj):
+        return obj.cast.type
 
 
 @admin.register(m.PostVoteAB)

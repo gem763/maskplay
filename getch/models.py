@@ -20,6 +20,11 @@ VOTE_DOWN = 1
 FOLLOW = 10
 
 
+# class InheritManager(InheritanceManager):
+#     def serialized(self):
+#         return self.get_queryset()
+
+
 class BigIdAbstract(models.Model):
     id = models.BigAutoField(primary_key=True)
 
@@ -244,11 +249,25 @@ class Post(BigIdAbstract, ModelWithFlag):
     objects = InheritanceManager()
 
     def __str__(self):
-        return str(self.created_at) #self.boo
+        return str(self.created_at) + ((' | ' + str(self.boo)) if self.boo else '')
 
     @property
     def type(self):
         return self.__class__.__name__.lower()
+
+    '''
+    child로 downcast
+    '''
+    @property
+    def cast(self):
+        for subclass in self.__class__.__subclasses__():
+            try:
+                return getattr(self, subclass.__name__.lower())
+            except:
+                pass
+
+        return self
+
 
     def vote(self, action, boo=None):
         if boo is None:
@@ -299,7 +318,7 @@ class PostVoteOX(Post):
     pix = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
     def __str__(self):
-        return 'OX | '# + self.boo
+        return 'OX | ' + super().__str__()
 
 
 class PostVoteAB(Post):
@@ -307,7 +326,7 @@ class PostVoteAB(Post):
     pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
     def __str__(self):
-        return 'AB | '# + self.boo
+        return 'AB | ' + super().__str__()
 
 
 
@@ -354,16 +373,28 @@ class ProfileSerializer(serializers.ModelSerializer):
             if ser.is_valid():
                 ser.save()
             else:
-                print('something wrong when saving eyemask data')
+                print('something wrong when updating eyemask data')
 
         if mouthmask_data:
             ser = MouthMaskSerializer(instance.mouthmask, data=mouthmask_data, partial=True)
             if ser.is_valid():
                 ser.save()
             else:
-                print('something wrong when saving mouthmask data')
+                print('something wrong when updating mouthmask data')
 
         return instance
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    pix = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Boo
+        fields = ['id', 'nick', 'text', 'pix']
+        read_only_fields = fields
+
+    def get_pix(self, obj):
+        return obj.profile.pix.url
 
 
 class BooSerializer(serializers.ModelSerializer):
@@ -387,7 +418,7 @@ class BooSerializer(serializers.ModelSerializer):
             if ser.is_valid():
                 ser.save()
             else:
-                print('something wrong when saving profile data')
+                print('something wrong when updating profile data')
 
         return instance
 
@@ -402,9 +433,69 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 
+class PostVoteOXSerializer(serializers.ModelSerializer):
+    boo = AuthorSerializer()
+
+    class Meta:
+        model = PostVoteOX
+        fields = ['id', 'boo', 'text', 'pix']
+        read_only_fields = ['id']
 
 
+class PostVoteABSerializer(serializers.ModelSerializer):
+    boo = AuthorSerializer()
 
+    class Meta:
+        model = PostVoteAB
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b']
+        read_only_fields = ['id']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        if isinstance(instance, PostVoteOX):
+            return {'type':'postvoteox', **PostVoteOXSerializer(instance=instance).data}
+
+        elif isinstance(instance, PostVoteAB):
+            return {'type':'postvoteab', **PostVoteABSerializer(instance=instance).data}
+
+    def create(self, validated_data):
+        _type = self.initial_data.pop('type')
+
+        if _type == 'postvoteox':
+            ser = PostVoteOXSerializer(data=self.initial_data, partial=True)
+
+        elif _type == 'postvoteab':
+            ser = PostVoteABSerializer(data=self.initial_data, partial=True)
+
+        if ser.is_valid():
+            return ser.save()
+
+        else:
+            print('something wrong when creating post data')
+            return None
+
+
+    def update(self, instance, validated_data):
+        _type = instance.__class__.__name__.lower()
+
+        if _type == 'postvoteox':
+            ser = PostVoteOXSerializer(instance, data=self.initial_data, partial=True)
+
+        elif _type == 'postvoteab':
+            ser = PostVoteABSerializer(instance, data=self.initial_data, partial=True)
+
+        if ser.is_valid():
+            ser.save()
+
+        else:
+            print('something wrong when updating post data')
+
+        return instance
 
 
 

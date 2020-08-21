@@ -154,9 +154,11 @@
       <img class='logo' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
     </div>
 
-    <!-- <div id='posts'> -->
-      {% include 'getch/posts.html' %}
-    <!-- </div> -->
+    <swiper ref="swiperComponent" :options="swiperOptions">
+      <swiper-slide v-for='post in posts' :post_id='post.id' :author_id='post.boo.id'>
+        <post :post=post :session=session></post>
+      </swiper-slide>
+    </swiper>
 
     <div class='posting menublock' onclick='show_posting_selector()'>
       <img class='icon' src="{% static 'materials/icons/plus.png' %}">
@@ -166,29 +168,41 @@
       <img class='icon' src="{% static 'materials/icons/profile.png' %}">
     </div>
 
-    {% include 'getch/pager.html' %}
-    {% include 'getch/popup.html' %}
+    <pager :session='session'></pager>
 
     <div class='border'></div>
   </div>
+
+  <!-- {% include 'getch/popup.html' %} -->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="{% static 'html2canvas/html2canvas.js' %}"></script>
   <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
   <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-  <!-- <script src="https://unpkg.com/merge-images"></script> -->
   <script src="{% static 'vue/vue.js' %}"></script>
-  <!-- <script src="{% static 'swiper/swiper.js' %}"></script> -->
+  <script src="/static/swiper/swiper.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script>
 
+
+  {% include "getch/post.html" %}
+  {% include "getch/pager.html" %}
 
 
   <script>
-    // const sideb = new Vue({
-    //   el: '#window',
-    //   delimiters: ['[[', ']]'],
-    //   data: {}
-    // });
+    Vue.use(VueAwesomeSwiper)
+
+    const sideb = new Vue({
+      el: '#window',
+      delimiters: ['[[', ']]'],
+      data: {
+        session: undefined,
+        posts: undefined,
+        swiperOptions: {
+          direction: 'vertical'
+        }
+      }
+    });
 
 
     class Session {
@@ -363,34 +377,12 @@
       });
     });
 
-    let session;
 
     {% if user.is_authenticated %}
-    session = new Session({{user.serialized|safe}});
-    // session.refresh();
-    console.log('session made')
-    pager.session = session;
-    posts.session = session;
-    // console.log({{user.serialized|safe}});
-
-    // console.log({{characters|safe}})
-    console.log({{posts_serialized|safe}})
+    sideb.session = new Session({{user.serialized|safe}});
+    sideb.posts = {{posts_serialized|safe}};
+    console.log(sideb.posts);
     {% endif %}
-
-
-    // $('#profiler .eye.maskbar').draggable({
-    //   axis: 'y',
-    //   containment: 'parent',
-    //   stop: function(event, ui) {
-    //     const canvas = document.querySelector('#profiler .profile-canvas');
-    //     const maskbar = document.querySelector('#profiler .profile-canvas .eye.maskbar');
-    //
-    //     session.boo.profile.eyemask.top = ui.position.top / canvas.offsetHeight * 100;
-    //     session.boo.profile.eyemask.left = ui.position.left / canvas.offsetWidth * 100;
-    //     session.boo.profile.eyemask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
-    //     session.boo.profile.eyemask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
-    //   }
-    // });
 
   </script>
 

@@ -1,43 +1,45 @@
-<div id='posts'>
-<div class="swiper-container">
-  <div class="swiper-wrapper">
+<link rel="stylesheet" href='/static/swiper/swiper.min.css'>
 
-    <div class="swiper-slide" v-for='post in posts' :post_id='post.id' :author_id='post.boo.id'>
-      <post
-        :post=post
-        :session=session
-      ></post>
+<script type='text/x-template' id='posts-template'>
+  <div class="swiper-container" ref='swiper'>
+    <div class="swiper-wrapper">
+
+      <div class="swiper-slide" v-for='post in posts' :post_id='post.id' :author_id='post.boo.id'>
+        <post :post=post :session=session></post>
+      </div>
+
     </div>
-
   </div>
-</div>
-</div>
-
+</script>
 
 <script src="/static/swiper/swiper.js"></script>
-<script src='/static/vue/vue.js'></script>
-
 {% include "getch/post.html" %}
 
 <script>
-  const posts = new Vue({
-    el: '#posts',
+  Vue.component('posts', {
+    template: '#posts-template',
     delimiters: ['[[', ']]'],
-    data: {
-      posts: undefined,
-      session: undefined
+    props: ['posts', 'session'],
+    data: function() {
+      return {
+        swiper: undefined
+      }
     },
 
-    created: function() {
-      this.posts = {{ posts_serialized|safe }};
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, {
+        direction: 'vertical'
+      });
     }
   });
 
 
-  const swiper = new Swiper('.swiper-container', {
+  const swiper = new Swiper('.swiper-container2', {
     direction: 'vertical',
     on: {
-      init: function() { },
+      init: function() {
+        // set_post();
+      },
       slideChangeTransitionEnd: function() {
         set_post();
       },

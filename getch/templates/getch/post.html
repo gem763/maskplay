@@ -287,11 +287,11 @@
     opacity: 0.5;
   }
 
-  .post[type='postvoteox'] .backbone td.vote-0.voted {
+  .post[type='postvoteox'] .backbone td.voted[act='0'] {
     background: var(--color-pos);
   }
 
-  .post[type='postvoteox'] .backbone td.vote-1.voted {
+  .post[type='postvoteox'] .backbone td.voted[act='1'] {
     background: var(--color-neg);
   }
 </style>
@@ -316,8 +316,8 @@
         </tr>
 
         <tr>
-          <td class='bottom half vote-0' :class='voted_0_class' onclick='toggle_vote(this)'><div class='ox'>O</div></td>
-          <td class='bottom half vote-1' :class='voted_1_class' onclick='toggle_vote(this)'><div class='ox'>X</div></td>
+          <td class='bottom half' act='0' :class='voted_class_0' @click='toggle_vote'><div class='ox'>O</div></td>
+          <td class='bottom half' act='1' :class='voted_class_1' @click='toggle_vote'><div class='ox'>X</div></td>
           <td class='bottom side'></td>
         </tr>
       </tbody>
@@ -326,12 +326,12 @@
     <table v-if='post.type=="postvoteab"' class='backbone'>
       <tbody>
         <tr>
-          <td class='top full vote-0' :class='voted_0_class' onclick='toggle_vote(this)'><img class='pix' :src='post.pix_a' onerror='this.style.display="none"'></td>
+          <td class='top full' act='0' :class='voted_class_0' @click='toggle_vote'><img class='pix' :src='post.pix_a' onerror='this.style.display="none"'></td>
           <td class='top side'></td>
         </tr>
 
         <tr>
-          <td class='bottom full vote-1' :class='voted_1_class' onclick='toggle_vote(this)'><img class='pix' :src='post.pix_b' onerror='this.style.display="none"'></td>
+          <td class='bottom full' act='1' :class='voted_class_1' @click='toggle_vote'><img class='pix' :src='post.pix_b' onerror='this.style.display="none"'></td>
           <td class='bottom side'></td>
         </tr>
       </tbody>
@@ -381,14 +381,14 @@
     },
 
     computed: {
-      voted_0_class: function() {
+      voted_class_0: function() {
         return {
           voted: this.vote_state == 0,
           devoted: this.vote_state == 1
         }
       },
 
-      voted_1_class: function() {
+      voted_class_1: function() {
         return {
           voted: this.vote_state == 1,
           devoted: this.vote_state == 0
@@ -396,7 +396,24 @@
       },
     },
 
-    methods: { }
+    watch: {
+      vote_state: function(new_vote_state) {
+        this.session.vote = new_vote_state;
+      }
+    },
+
+    methods: {
+      toggle_vote: function(event) {
+        const act = Number(event.currentTarget.getAttribute('act'));
+
+        if (this.vote_state==act) {
+          this.vote_state = -1;
+
+        } else {
+          this.vote_state = act;
+        }
+      }
+    }
   });
 
 

@@ -11,43 +11,45 @@
   }
 </style>
 
-<script type='text/x-template' id='pager-template'>
-  <div class='pager'>
-    <loginpage
-      :open='loginpage_open'
-      @close='close_page("loginpage")'
-    ></loginpage>
+<div id='pager'>
+<div class='pager'>
+  <loginpage
+    :open='loginpage_open'
+    @close='close_page("loginpage")'
+  ></loginpage>
 
-    <mypage
-      v-if='session'
-      :open='mypage_open'
-      :session='session'
-      @close='close_page("mypage")'
-      @open='open_page($event)'
-    ></mypage>
+  <mypage
+    v-if='session'
+    :open='mypage_open'
+    :session='session'
+    @close='close_page("mypage")'
+    @open='open_page($event)'
+  ></mypage>
 
-    <boochooser
-      v-if='session'
-      :open='boochooser_open'
-      :session='session'
-      @close='close_page("boochooser")'
-    ></boochooser>
+  <boochooser
+    v-if='session'
+    :open='boochooser_open'
+    :session='session'
+    @close='close_page("boochooser")'
+  ></boochooser>
 
-    <profiler
-      v-if='session'
-      :open='profiler_open'
-      :boo='session.boo'
-      @close='close_page("profiler")'
-    ></profiler>
+  <profiler
+    v-if='session'
+    :open='profiler_open'
+    :boo='session.boo'
+    @close='close_page("profiler")'
+  ></profiler>
 
-    <authorpage
-      :open='authorpage_open'
-      :session='session'
-      @close='close_page("authorpage")'
-    ></authorpage>
-  </div>
-</script>
+  <authorpage
+    :open='authorpage_open'
+    :session='session'
+    @close='close_page("authorpage")'
+  ></authorpage>
+</div>
+</div>
 
+
+<script src='/static/vue/vue.js'></script>
 
 {% include "getch/loginpage.html" %}
 {% include "getch/mypage.html" %}
@@ -56,19 +58,16 @@
 {% include "getch/authorpage.html" %}
 
 <script>
-  Vue.component('pager', {
-    template: '#pager-template',
+  const pager = new Vue({
+    el: '#pager',
     delimiters: ['[[', ']]'],
-    props: ['session'],
-
-    data: function() {
-      return {
-        mypage_open: false,
-        loginpage_open: false,
-        boochooser_open: false,
-        profiler_open: false,
-        authorpage_open: false,
-      }
+    data: {
+      session: undefined,
+      mypage_open: false,
+      loginpage_open: false,
+      boochooser_open: false,
+      profiler_open: false,
+      authorpage_open: false,
     },
 
     created: function() {

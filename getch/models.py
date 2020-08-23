@@ -46,7 +46,8 @@ class User(AbstractEmailUser):
     @property
     def serialized(self):
         _user = UserSerializer([self], many=True).data[0]
-        _user['boos'] = {boo.pop('id'):boo for boo in _user['boos']}
+        _user['boos'] = {boo['id']:boo for boo in _user['boos']}
+        # _user['boos'] = {boo.pop('id'):boo for boo in _user['boos']}
         return json.dumps(_user)
 
     def set_boo(self, boo_id):
@@ -226,15 +227,25 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def followees(self):
         return Boo.objects.filter(id__in=self.followees_id)
-#
-#     @property
-#     def nfollowers(self):
-#         return len(self.followers_id)
-#
-#     @property
-#     def nfollowees(self):
-#         return len(self.followees_id)
-#
+
+    @property
+    def network(self):
+        _network = {
+            'followers': NetworkSerializer(self.followers, many=True).data,
+            'followees': NetworkSerializer(self.followees, many=True).data
+        }
+        return json.dumps(_network)
+
+    @property
+    def nfollowers(self):
+        return self.get_flags(status=FOLLOW).count()
+        # return len(self.followers_id)
+
+    @property
+    def nfollowees(self):
+        return Flager.objects.filter(status=FOLLOW, user=self).count()
+        # return len(self.followees_id)
+
     @property
     def voting_record(self):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
@@ -385,16 +396,28 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
-class AuthorSerializer(serializers.ModelSerializer):
-    pix = serializers.SerializerMethodField()
+class NetworkSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'pix']
+        fields = ['id', 'nick', 'profile']
         read_only_fields = fields
 
-    def get_pix(self, obj):
-        return obj.profile.pix.url
+    def get_profile(self, obj):
+        return {'pix': obj.profile.pix.url}
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Boo
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nfollowees']
+        read_only_fields = fields
+
+    def get_profile(self, obj):
+        return {'pix': obj.profile.pix.url}
 
 
 class BooSerializer(serializers.ModelSerializer):
@@ -438,8 +461,8 @@ class PostVoteOXSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix']
-        read_only_fields = ['id']
+        fields = ['id', 'boo', 'text', 'pix', 'nvotes_up', 'nvotes_down']
+        read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
 class PostVoteABSerializer(serializers.ModelSerializer):
@@ -447,8 +470,8 @@ class PostVoteABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b']
-        read_only_fields = ['id']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'nvotes_up', 'nvotes_down']
+        read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
 class PostSerializer(serializers.ModelSerializer):

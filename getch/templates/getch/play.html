@@ -72,23 +72,6 @@
       pointer-events: none;
     }
 
-    #posts {
-      width: 100%;
-      height: 100%;
-    }
-
-    .swiper-container {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
-
-    .swiper-wrapper {
-      z-index: 0;
-    }
 
     .menublock {
       position: absolute;
@@ -127,49 +110,14 @@
       width: var(--s-menu-icon);
       height: var(--s-menu-icon);
     }
-
-    .back {
-      position: absolute;
-      top: calc(352 * var(--x));
-      left: 0;
-      width: 100%;
-      height: calc(572 * var(--x));
-      background: rgba(255,242,204,0.25);
-    }
-
-    .back img.logo {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: calc(90 * var(--x));
-      height: calc(90 * var(--x));
-    }
   </style>
 </head>
 
 
 <body style='background:lightgray;margin:0;'>
   <div id='window'>
-    <div class='back'>
-      <img class='logo' src="{% static 'materials/imgs/sideb_logo.jpg' %}">
-    </div>
-
-    <swiper ref="swiperComponent" :options="swiperOptions">
-      <swiper-slide v-for='post in posts' :post_id='post.id' :author_id='post.boo.id'>
-        <post :post=post :session=session></post>
-      </swiper-slide>
-    </swiper>
-
-    <div class='posting menublock' onclick='show_posting_selector()'>
-      <img class='icon' src="{% static 'materials/icons/plus.png' %}">
-    </div>
-
-    <div class='my menublock' onclick='pager.open_mypage()'>
-      <img class='icon' src="{% static 'materials/icons/profile.png' %}">
-    </div>
-
-    <pager :session='session'></pager>
-
+    <posts v-if='posts' :session='session' :posts='posts'></posts>
+    <pages :session='session'></pages>
     <div class='border'></div>
   </div>
 
@@ -182,182 +130,29 @@
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
   <script src="{% static 'vue/vue.js' %}"></script>
   <script src="/static/swiper/swiper.js"></script>
+  <script src="/static/sideb/sideb.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script>
 
 
-  {% include "getch/post.html" %}
-  {% include "getch/pager.html" %}
+  {% include "getch/posts.html" %}
+  {% include "getch/pages.html" %}
 
 
   <script>
-    Vue.use(VueAwesomeSwiper)
-
     const sideb = new Vue({
       el: '#window',
       delimiters: ['[[', ']]'],
       data: {
         session: undefined,
         posts: undefined,
-        swiperOptions: {
-          direction: 'vertical'
-        }
+        // guider: undefined
+      },
+
+      created: function() {
+        this.session = new Session();
       }
     });
 
-
-    class Session {
-      constructor(cuser) {
-        this.mode = {on:'journey', prev:undefined};
-        this.id = Number(cuser.id);
-        this.email = cuser.email;
-        this.boo_selected = Number(cuser.boo_selected);
-        this.boos = this._init_boos(cuser.boos);
-        this.myboos = Object.keys(cuser.boos).map(Number); //this._init_myboos(cuser.boos);
-        this.cpost = {};
-      }
-
-      _init_myboos(boos) {
-        boos = {...boos};
-
-        for (let k in boos) {
-          boos[k].followers_id = new Set(boos[k].followers_id);
-          boos[k].followees_id = new Set(boos[k].followees_id);
-        }
-        return boos
-      }
-
-      _init_boos(boos) {
-        // boos = {...boos, ...authors};
-        // authors = undefined;
-
-        for (let k in boos) {
-          boos[k].followers_id = new Set(boos[k].followers_id);
-          boos[k].followees_id = new Set(boos[k].followees_id);
-        }
-        return boos
-      }
-
-      api_get(url) {
-        fetch(url)
-          .then(x => x.json())
-          .then(js => {
-            console.log(js)
-          });
-      }
-
-      set vote(action) {
-        if (action==-1) {
-          delete this.boo.voting_record[this.cpost.post_id];
-
-        } else {
-          this.boo.voting_record[this.cpost.post_id] = action;
-        }
-
-        this.api_get(`post/${this.cpost.post_id}/vote?action=${action}`);
-      }
-
-      get has_voted() {
-        if (this.cpost.post_id in this.boo.voting_record) {
-          return true
-        } else {
-          return false
-        }
-      }
-
-      checkin(on) {
-        console.log(`check-in to ${on}`);
-        this.mode.prev = {...this.mode};
-        this.mode.on = on;
-      }
-
-      checkout() {
-        try {
-          console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
-          this.mode = this.mode.prev;
-
-        } catch(e) {
-          console.log('abnormal access')
-        }
-      }
-
-      refresh() {
-        set_post();
-        set_mypage();
-        set_boochooser();
-        set_profiler();
-        set_posting();
-      }
-
-      // set myprofile(profile) {
-      set_myprofile(boo) {
-        console.log(`profile changed to [${boo.profile.pix}]`);
-        // this.boo.profile = profile;
-        boo.followers_id = new Set(boo.followers_id);
-        boo.followees_id = new Set(boo.followees_id);
-        // this.boos[this.boo_selected] = {}//{...this.boos[this.boo_selected], ...boo};
-        this.boos[this.boo_selected] = boo;
-        // test11 = boo;
-        this.refresh();
-      }
-
-      set myboo(boo_id) {
-        console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);
-        this.boo_selected = Number(boo_id);
-        // this.refresh();
-        this.api_get(`/boo/${boo_id}/set/`);
-      }
-
-      get boo() {
-        return this.boos[this.boo_selected];
-      }
-
-      get nfollowers() {
-        return this.boo.followers_id.size;
-      }
-
-      get nfollowees() {
-        return this.boo.followees_id.size;
-      }
-
-      get is_following() {
-        // return this.boo.followees_id.includes(Number(boo_id));
-        return this.boo.followees_id.has(this.cpost.author_id);
-      }
-
-      get author() {
-        return this.boos[this.cpost.author_id];
-      }
-
-      get author_nfollowers() {
-        return this.author.followers_id.size;
-      }
-
-      get author_nfollowees() {
-        return this.author.followees_id.size;
-      }
-
-      unfollow() {
-        const boo_id = this.cpost.author_id;
-        this.api_get(`boo/${boo_id}/unfollow`);
-
-        // 내 followees에서 지우기
-        this.boo.followees_id.delete(boo_id);
-
-        // author의 followers에서 나를 지우기
-        this.author.followers_id.delete(this.boo_selected);
-      }
-
-      follow() {
-        const boo_id = this.cpost.author_id;
-        this.api_get(`boo/${boo_id}/follow`);
-
-        // 내 followees에 추가하기
-        this.boo.followees_id.add(boo_id);
-
-        // author의 followers에 나를 추가하기
-        this.author.followers_id.add(this.boo_selected);
-      }
-    }
 
     // https://docs.djangoproject.com/en/2.2/ref/csrf/
     function csrfSafeMethod(method) {
@@ -379,9 +174,9 @@
 
 
     {% if user.is_authenticated %}
-    sideb.session = new Session({{user.serialized|safe}});
-    sideb.posts = {{posts_serialized|safe}};
-    console.log(sideb.posts);
+    sideb.session.auth = new Auth({{user.serialized|safe}});
+    sideb.posts = {{posts|safe}};
+    // console.log(sideb.posts);
     {% endif %}
 
   </script>

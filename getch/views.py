@@ -47,9 +47,11 @@ maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} fo
 
 
 def play(request):
-    posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)
-    ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases, 'posts_serialized':posts_serialized}
+    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
+    _posts = {p['id']:p for p in m.PostSerializer(_posts, many=True).data}
+    # posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)
+    # ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases, 'posts_serialized':posts_serialized}
+    ctx = {'posts': json.dumps(_posts), 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
     return render(request, 'getch/play.html', ctx)
     # return render(request, 'getch/test.html')
 
@@ -84,7 +86,8 @@ def authorpage(request, boo_id):
 def set_boo(request, boo_id):
     try:
         request.user.set_boo(boo_id)
-        return JsonResponse({'success':True, 'voting_record':request.user.boo.voting_record}, safe=False)
+        return JsonResponse({'success':True}, safe=False)
+        # return JsonResponse({'success':True, 'voting_record':request.user.boo.voting_record}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)
@@ -224,11 +227,13 @@ def post_save(request):
 
 def network(request, boo_id):
     boo = m.Boo.objects.get(pk=boo_id)
-    return render(request, 'getch/network.html', {'boo':boo, 'open':1})
+    return JsonResponse({'success':True, 'network':boo.network}, safe=False)
+    # return render(request, 'getch/network.html', {'network':boo.network})
 
 
 def boo_new(request):
     boo = m.Boo.objects.create(user=request.user)
+    request.user.set_boo(boo.id) # 새로 생성한 부캐를 선택하는 것이 디폴트
     return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
 
 # def cuser(request):

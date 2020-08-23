@@ -1,16 +1,16 @@
 {% include "getch/page.html" %}
 
 <script type='text/x-template' id='mypage-template'>
-  <page class='mypage' :open='open' @close='$emit("close")'>
-    <img class='myboo' :src='profile_src' style="object-fit:cover;width:100px;height:100px;" @click='$emit("open", "boochooser")'>
+  <page class='mypage' :open='session.open.mypage' @close='session.close_page()'>
+    <img class='myboo' :src='session.auth.boo.profile.pix' style="object-fit:cover;width:100px;height:100px;" @click='session.open_boochooser()'>
 
     <br>
     <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
-    <i class="fa fa-barcode" @click='$emit("open", "profiler")'></i>
+    <i class="fa fa-barcode" @click='session.open_profiler()'></i>
 
     <br><br>
-    <span class='network' style='background:black;color:white;padding:5px;' onclick='open_network()'>
-      팔로워 <span class='nfollowers'>[[ nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ nfollowees ]]</span>
+    <span class='network' style='background:black;color:white;padding:5px;' @click='session.open_network()'>
+      팔로워 <span class='nfollowers'>[[ session.auth.nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ session.auth.nfollowees ]]</span>
     </span>
   </page>
 </script>
@@ -20,31 +20,12 @@
   Vue.component('mypage', {
     template: '#mypage-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'session'],
+    props: ['session'],
     data: function() {
       return { }
     },
 
-    computed: {
-      profile_src: function() {
-        if (this.session) {
-          return this.session.boo.profile.pix;
-        }
-      },
-
-      nfollowers: function() {
-        if (this.session) {
-          return this.session.nfollowers;
-        }
-      },
-
-      nfollowees: function() {
-        if (this.session) {
-          return this.session.nfollowees;
-        }
-      }
-    },
-
+    computed: { },
     methods: { }
   });
 </script>

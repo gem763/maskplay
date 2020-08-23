@@ -263,11 +263,11 @@
 
 
 <script type='text/x-template' id='profiler-template'>
-  <page class='profiler' :open='open' @close='$emit("close")'>
+  <page class='profiler' :open='session.open.profiler' @close='session.close_page()'>
 
     <div class='top'>
       <div class='nick'>
-        <span onblur='boo.nick=this.textContent' contenteditable>[[ boo.nick ]]</span>
+        <span @blur='boo.nick=this.textContent' contenteditable>[[ boo.nick ]]</span>
       </div>
     </div>
 
@@ -278,7 +278,7 @@
         <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" @change="imagize">
         <div v-show='is_characterized' class='profile-character' onerror='imgerr(this)' :style='profile_character_style'></div>
         <div v-show='is_imagized' class='profile-image' onerror='imgerr(this)' :style='profile_image_style'></div>
-        <div v-show='is_textized' class='profile-text' onblur='boo.profile.text=this.textContent;' contenteditable>[[ boo.profile.text ]]</div>
+        <div v-show='is_textized' class='profile-text' @blur='boo.profile.text=this.textContent;' contenteditable>[[ boo.profile.text ]]</div>
 
         <transition name='show-eyemask'>
           <div class='eye maskbar' ref='eyemaskbar' v-show='is_eyemasked && (!is_textized)' :style='eyemask_style'></div>
@@ -349,7 +349,7 @@
   Vue.component('profiler', {
     template: '#profiler-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'boo'],
+    props: ['session'],
     data: function() {
       return {
         characters: undefined,
@@ -382,6 +382,10 @@
     },
 
     computed: {
+      boo: function() {
+        return this.session.auth.boo
+      },
+
       is_characterized: function() {
         return (this.boo.profile.type=="CHARACTER")
       },
@@ -489,7 +493,8 @@
             canvas.toBlob(function(blob) {
               console.log(blob);
               self.boo.profile.pix = URL.createObjectURL(blob);
-              self.$emit('close');
+              self.session.close_page()
+              // self.$emit('close');
 
               const formData = new FormData();
               formData.append('csrfmiddlewaretoken', '{{csrf_token}}');

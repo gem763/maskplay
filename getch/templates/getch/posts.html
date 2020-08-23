@@ -1,57 +1,108 @@
-<link rel="stylesheet" href='/static/swiper/swiper.min.css'>
+{% include "getch/post.html" %}
+
+<style>
+  .posts {
+    width: 100%;
+    height: 100%;
+  }
+
+  .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .back {
+    position: absolute;
+    top: calc(352 * var(--x));
+    left: 0;
+    width: 100%;
+    height: calc(572 * var(--x));
+    background: rgba(255,242,204,0.25);
+  }
+
+  .back img.logo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(90 * var(--x));
+    height: calc(90 * var(--x));
+  }
+</style>
 
 <script type='text/x-template' id='posts-template'>
-  <div class="swiper-container" ref='swiper'>
-    <div class="swiper-wrapper">
+  <div class='posts'>
+    <div class='back'>
+      <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
+    </div>
 
-      <div class="swiper-slide" v-for='post in posts' :post_id='post.id' :author_id='post.boo.id'>
-        <post :post=post :session=session></post>
-      </div>
+    <swiper ref='swiper' :options='swiper_options' @slideChangeTransitionEnd='set_cpost_id'>
+      <swiper-slide v-for='post in posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
+        <post :post='post' :session='session'></post>
+      </swiper-slide>
+    </swiper>
 
+    <div class='posting menublock' onclick='show_posting_selector()'>
+      <img class='icon' src='/static/materials/icons/plus.png'>
+    </div>
+
+    <div class='my menublock' @click='session.open_mypage()'>
+      <img class='icon' src='/static/materials/icons/profile.png'>
     </div>
   </div>
 </script>
 
-<script src="/static/swiper/swiper.js"></script>
-{% include "getch/post.html" %}
 
 <script>
+  Vue.use(VueAwesomeSwiper);
+
   Vue.component('posts', {
     template: '#posts-template',
     delimiters: ['[[', ']]'],
-    props: ['posts', 'session'],
+    props: ['session', 'posts'],
+
     data: function() {
+      self = this;
       return {
-        swiper: undefined
+        swiper_options: {
+          direction: 'vertical'
+        },
+
+        cpost_id: undefined
+      }
+    },
+
+    computed: {
+      swiper: function() {
+        return this.$refs.swiper.$swiper
+      }
+    },
+
+    watch: {
+      cpost_id: function(_id) {
+        this.session.set_cpost(this.posts[_id]);
       }
     },
 
     mounted: function() {
-      this.swiper = new Swiper(this.$refs.swiper, {
-        direction: 'vertical'
-      });
+      this.set_cpost_id();
+    },
+
+    methods: {
+      set_cpost_id: function() {
+        const cpost = this.swiper.el.querySelector('.swiper-slide-active');
+        this.cpost_id = Number(cpost.getAttribute('post_id'));
+      }
     }
   });
 
-
-  const swiper = new Swiper('.swiper-container2', {
-    direction: 'vertical',
-    on: {
-      init: function() {
-        // set_post();
-      },
-      slideChangeTransitionEnd: function() {
-        set_post();
-      },
-      slideChange: function() {
-        // unset_post();
-      },
-    },
-    // spaceBetween: '-10'
-    // loop: true
-    // preventClicks: false,
-    // preventClicksPropagation: false
-  });
 
   function set_post() {
     const cpost = document.querySelector('.swiper-slide-active');

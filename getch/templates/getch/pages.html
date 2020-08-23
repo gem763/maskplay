@@ -1,0 +1,72 @@
+<style>
+  .pages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    pointer-events: none;
+    overflow: hidden;
+  }
+</style>
+
+<script type='text/x-template' id='pages-template'>
+  <div class='pages'>
+    <loginpage
+      v-if='!session.auth'
+      :session='session'
+    ></loginpage>
+
+    <mypage
+      v-if='session.auth'
+      :session='session'
+    ></mypage>
+
+    <boochooser
+      v-if='session.auth'
+      :session='session'
+    ></boochooser>
+
+    <profiler
+      v-if='session.auth'
+      :session='session'
+    ></profiler>
+
+    <authorpage
+      v-if='session.cpost'
+      :session='session'
+    ></authorpage>
+
+    <network
+      v-if='session.cnetwork.boo'
+      :session='session'
+    ></network>
+  </div>
+</script>
+
+
+{% include "getch/loginpage.html" %}
+{% include "getch/mypage.html" %}
+{% include "getch/boochooser.html" %}
+{% include "getch/profiler.html" %}
+{% include "getch/authorpage.html" %}
+{% include "getch/network.html" %}
+
+<script>
+  Vue.component('pages', {
+    template: '#pages-template',
+    delimiters: ['[[', ']]'],
+    props: ['session']
+  });
+
+
+  function open_posting(type) {
+    $('.popup input.toggler').prop('checked', false);
+    document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
+    document.querySelector(`#posting .${type} .description span.text`).innerHTML = '';
+    document.querySelectorAll(`#posting .${type} input[type='file']`).forEach(input => { input.value = ''; });
+    document.querySelectorAll(`#posting .${type} img.pix`).forEach(img => { img.src = ''; });
+    open_page('posting');
+  }
+</script>

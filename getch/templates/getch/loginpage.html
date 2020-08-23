@@ -23,7 +23,7 @@
 
 {% load socialaccount %}
 <script type='text/x-template' id='loginpage-template'>
-  <page class='loginpage' :open='open' @close='$emit("close")'>
+  <page class='loginpage' :open='session.open.loginpage' @close='session.close_page()'>
 
     <div style="margin-top:20vh;font-size:50px;font-weight:bold;font-family: 'Source Code Pro', monospace;">
       <!-- SIDE B -->
@@ -58,7 +58,7 @@
   Vue.component('loginpage', {
     template: '#loginpage-template',
     delimiters: ['[[', ']]'],
-    props: ['open'],
+    props: ['session'],
     data: function() {
       return { }
     },

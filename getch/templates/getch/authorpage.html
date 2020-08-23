@@ -10,20 +10,24 @@
     align-items: center;
     justify-content: center;
   }
+
+  .authorpage .follow-button.onfollow {
+    background: var(--color-pos);
+  }
 </style>
 
 <script type='text/x-template' id='authorpage-template'>
-  <page class='authorpage' :open='open' @close='$emit("close")'>
-    <img class='boo' :src='profile_src' style="object-fit:cover;width:100px;height:100px;">
+  <page class='authorpage' :open='session.open.authorpage' @close='session.close_page()'>
+    <img class='boo' :src='author.profile.pix' style="object-fit:cover;width:100px;height:100px;">
     <br>
 
     <br><br>
-    <span class='network' style='background:black;color:white;padding:5px;' onclick='open_network()'>
-      팔로워 <span class='nfollowers'>[[ nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ nfollowees ]]</span>
+    <span class='network' style='background:black;color:white;padding:5px;' @click='session.open_network()'>
+      팔로워 <span class='nfollowers'>[[ author.nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ author.nfollowees ]]</span>
     </span>
 
     <br></br>
-    <div class='follow-button'>팔로우하기</div>
+    <div class='follow-button' :class='{ onfollow:is_following }' @click='toggle_follow'>[[ follow_button_message ]]</div>
   </page>
 </script>
 
@@ -32,31 +36,40 @@
   Vue.component('authorpage', {
     template: '#authorpage-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'session'],
+    props: ['session'],
     data: function() {
       return { }
     },
 
     computed: {
-      profile_src: function() {
-        if (this.session) {
-          return this.session.boo.profile.pix;
-        }
+      author: function() {
+        return this.session.cpost.boo
       },
 
-      nfollowers: function() {
-        if (this.session) {
-          return this.session.nfollowers;
-        }
+      is_following: function() {
+        return this.session.auth && this.session.auth.is_following(this.author.id)
       },
 
-      nfollowees: function() {
-        if (this.session) {
-          return this.session.nfollowees;
+      follow_button_message: function() {
+        if (this.is_following) {
+          return '팔로우중'
+        } else {
+          return '팔로우하기'
         }
       }
     },
 
-    methods: { }
+    methods: {
+      toggle_follow: function() {
+        if (this.is_following) {
+          this.session.auth.unfollow(this.author.id);
+          this.author.nfollowers -= 1;
+
+        } else {
+          this.session.auth.follow(this.author.id);
+          this.author.nfollowers += 1;
+        }
+      }
+    }
   });
 </script>

@@ -37,23 +37,21 @@
 
 
 <script type='text/x-template' id='boochooser-template'>
-  <page class='boochooser' :open='open' @close='$emit("close")'>
+  <page class='boochooser' :open='session.open.boochooser' @close='session.close_page()'>
     <div style='background:white;height:100%;overflow:auto;padding:15%;'>
       <div style='background:none;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
         <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
       </div>
 
       <div class='myboos' style='display:flex;flex-wrap:wrap;'>
-        <template v-if='session'>
-          <div class='boo-candidate' :class='{ selected: boo_id==session.boo_selected }' v-for='boo_id in session.myboos' style='margin:10px' @click='set_myboo(boo_id)'>
-            <img class='pix' :src='session.boos[boo_id].profile.pix' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
-            <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
-              [[ session.boos[boo_id].nick ]]
-            </span>
-          </div>
-        </template>
+        <div class='boo-candidate' :class='{ selected: boo_id==session.auth.boo_selected }' v-for='(boo, boo_id) in session.auth.boos' style='margin:10px' @click='change_boo_to(boo_id)'>
+          <img class='pix' :src='boo.profile.pix' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+          <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+            [[ boo.nick ]]
+          </span>
+        </div>
 
-        <div class='boo-candidate' style='margin:10px' onclick='make_boo()'>
+        <div class='boo-candidate' style='margin:10px' @click='new_boo'>
           <img class='icon' src='/static/materials/icons/boo_plus.png' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
         </div>
       </div>
@@ -66,50 +64,21 @@
   Vue.component('boochooser', {
     template: '#boochooser-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'session'],
+    props: ['session'],
     data: function() {
       return { }
     },
 
     methods: {
-      set_myboo: function(boo_id) {
-        this.session.myboo = boo_id;
-        this.$emit('close');
+      change_boo_to: function(boo_id) {
+        this.session.auth.boo = boo_id;
+        this.session.close_page();
+      },
+
+      new_boo: async function() {
+        await this.session.auth.new_boo();
+        this.session.open_profiler();
       }
     }
   });
-
-
-  // function set_boochooser() {
-  // }
-  //
-  // function select_this_boo(div) {
-  //   let boo_id = div.getAttribute('boo_id');
-  //
-  //   if (boo_id=='') {
-  //
-  //   } else {
-  //     session.myboo = boo_id;
-  //     // close_page(div);
-  //     // close 가 왜 안먹히지????
-  //     session.checkout();
-  //     document.querySelector('#boochooser .page-toggler').checked = false;
-  //   }
-  // }
-
-  function make_boo() {
-    fetch('boo/new/')
-      .then(res => res.json())
-      .then(js => {
-        console.log(JSON.parse(js.boo));
-
-        let boo = JSON.parse(js.boo);
-        boo.followers_id = new Set(boo.followers_id);
-        boo.followees_id = new Set(boo.followees_id);
-        session.boos[boo.id] = boo;
-        session.myboos.push(boo.id);
-        session.myboo = boo.id;
-        open_profiler();
-      })
-    }
-  </script>
+</script>

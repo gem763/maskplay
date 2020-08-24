@@ -1,0 +1,109 @@
+<style>
+  .pixloader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pixloader img.pix {
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: calc(12 * var(--x)) solid transparent;
+  }
+
+  .pixloader input[type='file'] {
+    display: none;
+    visibility: hidden;
+  }
+
+  .pixloader .pix-clicker {
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    bottom: 20%;
+    right: 20%;
+    background: none;
+    border: 5px dashed silver;
+    opacity: 0.5;
+  }
+
+  .pixloader .pix-clicker img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    transform: translate(-50%,-50%);
+    opacity: 0.5;
+  }
+
+  .pixloader .show-pix-clicker-enter-active,
+  .pixloader .show-pix-clicker-leave-active {
+    transition: opacity 0.2s;
+  }
+
+  .pixloader .show-pix-clicker-enter,
+  .pixloader .show-pix-clicker-leave-to {
+    opacity: 0;
+  }
+</style>
+
+
+<script type='text/x-template' id='pixloader-template'>
+  <div class='pixloader'>
+    <input v-if='editable' type="file" accept="image/*" :id="pixloader_id" :field='field' @change='loadpix'>
+    <label class='pixloader-label' :for='pixloader_id'>
+      <img class='pix' :src='pix' onerror='this.style.display="none"' ref='pix'>
+
+      <transition name='show-pix-clicker'>
+        <div class='pix-clicker' v-show='editable'>
+          <!-- <img src='/static/materials/icons/pix.png'> -->
+        </div>
+      </transition>
+    </label>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('pixloader', {
+    template: '#pixloader-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'pix', 'editable', 'field' ],
+    data: function() {
+      return {
+        pixloader_id: 0
+      }
+    },
+
+    created: function() {
+      this.pixloader_id = Date.now();
+    },
+
+    methods: {
+      loadpix: function(event) {
+        const input = event.target;
+        const self = this;
+
+        if (input.files && input.files[0]) {
+          let reader = new FileReader();
+
+          reader.onload = function(e) {
+            self.$refs.pix.src = e.target.result;
+            self.$refs.pix.style.display = 'block';
+          };
+
+          reader.readAsDataURL(input.files[0]);
+        }
+      },
+    }
+  });
+</script>

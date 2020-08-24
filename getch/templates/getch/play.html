@@ -116,7 +116,7 @@
 
 <body style='background:lightgray;margin:0;'>
   <div id='window'>
-    <posts v-if='posts' :session='session' :posts='posts'></posts>
+    <posts v-if='session.posts' :session='session'></posts>
     <pages :session='session'></pages>
     <div class='border'></div>
   </div>
@@ -144,7 +144,7 @@
       delimiters: ['[[', ']]'],
       data: {
         session: undefined,
-        posts: undefined,
+        // posts: undefined,
         // guider: undefined
       },
 
@@ -175,7 +175,7 @@
 
     {% if user.is_authenticated %}
     sideb.session.auth = new Auth({{user.serialized|safe}});
-    sideb.posts = {{posts|safe}};
+    sideb.session.posts = {{posts|safe}};
     // console.log(sideb.posts);
     {% endif %}
 

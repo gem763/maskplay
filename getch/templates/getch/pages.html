@@ -42,6 +42,11 @@
       v-if='session.cnetwork.boo'
       :session='session'
     ></network>
+
+    <posting
+      v-if='session.auth'
+      :session='session'
+    ></posting>
   </div>
 </script>
 
@@ -52,6 +57,7 @@
 {% include "getch/profiler.html" %}
 {% include "getch/authorpage.html" %}
 {% include "getch/network.html" %}
+{% include "getch/posting.html" %}
 
 <script>
   Vue.component('pages', {

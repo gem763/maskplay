@@ -43,13 +43,16 @@
       <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
     </div>
 
-    <swiper ref='swiper' :options='swiper_options' @slideChangeTransitionEnd='set_cpost_id'>
-      <swiper-slide v-for='post in posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
+    <!-- <swiper ref='swiper' :options='swiper_options' @slideChangeTransitionEnd='set_cpost_index'> -->
+    <swiper ref='swiper' :options='swiper_options'>
+      <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
         <post :post='post' :session='session'></post>
+        <!-- <post :post='post' :session='session' @freeze='set_swiper_mode(0)' @activate='set_swiper_mode(1)'></post> -->
       </swiper-slide>
     </swiper>
 
-    <div class='posting menublock' onclick='show_posting_selector()'>
+    <!-- <div class='posting menublock' onclick='show_posting_selector()'> -->
+    <div class='posting menublock' @click='session.open_posting()'>
       <img class='icon' src='/static/materials/icons/plus.png'>
     </div>
 
@@ -66,79 +69,18 @@
   Vue.component('posts', {
     template: '#posts-template',
     delimiters: ['[[', ']]'],
-    props: ['session', 'posts'],
+    props: ['session'],
 
     data: function() {
-      self = this;
       return {
         swiper_options: {
           direction: 'vertical'
-        },
-
-        cpost_id: undefined
-      }
-    },
-
-    computed: {
-      swiper: function() {
-        return this.$refs.swiper.$swiper
-      }
-    },
-
-    watch: {
-      cpost_id: function(_id) {
-        this.session.set_cpost(this.posts[_id]);
+        }
       }
     },
 
     mounted: function() {
-      this.set_cpost_id();
-    },
-
-    methods: {
-      set_cpost_id: function() {
-        const cpost = this.swiper.el.querySelector('.swiper-slide-active');
-        this.cpost_id = Number(cpost.getAttribute('post_id'));
-      }
+      this.session.swiper = this.$refs.swiper.$swiper;
     }
   });
-
-
-  function set_post() {
-    const cpost = document.querySelector('.swiper-slide-active');
-    const cpost_id = cpost.getAttribute('post_id');
-    const author_id = cpost.getAttribute('author_id');
-
-    session.cpost = {
-      post_id: Number(cpost_id),
-      author_id: Number(author_id)
-    }
-
-    // cpost.querySelector('.author.menublock').setAttribute('author', author_id);
-    // cpost.querySelector('.author.menublock img.fit').src = session.author.profile.pix;
-    // cpost.querySelector('.description span.nick').innerHTML = '@' + session.author.nick;
-    //
-    // if (author_id==session.boo_selected) {
-    //   cpost.querySelector('input.show-modify-button.toggler').checked = true;
-    //
-    // } else {
-    //   cpost.querySelector('input.show-modify-button.toggler').checked = false;
-    // }
-    //
-    // if (cpost_id in session.boo.voting_record) {
-    //   const vote_action = session.boo.voting_record[cpost_id];
-    //   cpost.querySelector(`input.vote.toggler[value='${vote_action}']`).checked = true;
-    //
-    // } else {
-    //   cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
-    //   cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
-    // }
-  }
-  //
-  // function unset_post() {
-  //   let cpost = document.querySelector('.swiper-slide-active');
-  //   cpost.querySelector('input.show-modify-button.toggler').checked = false;
-  //   cpost.querySelector('input.vote.toggler[value="0"]').checked = false;
-  //   cpost.querySelector('input.vote.toggler[value="1"]').checked = false;
-  // }
 </script>

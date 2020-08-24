@@ -48,7 +48,8 @@ maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} fo
 
 def play(request):
     _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
-    _posts = {p['id']:p for p in m.PostSerializer(_posts, many=True).data}
+    _posts = m.PostSerializer(_posts, many=True).data
+    # _posts = {p['id']:p for p in m.PostSerializer(_posts, many=True).data}
     # posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)
     # ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases, 'posts_serialized':posts_serialized}
     ctx = {'posts': json.dumps(_posts), 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
@@ -60,18 +61,8 @@ def vote(request, post_id):
     action = request.GET.get('action', None)
 
     if action:
-        # boo_id = request.user.boo.pk
         post = m.Post.objects.get(pk=post_id)
         post.vote(int(action))
-        # print(post.get_flags(status=0).count())
-
-        # print('up vote: ', post.votes.user_ids(action=0))
-        # print('down vote: ', post.votes.user_ids(action=1))
-        # print('up voted: ', post.votes.exists(boo_id, action=0))
-        # print('down voted: ', post.votes.exists(boo_id, action=1))
-        # print(post.voters)
-        # print(request.user.boo.voting_record)
-
         return JsonResponse({'success':True, 'action':action}, safe=False)
 
     else:
@@ -169,27 +160,63 @@ def profile_save(request):
         else:
             return JsonResponse({'success':False}, safe=False)
 
-        #
-        # if _nick:
-        #     boo.nick = _nick
-        #
-        # if _pix:
-        #     boo.profile.pix = _pix
-        #
-        # if _pix_base:
-        #     boo.profile.pix_base = _pix_base
-        #
-        # if _profile:
-        #     boo.profile.type = _profile['type']
-        #     boo.profile.txt = _profile['txt']
-        #
-        # boo.profile.save()
-        # boo.save()
-        # return JsonResponse({'success':True, 'profile':boo.profile.serialized, 'boo':boo.serialized}, safe=False)
+
+
+# def post_save(request):
+#     if request.method=='POST':
+#         print(request.POST, request.FILES)
+#
+#         post_id = request.POST.get('post_id', None)
+#         post_type = request.POST.get('type', None)
+#         text = request.POST.get('text', None)
+#         pix = request.FILES.get('pix', None)
+#         pix_a = request.FILES.get('pix_a', None)
+#         pix_b = request.FILES.get('pix_b', None)
+#
+#         data = { 'boo': request.user.boo.id }
+#
+#         if text:
+#             data['text'] = text
+#
+#         if pix:
+#             data['pix'] = pix
+#
+#         if pix_a:
+#             data['pix_a'] = pix_a
+#
+#         if pix_b:
+#             data['pix_b'] = pix_b
+#
+#         if post_id:
+#             mode = 'edited'
+#             post = m.Post.objects.get_subclass(pk=post_id)
+#             ser = m.PostSerializer(post, data=data, partial=True)
+#
+#         else:
+#             mode = 'created'
+#             data['type'] = post_type
+#             ser = m.PostSerializer(data=data, partial=True)
+#
+#         ser.is_valid()
+#         post_saved = ser.save()
+#
+#         print(post_saved.validated_data)
+#
+#         if mode == 'edited':
+#             js = {'success':True, 'mode':mode}
+#
+#         elif mode == 'created':
+#             js = {'success':True, 'mode':mode, 'post':post_saved.validated_data}
+#             # post_created = render_to_string('getch/post.html', {'post':post, 'type':post_type})
+#             # js = {'success':True, 'mode':mode, 'post_id':post.id, 'post_created':post_created}
+#
+#         return JsonResponse(js, safe=False)
 
 
 def post_save(request):
     if request.method=='POST':
+        print(request.POST, request.FILES)
+
         post_id = request.POST.get('post_id', None)
         post_type = request.POST.get('type', None)
         text = request.POST.get('text', None)
@@ -198,14 +225,13 @@ def post_save(request):
         pix_b = request.FILES.get('pix_b', None)
 
         if post_id:
-            post = m.Post.objects.get_subclass(pk=post_id)
             mode = 'edited'
+            post = m.Post.objects.get_subclass(pk=post_id)
 
         else:
-            postmodel = apps.get_model(app_label='getch', model_name=post_type)
-            post = postmodel()
-            post.boo = request.user.boo
             mode = 'created'
+            postmodel = apps.get_model(app_label='getch', model_name=post_type)
+            post = postmodel(boo=request.user.boo)
 
         if text:    post.text = text
         if pix:     post.pix = pix
@@ -213,14 +239,14 @@ def post_save(request):
         if pix_b:   post.pix_b = pix_b
         post.save()
 
-        print(request.POST, request.FILES)
-
         if mode == 'edited':
             js = {'success':True, 'mode':mode}
 
         elif mode == 'created':
-            post_created = render_to_string('getch/post.html', {'post':post, 'type':post_type})
-            js = {'success':True, 'mode':mode, 'post_id':post.id, 'post_created':post_created}
+            _post = json.dumps(m.PostSerializer(post).data)
+            js = {'success':True, 'mode':mode, 'post':_post}
+            # post_created = render_to_string('getch/post.html', {'post':post, 'type':post_type})
+            # js = {'success':True, 'mode':mode, 'post_id':post.id, 'post_created':post_created}
 
         return JsonResponse(js, safe=False)
 

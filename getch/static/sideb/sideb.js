@@ -7,12 +7,15 @@ class Session {
       profiler: false,
       authorpage: false,
       network: false,
+      posting: false,
     };
 
     this.mode = { on:'journey', prev:undefined };
-    this.cpost = undefined;
+    // this.cpost = undefined;
     this.cnetwork = { boo:undefined, followers:undefined, followees:undefined };
     this.auth = undefined;
+    this.swiper = undefined;
+    this.posts = undefined;
   }
 
   close_page() {
@@ -43,6 +46,10 @@ class Session {
 
   open_profiler() {
     this.open_page('profiler');
+  }
+
+  open_posting() {
+    this.open_page('posting');
   }
 
   open_authorpage() {
@@ -93,8 +100,20 @@ class Session {
     }
   }
 
-  set_cpost(post) {
-    this.cpost = post;
+  // set_cpost(post) {
+  //   this.cpost = post;
+  // }
+
+  get cpost() {
+    if (this.swiper) {
+      return this.posts[this.swiper.realIndex]
+    }
+  }
+
+  push_post(post) {
+    const where = this.swiper.realIndex + 1;
+    this.posts.splice(where, 0, post);
+    this.swiper.slideTo(where);
   }
 }
 
@@ -189,7 +208,7 @@ class Auth {
   }
 
   new_boo() {
-    self = this;
+    const self = this;
     return fetch('boo/new/')
       .then(res => res.json())
       .then(js => {

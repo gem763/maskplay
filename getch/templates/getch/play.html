@@ -9,6 +9,7 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
   <!-- <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}"> -->
   <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css"> -->
@@ -21,8 +22,14 @@
 
   <style>
     :root {
+      --ox-panel-border-w: 1px;
+      --vs-fsize: 25px;
+      --ox-fsize: 100px;
+      --color-pos: rgb(241,20,15);
+      --color-neg: rgb(22,187,204);
+
       --border-w: 0px;
-      --border: var(--border-w) solid white;
+      --border: var(--border-w) solid black;
 
       --x1: calc((100vw - var(--border-w))/572);
       --x2: calc((100vh - var(--border-w))/988);
@@ -32,21 +39,31 @@
       --s-menu-icon: calc(var(--s-menu) * 25/35);
       --s-0: calc(494 * var(--x));
       --s-1: calc(var(--s-0)/2);
-
-
-
-      /* --s-menu: 35px;
-      --s-menu-icon: 25px;
-      --s-0: min(calc(100vw - var(--s-menu) - var(--border-w)), calc(50vh - var(--border-w)/2));
-      --s-1: calc(var(--s-0)/2);*/
+      --s-2: calc(var(--s-1)/2);
+      --pix-margin: calc(12 * var(--x));
 
       --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
       --window-h: calc(var(--s-0)*2 + var(--border-w));
 
-      --vs-fsize: 25px;
-      --ox-fsize: 100px;
-      --color-pos: rgb(241,20,15);
-      --color-neg: rgb(22,187,204);
+
+      --border2-w: 1px;
+      --border2: var(--border2-w) solid black;
+
+      --y1: calc((100vw - var(--border2-w))/572);
+      --y2: calc((100vh - var(--border2-w))/988);
+      --y: min(var(--y1), var(--y2));
+
+      --t-0: calc(572 * var(--y));
+      --t-1: calc(352 * var(--y));
+      --t-2: calc(220 * var(--y));
+      --t-3: calc(132 * var(--y));
+      --t-4: calc(var(--t-0)/4);
+
+      --window-w2: calc(var(--t-0) + var(--border2-w));
+      --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
+
+      --dashboard_post_w: calc((var(--t-0) - var(--border2-w)) / 4);
+      --dashboard_post_h: calc(var(--dashboard_post_w) * 2);
     }
 
     * {
@@ -78,7 +95,7 @@
       width: calc(var(--s-menu) - var(--border-w));
       height: calc(var(--s-menu) - var(--border-w));
       border: var(--border);
-      background: white;
+      background: none;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -90,12 +107,12 @@
     }
 
     .menublock.my {
-      bottom: 0;
+      bottom: calc(64 * var(--x));
       right: 0;
     }
 
     .menublock.posting {
-      bottom: calc(var(--s-menu));;
+      bottom: calc(64 * var(--x) + var(--s-menu));;
       right: 0;
     }
 
@@ -120,8 +137,6 @@
     <pages :session='session'></pages>
     <div class='border'></div>
   </div>
-
-  <!-- {% include 'getch/popup.html' %} -->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="{% static 'html2canvas/html2canvas.js' %}"></script>

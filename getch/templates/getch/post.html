@@ -1,4 +1,6 @@
 {% include "getch/pixloader.html" %}
+{% include "getch/editext.html" %}
+{% include "getch/modal.html" %}
 
 <style>
   .post {
@@ -70,6 +72,54 @@
     pointer-events: auto;
   }
 
+  /* 중요참고: contenteditable은 swiper에서 안먹힌다. swiper에서 detachEvents를 해야한다 */
+  .post .description span.text[contenteditable=true]:focus {
+    font-size: 20px;
+    line-height: 1.3;
+    display: inline-flex;
+    justify-content: flex-end;
+  }
+
+  .post .description span.header {
+    color: gray;
+  }
+
+  .post .pixlabels .pixlabel {
+    position: absolute;
+    width: calc(var(--s-1) - var(--pix-margin));
+    background: none;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.4;
+    pointer-events: none;
+    white-space: pre;
+  }
+
+  .post .pixlabels .pixlabel.a {
+    bottom: calc(50% + var(--pix-margin) * 2);
+    left: var(--pix-margin);
+  }
+
+  .post .pixlabels .pixlabel.b {
+    top: calc(50% + var(--pix-margin) * 2);
+    left: var(--s-1);
+  }
+
+  .post .pixlabel span {
+    background: black;
+    color: white;
+    padding-left: 2px;
+    padding-right: 2px;
+    pointer-events: auto;
+  }
+
+  .post .pixlabel span.text[contenteditable=true]:focus {
+    font-size: 20px;
+    line-height: 1.3;
+    /* display: inline-flex;
+    justify-content: flex-end; */
+  }
+
   .post span.vs {
     position: absolute;
     background: var(--color-pos);
@@ -92,21 +142,38 @@
   }
 
   .post[type='postvoteox'] .backbone .ox {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    top: var(--pix-margin);
+    width: calc(100% - var(--pix-margin));
+    height: calc(100% - var(--pix-margin)*2);
     color: black;
-    background: none;
-    font-weight: bold;
+    background: white;
+    /* font-weight: bold; */
     font-size: var(--ox-fsize);
     display: flex;
     align-items: center;
     justify-content: center;
-    /* display: inline-block; */
+    box-sizing: border-box;
+    border: var(--ox-panel-border-w) solid black;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .post[type='postvoteox'] .backbone .ox.o {
+    left: var(--pix-margin);
+    /* background: none; */
+    /* border-right-width: calc(var(--ox-panel-border-w)/2); */
+  }
+
+  .post[type='postvoteox'] .backbone .ox.x {
+    right: var(--pix-margin);
+    /* background: none; */
+    border-left-width: 0;
+    /* calc(var(--ox-panel-border-w)/2); */
   }
 
   .post .scores {
     font-size: 40px;
-    font-weight: bold;
+    /* font-weight: bold; */
     opacity: 1;
     transition: opacity 0.2s;
     pointer-events: none;
@@ -116,26 +183,45 @@
     position: absolute;
     background: none;
     transform: translate(-50%,-50%);
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .post[type='postvoteox'] .scores .score.devoted {
+    color: lightgray;
   }
 
   .post[type='postvoteox'] .scores .score.vote-0 {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2 - var(--s-1)/2);
+    top: calc(var(--s-0) + var(--s-1) + var(--s-2));
+    left: calc(var(--s-1) - (var(--s-1) - var(--pix-margin))/2);
   }
 
   .post[type='postvoteox'] .scores .score.vote-1 {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2 + var(--s-1)/2);
+    top: calc(var(--s-0) + var(--s-1) + var(--s-2));
+    left: calc(var(--s-1) + (var(--s-1) - var(--pix-margin))/2);
+  }
+
+  .post[type='postvoteox'] .scores .score.label {
+    font-size: calc(var(--pix-margin) * 2);
+    top: calc(var(--s-0) + var(--s-1));
+    left: calc(var(--s-1) + var(--border-w)/2);
   }
 
   .post[type='postvoteab'] .scores .score.vote-0 {
-    top: calc(var(--s-0) - var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
+    top: calc(var(--s-0) - var(--s-2));
+    left: calc(var(--s-2));
+    /* left: calc(var(--s-1) + var(--border-w)/2); */
   }
 
   .post[type='postvoteab'] .scores .score.vote-1 {
-    top: calc(var(--s-0) + var(--s-1)/2);
-    left: calc(var(--s-1) + var(--border-w)/2);
+    top: calc(var(--s-0) + var(--s-2));
+    left: calc(var(--s-2));
+    /* left: calc(var(--s-1) + var(--border-w)/2); */
+  }
+
+  .post[type='postvoteab'] .scores .score.label {
+    font-size: calc(var(--pix-margin) * 2);
+    top: calc(var(--s-0));
+    left: calc(var(--s-2));
   }
 
 
@@ -187,32 +273,27 @@
     background: black;
   }
 
-  /* 중요참고: contenteditable은 swiper에서 안먹힌다. swiper에서 detachEvents를 해야한다 */
-  .post .description span.text[contenteditable=true]:focus {
-    font-size: 20px;
-    line-height: 1.3;
-    display: inline-flex;
-    justify-content: flex-end;
-  }
-
-  .post .description span.text[contentEditable=true]:empty::before {
-    content: attr(placeholder);
-    color: gray;
-  }
-
-  .post[type='postvoteab'] .backbone td.devoted {
+  .post[type='postvoteab'] .backbone td.devoted img.pix {
     filter: grayscale(1);
     opacity: 0.5;
   }
 
-  .post[type='postvoteox'] .backbone td.voted[act='0'] {
+  .post[type='postvoteox'] .backbone td.devoted .ox {
+    color: lightgray;
+  }
+
+  .post[type='postvoteox'] .backbone td.devoted .ox div,
+  .post[type='postvoteox'] .backbone td.voted .ox div {
+    background: white !important;
+  }
+
+  /* .post[type='postvoteox'] .backbone td.voted[act='0'] {
     background: var(--color-pos);
   }
 
   .post[type='postvoteox'] .backbone td.voted[act='1'] {
     background: var(--color-neg);
-  }
-
+  } */
 
   .post .show-modify-enter-active,
   .post .show-modify-leave-active,
@@ -227,13 +308,26 @@
   .post .show-newpost-leave-to {
     bottom: -40px !important;
   }
+
+  .post .ox-panel {
+    background: lightgreen;
+    margin: var(--pix-margin);
+    border-collapse: collapse;
+    width: calc(100% - var(--pix-margin)*2);
+    height: calc(100% - var(--pix-margin)*2)
+  }
+
+  .post .ox-panel td {
+    border: 5px solid black;
+    box-sizing: border-box;
+  }
 </style>
 
 
 <script type='text/x-template' id='post-template'>
   <div class='post' :type='post_type' ref='post'>
 
-    <table v-if='post_type=="postvoteox"' class='backbone'>
+    <table v-if='is_postvoteox' class='backbone'>
       <tbody>
         <tr>
           <td class='top full' colspan='2'>
@@ -243,14 +337,24 @@
         </tr>
 
         <tr>
-          <td class='bottom half' act='0' :class='voted_class_0' @click='toggle_vote'><div class='ox'>O</div></td>
-          <td class='bottom half' act='1' :class='voted_class_1' @click='toggle_vote'><div class='ox'>X</div></td>
+          <td class='bottom half' act='0' :class='voted_class_0' @click='toggle_vote' style='background:none'>
+            <div class='ox o'>
+              O
+              <div style='position:absolute;bottom:0;left:0;width:100%;height:calc(50% - var(--ox-panel-border-w)/2);background:none;border-top:var(--ox-panel-border-w) solid black;'></div>
+            </div>
+          </td>
+          <td class='bottom half' act='1' :class='voted_class_1' @click='toggle_vote' style='background:none'>
+            <div class='ox x'>
+              X
+              <div style='position:absolute;bottom:0;left:0;width:100%;height:calc(50% - var(--ox-panel-border-w)/2);background:none;border-top:var(--ox-panel-border-w) solid black;'></div>
+            </div>
+          </td>
           <td class='bottom side'></td>
         </tr>
       </tbody>
     </table>
 
-    <table v-if='post_type=="postvoteab"' class='backbone'>
+    <table v-if='is_postvoteab' class='backbone'>
       <tbody>
         <tr>
           <td class='top full' act='0' :class='voted_class_0' @click='toggle_vote'>
@@ -272,20 +376,31 @@
       <img class='fit' :src='post_boo_profile_pix'>
     </div>
 
-    <div class='description'>
-      <span class='nick'>@[[ post_boo_nick ]]</span><br>
-      <span class='text' :asis='post_text' contenteditable="true" spellcheck='false' placeholder='COMMENT HERE'>[[ post_text ]]</span>
+    <div class='scores' v-show='on_voted'>
+      <div class='score vote-0' :class='voted_class_0'>[[ post_nvotes_up ]]</div>
+      <div class='score vote-1' :class='voted_class_1'>[[ post_nvotes_down ]]</div>
+      <div class='score label'>SCORE</div>
     </div>
 
-    <div class='scores' v-if='post'>
-      <div class='score vote-0'>[[ post.nvotes_up ]]</div>
-      <div class='score vote-1'>[[ post.nvotes_down ]]</div>
+    <div class='description' v-show='!on_voted'>
+      <editext ref='post_text' :rawtext='post_text' :header='"@" + post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE'></editext>
     </div>
+
+    <div class='pixlabels' v-if='is_postvoteab' v-show='!on_voted'>
+      <div class='pixlabel a'>
+        <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A'></editext>
+      </div>
+      <div class='pixlabel b'>
+        <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B'></editext>
+      </div>
+    </div>
+
+    <span class='vs' v-show='!on_voted'>VS</span>
 
     <transition name='show-modify'>
       <div class='modify button' v-if='is_mypost'>
         <div class='edit-post' :class='{ onedit: on_edit }' @click='toggle_edit'>[[ edit_button_text ]]</div>
-        <div class='delete-post' onclick='delete_post()'>
+        <div class='delete-post' @click='delete_post'>
           <img src='/static/materials/icons/delete.png'>
         </div>
       </div>
@@ -295,7 +410,8 @@
       <div class='newpost button' v-if='!post' @click='save_post'>SAVE NEWPOST</div>
     </transition>
 
-    <span class='vs'>VS</span>
+    <modal :pop='on_process' name='processing'></modal>
+    <modal :pop='on_delete' name='deleting' @delete='delete_post_really($event)'></modal>
   </div>
 </script>
 
@@ -308,11 +424,25 @@
 
     data: function() {
       return {
-        on_edit: (this.post ? false : true)
+        on_edit: (this.post ? false : true),
+        on_process: false,
+        on_delete: false
       }
     },
 
+    // mounted: function() {
+    //   this.$refs.post_text.innerHTML = this.post_text;
+    // },
+
     computed: {
+      is_postvoteox: function() {
+        return (this.post_type == 'postvoteox')
+      },
+
+      is_postvoteab: function() {
+        return (this.post_type == 'postvoteab')
+      },
+
       post_type: function() {
         if (this.post) {
           return this.post.type
@@ -336,6 +466,16 @@
         catch(e) { return '' }
       },
 
+      post_pixlabel_a: function() {
+        try { return this.post.pixlabel_a }
+        catch(e) { return '' }
+      },
+
+      post_pixlabel_b: function() {
+        try { return this.post.pixlabel_b }
+        catch(e) { return '' }
+      },
+
       post_boo_profile_pix: function() {
         if (this.post) {
           return this.post.boo.profile.pix
@@ -354,9 +494,25 @@
 
       post_text: function() {
         if (this.post) {
-          return this.post.text
+          return this.post.text //(this.post.text ? this.post.text : '')
         } else {
           return ''
+        }
+      },
+
+      post_nvotes_up: function() {
+        if (this.post) {
+          return this.post.nvotes_up
+        } else {
+          return 0
+        }
+      },
+
+      post_nvotes_down: function() {
+        if (this.post) {
+          return this.post.nvotes_down
+        } else {
+          return 0
         }
       },
 
@@ -401,6 +557,10 @@
         } else {
           return 'EDIT'
         }
+      },
+
+      on_voted: function() {
+        return this.post && (this.vote_state != -1)
       }
     },
 
@@ -408,12 +568,19 @@
       on_edit: function(_new, _old) {
         if (_new) {
           this.session.swiper.detachEvents()
-          // this.$emit('freeze');
 
         } else if (_old) {
-          // this.$emit('activate');
           this.session.swiper.attachEvents();
           this.save_post();
+        }
+      },
+
+      on_delete: function(_new, _old) {
+        if (_new) {
+          this.session.swiper.detachEvents()
+
+        } else if (_old) {
+          this.session.swiper.attachEvents();
         }
       }
     },
@@ -462,16 +629,69 @@
       },
 
 
+      show_processing: function() {
+        this.on_process = true;
+      },
+
+      hide_processing: function() {
+        this.on_process = false;
+      },
+
+      show_deleting: function() {
+        this.on_delete = true;
+        this.session.swiper.detachEvents()
+      },
+
+      hide_deleting: function() {
+        this.on_delete = false;
+        this.session.swiper.attachEvents()
+      },
+
+      delete_post: function() {
+        this.show_deleting();
+      },
+
+      delete_post_really: function(how) {
+        this.hide_deleting();
+
+        if (how==1) {
+          const self = this;
+          fetch(`post/${this.post.id}/delete`)
+            .then(res => res.json())
+            .then(js => {
+              console.log(js);
+            });
+
+          self.session.delete_cpost();
+        }
+      },
+
       save_post: function() {
         const post = this.$refs.post;
-        const text = post.querySelector('.description span.text');
+        // const text = post.querySelector('.description span.text');
         const pixloaders = post.querySelectorAll('input[type="file"]');
         const formdata = new FormData();
 
         // text가 바뀌는 경우
-        if (text.getAttribute('asis')!=text.innerHTML) {
-          formdata.append('text', text.innerHTML.replace(/<br>/gi,'\n'));
-          text.setAttribute('asis', text.innerHTML);
+        // 참고: console.log("")로 하면 <empty string>이라고 나온다 (이걸로 한참 헤맴)
+
+        const _post_text = this.$refs.post_text.get();
+        if (_post_text) {
+          formdata.append('text', _post_text);
+        }
+
+        if (this.$refs.post_pixlabel_a) {
+          const _post_pixlabel_a = this.$refs.post_pixlabel_a.get();
+          if (_post_pixlabel_a) {
+            formdata.append('pixlabel_a', _post_pixlabel_a);
+          }
+        }
+
+        if (this.$refs.post_pixlabel_b) {
+          const _post_pixlabel_b = this.$refs.post_pixlabel_b.get();
+          if (_post_pixlabel_b) {
+            formdata.append('pixlabel_b', _post_pixlabel_b);
+          }
         }
 
         // pix가 선택된 경우
@@ -482,42 +702,35 @@
           }
         });
 
-        if (formdata.has('text') | formdata.has('pix') | formdata.has('pix_a') | formdata.has('pix_b')) {
+        if (formdata.has('text') | formdata.has('pix') | formdata.has('pix_a') | formdata.has('pix_b') | formdata.has('pixlabel_a') | formdata.has('pixlabel_b')) {
           formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
           formdata.append('type', this.post_type);
 
           // 포스트를 수정하는 경우
           if (this.post) {
             formdata.append('post_id', this.post.id);
+
+          } else {
+            this.show_processing();
           }
 
           const self = this;
           fetch('post/save/', { method: 'POST', body: formdata })
             .then(res => res.json())
             .then(js => {
+              console.log(js)
+              self.hide_processing();
+
               if (js.success && js.mode=='created') {
                 const post = JSON.parse(js.post);
-                this.session.push_post(post);
+                console.log(post);
+                self.session.push_post(post);
                 self.session.close_page();
               }
             });
         }
       }
-
     }
+
   });
-
-
-  function delete_post() {
-    fetch(`post/${session.cpost.post_id}/delete`)
-      .then(res => res.json())
-      .then(js => {
-        console.log(js);
-      });
-
-    // 경고메시지가 있어야할듯하다
-    // 삭제후 액션이 약간 어색한듯
-    swiper.slideTo(swiper.realIndex + 1);
-    swiper.removeSlide(swiper.realIndex - 1);
-    }
 </script>

@@ -25,7 +25,8 @@
     left: 0;
     width: 100%;
     height: calc(572 * var(--x));
-    background: rgba(255,242,204,0.25);
+    background: orange;
+    /* rgba(255,242,204,0.25); */
   }
 
   .back img.logo {
@@ -43,21 +44,30 @@
       <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
     </div>
 
-    <!-- <swiper ref='swiper' :options='swiper_options' @slideChangeTransitionEnd='set_cpost_index'> -->
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
         <post :post='post' :session='session'></post>
-        <!-- <post :post='post' :session='session' @freeze='set_swiper_mode(0)' @activate='set_swiper_mode(1)'></post> -->
       </swiper-slide>
     </swiper>
 
-    <!-- <div class='posting menublock' onclick='show_posting_selector()'> -->
-    <div class='posting menublock' @click='session.open_posting()'>
+    <!-- <div class='posting menublock' @click='session.open_posting()'>
       <img class='icon' src='/static/materials/icons/plus.png'>
+    </div> -->
+
+    <!-- <div class='my menublock' @click='session.open_mypage()'>
+      <img class='icon' src='/static/materials/icons/profile.png'>
+    </div> -->
+
+    <div class='posting menublock' @click='session.open_posting()'>
+      <div style='width:80%;height:80%;background:black;border-radius:50%;display:flex;align-items:center;justify-content:center;'>
+        <div style='width:30%;height:30%;background:red;border-radius:50%;'></div>
+      </div>
     </div>
 
     <div class='my menublock' @click='session.open_mypage()'>
-      <img class='icon' src='/static/materials/icons/profile.png'>
+      <div style='width:80%;height:80%;background:black;border-radius:50%;'>
+        <img src='/static/materials/icons/profile.png' style='width:100%;height:100%;object-fit:contain;filter:invert(100%)'>
+      </div>
     </div>
   </div>
 </script>

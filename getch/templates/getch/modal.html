@@ -1,0 +1,192 @@
+<style>
+  .modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    transition: background 0.1s;
+    pointer-events: none;
+  }
+
+  .modal.pop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: none;
+    width: 100%;
+    height: 100%;
+    color: white;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal .content .sub {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal .show-modal-enter-active,
+  .modal .show-modal-leave-active {
+    transition: all 0.1s;
+  }
+
+  .modal .show-modal-enter,
+  .modal .show-modal-leave-to {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .modal .content .sub.posting .postype {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    background: none;
+    margin: 10px;
+  }
+
+  .modal .content .sub.posting .postype table {
+    border-collapse: collapse;
+  }
+
+  .modal .content .sub.posting .postype table td {
+    border: 5px solid white;
+    height: 25px;
+    width: 25px;
+    box-sizing: border-box;
+  }
+
+  .modal .content .sub.posting .postype table td.wide {
+    width: 50px;
+  }
+
+  .modal .content .actions {
+    position: absolute;
+    bottom: 25%;
+    left: 50%;
+    transform: translate(-50%,50%);
+    width: 100%;
+    /* height: 50px; */
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal .content .actions .action {
+    width: 50px;
+    height: 50px;
+    margin: 20px;
+  }
+
+  .modal .content .actions .action img {
+    filter: invert(100%);
+    width: 100%;
+    height: 100%;
+  }
+
+  .modal .content .sub.processing,
+  .modal .content .sub.deleting {
+    font-size: 30px;
+    font-weight: bold;
+  }
+</style>
+
+<script type='text/x-template' id='modal-template'>
+  <div class='modal' :class='{ pop: pop }'>
+    <transition name='show-modal'>
+      <div class='content' v-if='pop'>
+
+        <div class='sub posting' v-if='is_posting'>
+          <div class='postype' @click='$emit("posting", "postvoteox")'>
+            <table>
+              <tbody>
+                <tr>
+                  <td class='wide' colspan='2'></td>
+                </tr>
+                <tr>
+                  <td>O</td>
+                  <td>X</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class='postype' @click='$emit("posting", "postvoteab")'>
+            <table>
+              <tbody>
+                <tr>
+                  <td class='wide'>A</td>
+                </tr>
+                <tr>
+                  <td class='wide'>B</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class='actions'>
+            <div class='action' @click='$emit("posting", "cancel")'>
+              <img src='/static/materials/icons/times.png'>
+            </div>
+          </div>
+        </div>
+
+
+        <div class='sub processing' v-if='is_processing'>
+          잠시만...
+        </div>
+
+        <div class='sub deleting' v-if='is_deleting'>
+          진짜 삭제?
+
+          <div class='actions'>
+            <div class='action' @click='$emit("delete", 0)'>
+              <img src='/static/materials/icons/times.png'>
+            </div>
+
+            <div class='action' @click='$emit("delete", 1)'>
+              <img src='/static/materials/icons/o.png'>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </transition>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('modal', {
+    template: '#modal-template',
+    delimiters: ['[[', ']]'],
+    props: ['pop', 'name'],
+
+    computed: {
+      is_posting: function() {
+        return this.name == 'posting-type-selector'
+      },
+
+      is_processing: function() {
+        return this.name == 'processing'
+      },
+
+      is_deleting: function() {
+        return this.name == 'deleting'
+      }
+    }
+  });
+</script>

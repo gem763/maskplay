@@ -336,6 +336,9 @@ class PostVoteAB(Post):
     pix_a = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
     pix_b = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
+    pixlabel_a = models.TextField(max_length=200, blank=True, null=True)
+    pixlabel_b = models.TextField(max_length=200, blank=True, null=True)
+
     def __str__(self):
         return 'AB | ' + super().__str__()
 
@@ -470,7 +473,7 @@ class PostVoteABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'nvotes_up', 'nvotes_down']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 

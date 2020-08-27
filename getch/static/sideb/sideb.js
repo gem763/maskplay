@@ -100,10 +100,6 @@ class Session {
     }
   }
 
-  // set_cpost(post) {
-  //   this.cpost = post;
-  // }
-
   get cpost() {
     if (this.swiper) {
       return this.posts[this.swiper.realIndex]
@@ -114,6 +110,13 @@ class Session {
     const where = this.swiper.realIndex + 1;
     this.posts.splice(where, 0, post);
     this.swiper.slideTo(where);
+  }
+
+  delete_cpost() {
+    const where = this.swiper.realIndex;
+    this.swiper.slideTo(where - 1);
+    this.posts.splice(where, 1);
+    // this.swiper.removeSlide(where);
   }
 }
 

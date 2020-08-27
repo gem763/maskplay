@@ -1,0 +1,59 @@
+<style>
+  .editext span.text[contentEditable=true]:empty::before {
+    content: attr(placeholder);
+    color: gray;
+  }
+
+  /* .editext span.text[contentEditable=false]:empty {
+    display: none;
+  } */
+</style>
+
+
+<script type='text/x-template' id='editext-template'>
+  <div class='editext'>
+    <template v-if='header'>
+      <span class='header'>[[ header ]]</span><br>
+    </template>
+
+    <span class='text' v-show='text || editable' :contenteditable='editable' spellcheck='false' :placeholder='placeholder' @input='change_text'></span>
+  </div>
+</script>
+
+<script>
+  Vue.component('editext', {
+    template: '#editext-template',
+    delimiters: ['[[', ']]'],
+    props: ['rawtext', 'header', 'editable', 'placeholder'],
+    data: function() {
+      return {
+        text: (this.rawtext ? this.rawtext : ''),
+        changed: false
+      }
+    },
+
+    mounted: function() {
+      this.$el.querySelector('span.text').innerHTML = this.text;
+      // this.$refs.text.innerHTML = this.text;
+    },
+
+    watch: {
+      text: function(_new, _old) {
+        this.changed = true;
+      }
+    },
+
+    methods: {
+      change_text: function(event) {
+        this.text = event.currentTarget.innerHTML.replace(/<br>/gi,'\r\n').replace(/&nbsp;/gi,' ');
+      },
+
+      get: function() {
+        if (this.changed) {
+          this.changed = false;
+          return this.text
+        }
+      }
+    }
+  });
+</script>

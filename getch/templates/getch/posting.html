@@ -1,10 +1,23 @@
 {% include "getch/page.html" %}
 {% include "getch/post.html" %}
+{% include "getch/modal.html" %}
 
 <script type='text/x-template' id='posting-template'>
-  <page class='posting' :open='session.open.posting' @close='session.close_page()'>
-    <post type='postvoteab' :session='session'></post>
-  </page>
+  <div class='posting'>
+    <modal
+      :pop='session.open.posting'
+      name='posting-type-selector'
+      @posting='posting($event)'
+    ></modal>
+
+    <page :open='postvoteab' @close='session.close_page()'>
+      <post type='postvoteab' :session='session'></post>
+    </page>
+
+    <page :open='postvoteox' @close='session.close_page()'>
+      <post type='postvoteox' :session='session'></post>
+    </page>
+  </div>
 </script>
 
 
@@ -14,10 +27,34 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return {}
+      return {
+        postvoteab: false,
+        postvoteox: false
+      }
+    },
+
+    watch: {
+      // 초기화
+      'session.open.posting': function(_new, _old) {
+        this.postvoteab = false;
+        this.postvoteox = false;
+      }
     },
 
     computed: { },
-    methods: { }
+    methods: {
+      posting: function(type) {
+        if (type=="cancel") {
+          this.session.close_page();
+        } else {
+          this[type] = true;
+        }
+      },
+
+      // close: function(type) {
+      //   this[type] = false;
+      //   this.session.close_page();
+      // }
+    }
   });
 </script>

@@ -17,8 +17,8 @@ import json
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
 imgs = {
-    'characters': m.Character.objects.all(),
-    'eyemasks': m.MaskBase.objects.filter(type='EYE'),
+    'characters': m.Character.objects.all()[:5],
+    'eyemasks': m.MaskBase.objects.filter(type='EYE')[:5],
 }
 
 # characters = {}
@@ -46,8 +46,12 @@ characters = {ch.id:{'category':ch.category, 'pix':ch.pix.url} for ch in m.Chara
 maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
 
+def test(request):
+    return render(request, 'getch/test.html')
+
+
 def play(request):
-    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')
+    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
     _posts = m.PostSerializer(_posts, many=True).data
     # _posts = {p['id']:p for p in m.PostSerializer(_posts, many=True).data}
     # posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)
@@ -100,6 +104,13 @@ def unfollow(request, boo_id):
 
     except:
         return JsonResponse({'success':False}, safe=False)
+
+
+def boo_posts(request, boo_id):
+    # boo = request.user.boo
+    _posts = m.Post.objects.filter(boo_id=boo_id).select_subclasses().order_by('-created_at')
+    _posts = m.PostSerializer(_posts, many=True).data
+    return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
 
 
 def post_delete(request, post_id):
@@ -223,6 +234,8 @@ def post_save(request):
         pix = request.FILES.get('pix', None)
         pix_a = request.FILES.get('pix_a', None)
         pix_b = request.FILES.get('pix_b', None)
+        pixlabel_a = request.POST.get('pixlabel_a', None)
+        pixlabel_b = request.POST.get('pixlabel_b', None)
 
         if post_id:
             mode = 'edited'
@@ -233,10 +246,12 @@ def post_save(request):
             postmodel = apps.get_model(app_label='getch', model_name=post_type)
             post = postmodel(boo=request.user.boo)
 
-        if text:    post.text = text
-        if pix:     post.pix = pix
-        if pix_a:   post.pix_a = pix_a
-        if pix_b:   post.pix_b = pix_b
+        if text:        post.text = text
+        if pix:         post.pix = pix
+        if pix_a:       post.pix_a = pix_a
+        if pix_b:       post.pix_b = pix_b
+        if pixlabel_a:  post.pixlabel_a = pixlabel_a
+        if pixlabel_b:  post.pixlabel_b = pixlabel_b
         post.save()
 
         if mode == 'edited':

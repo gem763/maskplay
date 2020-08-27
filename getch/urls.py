@@ -20,8 +20,9 @@ urlpatterns = [
     path('boo/<int:boo_id>/unfollow/', v.unfollow, name='unfollow'),
     path('boo/<int:boo_id>/set/', v.set_boo, name='set_boo'),
     path('boo/<int:boo_id>/network/', v.network, name='network'),
+    path('boo/<int:boo_id>/posts/', v.boo_posts, name='boo_posts'),
     path('boo/profile/save/', v.profile_save, name='profile_save'),
-    path('boo/new/', v.boo_new, name='boo_new'), 
+    path('boo/new/', v.boo_new, name='boo_new'),
 
     # path('cuser/', v.cuser, name='cuser'),
 ]

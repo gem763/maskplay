@@ -1,61 +1,137 @@
 {% include "getch/page.html" %}
 
 <style>
-  .boo-candidate {
-    width: 75px;
-    height: 75px;
-    /* outline: 1px solid black; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .boochooser > .dashboard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--window-w2);
+    height: var(--window-h2);
+    background: lightblue;
+  }
+
+  .boochooser .dashboard > table {
+    border-collapse: collapse;
+  }
+
+  .boochooser .dashboard > table td {
     position: relative;
-    /* overflow: hidden; */
-    /* border-radius: 50%; */
+    box-sizing: border-box;
+    border: var(--border2);
+    padding: 0;
+    text-align: center;
   }
 
-  .boo-candidate:hover {
-    outline: 5px solid rgb(241,20,15);
+  .boochooser .dashboard > table td.follow {
+    width: var(--t-2);
+    height: var(--t-2);
   }
 
-  .boo-candidate.selected img {
-    /* outline: 5px solid black; */
-    box-shadow: 0 0 0 5px orange !important;
+  .boochooser .dashboard > table td.profile {
+    width: var(--t-1);
+    height: var(--t-1);
   }
 
-  .boo-candidate .pix {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .boochooser .dashboard > table td.profile .profile-container {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: rgba(0,0,0,0.1);
+    border: 1px solid black;
+    border-radius: 15%;
   }
 
-  .boo-candidate .icon {
+  .boochooser .dashboard > table td.profile .profile-container img {
+    position: absolute;
+    top: 15%;
+    left: 15%;
     width: 70%;
     height: 70%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid black;
+  }
+
+  .boochooser .dashboard > table td.logo {
+    width: var(--t-3);
+    height: var(--t-3);
+  }
+
+  .boochooser .dashboard > table td.logo img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+  }
+
+  .boochooser .dashboard > table td.content {
+    height: var(--t-0);
+  }
+
+  .boochooser .dashboard > table td.content .boo-candidate {
+    position: relative;
+    width: var(--dashboard_post_w);
+    height: var(--dashboard_post_w);
   }
 </style>
 
 
 <script type='text/x-template' id='boochooser-template'>
   <page class='boochooser' :open='session.open.boochooser' @close='session.close_page()'>
-    <div style='background:white;height:100%;overflow:auto;padding:15%;'>
-      <div style='background:none;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
-        <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
-      </div>
 
-      <div class='myboos' style='display:flex;flex-wrap:wrap;'>
-        <div class='boo-candidate' :class='{ selected: boo_id==session.auth.boo_selected }' v-for='(boo, boo_id) in session.auth.boos' style='margin:10px' @click='change_boo_to(boo_id)'>
-          <img class='pix' :src='boo.profile.pix' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
-          <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
-            [[ boo.nick ]]
-          </span>
-        </div>
+    <div class='dashboard'>
+      <table>
+        <tbody>
+          <tr>
+            <td class='follow' colspan='2'>
+              <div style='position:absolute;left:0;bottom:0;width:100%;height:var(--t-3);background:none;padding:5px;box-sizing:border-box;text-align:right;font-size:12px;line-height:1.4;color:white;white-space:pre;'>
+                <span style='background:black;'>@[[ session.auth.boo.nick + '\r\n' + session.auth.boo.text ]]</span>
+              </div>
+            </td>
 
-        <div class='boo-candidate' style='margin:10px' @click='new_boo'>
-          <img class='icon' src='/static/materials/icons/boo_plus.png' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
-        </div>
-      </div>
+            <td class='profile' rowspan='2'>
+              <div class='profile-container' @click='session.open_profiler()'>
+                <img :src='session.auth.boo.profile.pix'>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td class='logo'>
+              <img src='/static/materials/imgs/sideb_logo.jpg'>
+            </td>
+            <td></td>
+          </tr>
+
+          <tr>
+            <td class='content' colspan='3'>
+
+              <div style='position:absolute;top:0;left:0;width:100%;display:flex;flex-wrap:wrap;background:none;'>
+
+                <div class='boo-candidate' v-for='(boo, boo_id) in session.auth.boos' @click='change_boo_to(boo_id)'>
+                  <img :src='boo.profile.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;object-fit:cover;border:1px solid black;box-sizing:border-box;'>
+                  <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+                    [[ boo.nick ]]
+                  </span>
+                  <div v-if='boo_id==session.auth.boo_selected' style='position:absolute;top:50%;left:50%;width:30%;height:30%;transform:translate(-50%,-50%);background:red;border-radius:50%;'></div>
+                </div>
+
+                <div class='boo-candidate' @click='new_boo'>
+                  <img src='/static/materials/icons/boo_plus.png' style='position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;object-fit:contain;border:1px solid black;box-sizing:border-box;'>
+                </div>
+
+              </div>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+
   </page>
 </script>
 
@@ -66,13 +142,13 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return { }
+      return {  }
     },
 
     methods: {
       change_boo_to: function(boo_id) {
         this.session.auth.boo = boo_id;
-        this.session.close_page();
+        // this.session.close_page();
       },
 
       new_boo: async function() {

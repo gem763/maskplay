@@ -17,8 +17,8 @@ import json
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
 imgs = {
-    'characters': m.Character.objects.all()[:5],
-    'eyemasks': m.MaskBase.objects.filter(type='EYE')[:5],
+    'characters': m.Character.objects.all()[:],
+    'eyemasks': m.MaskBase.objects.filter(type='EYE')[:],
 }
 
 # characters = {}
@@ -51,7 +51,7 @@ def test(request):
 
 
 def play(request):
-    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
+    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     _posts = m.PostSerializer(_posts, many=True).data
     # _posts = {p['id']:p for p in m.PostSerializer(_posts, many=True).data}
     # posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)

@@ -17,9 +17,30 @@ import json
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
 imgs = {
-    'characters': m.Character.objects.all()[:5],
-    'eyemasks': m.MaskBase.objects.filter(type='EYE')[:5],
+    'characters': m.Character.objects.all()[:],
+    'eyemasks': m.MaskBase.objects.filter(type='EYE')[:],
 }
+
+# characters = {}
+# for ch in m.Character.objects.all():
+#     if ch.category in characters:
+#         characters[ch.category][ch.id] = ch.pix.url
+#     else:
+#         characters[ch.category] = { ch.id: ch.pix.url }
+#
+# maskbases = {}
+# for mb in m.MaskBase.objects.all():
+#     mb_type = mb.get_type_display()
+#
+#     if mb_type in maskbases:
+#         if mb.category in maskbases[mb_type]:
+#             maskbases[mb_type][mb.category][mb.id] = mb.pix.url
+#         else:
+#             maskbases[mb_type][mb.category] = { mb.id: mb.pix.url }
+#
+#     else:
+#         maskbases[mb_type] = { mb.category: { mb.id: mb.pix.url } }
+
 
 characters = {ch.id:{'category':ch.category, 'pix':ch.pix.url} for ch in m.Character.objects.all()}
 maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
@@ -30,10 +51,14 @@ def test(request):
 
 
 def play(request):
-    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:5]
+    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     _posts = m.PostSerializer(_posts, many=True).data
+    # _posts = {p['id']:p for p in m.PostSerializer(_posts, many=True).data}
+    # posts_serialized = json.dumps(m.PostSerializer(posts, many=True).data)
+    # ctx = {'posts': posts, 'imgs':imgs, 'characters':characters, 'maskbases':maskbases, 'posts_serialized':posts_serialized}
     ctx = {'posts': json.dumps(_posts), 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
     return render(request, 'getch/play.html', ctx)
+    # return render(request, 'getch/test.html')
 
 
 def vote(request, post_id):
@@ -82,6 +107,7 @@ def unfollow(request, boo_id):
 
 
 def boo_posts(request, boo_id):
+    # boo = request.user.boo
     _posts = m.Post.objects.filter(boo_id=boo_id).select_subclasses().order_by('-created_at')
     _posts = m.PostSerializer(_posts, many=True).data
     return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
@@ -243,6 +269,7 @@ def post_save(request):
 def network(request, boo_id):
     boo = m.Boo.objects.get(pk=boo_id)
     return JsonResponse({'success':True, 'network':boo.network}, safe=False)
+    # return render(request, 'getch/network.html', {'network':boo.network})
 
 
 def boo_new(request):

@@ -20,10 +20,6 @@ VOTE_DOWN = 1
 FOLLOW = 10
 
 
-# class InheritManager(InheritanceManager):
-#     def serialized(self):
-#         return self.get_queryset()
-
 
 class BigIdAbstract(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -326,6 +322,8 @@ def _postpix_path(instance, fname):
 
 
 class PostVoteOX(Post):
+    OX_KEYS = ( ('OX', 'OX'), ('SM', '살말') )
+    keys = models.CharField(max_length=2, choices=OX_KEYS, default='OX', null=False, blank=False)
     pix = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
 
     def __str__(self):
@@ -411,6 +409,7 @@ class NetworkSerializer(serializers.ModelSerializer):
         return {'pix': obj.profile.pix.url}
 
 
+# https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
 class AuthorSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
 
@@ -461,11 +460,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PostVoteOXSerializer(serializers.ModelSerializer):
     boo = AuthorSerializer()
+    # keys = serializers.SerializerMethodField()
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'nvotes_up', 'nvotes_down']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
+
+    # def get_keys(self, obj):
+    #     return obj.get_keys_display()
 
 
 class PostVoteABSerializer(serializers.ModelSerializer):
@@ -489,93 +492,38 @@ class PostSerializer(serializers.ModelSerializer):
         elif isinstance(instance, PostVoteAB):
             return {'type':'postvoteab', **PostVoteABSerializer(instance=instance).data}
 
-    def create(self, validated_data):
-        _type = self.initial_data.pop('type')
 
-        if _type == 'postvoteox':
-            ser = PostVoteOXSerializer(data=self.initial_data, partial=True)
-
-        elif _type == 'postvoteab':
-            ser = PostVoteABSerializer(data=self.initial_data, partial=True)
-
-        if ser.is_valid():
-            return ser.save()
-
-        else:
-            print('something wrong when creating post data')
-            return None
-
-
-    def update(self, instance, validated_data):
-        _type = instance.__class__.__name__.lower()
-
-        if _type == 'postvoteox':
-            ser = PostVoteOXSerializer(instance, data=self.initial_data, partial=True)
-
-        elif _type == 'postvoteab':
-            ser = PostVoteABSerializer(instance, data=self.initial_data, partial=True)
-
-        if ser.is_valid():
-            ser.save()
-
-        else:
-            print('something wrong when updating post data')
-
-        return instance
-
-
-
-#
-#
-# class MaskSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Mask
-#         fields = ['id', 'maskbase', 'top', 'left', 'width', 'height']
-#         read_only_fields = ['id']
-#
-#
-# class ProfileSerializer(serializers.ModelSerializer):
-#     eye_mask = MaskSerializer()
-#     mouth_mask = MaskSerializer()
-#
-#     class Meta:
-#         model = Profile
-#         fields = ['id', 'type', 'eye_mask', 'mouth_mask', 'pix', 'pix_base', 'txt']
-#         read_only_fields = fields
-#
-#
-# class BooSerializer(serializers.ModelSerializer):
-#     profile = ProfileSerializer()
-#
-#     class Meta:
-#         model = Boo
-#         fields = ['id', 'nick', 'text', 'followers_id', 'followees_id', 'profile', 'voting_record']
-#         read_only_fields = fields
-#
-#
-# class UserSerializer(serializers.ModelSerializer):
-#     boos = BooSerializer(source='boo_set', many=True)
-#
-#     class Meta:
-#         model = User
-#         fields = ['id', 'email', 'boo_selected', 'boos']
-#         read_only_fields = fields
-
-
-# https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
-# class BooSerializer(serializers.ModelSerializer):
-#     followers = serializers.SerializerMethodField()
-#     # followees = SerializerMethodField(many=True)
-#     profile = serializers.CharField(source='profile.pix.url')
-#
-#     class Meta:
-#         model = Boo
-#         fields = ['id', 'nick', 'text', 'followers', 'profile']
-#         read_only_fields = fields
-#
-#     def get_followers(self, obj):
-#         if len(obj.followers)==0:
-#             return None
-#         else:
-#             # return BooSerializer(obj.followers, many=True).data
-#             return FollowSerializer(obj.followers, many=True).data
+    # 이부분은 안쓰게 되는거 같다. pix를 어떻게 serializer로 저장하는지 모르겠다
+    # def create(self, validated_data):
+    #     _type = self.initial_data.pop('type')
+    #
+    #     if _type == 'postvoteox':
+    #         ser = PostVoteOXSerializer(data=self.initial_data, partial=True)
+    #
+    #     elif _type == 'postvoteab':
+    #         ser = PostVoteABSerializer(data=self.initial_data, partial=True)
+    #
+    #     if ser.is_valid():
+    #         return ser.save()
+    #
+    #     else:
+    #         print('something wrong when creating post data')
+    #         return None
+    #
+    #
+    # def update(self, instance, validated_data):
+    #     _type = instance.__class__.__name__.lower()
+    #
+    #     if _type == 'postvoteox':
+    #         ser = PostVoteOXSerializer(instance, data=self.initial_data, partial=True)
+    #
+    #     elif _type == 'postvoteab':
+    #         ser = PostVoteABSerializer(instance, data=self.initial_data, partial=True)
+    #
+    #     if ser.is_valid():
+    #         ser.save()
+    #
+    #     else:
+    #         print('something wrong when updating post data')
+    #
+    #     return instance

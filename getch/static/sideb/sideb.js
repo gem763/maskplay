@@ -126,16 +126,9 @@ class Auth {
     this.id = Number(cuser.id);
     this.email = cuser.email;
     this.boo_selected = Number(cuser.boo_selected);
-    this.boos = cuser.boos; //this.__init_boos__(cuser.boos);
+    this.boos = cuser.boos;
   }
 
-  // __init_boos__(boos) {
-  //   for (let k in boos) {
-  //     boos[k].followers_id = new Set(boos[k].followers_id);
-  //     boos[k].followees_id = new Set(boos[k].followees_id);
-  //   }
-  //   return boos
-  // }
 
   api_get(url) {
     fetch(url)

@@ -257,13 +257,13 @@
 
 
 <script type='text/x-template' id='post-template'>
-  <div class='post' :type='post_type'>
+  <div class='post' :type='post_type' ref='post'>
 
     <table v-if='is_postvoteox' class='backbone'>
       <tbody>
         <tr>
           <td class='top full' colspan='2'>
-            <pixloader ref='post_pix' :pix='post_pix' :editable='on_edit'></pixloader>
+            <pixloader field='pix' :pix='post_pix' :editable='on_edit'></pixloader>
           </td>
           <td class='top side'></td>
         </tr>
@@ -290,14 +290,14 @@
       <tbody>
         <tr>
           <td class='top full' act='0' :class='voted_class_0' @click='toggle_vote'>
-            <pixloader ref='post_pix_a' :pix='post_pix_a' :editable='on_edit'></pixloader>
+            <pixloader field='pix_a' :pix='post_pix_a' :editable='on_edit'></pixloader>
           </td>
           <td class='top side'></td>
         </tr>
 
         <tr>
           <td class='bottom full' act='1' :class='voted_class_1' @click='toggle_vote'>
-            <pixloader ref='post_pix_b' :pix='post_pix_b' :editable='on_edit'></pixloader>
+            <pixloader field='pix_b' :pix='post_pix_b' :editable='on_edit'></pixloader>
           </td>
           <td class='bottom side'></td>
         </tr>
@@ -422,7 +422,7 @@
 
       post_text: function() {
         if (this.post) {
-          return this.post.text
+          return this.post.text //(this.post.text ? this.post.text : '')
         } else {
           return ''
         }
@@ -593,12 +593,12 @@
 
       show_deleting: function() {
         this.on_delete = true;
-        // this.session.swiper.detachEvents()
+        this.session.swiper.detachEvents()
       },
 
       hide_deleting: function() {
         this.on_delete = false;
-        // this.session.swiper.attachEvents()
+        this.session.swiper.attachEvents()
       },
 
       delete_post: function() {
@@ -608,46 +608,55 @@
       delete_post_really: function(how) {
         this.hide_deleting();
 
-        // this.on_delete = false가 갱신된 후에 아래를 실행한다
-        this.$nextTick(function() {
-          if (how==1) {
-            const self = this;
-            fetch(`post/${this.post.id}/delete`)
-              .then(res => res.json())
-              .then(js => {
-                console.log(js);
-              });
+        if (how==1) {
+          const self = this;
+          fetch(`post/${this.post.id}/delete`)
+            .then(res => res.json())
+            .then(js => {
+              console.log(js);
+            });
 
-            self.session.delete_cpost();
-          }
-        });
-      },
-
-      formdata_append(key, comp, formdata) {
-        if (comp) {
-          const val = comp.get();
-          if (val) {
-            formdata.append(key, val);
-            formdata.set('n_edited', Number(formdata.get('n_edited')) + 1);
-          }
+          self.session.delete_cpost();
         }
       },
 
       save_post: function() {
+        // const post = this.$refs.post;
+        // const pixloaders = post.querySelectorAll('input[type="file"]');
+        const pixloaders = this.$el.querySelectorAll('input[type="file"]');
+        const formdata = new FormData();
+
         // text가 바뀌는 경우
         // 참고: console.log("")로 하면 <empty string>이라고 나온다 (이걸로 한참 헤맴)
-        let formdata = new FormData();
-        formdata.append('n_edited', 0);
 
-        this.formdata_append('text', this.$refs.post_text, formdata);
-        this.formdata_append('pix', this.$refs.post_pix, formdata);
-        this.formdata_append('pix_a', this.$refs.post_pix_a, formdata);
-        this.formdata_append('pix_b', this.$refs.post_pix_b, formdata);
-        this.formdata_append('pixlabel_a', this.$refs.post_pixlabel_a, formdata);
-        this.formdata_append('pixlabel_b', this.$refs.post_pixlabel_b, formdata);
+        const _post_text = this.$refs.post_text.get();
+        if (_post_text) {
+          formdata.append('text', _post_text);
+        }
 
+        if (this.$refs.post_pixlabel_a) {
+          const _post_pixlabel_a = this.$refs.post_pixlabel_a.get();
+          if (_post_pixlabel_a) {
+            formdata.append('pixlabel_a', _post_pixlabel_a);
+          }
+        }
 
-        if (Number(formdata.get('n_edited')) > 0) {
+        if (this.$refs.post_pixlabel_b) {
+          const _post_pixlabel_b = this.$refs.post_pixlabel_b.get();
+          if (_post_pixlabel_b) {
+            formdata.append('pixlabel_b', _post_pixlabel_b);
+          }
+        }
+
+        // pix가 선택된 경우
+        pixloaders.forEach(input => {
+          if (input.files.length > 0) {
+            formdata.append(input.getAttribute('field'), input.files[0]);
+            input.value = '';
+          }
+        });
+
+        if (formdata.has('text') | formdata.has('pix') | formdata.has('pix_a') | formdata.has('pix_b') | formdata.has('pixlabel_a') | formdata.has('pixlabel_b')) {
           formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
           formdata.append('type', this.post_type);
 

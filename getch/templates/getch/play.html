@@ -11,8 +11,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
-  <!-- <link rel="stylesheet" href="{% static 'semantic/semantic.min.css' %}"> -->
-  <!-- <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css"> -->
   <link rel="stylesheet" href="{% static 'swiper/swiper.min.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.min.css' %}">
@@ -158,9 +156,7 @@
       el: '#window',
       delimiters: ['[[', ']]'],
       data: {
-        session: undefined,
-        // posts: undefined,
-        // guider: undefined
+        session: undefined
       },
 
       created: function() {
@@ -191,7 +187,6 @@
     {% if user.is_authenticated %}
     sideb.session.auth = new Auth({{user.serialized|safe}});
     sideb.session.posts = {{posts|safe}};
-    // console.log(sideb.posts);
     {% endif %}
 
   </script>

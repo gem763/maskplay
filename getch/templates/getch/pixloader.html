@@ -15,8 +15,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* box-sizing: border-box; */
-    /* border: var(--pix-margin) solid transparent; */
   }
 
   .pixloader input[type='file'] {
@@ -62,7 +60,8 @@
 
 <script type='text/x-template' id='pixloader-template'>
   <div class='pixloader'>
-    <input v-if='editable' type="file" accept="image/*" :id="pixloader_id" :field='field' @change='loadpix'>
+    <!-- <input v-if='editable' type="file" accept="image/*" :id="pixloader_id" :field='field' @change='loadpix' ref='input'> -->
+    <input v-if='editable' type="file" accept="image/*" :id="pixloader_id" @change='loadpix' ref='input'>
     <label class='pixloader-label' :for='pixloader_id'>
       <img class='pix' :src='pix' onerror='this.style.display="none"' ref='pix'>
 
@@ -83,8 +82,13 @@
     props: [ 'pix', 'editable', 'field' ],
     data: function() {
       return {
-        pixloader_id: 0
+        pixloader_id: 0,
+        changed: false
       }
+    },
+
+    watch: {
+      changed: function(_new, _old) { }
     },
 
     created: function() {
@@ -92,8 +96,8 @@
     },
 
     methods: {
-      loadpix: function(event) {
-        const input = event.target;
+      loadpix: function() {
+        const input = this.$refs.input; //event.target;
         const self = this;
 
         if (input.files && input.files[0]) {
@@ -105,8 +109,24 @@
           };
 
           reader.readAsDataURL(input.files[0]);
+          this.changed = true;
         }
       },
+
+      get: function() {
+        // input.value='' 을 하면 input.files도 비워진다
+        // 그 반대는 안된다
+        if (this.changed) {
+          this.changed = false;
+          // const file = this.$refs.input.files[0];
+          // this.$refs.input.value = ''
+          // return file
+
+          // 사실 input.value=''를 할필요도 없다
+          // input이 v-if로 되어 있어, 다시 여는 경우 어짜피 초기화된다
+          return this.$refs.input.files[0];
+        }
+      }
     }
   });
 </script>

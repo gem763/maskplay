@@ -13,12 +13,12 @@ class PostAdmin(admin.ModelAdmin):
 
 @admin.register(m.PostVoteAB)
 class PostVoteABAdmin(admin.ModelAdmin):
-    list_display = ['boo', 'text', 'nvotes_up', 'nvotes_down']
+    list_display = ['boo', 'text', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']
 
 
 @admin.register(m.PostVoteOX)
 class PostVoteOXAdmin(admin.ModelAdmin):
-    list_display = ['boo', 'text', 'nvotes_up', 'nvotes_down']
+    list_display = ['boo', 'text', 'keys', 'nvotes_up', 'nvotes_down']
 
 
 @admin.register(m.User)

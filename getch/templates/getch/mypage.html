@@ -175,16 +175,16 @@
     computed: { },
     methods: {
       load_posts: function() {
-        this.show_postloading();
-
-        const self = this;
-        fetch(`/boo/${self.session.auth.boo.id}/posts/`)
-          .then(x => x.json())
-          .then(js => {
-            self.posts = JSON.parse(js.posts);
-            console.log(self.posts);
-            self.hide_postloading();
-          })
+        // this.show_postloading();
+        //
+        // const self = this;
+        // fetch(`/boo/${self.session.auth.boo.id}/posts/`)
+        //   .then(x => x.json())
+        //   .then(js => {
+        //     self.posts = JSON.parse(js.posts);
+        //     console.log(self.posts);
+        //     self.hide_postloading();
+        //   })
       },
 
       show_postloading: function() {

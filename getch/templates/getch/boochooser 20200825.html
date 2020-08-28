@@ -1,0 +1,84 @@
+{% include "getch/page.html" %}
+
+<style>
+  .boo-candidate {
+    width: 75px;
+    height: 75px;
+    /* outline: 1px solid black; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* overflow: hidden; */
+    /* border-radius: 50%; */
+  }
+
+  .boo-candidate:hover {
+    outline: 5px solid rgb(241,20,15);
+  }
+
+  .boo-candidate.selected img {
+    /* outline: 5px solid black; */
+    box-shadow: 0 0 0 5px orange !important;
+  }
+
+  .boo-candidate .pix {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .boo-candidate .icon {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+  }
+</style>
+
+
+<script type='text/x-template' id='boochooser-template'>
+  <page class='boochooser' :open='session.open.boochooser' @close='session.close_page()'>
+    <div style='background:white;height:100%;overflow:auto;padding:15%;'>
+      <div style='background:none;height:20%;display:flex;align-items:flex-end;justify-content:left;'>
+        <span style='background:black;color:white;font-weight:bold;'>CHARACTER ON/OFF</span>
+      </div>
+
+      <div class='myboos' style='display:flex;flex-wrap:wrap;'>
+        <div class='boo-candidate' :class='{ selected: boo_id==session.auth.boo_selected }' v-for='(boo, boo_id) in session.auth.boos' style='margin:10px' @click='change_boo_to(boo_id)'>
+          <img class='pix' :src='boo.profile.pix' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+          <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+            [[ boo.nick ]]
+          </span>
+        </div>
+
+        <div class='boo-candidate' style='margin:10px' @click='new_boo'>
+          <img class='icon' src='/static/materials/icons/boo_plus.png' style='border-radius:50%;box-shadow: 0 0 0 1px black;width:75px;height:75px;'>
+        </div>
+      </div>
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('boochooser', {
+    template: '#boochooser-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    methods: {
+      change_boo_to: function(boo_id) {
+        this.session.auth.boo = boo_id;
+        this.session.close_page();
+      },
+
+      new_boo: async function() {
+        await this.session.auth.new_boo();
+        this.session.open_profiler();
+      }
+    }
+  });
+</script>

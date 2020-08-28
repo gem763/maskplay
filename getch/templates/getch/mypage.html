@@ -25,7 +25,7 @@
   .mypage .dashboard > table td.follow {
     width: var(--t-2);
     height: var(--t-2);
-    font-size: 25px;
+    font-size: 22px;
     font-weight: bold;
   }
 
@@ -77,10 +77,11 @@
         <tbody>
           <tr>
             <td class='follow' colspan='2'>
-              FOLLOW<br>
+              <span style='background:none;color:black'>FOLLOW</span>
+              <!-- <br>
               <span class='network' style='background:black;color:white;padding:5px;font-size:12px;' @click='session.open_network()'>
                 팔로워 <span class='nfollowers'>[[ session.auth.nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ session.auth.nfollowees ]]</span>
-              </span>
+              </span> -->
             </td>
 
             <td class='profile' rowspan='2'>
@@ -91,8 +92,9 @@
                 <span style='font-size:30px;font-weight:bold;'>9600</span>
               </div>
 
-              <div class='profile-text' style='position:absolute;left:0;bottom:0;width:100%;height:var(--t-3);background:none;padding:5px;box-sizing:border-box;text-align:left;font-size:12px;line-height:1.4;color:white;white-space:pre;'>
-                <span style='background:black;'>@[[ session.auth.boo.nick + '\r\n' + session.auth.boo.text ]]</span>
+              <div class='profile-text' style='position:absolute;left:0;bottom:0;width:100%;height:var(--t-3);background:none;padding:5px;box-sizing:border-box;text-align:center;font-size:12px;line-height:1.4;color:white;white-space:pre;'>
+                <span style='background:black;font-size:18px;font-weight:bold;'>[[ session.auth.boo.nick ]]</span><br>
+                <span style='background:black;'>[[ '"' + session.auth.boo.text + '"' ]]</span>
               </div>
             </td>
           </tr>
@@ -111,19 +113,19 @@
                 <div class='dpost' v-for='post in posts'>
 
                   <template v-if='post.type=="postvoteab"'>
-                    <div style='position:absolute;top:2%;left:2%;width:96%;height:48%;'>
+                    <div style='position:absolute;top:0.5%;left:1%;width:98%;height:49%;'>
                       <img :src='post.pix_a' style='width:100%;height:100%;object-fit:cover;'>
                     </div>
-                    <div style='position:absolute;top:50%;left:2%;width:96%;height:48%;'>
+                    <div style='position:absolute;top:50.5%;left:1%;width:98%;height:49%;'>
                       <img :src='post.pix_b' style='width:100%;height:100%;object-fit:cover;'>
                     </div>
                   </template>
 
                   <template v-else>
-                    <div style='position:absolute;top:2%;left:2%;width:96%;height:48%;'>
+                    <div style='position:absolute;top:0.5%;left:1%;width:98%;height:49%;'>
                       <img :src='post.pix' style='width:100%;height:100%;object-fit:cover;'>
                     </div>
-                    <div style='position:absolute;top:50%;left:0;width:100%;height:50%;'>
+                    <div style='position:absolute;top:50.5%;left:1%;width:98%;height:49%;'>
                       OX
                     </div>
                   </template>
@@ -141,7 +143,7 @@
       </table>
     </div>
 
-    <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
+    <a class='logout' href="{% url 'account_logout' %}" style='float:right;'><span style='background:black;color:white;'>LOGOUT</span></a>
     <!-- <i class="fa fa-barcode" @click='session.open_profiler()'></i> -->
 
   </page>
@@ -173,16 +175,16 @@
     computed: { },
     methods: {
       load_posts: function() {
-        // this.show_postloading();
-        //
-        // const self = this;
-        // fetch(`/boo/${self.session.auth.boo.id}/posts/`)
-        //   .then(x => x.json())
-        //   .then(js => {
-        //     self.posts = JSON.parse(js.posts);
-        //     console.log(self.posts);
-        //     self.hide_postloading();
-        //   })
+        this.show_postloading();
+
+        const self = this;
+        fetch(`/boo/${self.session.auth.boo.id}/posts/`)
+          .then(x => x.json())
+          .then(js => {
+            self.posts = JSON.parse(js.posts);
+            console.log(self.posts);
+            self.hide_postloading();
+          })
       },
 
       show_postloading: function() {

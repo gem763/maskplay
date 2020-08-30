@@ -1,0 +1,111 @@
+{% include "getch/pixloader.html" %}
+
+<style>
+  .aber {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  /* .aber .container {
+    position: absolute;
+    top: var(--pix-margin);
+    left: var(--pix-margin);
+    width: calc(100% - var(--pix-margin)*2);
+    height: calc(100% - var(--pix-margin)*2);
+    background: white;
+  } */
+
+  /* .aber .container .pixloader { */
+  .aber .pixloader {
+    transition: all 0.2s;
+  }
+
+  /* .aber .container.devoted .pixloader { */
+  .aber.devoted .pixloader {
+    opacity: 0.5;
+    filter: grayscale(0.5);
+  }
+
+  .aber .score {
+    font-size: 40px;
+    pointer-events: none;
+    position: absolute;
+    font-family: 'Montserrat', sans-serif;
+    left: var(--s-2);
+  }
+
+  .aber .score.act-0 {
+    bottom: var(--s-2);
+    transform: translate(-50%,50%);
+  }
+
+  .aber .score.act-1 {
+    top: var(--s-2);
+    transform: translate(-50%,-50%);
+  }
+
+  .aber .show-score-enter-active,
+  .aber .show-score-leave-active {
+    transition: all 0.2s;
+  }
+
+  .aber .show-score-enter,
+  .aber .show-score-leave-to {
+    left: 0;
+    opacity: 0;
+  }
+</style>
+
+<script type='text/x-template' id='aber-template'>
+  <div class='aber' :class='phase'>
+    <!-- <div class='container' :class='phase'> -->
+      <pixloader :pix='pix' :editable='editable' ref='pixloader'></pixloader>
+    <!-- </div> -->
+
+    <transition name='show-score'>
+      <div class='score' :class='act_class' v-if='is_active'>[[ score ]]</div>
+    </transition>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('aber', {
+    template: '#aber-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'act', 'vote_state', 'score', 'editable', 'is_active', 'pix' ],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      // is_active: function() {
+      //   return !this.editable && this.is_cpost && (this.vote_state != -1)
+      // },
+      //
+      phase: function() {
+        if (this.is_active) {
+          if (this.vote_state == this.act) {
+            return 'voted'
+          } else {
+            return 'devoted'
+          }
+        }
+      },
+
+      act_class: function() {
+        return 'act-' + this.act
+      }
+    },
+
+    methods: {
+      get: function() {
+        return this.$refs.pixloader.get()
+      }
+    }
+  });
+</script>

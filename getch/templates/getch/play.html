@@ -20,7 +20,8 @@
 
   <style>
     :root {
-      --ox-panel-border-w: 1px;
+      --oxcard-border-w: 1px;
+      --oxcard-border: var(--oxcard-border-w) solid black;
       --vs-fsize: 25px;
       --ox-fsize: 100px;
       --color-pos: rgb(241,20,15);
@@ -86,45 +87,6 @@
       box-sizing: border-box;
       pointer-events: none;
     }
-
-
-    .menublock {
-      position: absolute;
-      width: calc(var(--s-menu) - var(--border-w));
-      height: calc(var(--s-menu) - var(--border-w));
-      border: var(--border);
-      background: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .menublock.author {
-      top: 0;
-      right: 0;
-    }
-
-    .menublock.my {
-      bottom: calc(64 * var(--x));
-      right: 0;
-    }
-
-    .menublock.posting {
-      bottom: calc(64 * var(--x) + var(--s-menu));;
-      right: 0;
-    }
-
-    .menublock img.fit {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .menublock img.icon {
-      object-fit: contain;
-      width: var(--s-menu-icon);
-      height: var(--s-menu-icon);
-    }
   </style>
 </head>
 
@@ -184,9 +146,10 @@
     });
 
 
+    sideb.session.posts = {{posts|safe}};
+
     {% if user.is_authenticated %}
     sideb.session.auth = new Auth({{user.serialized|safe}});
-    sideb.session.posts = {{posts|safe}};
     {% endif %}
 
   </script>

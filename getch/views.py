@@ -205,6 +205,7 @@ def post_save(request):
         post_id = request.POST.get('post_id', None)
         post_type = request.POST.get('type', None)
         text = request.POST.get('text', None)
+        keys = request.POST.get('keys', None)
         pix = request.FILES.get('pix', None)
         pix_a = request.FILES.get('pix_a', None)
         pix_b = request.FILES.get('pix_b', None)
@@ -221,6 +222,7 @@ def post_save(request):
             post = postmodel(boo=request.user.boo)
 
         if text:        post.text = text
+        if keys:        post.keys = keys
         if pix:         post.pix = pix
         if pix_a:       post.pix_a = pix_a
         if pix_b:       post.pix_b = pix_b

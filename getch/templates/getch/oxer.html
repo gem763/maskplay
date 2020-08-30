@@ -1,0 +1,127 @@
+<style>
+  .oxer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .oxer * {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+  }
+
+  .oxer .oxkey {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: var(--ox-fsize);
+  }
+
+  .oxer > table {
+    border-collapse: collapse;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .oxer > table td {
+    border: 0;
+    box-sizing: border-box;
+    position: relative;
+    height: 50%;
+    overflow: hidden;
+  }
+
+  .oxer > table td.top {
+    border-bottom: var(--oxcard-border);
+  }
+
+  .oxer > table td .score {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    outline: var(--oxcard-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+
+  .oxer .oxkey.devoted,
+  .oxer > table td .score.devoted {
+    color: lightgray
+  }
+
+  .oxer .show-score-enter-active,
+  .oxer .show-score-leave-active {
+    transition: all 0.2s;
+  }
+
+  .oxer .show-score-enter,
+  .oxer .show-score-leave-to {
+    top: 100% !important;
+  }
+</style>
+
+<script type='text/x-template' id='oxer-template'>
+  <div class='oxer'>
+
+    <div class='oxkey' :class='phase'>[[ keyvalue ]]</div>
+
+    <table>
+      <tbody>
+        <tr>
+          <td class='top'></td>
+        </tr>
+        <tr>
+          <td class='bottom'>
+            <transition name='show-score'>
+              <div class='score' :class='phase' v-if='is_active'>[[ score ]]</div>
+            </transition>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('oxer', {
+    template: '#oxer-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'act', 'vote_state', 'score', 'editable', 'is_active', 'keyvalue' ],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      // is_active: function() {
+      //   return !this.editable && this.is_cpost && (this.vote_state != -1)
+      // },
+      //
+      phase: function() {
+        if (this.is_active) {
+          if (this.vote_state == this.act) {
+            return 'voted'
+          } else {
+            return 'devoted'
+          }
+        }
+      },
+
+      // keyvalue: function() {
+      //   return this.keyvalues[this.act]
+      // },
+    }
+  });
+</script>

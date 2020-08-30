@@ -1,0 +1,103 @@
+<style>
+  .oxcard > table {
+    border-collapse: collapse;
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* top: var(--pix-margin);
+    left: var(--pix-margin);
+    right: var(--pix-margin);
+    height: calc(var(--s-0) - 2*var(--pix-margin)); */
+  }
+
+  .oxcard > table > tbody > tr > td {
+    /* width: calc(var(--s-1) - var(--pix-margin)); */
+    width: 50%;
+    border: var(--oxcard-border);
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  .oxcard .oxkeys-changer {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    width: var(--s-menu);
+    height: var(--s-menu);
+    object-fit: contain;
+    transform: translate(-50%,-50%)
+  }
+</style>
+
+
+<script type='text/x-template' id='oxcard-template'>
+  <div class='oxcard' @click='change_keys'>
+    <table>
+      <tbody>
+        <tr>
+          <td><slot name='O' :keyvalue='keyvalues[0]'></slot></td>
+          <td><slot name='X' :keyvalue='keyvalues[1]'></slot></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <img class='oxkeys-changer' v-show='editable' src='/static/materials/icons/change.png'>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('oxcard', {
+    template: '#oxcard-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'rawkeys', 'editable' ],
+    data: function() {
+      return {
+        keys: (this.rawkeys ? this.rawkeys : 'OX'),
+        changed: false
+      }
+    },
+
+    // keys = SM
+    // keyvalues = 살말
+
+    watch: {
+      keys: function(_new, _old) {
+        this.changed = true;
+      }
+    },
+
+    computed: {
+      keyvalues: function() {
+        if (this.keys == 'OX') {
+          return 'OX'
+        } else if (this.keys == 'SM') {
+          return '살말'
+        }
+      }
+    },
+
+    methods: {
+      change_keys: function() {
+        if (this.editable) {
+          if (this.keys == 'OX') {
+            this.keys = 'SM';
+          } else if (this.keys = 'SM') {
+            this.keys = 'OX';
+          }
+        }
+      },
+
+      get: function() {
+        if (this.changed) {
+          this.changed = false;
+          return this.keys
+        }
+      }
+    }
+
+  });
+</script>

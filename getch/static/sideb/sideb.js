@@ -49,7 +49,11 @@ class Session {
   }
 
   open_posting() {
-    this.open_page('posting');
+    if (this.auth) {
+      this.open_page('posting');
+    } else {
+      this.open_loginpage();
+    }
   }
 
   open_authorpage() {

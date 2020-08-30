@@ -25,7 +25,8 @@
     left: 0;
     width: 100%;
     height: calc(572 * var(--x));
-    background: rgba(255,242,204,0.25);
+    background: orange;
+    /* background: rgba(255,242,204,0.25); */
   }
 
   .back img.logo {
@@ -34,6 +35,54 @@
     right: 0;
     width: calc(90 * var(--x));
     height: calc(90 * var(--x));
+  }
+
+  .menublock {
+    position: absolute;
+    width: calc(var(--s-menu) - var(--border-w));
+    height: calc(var(--s-menu) - var(--border-w));
+    border: var(--border);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menublock.author {
+    top: 0;
+    right: 0;
+  }
+
+  .menublock.my {
+    bottom: calc(64 * var(--x));
+    right: 0;
+  }
+
+  .menublock.posting {
+    bottom: calc(64 * var(--x) + var(--s-menu));;
+    right: 0;
+  }
+
+  .menublock img.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .menublock img.icon {
+    object-fit: contain;
+    width: var(--s-menu-icon);
+    height: var(--s-menu-icon);
+  }
+
+  .posts .show-author-profile-enter-active,
+  .posts .show-author-profile-leave-active {
+    transition: all 0.2s;
+  }
+
+  .posts .show-author-profile-enter,
+  .posts .show-author-profile-leave-to {
+    top: -100px !important;
   }
 </style>
 
@@ -48,6 +97,12 @@
         <post :post='post' :session='session'></post>
       </swiper-slide>
     </swiper>
+
+    <!-- <transition name='show-author-profile'>
+      <div class='author menublock' v-if='session && session.cpost && !session.swiper.animating' @click='session.open_authorpage()'>
+        <img class='fit' :src='session.cpost.boo.profile.pix'>
+      </div>
+    </transition> -->
 
     <div class='posting menublock' @click='session.open_posting()'>
       <div style='width:80%;height:80%;background:black;border-radius:50%;display:flex;align-items:center;justify-content:center;'>

@@ -1,0 +1,75 @@
+{% include "getch/page.html" %}
+
+<style>
+  .authorpage .follow-button {
+    background: black;
+    color: white;
+    width: 100px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .authorpage .follow-button.onfollow {
+    background: var(--color-pos);
+  }
+</style>
+
+<script type='text/x-template' id='authorpage-template'>
+  <page class='authorpage' :open='session.open.authorpage' @close='session.close_page()'>
+    <img class='boo' :src='author.profile.pix' style="object-fit:cover;width:100px;height:100px;">
+    <br>
+
+    <br><br>
+    <span class='network' style='background:black;color:white;padding:5px;' @click='session.open_network()'>
+      팔로워 <span class='nfollowers'>[[ author.nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ author.nfollowees ]]</span>
+    </span>
+
+    <br></br>
+    <div class='follow-button' :class='{ onfollow:is_following }' @click='toggle_follow'>[[ follow_button_message ]]</div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('authorpage', {
+    template: '#authorpage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      author: function() {
+        return this.session.cpost.boo
+      },
+
+      is_following: function() {
+        return this.session.auth && this.session.auth.is_following(this.author.id)
+      },
+
+      follow_button_message: function() {
+        if (this.is_following) {
+          return '팔로우중'
+        } else {
+          return '팔로우하기'
+        }
+      }
+    },
+
+    methods: {
+      toggle_follow: function() {
+        if (this.is_following) {
+          this.session.auth.unfollow(this.author.id);
+          this.author.nfollowers -= 1;
+
+        } else {
+          this.session.auth.follow(this.author.id);
+          this.author.nfollowers += 1;
+        }
+      }
+    }
+  });
+</script>

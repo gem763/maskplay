@@ -6,7 +6,7 @@
     height: 100%;
   }
 
-  .swiper-container {
+  .posts .swiper-container {
     position: absolute;
     left: 0;
     top: 0;
@@ -15,11 +15,11 @@
     z-index: 0;
   }
 
-  .swiper-wrapper {
+  .posts .swiper-wrapper {
     z-index: 0;
   }
 
-  .back {
+  .posts > .back {
     position: absolute;
     top: calc(352 * var(--x));
     left: 0;
@@ -29,7 +29,7 @@
     /* background: rgba(255,242,204,0.25); */
   }
 
-  .back img.logo {
+  .posts > .back > img.logo {
     position: absolute;
     top: 0;
     right: 0;
@@ -37,7 +37,7 @@
     height: calc(90 * var(--x));
   }
 
-  .menublock {
+  .posts > .menublock {
     position: absolute;
     width: calc(var(--s-menu) - var(--border-w));
     height: calc(var(--s-menu) - var(--border-w));
@@ -48,43 +48,67 @@
     justify-content: center;
   }
 
-  .menublock.author {
+  .posts > .menublock.author {
     top: 0;
     right: 0;
   }
 
-  .menublock.my {
+  .posts > .menublock.my {
     bottom: calc(64 * var(--x));
     right: 0;
   }
 
-  .menublock.posting {
+  .posts > .menublock.posting {
     bottom: calc(64 * var(--x) + var(--s-menu));;
     right: 0;
   }
 
-  .menublock img.fit {
+  .posts > .menublock img.fit {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .menublock img.icon {
+  .posts > .menublock img.icon {
     object-fit: contain;
-    width: var(--s-menu-icon);
-    height: var(--s-menu-icon);
+    width: 80%;
+    height: 80%;
   }
 
-  .posts .show-author-profile-enter-active,
+  .posts > .menublock > .circle {
+    width: 80%;
+    height: 80%;
+    background: black;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .posts > .menublock > .circle > .red-dot {
+    width: 30%;
+    height: 30%;
+    background: red;
+    border-radius: 50%;
+  }
+
+  .posts .show-author-profile-enter-active {
+    transition: all 0.5s;
+  }
+
+  .posts .show-author-profile-enter {
+    top: calc(var(--s-menu) * (-1)) !important;
+  }
+
   .posts .show-author-profile-leave-active {
-    transition: all 0.2s;
+    transition: all 0.1s;
   }
 
-  .posts .show-author-profile-enter,
   .posts .show-author-profile-leave-to {
-    top: -100px !important;
+    opacity: 0;
   }
 </style>
+
 
 <script type='text/x-template' id='posts-template'>
   <div class='posts'>
@@ -98,22 +122,24 @@
       </swiper-slide>
     </swiper>
 
-    <!-- <transition name='show-author-profile'>
+    <transition name='show-author-profile'>
       <div class='author menublock' v-if='session && session.cpost && !session.swiper.animating' @click='session.open_authorpage()'>
         <img class='fit' :src='session.cpost.boo.profile.pix'>
       </div>
-    </transition> -->
+    </transition>
 
     <div class='posting menublock' @click='session.open_posting()'>
-      <div style='width:80%;height:80%;background:black;border-radius:50%;display:flex;align-items:center;justify-content:center;'>
-        <div style='width:30%;height:30%;background:red;border-radius:50%;'></div>
-      </div>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
+      <!-- <div class='circle'>
+        <div class='red-dot'></div>
+      </div> -->
     </div>
 
     <div class='my menublock' @click='session.open_mypage()'>
-      <div style='width:80%;height:80%;background:black;border-radius:50%;'>
-        <img src='/static/materials/icons/profile.png' style='width:100%;height:100%;object-fit:contain;filter:invert(100%)'>
-      </div>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png'>
+      <!-- <div class='circle'>
+        <img class='icon' src='/static/materials/icons/profile.png' style='filter:invert(100%)'>
+      </div> -->
     </div>
   </div>
 </script>

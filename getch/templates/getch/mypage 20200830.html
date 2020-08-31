@@ -1,0 +1,232 @@
+{% include "getch/page.html" %}
+{% include "getch/struct.html" %}
+
+<style>
+  .mypage .header-0 > .profilepix {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--t-3);
+    height: var(--t-3);
+  }
+
+  .mypage .header-0 > .profilepix > img.fit {
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mypage .header-0 > .profilepix > img.barcode {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 80%;
+    height: auto;
+    transform: translate(-50%, 50%)
+  }
+
+  .mypage .header-0 > .scorecard {
+    position: absolute;
+    left: 3vw;
+    top: 3vw;
+    bottom: calc(var(--t-3) + 3vw);
+    width: calc(100% - var(--t-3) - 6vw);
+    background: none;
+    line-height: 1;
+  }
+
+  .mypage .header-0 > .scorecard > .score {
+    position: absolute;
+    height: 50%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mypage .header-0 > .scorecard > .score.pscore {
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .mypage .header-0 > .scorecard > .score.nfollowers {
+    top: 50%;
+    left: 0;
+    width: 50%;
+  }
+
+  .mypage .header-0 > .scorecard > .score.npostings {
+    top: 50%;
+    left: 50%;
+    width: 50%;
+  }
+
+  .mypage .header-0 > .scorecard > .score .score-name {
+    font-size: 8px;
+  }
+
+  .mypage .header-0 > .scorecard > .score .score-value {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .mypage .header-0 > .scorecard > .score.pscore .score-value {
+    font-size: 30px;
+  }
+
+  .mypage .header-0 > .description {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: var(--t-3);
+    background: none;
+    line-height: 1;
+    color: white;
+    white-space: pre;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mypage .header-0 > .description span.nick {
+    background: black;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .mypage .header-0 > .description span.text {
+    background: black;
+    font-size: 12px;
+  }
+
+  .mypage .header-1 > span.follow {
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+
+  .mypage .header-2 > img.logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+</style>
+
+<script type='text/x-template' id='mypage-template'>
+  <page class='mypage' :open='session.open.mypage' @close='session.close_page()'>
+
+    <struct>
+      <template #header-0>
+        <div class='profilepix'>
+          <img class='barcode' src='/static/materials/icons/SIEDB_ICON_BARCODE_RE.png'>
+          <img class='fit' :src='session.auth.boo.profile.pix' @click='session.open_boochooser()'>
+        </div>
+
+        <div class='scorecard' @click='session.open_network()'>
+          <div class='score pscore'>
+            <div>
+              <span class='score-name'>POWER SCORE</span><br>
+              <span class='score-value'>9.6K</span>
+            </div>
+          </div>
+
+          <div class='score nfollowers'>
+            <div>
+              <span class='score-value'>[[ session.auth.nfollowers ]]</span>
+              <span class='score-name'>FOLLOWERS</span><br>
+            </div>
+          </div>
+
+          <div class='score npostings'>
+            <div>
+              <span class='score-value'>132</span>
+              <span class='score-name'>POSTINGS</span><br>
+            </div>
+          </div>
+        </div>
+
+        <div class='description'>
+          <div>
+            <span class='nick'>[[ session.auth.boo.nick ]]</span><br>
+            <span class='text'>[[ '"' + session.auth.boo.text + '"' ]]</span>
+          </div>
+        </div>
+      </template>
+
+
+      <template #header-1>
+        <span class='follow'>FOLLOW</span>
+      </template>
+
+
+      <template #header-2>
+        <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
+      </template>
+
+
+      <template #content>
+        content
+      </template>
+    </struct>
+
+    <!-- <a class='logout' href="{% url 'account_logout' %}" style='float:right;'><span style='background:black;color:white;'>LOGOUT</span></a> -->
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('mypage', {
+    template: '#mypage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        posts: undefined,
+        on_postloading: false,
+      }
+    },
+
+    created: function() {
+      this.load_posts();
+    },
+
+    watch: {
+      'session.auth.boo.id': function(_new, _old) {
+        this.load_posts();
+      }
+    },
+
+    computed: { },
+    methods: {
+      load_posts: function() {
+        // this.show_postloading();
+        //
+        // const self = this;
+        // fetch(`/boo/${self.session.auth.boo.id}/posts/`)
+        //   .then(x => x.json())
+        //   .then(js => {
+        //     self.posts = JSON.parse(js.posts);
+        //     console.log(self.posts);
+        //     self.hide_postloading();
+        //   })
+      },
+
+      show_postloading: function() {
+        this.on_postloading = true;
+      },
+
+      hide_postloading: function() {
+        this.on_postloading = false;
+      },
+    }
+  });
+</script>

@@ -1,151 +1,13 @@
 {% include "getch/page.html" %}
-
-<style>
-  .mypage > .dashboard {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--window-w2);
-    height: var(--window-h2);
-    background: lightblue;
-  }
-
-  .mypage .dashboard > table {
-    border-collapse: collapse;
-  }
-
-  .mypage .dashboard > table td {
-    position: relative;
-    box-sizing: border-box;
-    border: var(--border2);
-    padding: 0;
-    text-align: center;
-  }
-
-  .mypage .dashboard > table td.follow {
-    width: var(--t-2);
-    height: var(--t-2);
-    font-size: 22px;
-    font-weight: bold;
-  }
-
-  .mypage .dashboard > table td.profile {
-    width: var(--t-1);
-    height: var(--t-1);
-  }
-
-  .mypage .dashboard > table td.logo {
-    width: var(--t-3);
-    height: var(--t-3);
-  }
-
-  .mypage .dashboard > table td.logo img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .mypage .dashboard > table td.content {
-    height: var(--t-0);
-  }
-
-  .mypage .dashboard > table td.content .dpost {
-    position: relative;
-    width: var(--dashboard_post_w);
-    height: var(--dashboard_post_h);
-  }
-</style>
+{% include "getch/aboutboo.html" %}
 
 <script type='text/x-template' id='mypage-template'>
   <page class='mypage' :open='session.open.mypage' @close='session.close_page()'>
-    <!-- <img class='myboo' :src='session.auth.boo.profile.pix' style="object-fit:cover;width:100px;height:100px;" @click='session.open_boochooser()'>
+    <aboutboo :session='session' type='my'></aboutboo>
 
-    <br>
-    <a class='logout' href="{% url 'account_logout' %}"><span style='background:black;color:white;'>LOGOUT</span></a>
-    <i class="fa fa-barcode" @click='session.open_profiler()'></i>
-
-    <br><br>
-    <span class='network' style='background:black;color:white;padding:5px;' @click='session.open_network()'>
-      팔로워 <span class='nfollowers'>[[ session.auth.nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ session.auth.nfollowees ]]</span>
-    </span> -->
-
-    <div class='dashboard'>
-      <table>
-        <tbody>
-          <tr>
-            <td class='follow' colspan='2'>
-              <span style='background:none;color:black'>FOLLOW</span>
-              <!-- <br>
-              <span class='network' style='background:black;color:white;padding:5px;font-size:12px;' @click='session.open_network()'>
-                팔로워 <span class='nfollowers'>[[ session.auth.nfollowers ]]</span> | 팔로잉 <span class='nfollowees'>[[ session.auth.nfollowees ]]</span>
-              </span> -->
-            </td>
-
-            <td class='profile' rowspan='2'>
-              <img :src='session.auth.boo.profile.pix' style="object-fit:cover;position:absolute;top:0;right:0;width:var(--t-3);height:var(--t-3);" @click='session.open_boochooser()'>
-
-              <div style='position:absolute;left:0;bottom:var(--t-3);width:var(--t-2);height:var(--t-3);background:none;padding:10px;box-sizing:border-box;line-height:1'>
-                <span style='font-size:8px;'>POWER SCORE</span><br>
-                <span style='font-size:30px;font-weight:bold;'>9600</span>
-              </div>
-
-              <div class='profile-text' style='position:absolute;left:0;bottom:0;width:100%;height:var(--t-3);background:none;padding:5px;box-sizing:border-box;text-align:center;font-size:12px;line-height:1.4;color:white;white-space:pre;'>
-                <span style='background:black;font-size:18px;font-weight:bold;'>[[ session.auth.boo.nick ]]</span><br>
-                <span style='background:black;'>[[ '"' + session.auth.boo.text + '"' ]]</span>
-              </div>
-            </td>
-          </tr>
-
-          <tr>
-            <td class='logo'>
-              <img src='/static/materials/imgs/sideb_logo.jpg'>
-            </td>
-            <td></td>
-          </tr>
-
-          <tr>
-            <td class='content' colspan='3'>
-
-              <div style='position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-wrap:wrap;'>
-                <div class='dpost' v-for='post in posts'>
-
-                  <template v-if='post.type=="postvoteab"'>
-                    <div style='position:absolute;top:0.5%;left:1%;width:98%;height:49%;'>
-                      <img :src='post.pix_a' style='width:100%;height:100%;object-fit:cover;'>
-                    </div>
-                    <div style='position:absolute;top:50.5%;left:1%;width:98%;height:49%;'>
-                      <img :src='post.pix_b' style='width:100%;height:100%;object-fit:cover;'>
-                    </div>
-                  </template>
-
-                  <template v-else>
-                    <div style='position:absolute;top:0.5%;left:1%;width:98%;height:49%;'>
-                      <img :src='post.pix' style='width:100%;height:100%;object-fit:cover;'>
-                    </div>
-                    <div style='position:absolute;top:50.5%;left:1%;width:98%;height:49%;'>
-                      OX
-                    </div>
-                  </template>
-
-                </div>
-              </div>
-
-              <div v-show='on_postloading' style='position:absolute;top:0;left:0;width:100%;height:100%;display: flex;align-items: center;justify-content: center;background:rgba(0,0,0,0.5)'>
-                <span style='font-size:30px;font-weight:bold;color:white;'>로딩중</span>
-              </div>
-
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <a class='logout' href="{% url 'account_logout' %}" style='float:right;'><span style='background:black;color:white;'>LOGOUT</span></a>
-    <!-- <i class="fa fa-barcode" @click='session.open_profiler()'></i> -->
-
+    <a class='logout' href="{% url 'account_logout' %}" style='position:absolute;bottom:0;right:0;'>
+      <span style='background:black;color:white;'>LOGOUT</span>
+    </a>
   </page>
 </script>
 
@@ -156,44 +18,7 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return {
-        posts: undefined,
-        on_postloading: false,
-      }
-    },
-
-    created: function() {
-      this.load_posts();
-    },
-
-    watch: {
-      'session.auth.boo.id': function(_new, _old) {
-        this.load_posts();
-      }
-    },
-
-    computed: { },
-    methods: {
-      load_posts: function() {
-        // this.show_postloading();
-        //
-        // const self = this;
-        // fetch(`/boo/${self.session.auth.boo.id}/posts/`)
-        //   .then(x => x.json())
-        //   .then(js => {
-        //     self.posts = JSON.parse(js.posts);
-        //     console.log(self.posts);
-        //     self.hide_postloading();
-        //   })
-      },
-
-      show_postloading: function() {
-        this.on_postloading = true;
-      },
-
-      hide_postloading: function() {
-        this.on_postloading = false;
-      },
+      return {  }
     }
   });
 </script>

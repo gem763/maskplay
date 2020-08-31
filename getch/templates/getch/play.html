@@ -35,7 +35,6 @@
       --x: min(var(--x1), var(--x2));
 
       --s-menu: calc(78 * var(--x));
-      --s-menu-icon: calc(var(--s-menu) * 25/35);
       --s-0: calc(494 * var(--x));
       --s-1: calc(var(--s-0)/2);
       --s-2: calc(var(--s-1)/2);
@@ -45,10 +44,18 @@
       --window-h: calc(var(--s-0)*2 + var(--border-w));
 
 
-      --border2-w: 1px;
+      --border2-w: 10px;
       --border2: var(--border2-w) solid black;
 
-      --y1: calc((100vw - var(--border2-w))/572);
+      --t-0: calc(var(--window-w) - var(--border2-w));
+      --t-1: calc(var(--t-0) * 352 / 572);
+      --t-2: calc(var(--t-0) * 220 / 572);
+      --t-3: calc(var(--t-0) * 132 / 572);
+      --t-4: calc(var(--t-0) / 4);
+
+      --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
+
+      /* --y1: calc((100vw - var(--border2-w))/572);
       --y2: calc((100vh - var(--border2-w))/988);
       --y: min(var(--y1), var(--y2));
 
@@ -62,7 +69,7 @@
       --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
 
       --dashboard_post_w: calc((var(--t-0) - 2*var(--border2-w)) / 4);
-      --dashboard_post_h: calc(var(--dashboard_post_w) * 2);
+      --dashboard_post_h: calc(var(--dashboard_post_w) * 2); */
     }
 
     * {

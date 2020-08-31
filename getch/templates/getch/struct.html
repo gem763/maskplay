@@ -1,0 +1,100 @@
+<style>
+  .struct {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .struct > .struct-content {
+    background: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--window-h2);
+    padding-top: var(--t-1);
+    border: var(--border2);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .struct > .struct-header {
+    border-collapse: collapse;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  .struct > .struct-header > tbody > tr > td {
+    position: relative;
+    box-sizing: border-box;
+    border: var(--border2);
+    padding: 0;
+    text-align: center;
+  }
+
+  .struct > .struct-header > tbody > tr > td.header-1 {
+    width: var(--t-2);
+    height: var(--t-2);
+  }
+
+  .struct > .struct-header > tbody > tr > td.header-0 {
+    width: var(--t-1);
+    height: var(--t-1);
+  }
+
+  .struct > .struct-header > tbody > tr > td.header-2 {
+    width: var(--t-3);
+    height: var(--t-3);
+  }
+</style>
+
+
+<script type='text/x-template' id='struct-template'>
+  <div class='struct'>
+    <div class='struct-content content'>
+      <slot name='content'></slot>
+    </div>
+
+    <table class='struct-header'>
+      <tbody>
+        <tr>
+          <td class='header-1' colspan='2'>
+            <slot name='header-1'></slot>
+          </td>
+          <td class='header-0' rowspan='2'>
+            <slot name='header-0'></slot>
+          </td>
+        </tr>
+
+        <tr>
+          <td class='header-2'>
+            <slot name='header-2'></slot>
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('struct', {
+    template: '#struct-template',
+    delimiters: ['[[', ']]'],
+    props: [ ],
+    data: function() {
+      return { }
+    },
+
+    methods: { }
+  });
+</script>

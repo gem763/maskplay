@@ -153,13 +153,13 @@ class Auth {
     return this.boos[this.boo_selected];
   }
 
-  get nfollowers() {
-    return this.boo.followers_id.length;//size;
-  }
-
-  get nfollowees() {
-    return this.boo.followees_id.length;//size;
-  }
+  // get nfollowers() {
+  //   return this.boo.followers_id.length;//size;
+  // }
+  //
+  // get nfollowees() {
+  //   return this.boo.followees_id.length;//size;
+  // }
 
   is_following(author_id) {
     return this.boo.followees_id.includes(author_id);

@@ -169,6 +169,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
     text = models.TextField(max_length=200, blank=True, null=True)
     profile = models.OneToOneField(Profile, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
+    key = models.IntegerField(default=0)
 
     def __str__(self):
         return self.nick + ' | ' + self.user.email
@@ -250,6 +251,40 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def npost(self):
         return Post.objects.filter(boo=self).count()
+
+    @property
+    def npost_share(self):
+        return self.npost / Post.objects.count()
+
+    @property
+    def nfollowers_share(self):
+        return self.nfollowers / Flager.objects.filter(status=FOLLOW).count()
+
+    @property
+    def pscore(self):
+        return self.npost + self.nfollowers
+
+    @property
+    def pscore_share(self):
+        denom = Post.objects.count() + Flager.objects.filter(status=FOLLOW).count()
+        return self.pscore / denom
+
+    @property
+    def level(self):
+        _pscore = self.pscore_share
+
+        if 0 <= _pscore < 0.05:
+            return 0
+        elif 0.05 <= _pscore < 0.10:
+            return 1
+        elif 0.10 <= _pscore < 0.15:
+            return 2
+        elif 0.15 <= _pscore < 0.20:
+            return 3
+        elif 0.20 <= _pscore < 0.25:
+            return 4
+        elif 0.25 <= _pscore:
+            return 5
 
 
 class Post(BigIdAbstract, ModelWithFlag):
@@ -418,7 +453,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nfollowees', 'npost']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nfollowees', 'npost', 'pscore', 'pscore_share', 'level']
         read_only_fields = fields
 
     def get_profile(self, obj):
@@ -430,8 +465,8 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'followers_id', 'followees_id', 'voting_record', 'npost']
-        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'npost']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followers_id', 'followees_id', 'voting_record', 'npost', 'pscore', 'pscore_share', 'level']
+        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'npost', 'pscore', 'pscore_share', 'level']
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)
@@ -439,6 +474,7 @@ class BooSerializer(serializers.ModelSerializer):
         instance.user = validated_data.get('user', instance.user)
         instance.nick = validated_data.get('nick', instance.nick)
         instance.text = validated_data.get('text', instance.text)
+        instance.key = validated_data.get('key', instance.key)
         instance.save()
 
         if profile_data:

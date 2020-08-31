@@ -149,7 +149,7 @@
   <struct class='aboutboo'>
     <template #header-0>
       <div class='profilepix'>
-        <img class='barcode' src='/static/materials/icons/SIEDB_ICON_BARCODE_RE.png'>
+        <img class='barcode' :src='session.barcode(boo.level)'>
         <img class='fit' :src='boo.profile.pix' @click='session.open_boochooser()'>
       </div>
 
@@ -157,7 +157,7 @@
         <div class='score pscore'>
           <div>
             <span class='score-name'>POWER SCORE</span><br>
-            <span class='score-value'>9.6K</span>
+            <span class='score-value'>[[ boo.pscore * 10 ]]</span>
           </div>
         </div>
 
@@ -241,12 +241,14 @@
     },
 
     created: function() {
+      // 이게 created에 있으면 안될듯 하다 ========================================================================
       this.load_posts();
     },
 
     watch: {
       'boo.id': function(_new, _old) {
-        this.load_posts();
+        // this.load_posts();
+        // 스크롤할때마다 이게 실행된다!!! 오마갓 ===================================================================
       }
     },
 

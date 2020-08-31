@@ -122,6 +122,10 @@ class Session {
     this.posts.splice(where, 1);
     // this.swiper.removeSlide(where);
   }
+
+  barcode(level) {
+    return `/static/materials/icons/barcode_${level}.png`
+  }
 }
 
 

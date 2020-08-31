@@ -107,6 +107,16 @@
   .posts .show-author-profile-leave-to {
     opacity: 0;
   }
+
+  .posts img.author-barcode {
+    position: absolute;
+    top: var(--pix-margin);
+    left: calc(var(--s-0) + var(--pix-margin));
+    height: calc(3.5 * var(--pix-margin));
+    width: auto;
+    transform: rotate(90deg);
+    transform-origin: 0 0;
+  }
 </style>
 
 
@@ -116,11 +126,15 @@
       <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
     </div>
 
+
+    <img class='author-barcode' v-if='session && session.cpost' :src='session.barcode(session.cpost.boo.level)'>
+
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
         <post :post='post' :session='session'></post>
       </swiper-slide>
     </swiper>
+
 
     <transition name='show-author-profile'>
       <div class='author menublock' v-if='session && session.cpost && !session.swiper.animating' @click='session.open_authorpage()'>

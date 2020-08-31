@@ -93,7 +93,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(m.Boo)
 class BooAdmin(admin.ModelAdmin):
-    list_display = ['user', 'nick', 'selected', 'text', 'profile']
+    list_display = ['user', 'nick', 'key', 'selected', 'text', 'profile']
     list_display_links = ['user']
     list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
-    list_editable = ['nick']
+    list_editable = ['nick', 'key']

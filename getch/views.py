@@ -30,7 +30,7 @@ def test(request):
 
 
 def play(request):
-    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:5]
+    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     _posts = m.PostSerializer(_posts, many=True).data
     ctx = {'posts': json.dumps(_posts), 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
     return render(request, 'getch/play.html', ctx)

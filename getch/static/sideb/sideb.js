@@ -16,6 +16,7 @@ class Session {
     this.auth = undefined;
     this.swiper = undefined;
     this.posts = undefined;
+    this.stats = undefined;
   }
 
   close_page() {
@@ -123,8 +124,42 @@ class Session {
     // this.swiper.removeSlide(where);
   }
 
-  barcode(level) {
-    return `/static/materials/icons/barcode_${level}.png`
+
+  pscore(boo) {
+    return (boo.nfollowers + boo.npost) * 10
+  }
+
+  get total_pscore() {
+    return (this.stats.total_nposts + this.stats.total_nfollowers) * 10
+  }
+
+  level(boo) {
+    const _ps = this.pscore(boo) / this.total_pscore;
+
+    switch (true) {
+      case (0<=_ps && _ps<0.05):
+        return 0
+        break;
+      case (0.05<=_ps && _ps<0.10):
+        return 1
+        break;
+      case (0.10<=_ps && _ps<0.15):
+        return 2
+        break;
+      case (0.15<=_ps && _ps<0.20):
+        return 3
+        break;
+      case (0.20<=_ps && _ps<0.25):
+        return 4
+        break;
+      case (0.25<=_ps):
+        return 5
+        break;
+    }
+  }
+
+  barcode(boo) {
+    return `/static/materials/icons/barcode_${this.level(boo)}.png`
   }
 }
 
@@ -134,7 +169,9 @@ class Auth {
     this.id = Number(cuser.id);
     this.email = cuser.email;
     this.boo_selected = Number(cuser.boo_selected);
-    this.boos = cuser.boos;
+    this.boos = {[cuser.boo_selected]: cuser.boo};
+    // this.boos = cuser.boos;
+    this.fetch_other_boos();
   }
 
 
@@ -146,6 +183,18 @@ class Auth {
       });
   }
 
+  fetch_other_boos() {
+    const self = this;
+    fetch('/user/other_boos')
+      .then(x => x.json())
+      .then(js => {
+        // console.log(js);
+
+        if (js.success) {
+          self.boos = { ...self.boos, ...JSON.parse(js.other_boos) };
+        }
+      })
+  }
 
   set boo(boo_id) {
     console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);

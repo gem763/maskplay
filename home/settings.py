@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'custom_user',
     'rest_framework',
     'django_extensions',
+    'debug_toolbar',
     # 'corsheaders',
 
     # 'vote',
@@ -69,7 +70,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # https://pypi.org/project/django-currentuser
     'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+
+INTERNAL_IPS = ('127.0.0.1')
 
 # CORS_ORIGIN_ALLOW_ALL = True
 

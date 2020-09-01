@@ -154,9 +154,10 @@
 
 
     sideb.session.posts = {{posts|safe}};
+    sideb.session.stats = {{stats|safe}};
 
     {% if user.is_authenticated %}
-    sideb.session.auth = new Auth({{user.serialized|safe}});
+    // sideb.session.auth = new Auth({{user.serialized2|safe}});
     {% endif %}
 
   </script>

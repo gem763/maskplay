@@ -40,10 +40,17 @@ class User(AbstractEmailUser):
         return Boo.objects.get(pk=self.boo_selected, user=self)
 
     @property
+    def other_boos(self):
+        _boos = Boo.objects.filter(user=self).exclude(pk=self.boo_selected)
+        _boos = BooSerializer(_boos, many=True).data
+        _boos = {b['id']:b for b in _boos}
+        return json.dumps(_boos)
+
+    @property
     def serialized(self):
-        _user = UserSerializer([self], many=True).data[0]
-        _user['boos'] = {boo['id']:boo for boo in _user['boos']}
-        # _user['boos'] = {boo.pop('id'):boo for boo in _user['boos']}
+        # _user = UserSerializer([self], many=True).data[0]
+        _user = UserSerializer(self).data
+        # _user['boos'] = {boo['id']:boo for boo in _user['boos']}
         return json.dumps(_user)
 
     def set_boo(self, boo_id):
@@ -149,7 +156,7 @@ class Profile(BigIdAbstract):
             self.mouthmask = MouthMask.objects.create()
 
         if not self.pix:
-            self.pix = 'material/character_default.png'
+            self.pix = 'material/SIDEB_CHARACTER_M_01.png'
 
         # if not self.image:
         #     self.image = 'material/character_default.png'
@@ -189,7 +196,8 @@ class Boo(BigIdAbstract, ModelWithFlag):
 
     @property
     def serialized(self):
-        _boo = BooSerializer([self], many=True).data[0]
+        # _boo = BooSerializer([self], many=True).data[0]
+        _boo = BooSerializer(self).data
         return json.dumps(_boo)
 
     def follow(self, boo_id, note=None):
@@ -252,39 +260,39 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def npost(self):
         return Post.objects.filter(boo=self).count()
 
-    @property
-    def npost_share(self):
-        return self.npost / Post.objects.count()
-
-    @property
-    def nfollowers_share(self):
-        return self.nfollowers / Flager.objects.filter(status=FOLLOW).count()
-
-    @property
-    def pscore(self):
-        return self.npost + self.nfollowers
-
-    @property
-    def pscore_share(self):
-        denom = Post.objects.count() + Flager.objects.filter(status=FOLLOW).count()
-        return self.pscore / denom
-
-    @property
-    def level(self):
-        _pscore = self.pscore_share
-
-        if 0 <= _pscore < 0.05:
-            return 0
-        elif 0.05 <= _pscore < 0.10:
-            return 1
-        elif 0.10 <= _pscore < 0.15:
-            return 2
-        elif 0.15 <= _pscore < 0.20:
-            return 3
-        elif 0.20 <= _pscore < 0.25:
-            return 4
-        elif 0.25 <= _pscore:
-            return 5
+    # @property
+    # def npost_share(self):
+    #     return self.npost / Post.objects.count()
+    #
+    # @property
+    # def nfollowers_share(self):
+    #     return self.nfollowers / Flager.objects.filter(status=FOLLOW).count()
+    #
+    # @property
+    # def pscore(self):
+    #     return self.npost + self.nfollowers
+    #
+    # @property
+    # def pscore_share(self):
+    #     denom = Post.objects.count() + Flager.objects.filter(status=FOLLOW).count()
+    #     return self.pscore / denom
+    #
+    # @property
+    # def level(self):
+    #     _pscore = self.pscore_share
+    #
+    #     if 0 <= _pscore < 0.05:
+    #         return 0
+    #     elif 0.05 <= _pscore < 0.10:
+    #         return 1
+    #     elif 0.10 <= _pscore < 0.15:
+    #         return 2
+    #     elif 0.15 <= _pscore < 0.20:
+    #         return 3
+    #     elif 0.20 <= _pscore < 0.25:
+    #         return 4
+    #     elif 0.25 <= _pscore:
+    #         return 5
 
 
 class Post(BigIdAbstract, ModelWithFlag):
@@ -453,7 +461,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nfollowees', 'npost', 'pscore', 'pscore_share', 'level']
+        # fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nfollowees', 'npost']#, 'pscore', 'pscore_share', 'level']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'npost']#, 'pscore', 'pscore_share', 'level']
         read_only_fields = fields
 
     def get_profile(self, obj):
@@ -465,8 +474,9 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followers_id', 'followees_id', 'voting_record', 'npost', 'pscore', 'pscore_share', 'level']
-        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'npost', 'pscore', 'pscore_share', 'level']
+        # fields = ['id', 'nick', 'text', 'profile', 'key', 'followers_id', 'followees_id', 'voting_record', 'npost']#, 'pscore', 'level']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'npost']#, 'pscore', 'level']
+        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'npost']#, 'pscore', 'level']
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)
@@ -488,12 +498,16 @@ class BooSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    boos = BooSerializer(source='boo_set', many=True)
+    boo = BooSerializer()
+    # boos = BooSerializer(source='boo_set', many=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'boo_selected', 'boos']
+        # fields = ['id', 'email', 'boo_selected', 'boos']
+        fields = ['id', 'email', 'boo_selected', 'boo']
         read_only_fields = fields
+
+
 
 
 

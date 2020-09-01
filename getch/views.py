@@ -16,14 +16,18 @@ import json
 # eye_masks = os.listdir(os.path.join(settings.BASE_DIR, 'getch\static', "materials\imgs\masks\eyes"))
 # charac_imgs = os.listdir(os.path.join(settings.STATIC_ROOT, "materials\imgs\characters"))
 
-imgs = {
-    'characters': m.Character.objects.all()[:5],
-    'eyemasks': m.MaskBase.objects.filter(type='EYE')[:5],
-}
+# imgs = {
+#     'characters': m.Character.objects.all()[:5],
+#     'eyemasks': m.MaskBase.objects.filter(type='EYE')[:5],
+# }
 
 characters = {ch.id:{'category':ch.category, 'pix':ch.pix.url} for ch in m.Character.objects.all()}
 maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
+stats = {
+    'total_nposts': m.Post.objects.count(),
+    'total_nfollowers': m.Flager.objects.filter(status=m.FOLLOW).count()
+}
 
 def test(request):
     return render(request, 'getch/test.html')
@@ -32,8 +36,12 @@ def test(request):
 def play(request):
     _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     _posts = m.PostSerializer(_posts, many=True).data
-    ctx = {'posts': json.dumps(_posts), 'imgs':imgs, 'characters':characters, 'maskbases':maskbases}
+    ctx = {'posts': json.dumps(_posts), 'characters':characters, 'maskbases':maskbases, 'stats':stats}#, 'imgs':imgs}
     return render(request, 'getch/play.html', ctx)
+
+
+def other_boos(request):
+    return JsonResponse({'success':True, 'other_boos':request.user.other_boos}, safe=False)
 
 
 def vote(request, post_id):

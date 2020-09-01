@@ -35,9 +35,9 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(m.MaskBase)
 class MaskBaseAdmin(admin.ModelAdmin):
-    list_display = ['type', 'category', 'pix_name']
+    list_display = ['type', 'category', 'pix_name']#, 'pix']
     list_display_links = ['pix_name']
-    # list_editable = ['category']
+    list_editable = ['category']#, 'pix']
 
     def pix_name(self, obj):
         return os.path.basename(obj.pix.name)

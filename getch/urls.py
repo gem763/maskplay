@@ -5,7 +5,7 @@ from . import views as v
 urlpatterns = [
     path('', v.play, name='play'),
     path('accounts/', include('allauth.urls')),
-    path('authorpage/<int:boo_id>/', v.authorpage, name='authorpage'),
+    # path('authorpage/<int:boo_id>/', v.authorpage, name='authorpage'),
     path('post/<int:post_id>/vote/', v.vote, name='vote'),
     path('post/save/', v.post_save, name='post_save'),
     path('post/<int:post_id>/delete/', v.post_delete, name='post_delete'),
@@ -16,4 +16,5 @@ urlpatterns = [
     path('boo/<int:boo_id>/posts/', v.boo_posts, name='boo_posts'),
     path('boo/profile/save/', v.profile_save, name='profile_save'),
     path('boo/new/', v.boo_new, name='boo_new'),
+    path('user/other_boos/', v.other_boos, name='other_boos'),
 ]

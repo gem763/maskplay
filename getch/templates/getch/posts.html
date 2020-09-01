@@ -127,7 +127,7 @@
     </div>
 
 
-    <img class='author-barcode' v-if='session && session.cpost' :src='session.barcode(session.cpost.boo.level)'>
+    <img class='author-barcode' v-if='session && session.cpost' :src='session.barcode(session.cpost.boo)'>
 
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>

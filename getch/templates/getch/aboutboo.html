@@ -146,10 +146,10 @@
 
 <script type='text/x-template' id='aboutboo-template'>
 
-  <struct class='aboutboo'>
+  <struct class='aboutboo' v-if='boo'>
     <template #header-0>
       <div class='profilepix'>
-        <img class='barcode' :src='session.barcode(boo.level)'>
+        <img class='barcode' :src='session.barcode(boo)'>
         <img class='fit' :src='boo.profile.pix' @click='session.open_boochooser()'>
       </div>
 
@@ -157,13 +157,13 @@
         <div class='score pscore'>
           <div>
             <span class='score-name'>POWER SCORE</span><br>
-            <span class='score-value'>[[ boo.pscore * 10 ]]</span>
+            <span class='score-value'>[[ session.pscore(boo) ]]</span>
           </div>
         </div>
 
         <div class='score nfollowers'>
           <div>
-            <span class='score-value'>[[ nfollowers ]]</span><br>
+            <span class='score-value'>[[ boo.nfollowers ]]</span><br>
             <span class='score-name'>FOLLOWERS</span>
           </div>
         </div>
@@ -241,8 +241,8 @@
     },
 
     created: function() {
-      // 이게 created에 있으면 안될듯 하다 ========================================================================
-      this.load_posts();
+      // 이게 created에 처음에 로드가 너무 큼
+      // this.load_posts();
     },
 
     watch: {
@@ -259,15 +259,6 @@
 
         } else if (this.type=='author' && this.session.cpost) {
           return this.session.cpost.boo
-        }
-      },
-
-      nfollowers: function() {
-        if (this.type=='my' && this.boo) {
-          return this.boo.followers_id.length
-
-        } else if (this.type=='author' && this.boo) {
-          return this.boo.nfollowers
         }
       },
 
@@ -307,6 +298,8 @@
       },
 
       toggle_follow: function() {
+        // auth.boo의 nfollower를 db에서 직접 가져올 필요는 없다
+        // auth.boo(나자신)를 팔로우할 일은 없을테니
         if (this.is_following) {
           this.session.auth.unfollow(this.boo.id);
           this.boo.nfollowers -= 1;

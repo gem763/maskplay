@@ -25,8 +25,8 @@
     left: 0;
     width: 100%;
     height: calc(572 * var(--x));
-    background: orange;
-    /* background: rgba(255,242,204,0.25); */
+    /* background: orange; */
+    background: rgba(255,242,204,0.25);
   }
 
   .posts > .back > img.logo {
@@ -37,7 +37,7 @@
     height: calc(90 * var(--x));
   }
 
-  .posts > .menublock {
+  .posts .menublock {
     position: absolute;
     width: calc(var(--s-menu) - var(--border-w));
     height: calc(var(--s-menu) - var(--border-w));
@@ -48,34 +48,39 @@
     justify-content: center;
   }
 
-  .posts > .menublock.author {
+  .posts .menublock.author {
     top: 0;
     right: 0;
   }
 
-  .posts > .menublock.my {
+  .posts .menublock.my {
     bottom: calc(64 * var(--x));
     right: 0;
   }
 
-  .posts > .menublock.posting {
+  .posts .menublock.posting {
     bottom: calc(64 * var(--x) + var(--s-menu));;
     right: 0;
   }
 
-  .posts > .menublock img.fit {
+  .posts .menublock.comment {
+    bottom: calc(64 * var(--x) + 2 * var(--s-menu));;
+    right: 0;
+  }
+
+  .posts .menublock > img.fit {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .posts > .menublock img.icon {
+  .posts .menublock > img.icon {
     object-fit: contain;
     width: 80%;
     height: 80%;
   }
 
-  .posts > .menublock > .circle {
+  .posts .menublock > .circle {
     width: 80%;
     height: 80%;
     background: black;
@@ -85,7 +90,7 @@
     justify-content: center;
   }
 
-  .posts > .menublock > .circle > .red-dot {
+  .posts .menublock > .circle > .red-dot {
     width: 30%;
     height: 30%;
     background: red;
@@ -108,6 +113,19 @@
     opacity: 0;
   }
 
+
+
+  .posts .show-comment-button-enter-active,
+  .posts .show-comment-button-leave-active {
+    transition: all 0.2s;
+  }
+
+  .posts .show-comment-button-enter,
+  .posts .show-comment-button-leave-to {
+    right: -50px !important;
+  }
+
+
   .posts img.author-barcode {
     position: absolute;
     top: var(--pix-margin);
@@ -116,6 +134,14 @@
     width: auto;
     transform: rotate(90deg);
     transform-origin: 0 0;
+  }
+
+  .posts img.base-barcode {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: calc(3.5 * var(--pix-margin));
+    width: auto;
   }
 </style>
 
@@ -128,6 +154,7 @@
 
 
     <img class='author-barcode' v-if='session && session.cpost' :src='session.barcode(session.cpost.boo)'>
+    <img class='base-barcode' src='/static/materials/icons/barcode_0.png'>
 
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
@@ -136,11 +163,19 @@
     </swiper>
 
 
-    <transition name='show-author-profile'>
-      <div class='author menublock' v-if='session && session.cpost && !session.swiper.animating' @click='session.open_authorpage()'>
-        <img class='fit' :src='session.cpost.boo.profile.pix'>
+    <transition name='show-author-profile' mode=in-out>
+      <!-- <div class='author menublock' v-if='session.swiper && !session.swiper.animating' @click='session.open_authorpage()'> -->
+      <div class='author menublock' :key='cpost_boo_id' @click='session.open_authorpage()'>
+        <!-- <img class='fit' :src='cpost_boo_profile'> -->
+        <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'>
       </div>
     </transition>
+
+    <!-- <transition name='show-comment-button'>
+      <div class='comment menublock' v-if='' @click='open_comment'>
+        <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
+      </div>
+    <transition> -->
 
     <div class='posting menublock' @click='session.open_posting()'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
@@ -175,8 +210,22 @@
       }
     },
 
+    computed: {
+      cpost_boo_id: function() {
+        if (this.session.cpost) {
+          return this.session.cpost.boo.id
+        }
+      }
+    },
+
     mounted: function() {
       this.session.swiper = this.$refs.swiper.$swiper;
+    },
+
+    methods: {
+      // open_comment: function() {
+      //   alert("댓글보이기")
+      // }
     }
   });
 </script>

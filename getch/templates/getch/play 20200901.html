@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+
+{% load static %}
+<head>
+  <title>SIDE.B</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
+  <link rel="stylesheet" href="{% static 'swiper/swiper.min.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.min.css' %}">
+
+  <!-- favicon.ico 404 Not found error -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <style>
+    :root {
+      --oxcard-border-w: 1px;
+      --oxcard-border: var(--oxcard-border-w) solid black;
+      --vs-fsize: 25px;
+      --ox-fsize: 100px;
+      --color-pos: rgb(241,20,15);
+      --color-neg: rgb(22,187,204);
+
+      --border-w: 0px;
+      --border: var(--border-w) solid black;
+
+      --x1: calc((100vw - var(--border-w))/572);
+      --x2: calc((100vh - var(--border-w))/988);
+      --x: min(var(--x1), var(--x2));
+
+      --s-menu: calc(78 * var(--x));
+      --s-0: calc(494 * var(--x));
+      --s-1: calc(var(--s-0)/2);
+      --s-2: calc(var(--s-1)/2);
+      --pix-margin: calc(12 * var(--x));
+
+      --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
+      --window-h: calc(var(--s-0)*2 + var(--border-w));
+
+
+      --border2-w: 1px;
+      --border2: var(--border2-w) solid black;
+
+      --t-0: calc(var(--window-w) - var(--border2-w));
+      --t-1: calc(var(--t-0) * 352 / 572);
+      --t-2: calc(var(--t-0) * 220 / 572);
+      --t-3: calc(var(--t-0) * 132 / 572);
+      --t-4: calc(var(--t-0) / 4);
+
+      --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
+
+      /* --y1: calc((100vw - var(--border2-w))/572);
+      --y2: calc((100vh - var(--border2-w))/988);
+      --y: min(var(--y1), var(--y2));
+
+      --t-0: calc(572 * var(--y));
+      --t-1: calc(352 * var(--y));
+      --t-2: calc(220 * var(--y));
+      --t-3: calc(132 * var(--y));
+      --t-4: calc(var(--t-0)/4);
+
+      --window-w2: calc(var(--t-0) + var(--border2-w));
+      --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
+
+      --dashboard_post_w: calc((var(--t-0) - 2*var(--border2-w)) / 4);
+      --dashboard_post_h: calc(var(--dashboard_post_w) * 2); */
+    }
+
+    * {
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    #window {
+      width: var(--window-w);
+      height: var(--window-h);
+      background: white;
+      position: relative;
+    }
+
+    #window .border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: none;
+      width: 100%;
+      height: 100%;
+      border: var(--border);
+      box-sizing: border-box;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+
+<body style='background:lightgray;margin:0;'>
+  <div id='window'>
+    <posts v-if='session.posts' :session='session'></posts>
+    <pages :session='session'></pages>
+    <div class='border'></div>
+
+    <modal :pop='session.on_intro' name='intro'></modal>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="{% static 'html2canvas/html2canvas.js' %}"></script>
+  <script src="{% static 'jquery-ui/jquery-ui.min.js' %}"></script>
+  <script src="{% static 'jquery-ui/jquery.ui.touch-punch.min.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+  <script src="{% static 'vue/vue.js' %}"></script>
+  <script src="/static/swiper/swiper.js"></script>
+  <script src="/static/sideb/sideb.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script>
+  <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
+
+
+  {% include "getch/posts.html" %}
+  {% include "getch/pages.html" %}
+
+
+  <script>
+    const sideb = new Vue({
+      el: '#window',
+      delimiters: ['[[', ']]'],
+      data: {
+        session: undefined
+      },
+
+      created: function() {
+        this.session = new Session();
+      }
+    });
+
+
+    // https://docs.djangoproject.com/en/2.2/ref/csrf/
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+
+    $(document).ready(function(){
+      var csrftoken = Cookies.get('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+    });
+
+
+    // sideb.session.posts = {{posts2|safe}};
+    sideb.session.stats = {{stats|safe}};
+
+    // {% if user.is_authenticated %}
+    // sideb.session.auth = new Auth({{user.serialized2|safe}});
+    // {% endif %}
+
+  </script>
+
+</body>
+</html>

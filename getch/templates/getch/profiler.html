@@ -1,345 +1,265 @@
 {% include "getch/page.html" %}
+{% include "getch/struct.html" %}
 
 <style>
-  :root {
-    --canvas-size: calc(var(--window-w) * 0.7);
-    --profiler-top: 20%;
-    --profiler-mid: var(--canvas-size);
-    --profiler-bottom: calc(100% - var(--profiler-top) - var(--profiler-mid));
-  }
-
-  .profiler .top {
-    height: var(--profiler-top);
-    width: 100%;
-    position: relative;
-    background: none;
-  }
-
-  .profiler .nick {
+  .profiler .struct .header-0 > .profile-container {
     position: absolute;
-    bottom: 7px;
-    left: 50%;
-    width: var(--canvas-size);
-    transform: translate(-50%,0);
-    text-align: left;
-  }
-
-
-  .profiler [contenteditable]:focus {
-    outline: none;
-  }
-
-  .profiler .nick span {
-    background: black;
-    color: white;
-    font-size: 25px;
-    font-weight: bold;
-    line-height: 30px;
-  }
-
-  .profiler .mid {
-    background: none;
-    height: var(--profiler-mid);
-    text-align: center;
-  }
-
-  .profiler .profile-canvas {
-    position: relative;
-    width: var(--canvas-size);
-    height: 100%;
-    background: none;
-    display: inline-block;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: rgba(0,0,0,0.1);
+    /* border: 1px solid black; */
     overflow: hidden;
   }
 
-  .profiler .profile-canvas .maskbar {
-    position: absolute;
-    top: 20%;
-    left: 0;
-    height: 20%;
-    width: 100%;
-    background: none;
-    background-size: contain;
-    background-position: center center;
-    background-repeat: no-repeat;
-    text-align: center;
-  }
-
-
-  .profiler .bottom {
-    padding-top: 20px;
-    position: relative;
-    background: none;
-  }
-
-  .profiler .selector {
-    background: none;
-    border: var(--border);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .profiler .selector table.selectbase {
-    border-collapse: collapse;
-    width: 100%;
-    height: 100%;
-    table-layout: fixed;
-  }
-
-  .profiler .selector table.selectbase.eye-masks {
+  .profiler .struct .header-0 > .profile-container img.profile {
     position: absolute;
     top: 0;
-  }
-
-  .profiler .selector table.selectbase td {
-    position: relative;
-    padding: 0;
-    border: none;
-    height: 50px;
-    overflow: scroll;
-    white-space: nowrap;
-    font-size: 0;
-    /* span.inline-block 사이에 여백을 줄이기 위함: https://norux.me/63 */
-    background: white;
-  }
-
-  .profiler .selector table.selectbase td.pixloader,
-  .profiler .selector table.selectbase td.txtloader {
-    width: 50px;
-    overflow: hidden;
-  }
-
-  .profiler .selector table.selectbase td .item {
-    width: 50px;
-    height: 50px;
-    display: inline-block;
-    text-align: center;
-    line-height: 50px;
-  }
-
-  .profiler .selector table.selectbase td .item.wide {
-    width: 120px;
-  }
-
-  .profiler .selector table.selectbase td .item img {
-    vertical-align: middle;
-  }
-
-  .profiler .selector table.selectbase td .item img.icon {
-    width: 35px;
-    height: 35px;
-    object-fit: contain;
-  }
-
-  .profiler .selector table.selectbase td .item img.fit {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .profiler .selector table.selectbase td .item img.mask {
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    background: white;
   }
 
-  .profiler .selector table.selectbase td .item span.txt {
-    background: black;
-    color: white;
-    font-size: 20px;
-  }
-
-  .profiler table.options {
-    border-collapse: collapse;
-    width: 80%;
+  .profiler .struct .header-1 > .description {
     position: absolute;
-    top: calc(100% - var(--border-w));
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    line-height: 1;
+    color: white;
+    /* white-space: pre; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .profiler table.options td.option {
-    width: 40px;
-    height: 40px;
-    border: var(--border);
-    text-align: center;
+  .profiler .struct .header-1 > .description span.nick {
+    background: black;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .profiler .struct .header-1 > .description span.text {
+    background: black;
+    font-size: 12px;
+  }
+
+  .profiler .struct .content > .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .profiler .struct .content > .container > .section-names {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background: white;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .profiler .struct .content > .container > .sections {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75%;
+    background: white;
+  }
+
+  .profiler .struct .content > .container > .sections > table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300%;
+    height: 100%;
+    border-collapse: collapse;
+    transition: left 0.5s;
+  }
+
+  .profiler .struct .content > .container > .sections > table.character {
+    left: 0;
+  }
+
+  .profiler .struct .content > .container > .sections > table.eyemask {
+    left: -100%;
+  }
+
+  .profiler .struct .content > .container > .sections > table.mouthmask {
+    left: -200%;
+  }
+
+  .profiler .struct .content > .container > .sections > table td {
+    position: relative;
+    width: calc(100% / 3);
+    height: 100%;
     padding: 0;
   }
 
-  .profiler table.options td.option.coloring {
-    background: rgb(241,20,15);
-  }
-
-  .profiler table.options td.option img.icon {
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    object-fit: contain;
-  }
-
-  .profiler table.options td.option.texting span {
-    background: black;
-    color: white;
-    font-size: 15px;
-  }
-
-  .profiler .save {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    width: 80%;
-    height: 45px;
-    background: black;
-    transform: translateX(-50%);
-    border: var(--border);
-    box-sizing: border-box;
-    color: white;
-    text-align: center;
-    line-height: 45px;
-  }
-
-  .profile-canvas .profile-character,
-  .profile-canvas .profile-image,
-  .profile-canvas .profile-text {
+  .profiler .struct .content > .container > .sections > table td > div {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-size: cover;
-    /* object-fit: cover; */
-    /* object-fit으로 하면 html2canvas가 capture 못한다 */
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
   }
 
-  /* .profile-canvas .profile-text {
-    font-size: 30vw;
-    font-weight: bold;
-    background: black;
-    color: white;
-    white-space: nowrap;
+  /* .profiler .struct .content > .container > .sections > table td.character {
+    background: lightblue;
+  } */
+
+  /* .profiler .struct .content > .container > .sections > table td.eyemask {
+    background: lightpink;
+  } */
+
+  /* .profiler .struct .content > .container > .sections > table td.mouthmask {
+    background: lightyellow;
+  } */
+
+  .profiler .struct .content > .container > .sections > table td.character > div > .ch {
+    width: calc(100% / 4);
+    height: calc(100% / 3);
+    position: relative;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 50%;
     overflow: hidden;
   }
 
-  .profile-canvas .profile-text span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  } */
+  .profiler .struct .content > .container > .sections > table td.eyemask > div > .emask {
+    width: calc(100% / 4);
+    height: calc(100% / 3);
+    position: relative;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 50%;
+    overflow: hidden;
+  }
 
-  .profile-canvas .profile-text {
-    font-size: 30vw;
-    font-weight: bold;
+  .profiler .struct .content > .container > .sections > table td.mouthmask > div > .mmask {
+    width: calc(100% / 4);
+    height: calc(100% / 3);
+    position: relative;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .profiler .struct .content > .container .cbutton {
+    width: 25%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid black;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .profiler .struct .content > .container .cbutton.sectionized {
     background: black;
     color: white;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-    overflow: hidden;
   }
 
-  .profiler .show-eyemask-enter-active,
-  .profiler .show-eyemask-leave-active {
-    transition: opacity .1s;
-  }
-
-  .profiler .show-eyemask-enter,
-  .profiler .show-eyemask-leave-to {
-    opacity: 0;
-  }
-
-  .profiler .show-eyemasks-enter-active,
-  .profiler .show-eyemasks-leave-active {
-    transition: all .1s;
-  }
-
-  .profiler .show-eyemasks-enter,
-  .profiler .show-eyemasks-leave-to {
-    top: 100% !important;
+  .profiler .struct .content > .container .cbutton > img.icon {
+    width: 40%;
+    height: 40%;
+    object-fit: contain;
   }
 </style>
 
 
 <script type='text/x-template' id='profiler-template'>
-  <page class='profiler' :open='session.open.profiler' @close='session.close_page()'>
+  <page class='profiler' :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
 
-    <div class='top'>
-      <div class='nick'>
-        <span @blur='boo.nick=this.textContent' contenteditable>[[ boo.nick ]]</span>
-      </div>
-    </div>
+    <struct>
+      <template #header-0>
+        <div class='profile-container' @click='session.open_profiler()'>
+          <img class='profile' :src='boo.profile.pix'>
+        </div>
+      </template>
 
+      <template #header-1>
+        <div class='description'>
+          <div>
+            <span class='nick'>[[ boo.nick ]]</span>
+            <span class='text' v-if='boo.text'><br>[[ '"' + boo.text + '"' ]]</span>
+          </div>
+        </div>
+      </template>
 
-    <div class='mid'>
-      <div class='profile-canvas' ref='canvas'>
+      <template #content>
+        <div class='container'>
+          <div class='section-names'>
+            <div class='cbutton' :class='{sectionized:section=="character"}' section='character' @click='sectionize'>
+              <p>SELECT<br>CHARACTER</p>
+            </div>
 
-        <input type="file" name="image" accept="image/*" style="display:none;" id="profile-image-load" @change="imagize">
-        <div v-show='is_characterized' class='profile-character' onerror='imgerr(this)' :style='profile_character_style'></div>
-        <div v-show='is_imagized' class='profile-image' onerror='imgerr(this)' :style='profile_image_style'></div>
-        <div v-show='is_textized' class='profile-text' @blur='boo.profile.text=this.textContent;' contenteditable>[[ boo.profile.text ]]</div>
+            <div class='cbutton' :class='{sectionized:section=="eyemask"}' section='eyemask' @click='sectionize'>
+              <p>SELECT<br>EYE-MASK</p>
+            </div>
 
-        <transition name='show-eyemask'>
-          <div class='eye maskbar' ref='eyemaskbar' v-show='is_eyemasked && (!is_textized)' :style='eyemask_style'></div>
-        </transition>
-      </div>
-    </div>
+            <div class='cbutton' :class='{sectionized:section=="mouthmask"}' section='mouthmask' @click='sectionize'>
+              <p>SELECT<br>MASK</p>
+            </div>
 
-    <div class='bottom'>
-      <div class='selector'>
-        <table class='selectbase'>
-          <tbody>
-            <tr>
-              <td class='pixloader'>
-                <label class='item' for='profile-image-load'>
-                  <img class='icon' src='/static/materials/icons/pix.png'>
-                </label>
-              </td>
-              <td class='txtloader'>
-                <div class='item' @click='textize()'>
-                  <span class='txt'>히</span>
-                </div>
-              </td>
-              <td>
-                <div class='item' v-for='(ch, ch_id) in characters' @click='characterize(ch_id)'>
-                  <img class='fit' :src='ch.pix'>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <div class='cbutton'>
+              <img class='icon' src='/static/materials/icons/arrow_down.png'>
+            </div>
+          </div>
 
-        <transition name='show-eyemasks'>
-          <table v-show='eyemasks_showing' class='selectbase eye-masks'>
-            <tbody>
-              <tr>
-                <td>
-                  <div class='item wide' v-for='(mb, mb_id) in maskbases' @click='eyemask_up(mb_id)'>
-                    <img class='mask' :src='mb.pix'>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </transition>
-      </div>
+          <div class='sections'>
+            <table :class='section'>
+              <tbody>
+                <tr>
+                  <td class='character'>
+                    <div>
+                      <div class='ch' v-for='(ch, ch_id) in characters'>
+                        <img :src='ch.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;'>
+                      </div>
+                    </div>
+                  </td>
 
-      <table class='options'>
-        <tbody>
-          <tr>
-            <td class='option masking' @click='eyemasks_showing=!eyemasks_showing'><img class='icon' src='/static/materials/icons/mask4.png'></td>
-            <td class='option coloring'></td>
-            <td></td>
-            <td class='option texting'><span>Aa</span></td>
-            <td class='option clipping' @click='download()'><img class='icon' src='/static/materials/icons/arrow_down.png'></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                  <td class='eyemask'>
+                    <div>
+                      <div class='emask' v-for='(emask, emask_id) in eyemasks'>
+                        <img :src='emask.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transform:scale(2)'>
+                      </div>
+                    </div>
+                  </td>
 
-    <div class='save' @click='save'>SAVE</div>
-    <a id="downloader" style="display:none"></a>
+                  <td class='mouthmask'>
+                    <div>
+                      <div class='mmask' v-for='(mmask, mmask_id) in mouthmasks'>
+                        <img :src='mmask.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transform:scale(2)'>
+                      </div>
+                    </div>
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </template>
+    </struct>
 
   </page>
 </script>
@@ -352,189 +272,31 @@
     props: ['session'],
     data: function() {
       return {
+        section: 'character',
         characters: undefined,
-        maskbases: undefined,
-        image_file: undefined,
-        eyemasks_showing: false,
+        eyemasks: undefined,
+        mouthmasks: undefined
       }
     },
 
     created: function() {
+      maskbases = {{ maskbases|safe }};
+      maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
+      this.eyemasks = maskbases.EYE;
+      this.mouthmasks = maskbases.MOUTH;
       this.characters = {{ characters|safe }};
-      this.maskbases = {{ maskbases|safe }};
-    },
-
-    mounted: function() {
-      const self = this;
-      $(this.$refs.eyemaskbar).draggable({
-        axis: 'y',
-        containment: 'parent',
-        stop: function(event, ui) {
-          const canvas = self.$refs.canvas;
-          const maskbar = self.$refs.eyemaskbar;
-
-          self.boo.profile.eyemask.top = ui.position.top / canvas.offsetHeight * 100;
-          self.boo.profile.eyemask.left = ui.position.left / canvas.offsetWidth * 100;
-          self.boo.profile.eyemask.height = maskbar.offsetHeight / canvas.offsetHeight * 100;
-          self.boo.profile.eyemask.width = maskbar.offsetWidth / canvas.offsetWidth * 100;
-        }
-      });
     },
 
     computed: {
       boo: function() {
         return this.session.auth.boo
-      },
-
-      is_characterized: function() {
-        return (this.boo.profile.type=="CHARACTER")
-      },
-
-      is_imagized: function() {
-        return (this.boo.profile.type=="IMAGE")
-      },
-
-      is_textized: function() {
-        return (this.boo.profile.type=="TEXT")
-      },
-
-      is_eyemasked: function() {
-        return this.boo.profile.eyemask.masked
-      },
-
-      is_mouthmasked: function() {
-        return this.boo.profile.mouthmask.masked
-      },
-
-      eyemask_style: function() {
-        return {
-          backgroundImage: `url(${this.maskbases[this.boo.profile.eyemask.maskbase].pix})`,
-          top: this.boo.profile.eyemask.top + '%',
-          left: this.boo.profile.eyemask.left + '%',
-          width: this.boo.profile.eyemask.width + '%',
-          height: this.boo.profile.eyemask.height + '%'
-        }
-      },
-
-      profile_image_style: function() {
-        return {
-          backgroundImage: `url(${this.boo.profile.image})`
-        }
-      },
-
-      profile_character_style: function() {
-        return {
-          backgroundImage: `url(${this.characters[this.boo.profile.character].pix})`
-        }
       }
-
-      // character_src: function() {
-        // if (this.open) {
-        //   this.$nextTick(function() {
-        //     charac_id = this.session.boo.profile.character;
-        //     return this.$refs['charac-' + charac_id].src
-        //   });
-        // return 1
     },
 
     methods: {
-      eyemask_up: function(maskbase_id) {
-        this.boo.profile.eyemask.maskbase = Number(maskbase_id);
-        this.boo.profile.eyemask.masked = true;
-      },
-
-      imagize: function(event) {
-        const input = event.target;
-        const self = this;
-
-        if (input.files && input.files[0]) {
-          let reader = new FileReader();
-
-          reader.onload = function(e) {
-            self.boo.profile.type = 'IMAGE';
-            self.boo.profile.image = e.target.result;
-            self.image_file = input.files[0];
-            // console.log(input.files[0]);
-            // console.log(e.target);
-          };
-          reader.readAsDataURL(input.files[0]);
-        }
-      },
-
-      characterize: function(character_id) {
-        this.boo.profile.character = Number(character_id);
-        this.boo.profile.type = 'CHARACTER';
-      },
-
-      textize: function() {
-        this.boo.profile.type = 'TEXT'
-      },
-
-      download: function() {
-        html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
-          .then(function(canvas) {
-            if (navigator.msSaveBlob) {
-              const blob = canvas.msToBlob();
-              return navigator.msSaveBlob(blob, 'mypix.png');
-
-            } else {
-              const el = document.createElement("a");
-              el.href = canvas.toDataURL("image/png");
-              el.download = 'mypix.png';
-              el.click();
-            }
-          });
-      },
-
-      save: function() {
-        const self = this;
-        html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
-          .then(function(canvas) {
-            canvas.toBlob(function(blob) {
-              console.log(blob);
-              self.boo.profile.pix = URL.createObjectURL(blob);
-              self.session.close_page()
-              // self.$emit('close');
-
-              const formData = new FormData();
-              formData.append('csrfmiddlewaretoken', '{{csrf_token}}');
-              formData.append('pix', blob, 'mypix.png');
-              formData.append('nick', self.boo.nick);
-              formData.append('type', self.boo.profile.type);
-
-              if (self.is_characterized && self.boo.profile.character) {
-                formData.append('character', self.boo.profile.character);
-
-              } else if (self.is_imagized && self.image_file) {
-                formData.append('image', self.image_file);
-
-              } else if (self.is_textized && self.boo.profile.text) {
-                formData.append('text', self.boo.profile.text);
-              }
-
-              if (self.is_eyemasked && (!self.is_textized)) {
-                formData.append('eyemask', JSON.stringify(self.boo.profile.eyemask));
-              }
-
-              if (self.is_mouthmasked && (!self.is_textized)) {
-                formData.append('eyemask', JSON.stringify(self.boo.profile.mouthmask));
-              }
-
-              fetch('boo/profile/save/', { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(js => {
-                  if (js.success) {
-                    console.log(JSON.parse(js.boo));
-                  }
-                });
-            });
-          });
+      sectionize: function(event) {
+        this.section = event.currentTarget.getAttribute('section');
       }
     }
   });
-
-
-  function imgerr(img) {
-    img.style.display = 'none';
-  }
 </script>

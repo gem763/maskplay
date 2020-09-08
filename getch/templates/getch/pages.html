@@ -47,6 +47,11 @@
       v-if='session.auth'
       :session='session'
     ></posting>
+
+    <comments
+      v-if='session.cpost'
+      :session='session'
+    ></comments>
   </div>
 </script>
 
@@ -58,6 +63,7 @@
 {% include "getch/authorpage.html" %}
 {% include "getch/network.html" %}
 {% include "getch/posting.html" %}
+{% include "getch/comments.html" %}
 
 <script>
   Vue.component('pages', {
@@ -65,14 +71,4 @@
     delimiters: ['[[', ']]'],
     props: ['session']
   });
-
-
-  function open_posting(type) {
-    $('.popup input.toggler').prop('checked', false);
-    document.querySelector(`#posting .posting-type.toggler[posting-type=${type}]`).checked = true;
-    document.querySelector(`#posting .${type} .description span.text`).innerHTML = '';
-    document.querySelectorAll(`#posting .${type} input[type='file']`).forEach(input => { input.value = ''; });
-    document.querySelectorAll(`#posting .${type} img.pix`).forEach(img => { img.src = ''; });
-    open_page('posting');
-  }
 </script>

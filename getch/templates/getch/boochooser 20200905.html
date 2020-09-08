@@ -1,0 +1,168 @@
+{% include "getch/page.html" %}
+{% include "getch/struct.html" %}
+
+<style>
+  .boochooser .struct .header-0 > .profile-container {
+    position: absolute;
+    top: 3%;
+    left: 3%;
+    width: 94%;
+    height: 94%;
+    /* background: rgba(0,0,0,0.1); */
+    /* border: 1px solid black; */
+    /* border-radius: 15%; */
+    overflow: hidden;
+  }
+
+  .boochooser .struct .header-0 > .profile-container img.profile {
+    position: absolute;
+    top: 17%;
+    left: 17%;
+    width: 66%;
+    height: 66%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid black;
+    box-sizing: border-box;
+    background: white;
+    animation: onair 15s linear infinite;
+  }
+
+  @keyframes onair {
+    100% { transform: rotate(360deg); }
+  }
+
+  .boochooser .struct .header-0 > .profile-container img.barcode {
+    position: absolute;
+    bottom: 2%;
+    left: 30%;
+    width: 40%;
+    height: auto;
+  }
+
+
+  .boochooser .struct .header-1 > .description {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    line-height: 1;
+    color: white;
+    white-space: pre;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .boochooser .struct .header-1 > .description span.nick {
+    background: black;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .boochooser .struct .header-1 > .description span.text {
+    background: black;
+    font-size: 12px;
+  }
+
+  .boochooser .struct .content .boo-candidate {
+    position: relative;
+    width: 25%;
+    height: 25%;
+  }
+
+  .boochooser .change-profile-enter-active,
+  .boochooser .change-profile-leave-active {
+    transition: all 0.5s;
+  }
+
+  .boochooser .change-profile-enter {
+    top: -100% !important;
+  }
+
+  .boochooser .change-profile-leave-to {
+    top: 100% !important;
+  }
+</style>
+
+
+<script type='text/x-template' id='boochooser-template'>
+  <page class='boochooser' :open='session.page.boochooser.open' :from='session.page.boochooser.from' @close='session.close_page()'>
+
+    <struct>
+      <template #header-0>
+        <div class='profile-container' @click='session.open_profiler()'>
+          <img src='/static/materials/icons/SIDEB_ICON_CDP.png' style='position:absolute;top:0;left:0;width:100%;height:100%;'>
+          <img class='barcode' :src='session.barcode(boo)'>
+          <transition name='change-profile'>
+            <img class='profile' :src='boo.profile.pix' :key='boo.profile.pix'>
+          </transition>
+        </div>
+      </template>
+
+      <template #header-1>
+        <div class='description'>
+          <div>
+            <span class='nick'>[[ boo.nick ]]</span>
+            <span class='text' v-if='boo.text'><br>[[ '"' + boo.text + '"' ]]</span>
+          </div>
+        </div>
+      </template>
+
+      <template #content>
+        <div style='width:100%;height:100%;display:flex;flex-wrap:wrap;align-content:flex-start;background:none;'>
+
+          <div class='boo-candidate' v-for='(b, bid) in session.auth.boos' @click='change_boo_to(bid)'>
+            <img :src='b.profile.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;object-fit:cover;border:1px solid black;box-sizing:border-box;'>
+            <span style='position:absolute;bottom:2px;left:50%;background:black;color:white;transform:translate(-50%,0);font-size:8px;line-height:12px;'>
+              [[ b.nick ]]
+            </span>
+            <div v-if='bid==session.auth.boo_selected' style='position:absolute;top:50%;left:50%;width:30%;height:30%;transform:translate(-50%,-50%);background:red;border-radius:50%;'></div>
+          </div>
+
+          <div class='boo-candidate' @click='new_boo'>
+            <img src='/static/materials/icons/boo_plus.png' style='position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;object-fit:contain;border:1px solid black;box-sizing:border-box;'>
+          </div>
+
+          <modal :pop='on_making_boo' name='processing'></modal>
+        </div>
+      </template>
+    </struct>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('boochooser', {
+    template: '#boochooser-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        on_making_boo: false
+      }
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.auth.boo
+      }
+    },
+
+    methods: {
+      change_boo_to: function(boo_id) {
+        this.session.auth.boo = boo_id;
+      },
+
+      new_boo: async function() {
+        this.on_making_boo = true;
+        await this.session.auth.new_boo();
+        this.session.open_profiler();
+        this.on_making_boo = false;
+      }
+    }
+  });
+</script>

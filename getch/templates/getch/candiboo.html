@@ -1,0 +1,133 @@
+<style>
+  .candiboo.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .candiboo.vcomp > img.profile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: white;
+  }
+
+  .candiboo.vcomp > .keystring {
+    font-size: calc(var(--t-4) * 0.5);
+    font-weight: bold;
+  }
+
+  .candiboo.vcomp > .mychoice {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    transform: translate(-50%, -50%);
+    background: red;
+    border-radius: 50%;
+  }
+
+  .candiboo.vcomp .show-profile-enter-active,
+  .candiboo.vcomp .show-profile-leave-active {
+    transition: all 0.5s;
+  }
+
+  .candiboo.vcomp .show-profile-enter,
+  .candiboo.vcomp .show-profile-leave-to {
+    transform: scale(2);
+    opacity: 0;
+  }
+</style>
+
+<script type='text/x-template' id='candiboo-template'>
+  <div class='candiboo vcomp' @click='choose_this_boo'>
+    <transition name='show-profile'>
+      <img class='profile' :src='profile_pix' v-if='boo'>
+    </transition>
+
+    <div class='keystring'>[[ keystring ]]</div>
+    <div class='mychoice' v-show='chosen'></div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('candiboo', {
+    template: '#candiboo-template',
+    delimiters: ['[[', ']]'],
+    props: ['bookey', 'session'],
+    data: function() {
+      return {  }
+    },
+
+    methods: {
+      choose_this_boo: function() {
+        if (this.boo) {
+          this.session.auth.boo = this.boo.id;
+
+        } else {
+          alert('부캐만들자');
+        }
+
+      }
+    },
+
+    computed: {
+      chosen: function() {
+        if (this.boo) {
+          return this.session.auth.boo_selected == this.boo.id
+        }
+      },
+
+      boo: function() {
+        return _.find(this.session.auth.boos, ['key', this.bookey]);
+      },
+
+      profile_pix: function() {
+        if (this.boo) {
+          return this.boo.profile.pix
+        }
+      },
+
+      keystring: function() {
+        switch (this.bookey) {
+          case 0:
+            return 'G'
+          case 1:
+            return 'H'
+          case 2:
+            return 'I'
+          case 3:
+            return 'J'
+          case 4:
+            return 'F'
+          case 5:
+            return 'A'
+          case 6:
+            return 'B'
+          case 7:
+            return 'E'
+          case 8:
+            return 'D'
+          case 9:
+            return 'C'
+          case 10:
+            return 'K'
+        }
+      }
+    }
+  });
+</script>

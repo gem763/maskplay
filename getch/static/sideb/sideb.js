@@ -1,31 +1,104 @@
 class Session {
   constructor() {
-    this.open = {
-      mypage: false,
-      loginpage: false,
-      boochooser: false,
-      profiler: false,
-      authorpage: false,
-      network: false,
-      posting: false,
+    this.page = {
+      mypage:     { open: false, from: 'left'},
+      loginpage:  { open: false, from: 'left'},
+      boochooser: { open: false, from: 'left'},
+      profiler:   { open: false, from: 'left'},
+      authorpage: { open: false, from: 'right'},
+      network:    { open: false, from: 'right'},
+      posting:    { open: false, from: 'right'},
+      comments:    { open: false, from: 'bottom'},
     };
 
-    this.mode = { on:'journey', prev:undefined };
-    // this.cpost = undefined;
-    this.cnetwork = { boo:undefined, followers:undefined, followees:undefined };
+    this.on_intro = true;
+    this.mode = { on: 'journey', prev: undefined };
+    this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
     this.auth = undefined;
     this.swiper = undefined;
     this.posts = undefined;
     this.stats = undefined;
+    this.hammer = this.get_hammer();
+
+    this.fetch_user();
+    this.fetch_posts();
   }
 
+
+  fetch_user() {
+    fetch('/user')
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          // 화살표 함수 안에서는 그냥 this를 써도 된다
+          this.auth = new Auth(JSON.parse(js.user));
+        }
+      });
+  }
+
+  fetch_posts() {
+    fetch('/posts')
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.posts = JSON.parse(js.posts);
+          this.on_intro = false;
+        }
+      });
+  }
+
+
+  get_hammer() {
+    const self = this;
+    const hammer = new Hammer(document);
+
+    function getStartX(e) {
+      const delta_x = e.deltaX;
+      const final_x = e.srcEvent.pageX || e.srcEvent.screenX || 0;
+      const canvas_w = document.querySelector('#window').offsetWidth;
+      return (final_x - delta_x) / canvas_w;
+    }
+
+    hammer.on('swiperight swipeleft', function (e) {
+      e.preventDefault();
+      const x = getStartX(e);
+
+      if (self.mode.on == 'journey') {
+        if (e.type=='swiperight' && x <= 0.3) {
+          self.open_boochooser();
+
+        } else if (e.type=='swipeleft' && x >= 0.7) {
+          self.open_authorpage();
+        }
+
+      } else {
+        if (e.type=='swiperight' && x <= 0.3 && self.page[self.mode.on].from=='right') {
+          self.close_page();
+
+        } else if (e.type=='swipeleft' && x >= 0.7 && self.page[self.mode.on].from=='left') {
+          self.close_page();
+        }
+      }
+    });
+
+    return hammer
+  }
+
+  // hammer_on() {
+  //   this.hammer.set({ enable: true });
+  // }
+  //
+  // hammer_off() {
+  //   this.hammer.set({ enable: false });
+  // }
+
   close_page() {
-    this.open[this.mode.on] = false;
+    this.page[this.mode.on].open = false;
     this.checkout();
   }
 
   open_page(pagename) {
-    this.open[pagename] = true;
+    this.page[pagename].open = true;
     this.checkin(pagename);
   }
 
@@ -47,6 +120,10 @@ class Session {
 
   open_profiler() {
     this.open_page('profiler');
+  }
+
+  open_comments() {
+    this.open_page('comments');
   }
 
   open_posting() {
@@ -93,12 +170,17 @@ class Session {
     console.log(`check-in to ${on}`);
     this.mode.prev = {...this.mode};
     this.mode.on = on;
+    // this.hammer_off();
   }
 
   checkout() {
     try {
       console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
       this.mode = this.mode.prev;
+
+      // if (this.mode.on == 'journey') {
+      //   this.hammer_on();
+      // }
 
     } catch(e) {
       console.log('abnormal access')
@@ -126,11 +208,11 @@ class Session {
 
 
   pscore(boo) {
-    return (boo.nfollowers + boo.npost) * 10
+    return (boo.nfollowers*1 + boo.nposts*0.2) + 10
   }
 
   get total_pscore() {
-    return (this.stats.total_nposts + this.stats.total_nfollowers) * 10
+    return (this.stats.total_nfollowers*1 + this.stats.total_nposts*0.2) + 10*this.stats.total_nboos
   }
 
   level(boo) {
@@ -139,22 +221,16 @@ class Session {
     switch (true) {
       case (0<=_ps && _ps<0.05):
         return 0
-        break;
       case (0.05<=_ps && _ps<0.10):
         return 1
-        break;
       case (0.10<=_ps && _ps<0.15):
         return 2
-        break;
       case (0.15<=_ps && _ps<0.20):
         return 3
-        break;
       case (0.20<=_ps && _ps<0.25):
         return 4
-        break;
       case (0.25<=_ps):
         return 5
-        break;
     }
   }
 
@@ -164,14 +240,16 @@ class Session {
 }
 
 
+
+
 class Auth {
   constructor(cuser) {
     this.id = Number(cuser.id);
     this.email = cuser.email;
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = {[cuser.boo_selected]: cuser.boo};
-    // this.boos = cuser.boos;
-    this.fetch_other_boos();
+    this.load_other_boos();
+    this.boos_fully_loaded = false;
   }
 
 
@@ -183,15 +261,13 @@ class Auth {
       });
   }
 
-  fetch_other_boos() {
-    const self = this;
+  load_other_boos() {
     fetch('/user/other_boos')
       .then(x => x.json())
       .then(js => {
-        // console.log(js);
-
         if (js.success) {
-          self.boos = { ...self.boos, ...JSON.parse(js.other_boos) };
+          this.boos = { ...this.boos, ...JSON.parse(js.other_boos) };
+          this.boos_fully_loaded = true;
         }
       })
   }

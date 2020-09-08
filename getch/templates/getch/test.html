@@ -95,9 +95,9 @@
   </style>
 </head>
 
-<body style='margin:0;'>
+<body style='margin:0;background:lightpink;'>
 
-  <table class='struct-header'>
+  <!-- <table id='window' class='struct-header'>
     <tbody>
       <tr>
         <td class='slot-1' colspan='2'></td>
@@ -112,8 +112,38 @@
   </table>
 
   <div class='struct-content'>
-  </div>
+  </div> -->
 
+  <!-- <img src='/static/materials/icons/SIDEB_ICON_CDP.png' style='width:100px;height:100px;'> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/static/hammer/hammer.min.js"></script>
+
+  <script>
+  $(document).ready(function () {
+
+    const hammer = new Hammer(document);
+
+    function getStartX(e) {
+        const delta_x = e.deltaX;
+        const final_x = e.srcEvent.pageX || e.srcEvent.screenX || 0;
+        const canvas_w = document.querySelector('#window').offsetWidth;
+        return (final_x - delta_x) / canvas_w;
+    };
+
+    hammer.on('swiperight swipeleft', function (e) {
+      e.preventDefault();
+      const x = getStartX(e);
+
+      if (e.type=='swiperight' && x <= 0.3) {
+        console.log('swipe right')
+
+      } else if (e.type=='swipeleft' && x >= 0.7) {
+        console.log('swipe left')
+      }
+    });
+  });
+  </script>
 
 </body>
 </html>

@@ -1,0 +1,267 @@
+{% include "getch/page.html" %}
+{% include "getch/comment.html" %}
+
+<style>
+  :root {
+    --comment-menu-h: 25px;
+  }
+
+  .comments .section {
+    position: absolute;
+    background: white;
+    left: 0;
+    right: 0;
+    padding: 10px;
+  }
+
+  .comments .commentlist.section {
+    background: white;
+    top: 0;
+    bottom: calc(60px + var(--s-menu));
+    overflow-y: auto;
+  }
+
+  .comments .commenting.section {
+    background: white;
+    bottom: 40px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  .comments .section > .container {
+    position: relative;
+    background: none;
+  }
+
+  .comments .section > .container > .comment {
+    /* display: inline-block; */
+    position: relative;
+    min-height: calc(var(--s-menu) - var(--comment-menu-h));
+    background: none;
+    padding-left: calc(var(--s-menu) + 4px);
+    padding-bottom: var(--comment-menu-h);
+    font-size: 11px;
+    white-space: pre-line;
+  }
+
+  .comments .commentlist.section > .container > .comment {
+    margin-bottom: 5px;
+  }
+
+  .comments .section > .container > .comment > span.nick {
+    font-weight: bold;
+  }
+
+  .comments .section > .container > .comment > span.text {
+    margin-left: 5px;
+  }
+
+  .comments .section > .container > .comment > span.text[contenteditable=true]:focus {
+    /* font-size: 20px;
+    line-height: 1.3; */
+    outline: none;
+  }
+
+  .comments .section > .container > .comment > span.text[contentEditable=true]:empty::before {
+    content: attr(placeholder);
+    color: lightgray;
+  }
+
+  .comments .section > .container > .comment > .pix {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--s-menu);
+    height: var(--s-menu);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .comments .section > .container > .comment > .pix > img.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .comments .section > .container > .comment > .pix > img.icon {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+
+  .comments .section > .container > .comment > .menu {
+    position: absolute;
+    bottom: 0;
+    left: calc(var(--s-menu) + 4px);
+    right: 0;
+    height: var(--comment-menu-h);
+    line-height: var(--comment-menu-h);
+    background: none;
+    padding-right: 5px;
+    font-size: 9px;
+    color: lightgray;
+  }
+
+  .comments .section > .container > .comment > .menu > span.save,
+  .comments .section > .container > .comment > .menu > span.edit {
+    float: right;
+    margin-left: 10px;
+  }
+
+  .comments .section > .container > .comment > .menu > span.edit.saving {
+    color: var(--color-neg);
+  }
+
+  .comments .section > .container > .comment > .menu > span.save.active {
+    color: var(--color-neg);
+  }
+
+  .comment-listing-enter-active, .comment-listing-leave-active {
+    transition: all 0.5s;
+  }
+  .comment-listing-enter, .comment-listing-leave-to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+
+  .comment-listing-move {
+    transition: all 0.5s;
+  }
+
+  .comments .commentlist.section .scroll-to-top {
+    position: absolute;
+    top: 0;
+  }
+</style>
+
+<script type='text/x-template' id='comments-template'>
+  <page class='comments' :open='session.page.comments.open' :from='session.page.comments.from' @close='session.close_page()'>
+
+    <div class='commentlist section'>
+      <div class='scroll-to-top' ref='scroll_to_top'></div>
+
+      <transition-group tag='div' class='container' name='comment-listing'>
+        <comment v-for='comment in comments' :comment='comment' :session='session' :key='comment.created_at' @click='comment_edit(comment)'>
+        </comment>
+        <!-- <div class='comment' v-for='comment in comments' :key='comment.created_at' @click='comment_edit(comment)'>
+          <span class='nick'>[[ comment.boo.nick ]]</span>
+          <span class='text'>[[ comment.text ]]</span><br>
+
+          <div class='menu'>
+            <span class='date'>[[ relative_date_of(comment.created_at) ]]</span>
+            <span class='edit' :class='{ saving: !comment.id }' v-show='is_my_comment(comment.boo.id)'>[[ comment.id ? 'edit' : 'saving...' ]]</span>
+          </div>
+
+          <div class='pix'>
+            <img class='fit' :src='comment.boo.profile.pix'>
+          </div>
+        </div> -->
+      </transition-group>
+    </div>
+
+    <!-- <div class='commenting section' v-if='session.auth'>
+      <div class='container'>
+        <div class='comment'>
+          <span class='nick'>[[ session.auth.boo.nick ]]</span>
+          <span class='text' ref='comment_text' spellcheck='false' placeholder='COMMENT HERE' @input='change_text' contenteditable></span>
+          <div class='menu'>
+            <span class='save' :class='{ active: commented }' @click='comment_save'>SAVE</span>
+          </div>
+          <div class='pix'>
+            <img class='fit' :src='session.auth.boo.profile.pix'>
+          </div>
+        </div>
+      </div>
+    </div> -->
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('comments', {
+    template: '#comments-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        text: ''
+      }
+    },
+
+    watch: {
+      text: function(_new, _old) {},
+
+    },
+
+    computed: {
+      comments: function() {
+        return this.session.cpost.comments.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+      },
+
+      commented: function() {
+        return this.text.length > 0
+      }
+    },
+
+    methods: {
+      comment_edit: function(comment) {
+        if (!this.is_my_comment(comment.boo.id) || !comment.id) {
+          return
+        }
+
+        this.$refs.comment_text.innerHTML = comment.text;
+      },
+
+      is_my_comment: function(boo_id) {
+        return this.session.auth && this.session.auth.boo.id==boo_id
+      },
+
+      change_text: function() {
+        this.text = this.$refs.comment_text.innerHTML.replace(/<br>/gi,'\r\n').replace(/&nbsp;/gi,' ').trim();
+      },
+
+      relative_date_of: function(date) {
+        return moment(date).fromNow()
+      },
+
+      comment_save: function() {
+        if (!this.commented) {
+          return
+        }
+
+        this.$refs.scroll_to_top.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+
+        const now = new Date().toISOString();
+        const _comment = {
+          boo: this.session.auth.boo,
+          text: this.text,
+          created_at: now,
+          id: undefined
+        };
+
+        this.session.cpost.comments.push(_comment);
+
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('post_id', this.session.cpost.id);
+        formdata.append('text', this.text);
+        this.$refs.comment_text.innerHTML = '';
+        this.change_text();
+
+        fetch('comment/save/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+
+            if (js.success) {
+              const comment_unsaved = _.find(this.comments, ['created_at', now]);
+              comment_unsaved.id = Number(js.comment_id);
+            }
+          });
+      }
+    }
+  });
+</script>

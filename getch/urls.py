@@ -6,9 +6,11 @@ urlpatterns = [
     path('', v.play, name='play'),
     path('accounts/', include('allauth.urls')),
     # path('authorpage/<int:boo_id>/', v.authorpage, name='authorpage'),
+    path('posts/', v.get_posts, name='get_posts'),
     path('post/<int:post_id>/vote/', v.vote, name='vote'),
     path('post/save/', v.post_save, name='post_save'),
     path('post/<int:post_id>/delete/', v.post_delete, name='post_delete'),
+    path('comment/save/', v.comment_save, name='comment_save'),
     path('boo/<int:boo_id>/follow/', v.follow, name='follow'),
     path('boo/<int:boo_id>/unfollow/', v.unfollow, name='unfollow'),
     path('boo/<int:boo_id>/set/', v.set_boo, name='set_boo'),
@@ -16,5 +18,7 @@ urlpatterns = [
     path('boo/<int:boo_id>/posts/', v.boo_posts, name='boo_posts'),
     path('boo/profile/save/', v.profile_save, name='profile_save'),
     path('boo/new/', v.boo_new, name='boo_new'),
+    path('user/', v.get_user, name='get_user'),
     path('user/other_boos/', v.other_boos, name='other_boos'),
+
 ]

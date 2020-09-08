@@ -1,7 +1,8 @@
 {% include "getch/struct.html" %}
+{% include "getch/modal.html" %}
 
 <style>
-  .aboutboo .header-0 > .profilepix {
+  .aboutboo.vcomp .header-0 > .profilepix {
     position: absolute;
     top: 0;
     right: 0;
@@ -9,16 +10,17 @@
     height: var(--t-3);
   }
 
-  .aboutboo .header-0 > .profilepix > img.fit {
+  .aboutboo.vcomp .header-0 > .profilepix > img.fit {
     object-fit: cover;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: white;
   }
 
-  .aboutboo .header-0 > .profilepix > img.barcode {
+  .aboutboo.vcomp .header-0 > .profilepix > img.barcode {
     position: absolute;
     bottom: 0;
     left: 50%;
@@ -27,17 +29,17 @@
     transform: translate(-50%, 50%)
   }
 
-  .aboutboo .header-0 > .scorecard {
+  .aboutboo.vcomp .header-0 > .scorecard {
     position: absolute;
-    left: 3vw;
-    top: 3vw;
-    bottom: calc(var(--t-3) + 3vw);
-    width: calc(100% - var(--t-3) - 6vw);
+    left: calc(3 * var(--vw-unit));
+    top: calc(3 * var(--vw-unit));
+    bottom: calc(var(--t-3) + 3*var(--vw-unit));
+    width: calc(100% - var(--t-3) - 6*var(--vw-unit));
     background: none;
     line-height: 1;
   }
 
-  .aboutboo .header-0 > .scorecard > .score {
+  .aboutboo.vcomp .header-0 > .scorecard > .score {
     position: absolute;
     height: 50%;
     background: none;
@@ -46,97 +48,91 @@
     justify-content: center;
   }
 
-  .aboutboo .header-0 > .scorecard > .score.pscore {
+  .aboutboo.vcomp .header-0 > .scorecard > .score.pscore {
     top: 0;
     left: 0;
     width: 100%;
   }
 
-  .aboutboo .header-0 > .scorecard > .score.nfollowers {
+  .aboutboo.vcomp .header-0 > .scorecard > .score.nfollowers {
     top: 50%;
     left: 0;
     width: 50%;
   }
 
-  .aboutboo .header-0 > .scorecard > .score.npostings {
+  .aboutboo.vcomp .header-0 > .scorecard > .score.npostings {
     top: 50%;
     left: 50%;
     width: 50%;
   }
 
-  .aboutboo .header-0 > .scorecard > .score .score-name {
+  .aboutboo.vcomp .header-0 > .scorecard > .score .score-name {
     font-size: 8px;
   }
 
-  .aboutboo .header-0 > .scorecard > .score .score-value {
+  .aboutboo.vcomp .header-0 > .scorecard > .score .score-value {
     font-size: 20px;
     font-weight: bold;
   }
 
-  .aboutboo .header-0 > .scorecard > .score.pscore .score-value {
+  .aboutboo.vcomp .header-0 > .scorecard > .score.pscore .score-value {
     font-size: 30px;
   }
 
-  .aboutboo .header-0 > .description {
+  .aboutboo.vcomp .header-1 > .description {
     position: absolute;
     left: 0;
     bottom: 0;
     width: 100%;
-    height: var(--t-3);
+    height: 100%;
+    /* height: var(--t-3); */
     background: none;
     line-height: 1;
     color: white;
-    white-space: pre;
+    /* white-space: pre; */
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .aboutboo .header-0 > .description span.nick {
+  .aboutboo.vcomp .header-1 > .description span.nick {
     background: black;
     font-size: 18px;
     font-weight: bold;
   }
 
-  .aboutboo .header-0 > .description span.text {
+  .aboutboo.vcomp .header-1 > .description span.text {
     background: black;
     font-size: 12px;
   }
 
-  .aboutboo .header-1 {
-    font-size: 22px;
+  .aboutboo.vcomp .header-1 {
+    font-size: 18px;
     font-weight: bold;
   }
 
-  .aboutboo .header-1 > .follow {
+  .aboutboo.vcomp .header-1 > .follow {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: var(--color-pos);
-    color: white;
+    background: white;
+    /* background: var(--color-pos); */
+    /* color: white; */
+    color: black;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .aboutboo .header-1 > .follow.onfollow {
-    background: white;
+  .aboutboo.vcomp .header-1 > .follow.onfollow {
+    background: lightgray;
     color: black
   }
 
 
-  .aboutboo .header-2 > img.logo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .aboutboo .content > .booposts > .boopost {
+  .aboutboo.vcomp .content > .booposts > .boopost {
     position: relative;
     width: 25%;
     height: calc(var(--t-0) / 2);
@@ -146,11 +142,11 @@
 
 <script type='text/x-template' id='aboutboo-template'>
 
-  <struct class='aboutboo' v-if='boo'>
+  <struct class='aboutboo vcomp' v-if='boo'>
     <template #header-0>
       <div class='profilepix'>
         <img class='barcode' :src='session.barcode(boo)'>
-        <img class='fit' :src='boo.profile.pix' @click='session.open_boochooser()'>
+        <img class='fit' :src='boo.profile.pix' @click='open_boochooser'>
       </div>
 
       <div class='scorecard' @click='session.open_network()'>
@@ -170,32 +166,31 @@
 
         <div class='score npostings'>
           <div>
-            <span class='score-value'>[[ boo.npost ]]</span><br>
+            <span class='score-value'>[[ boo.nposts ]]</span><br>
             <span class='score-name'>POSTINGS</span>
           </div>
         </div>
       </div>
 
-      <div class='description'>
-        <div>
-          <span class='nick'>[[ boo.nick ]]</span><br>
-          <span class='text'>[[ '"' + boo.text + '"' ]]</span>
-        </div>
-      </div>
     </template>
 
 
     <template #header-1>
-      <div v-if='type=="author"' class='follow' :class='{ onfollow:is_following }' @click='toggle_follow'>
+      <div class='description'>
+        <div>
+          <span class='nick'>[[ boo.nick ]]</span>
+          <span class='text' v-if='boo.text'><br>[[ '"' + boo.text + '"' ]]</span>
+        </div>
+      </div>
+
+      <!-- <div v-if='type=="author" && session.auth' class='follow' :class='{ onfollow:is_following }' @click='toggle_follow'>
         [[ follow_button_message ]]
       </div>
-      <div v-else>나</div>
+      <div v-else></div> -->
     </template>
 
 
-    <template #header-2>
-      <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
-    </template>
+    <template #header-2></template>
 
 
     <template #content>
@@ -221,6 +216,8 @@
           </template>
 
         </div>
+
+        <modal :pop='on_postloading' name='processing'></modal>
       </div>
     </template>
   </struct>
@@ -232,23 +229,37 @@
   Vue.component('aboutboo', {
     template: '#aboutboo-template',
     delimiters: ['[[', ']]'],
-    props: ['session', 'type'],
+    props: ['session', 'type', 'is_active'],
     data: function() {
       return {
         posts: undefined,
         on_postloading: false,
+        boo_id: undefined
       }
     },
 
     created: function() {
-      // 이게 created에 처음에 로드가 너무 큼
-      // this.load_posts();
+      if (this.type == 'my') {
+        this.boo_id = this.boo.id;
+        this.load_posts();
+      }
     },
 
     watch: {
       'boo.id': function(_new, _old) {
-        // this.load_posts();
-        // 스크롤할때마다 이게 실행된다!!! 오마갓 ===================================================================
+        if (this.type == 'my') {
+          this.boo_id = this.boo.id;
+          this.load_posts();
+        }
+      },
+
+      is_active: function(_new, _old) {
+        if (_new) {
+          if (this.boo && this.boo.id != this.boo_id) {
+            this.boo_id = this.boo.id;
+            this.load_posts();
+          }
+        }
       }
     },
 
@@ -268,24 +279,30 @@
 
       follow_button_message: function() {
         if (this.is_following) {
-          return '팔로우중'
+          return 'FOLLOWING'
         } else {
-          return '팔로우하기'
+          return 'FOLLOW'
         }
       }
     },
 
     methods: {
+      open_boochooser: function() {
+        if (this.type == 'my') {
+          this.session.open_boochooser();
+        }
+      },
+
       load_posts: function() {
-        // this.show_postloading();
+        this.show_postloading();
 
         const self = this;
         fetch(`/boo/${self.boo.id}/posts/`)
           .then(x => x.json())
           .then(js => {
             self.posts = JSON.parse(js.posts);
-            console.log(self.posts);
-            // self.hide_postloading();
+            // console.log(self.posts);
+            self.hide_postloading();
           })
       },
 
@@ -298,8 +315,6 @@
       },
 
       toggle_follow: function() {
-        // auth.boo의 nfollower를 db에서 직접 가져올 필요는 없다
-        // auth.boo(나자신)를 팔로우할 일은 없을테니
         if (this.is_following) {
           this.session.auth.unfollow(this.boo.id);
           this.boo.nfollowers -= 1;

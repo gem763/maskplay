@@ -178,6 +178,9 @@ class Boo(BigIdAbstract, ModelWithFlag):
     created_at = models.DateTimeField(auto_now_add=True)
     key = models.IntegerField(default=0)
 
+    nposts = models.IntegerField(default=0)
+    nfollowers = models.IntegerField(default=0)
+
     def __str__(self):
         return self.nick + ' | ' + self.user.email
 
@@ -192,6 +195,12 @@ class Boo(BigIdAbstract, ModelWithFlag):
         if self.profile is None:
             self.profile  = Profile.objects.create()
 
+        # 포스트가 새로 만들어지거나 팔로우할때 아래 코드가 실행되게 하고 싶은데
+        # 늘 두개씩 다 실행시키는게 불필요해보이기도 하고
+        # 팔로우 한후에 Boo가 자동저장되는지도 불확실
+        self.nposts = self.post_set.count()
+        self.nfollowers = self.get_flags(status=FOLLOW).count()
+
         super().save(*args, **kwargs)
 
     @property
@@ -203,10 +212,12 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def follow(self, boo_id, note=None):
         boo = Boo.objects.get(pk=boo_id)
         boo.set_flag(self, note=note, status=FOLLOW)
+        boo.save()
 
     def unfollow(self, boo_id):
         boo = Boo.objects.get(pk=boo_id)
         boo.remove_flag(self, status=FOLLOW)
+        boo.save()
 
     def is_following(self, boo_id):
         boo = Boo.objects.get(pk=boo_id)
@@ -242,57 +253,21 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return json.dumps(_network)
 
     @property
-    def nfollowers(self):
-        return self.get_flags(status=FOLLOW).count()
-        # return len(self.followers_id)
-
-    @property
-    def nfollowees(self):
-        return Flager.objects.filter(status=FOLLOW, user=self).count()
-        # return len(self.followees_id)
-
-    @property
     def voting_record(self):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
-    @property
-    def npost(self):
-        return Post.objects.filter(boo=self).count()
+    # @property
+    # def nfollowers(self):
+    #     return self.get_flags(status=FOLLOW).count()
+    #
+    # @property
+    # def nfollowees(self):
+    #     return Flager.objects.filter(status=FOLLOW, user=self).count()
 
     # @property
-    # def npost_share(self):
-    #     return self.npost / Post.objects.count()
-    #
-    # @property
-    # def nfollowers_share(self):
-    #     return self.nfollowers / Flager.objects.filter(status=FOLLOW).count()
-    #
-    # @property
-    # def pscore(self):
-    #     return self.npost + self.nfollowers
-    #
-    # @property
-    # def pscore_share(self):
-    #     denom = Post.objects.count() + Flager.objects.filter(status=FOLLOW).count()
-    #     return self.pscore / denom
-    #
-    # @property
-    # def level(self):
-    #     _pscore = self.pscore_share
-    #
-    #     if 0 <= _pscore < 0.05:
-    #         return 0
-    #     elif 0.05 <= _pscore < 0.10:
-    #         return 1
-    #     elif 0.10 <= _pscore < 0.15:
-    #         return 2
-    #     elif 0.15 <= _pscore < 0.20:
-    #         return 3
-    #     elif 0.20 <= _pscore < 0.25:
-    #         return 4
-    #     elif 0.25 <= _pscore:
-    #         return 5
+    # def nposts(self):
+    #     return Post.objects.filter(boo=self).count()
 
 
 class Post(BigIdAbstract, ModelWithFlag):
@@ -301,8 +276,16 @@ class Post(BigIdAbstract, ModelWithFlag):
     created_at = models.DateTimeField(auto_now_add=True)
     objects = InheritanceManager()
 
+    nvotes_up = models.IntegerField(default=0)
+    nvotes_down = models.IntegerField(default=0)
+
     def __str__(self):
         return str(self.created_at) + ((' | ' + str(self.boo)) if self.boo else '')
+
+    def save(self, *args, **kwargs):
+        # 아래 두줄의 순서가 중요할까?
+        super().save(*args, **kwargs)
+        self.boo.save()
 
     @property
     def type(self):
@@ -341,17 +324,21 @@ class Post(BigIdAbstract, ModelWithFlag):
             self.remove_flag(boo, status=VOTE_UP)
             self.remove_flag(boo, status=VOTE_DOWN)
 
+        self.nvotes_up = self._nvotes_up
+        self.nvotes_down = self._nvotes_down
+        self.save()
+
     # @property
     # def voters(self):
     #     q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
     #     return Flager.objects.filter(q)
 
     @property
-    def nvotes_up(self):
+    def _nvotes_up(self):
         return Flager.objects.filter(status=VOTE_UP, object_id=self.id).count()
 
     @property
-    def nvotes_down(self):
+    def _nvotes_down(self):
         return Flager.objects.filter(status=VOTE_DOWN, object_id=self.id).count()
 
 
@@ -387,6 +374,14 @@ class PostVoteAB(Post):
         return 'AB | ' + super().__str__()
 
 
+class Comment(BigIdAbstract, ModelWithFlag):
+    boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.SET_NULL)
+    text = models.TextField(max_length=500, blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.created_at) + ' | ' +  self.text + ((' | ' + str(self.boo)) if self.boo else '')
 
 
 class EyeMaskSerializer(serializers.ModelSerializer):
@@ -461,12 +456,12 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        # fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nfollowees', 'npost']#, 'pscore', 'pscore_share', 'level']
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'npost']#, 'pscore', 'pscore_share', 'level']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
+
 
 
 class BooSerializer(serializers.ModelSerializer):
@@ -474,9 +469,8 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        # fields = ['id', 'nick', 'text', 'profile', 'key', 'followers_id', 'followees_id', 'voting_record', 'npost']#, 'pscore', 'level']
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'npost']#, 'pscore', 'level']
-        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'npost']#, 'pscore', 'level']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts']
+        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'nposts']
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)
@@ -499,37 +493,39 @@ class BooSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     boo = BooSerializer()
-    # boos = BooSerializer(source='boo_set', many=True)
 
     class Meta:
         model = User
-        # fields = ['id', 'email', 'boo_selected', 'boos']
         fields = ['id', 'email', 'boo_selected', 'boo']
         read_only_fields = fields
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    boo = AuthorSerializer()
 
+    class Meta:
+        model = Comment
+        fields = ['id', 'boo', 'text', 'created_at']
+        read_only_fields = ['id']
 
 
 class PostVoteOXSerializer(serializers.ModelSerializer):
     boo = AuthorSerializer()
-    # keys = serializers.SerializerMethodField()
+    comments = CommentSerializer(source='comment_set', many=True) #----------꼭 댓글까지 다 가져올 필요 있을까
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'comments']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
-
-    # def get_keys(self, obj):
-    #     return obj.get_keys_display()
 
 
 class PostVoteABSerializer(serializers.ModelSerializer):
     boo = AuthorSerializer()
+    comments = CommentSerializer(source='comment_set', many=True)
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'comments']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -545,6 +541,14 @@ class PostSerializer(serializers.ModelSerializer):
         elif isinstance(instance, PostVoteAB):
             return {'type':'postvoteab', **PostVoteABSerializer(instance=instance).data}
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        # serializer queryset 최적화하기
+        # http://ses4j.github.io/2015/11/23/optimizing-slow-django-rest-framework-performance/
+        queryset = queryset.select_related('boo', 'boo__profile')
+        queryset = queryset.prefetch_related('comment_set')
+        return queryset
 
     # 이부분은 안쓰게 되는거 같다. pix를 어떻게 serializer로 저장하는지 모르겠다
     # def create(self, validated_data):

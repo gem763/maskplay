@@ -1,0 +1,173 @@
+{% include "getch/page.html" %}
+{% include "getch/comment.html" %}
+
+<style>
+  .comments.vcomp .comments-layout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    background: lightpink;
+  }
+
+  .comments.vcomp .comments-layout > .section {
+    padding: 10px;
+  }
+
+  .comments.vcomp .comments-layout > .commentlist.section {
+    background: white;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  .comments.vcomp .commenting.section {
+    background: white;
+    box-sizing: content-box;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  /* .comments.vcomp .section {
+    position: absolute;
+    background: white;
+    left: 0;
+    right: 0;
+    padding: 10px;
+  } */
+
+  /* .comments.vcomp .commentlist.section {
+    background: white;
+    top: 0;
+    bottom: calc(60px + var(--s-menu));
+    overflow-y: auto;
+  }
+
+  .comments.vcomp .commenting.section {
+    background: white;
+    bottom: 40px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  } */
+
+  .comments.vcomp .section > .container {
+    position: relative;
+    background: none;
+  }
+
+
+  .comments.vcomp .comment-listing-enter-active, .comment-listing-leave-active {
+    transition: all 0.5s;
+  }
+
+  .comments.vcomp .comment-listing-enter, .comment-listing-leave-to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+
+  .comments.vcomp .comment-listing-move {
+    transition: all 0.5s;
+  }
+
+  .comments.vcomp .commentlist.section .scroll-to-top {
+    position: absolute;
+    top: 0;
+  }
+</style>
+
+<script type='text/x-template' id='comments-template'>
+  <page class='comments vcomp' :open='session.page.comments.open' :from='session.page.comments.from' @close='session.close_page()'>
+    <div class='comments-layout'>
+
+      <div class='commentlist section'>
+        <div class='scroll-to-top' ref='scroll_to_top'></div>
+
+        <transition-group tag='div' class='container' name='comment-listing'>
+          <comment
+            v-for='comment in comments'
+            :comment='comment'
+            :session='session'
+            :key='comment.created_at'
+            :comment_focused='the_comment'
+          ></comment>
+        </transition-group>
+      </div>
+
+      <div class='commenting section' v-if='session.auth'>
+        <div class='container'>
+          <comment
+            type='commenter'
+            :comment='the_comment'
+            :session='session'
+            :comment_focused='the_comment'
+          ></comment>
+        </div>
+      </div>
+
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('comments', {
+    template: '#comments-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        the_comment: {
+          text: '',
+          id: undefined,
+          created_at: undefined
+        }
+      }
+    },
+
+    computed: {
+      comments: function() {
+        return this.session.cpost.comments.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+      }
+    },
+
+    methods: {
+      comment_save: function() {
+        if (!this.commented) {
+          return
+        }
+
+        this.$refs.scroll_to_top.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
+
+        const now = new Date().toISOString();
+        const _comment = {
+          boo: this.session.auth.boo,
+          text: this.text,
+          created_at: now,
+          id: undefined
+        };
+
+        this.session.cpost.comments.push(_comment);
+
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('post_id', this.session.cpost.id);
+        formdata.append('text', this.text);
+        this.$refs.comment_text.innerHTML = '';
+        this.change_text();
+
+        fetch('comment/save/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+
+            if (js.success) {
+              const comment_unsaved = _.find(this.comments, ['created_at', now]);
+              comment_unsaved.id = Number(js.comment_id);
+            }
+          });
+      }
+    }
+  });
+</script>

@@ -2,8 +2,8 @@
 {% include "getch/aboutboo.html" %}
 
 <script type='text/x-template' id='authorpage-template'>
-  <page class='authorpage' :open='session.open.authorpage' @close='session.close_page()'>
-    <aboutboo :session='session' type='author'></aboutboo>
+  <page class='authorpage' :open='session.page.authorpage.open' :from='session.page.authorpage.from' @close='session.close_page()'>
+    <aboutboo :session='session' type='author' :is_active='session.page.authorpage.open'></aboutboo>
   </page>
 </script>
 

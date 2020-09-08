@@ -25,8 +25,9 @@ characters = {ch.id:{'category':ch.category, 'pix':ch.pix.url} for ch in m.Chara
 maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
 stats = {
+    'total_nboos': m.Boo.objects.count(),
     'total_nposts': m.Post.objects.count(),
-    'total_nfollowers': m.Flager.objects.filter(status=m.FOLLOW).count()
+    'total_nfollowers': m.Flager.objects.filter(status=m.FOLLOW).count(),
 }
 
 def test(request):
@@ -34,10 +35,26 @@ def test(request):
 
 
 def play(request):
-    _posts = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
-    _posts = m.PostSerializer(_posts, many=True).data
-    ctx = {'posts': json.dumps(_posts), 'characters':characters, 'maskbases':maskbases, 'stats':stats}#, 'imgs':imgs}
+    # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
+    # _qs = m.PostSerializer.setup_eager_loading(_qs)
+    # _posts = m.PostSerializer(_qs, many=True).data
+    # ctx = {'posts': json.dumps(_posts), 'characters':characters, 'maskbases':maskbases, 'stats':stats}
+    ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
     return render(request, 'getch/play.html', ctx)
+
+
+def get_user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'success':True, 'user':request.user.serialized}, safe=False)
+    else:
+        return JsonResponse({'success':False})
+
+
+def get_posts(request):
+    _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
+    _qs = m.PostSerializer.setup_eager_loading(_qs)
+    _posts = m.PostSerializer(_qs, many=True).data
+    return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
 
 
 def other_boos(request):
@@ -206,8 +223,31 @@ def profile_save(request):
 #         return JsonResponse(js, safe=False)
 
 
+def comment_save(request):
+    if request.method == 'POST':
+        print(request.POST)
+        post_id = request.POST.get('post_id', None)
+        text = request.POST.get('text', None)
+        id = request.POST.get('id', None)
+
+        if text and post_id:
+            if id:
+                comment = m.Comment.objects.get(pk=id)
+                comment.text = text
+                comment.save()
+
+            else:
+                comment = m.Comment.objects.create(boo=request.user.boo, post_id=post_id, text=text)
+                
+            return JsonResponse({'success':True, 'message':'successfully commented', 'comment_id':comment.id}, safe=False)
+
+        else:
+            return JsonResponse({'success':False, 'message':'something wrong on commenting'}, safe=False)
+
+
+
 def post_save(request):
-    if request.method=='POST':
+    if request.method == 'POST':
         print(request.POST, request.FILES)
 
         post_id = request.POST.get('post_id', None)

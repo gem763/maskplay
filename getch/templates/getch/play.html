@@ -5,7 +5,7 @@
 <head>
   <title>SIDE.B</title>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
@@ -20,6 +20,9 @@
 
   <style>
     :root {
+      --vw-unit: 1vw;
+      --vh-unit: 1vh;
+
       --oxcard-border-w: 1px;
       --oxcard-border: var(--oxcard-border-w) solid black;
       --vs-fsize: 25px;
@@ -30,8 +33,8 @@
       --border-w: 0px;
       --border: var(--border-w) solid black;
 
-      --x1: calc((100vw - var(--border-w))/572);
-      --x2: calc((100vh - var(--border-w))/988);
+      --x1: calc((100*var(--vw-unit) - var(--border-w))/572);
+      --x2: calc((100*var(--vh-unit) - var(--border-w))/988);
       --x: min(var(--x1), var(--x2));
 
       --s-menu: calc(78 * var(--x));
@@ -44,7 +47,7 @@
       --window-h: calc(var(--s-0)*2 + var(--border-w));
 
 
-      --border2-w: 10px;
+      --border2-w: 1px;
       --border2: var(--border2-w) solid black;
 
       --t-0: calc(var(--window-w) - var(--border2-w));
@@ -54,22 +57,15 @@
       --t-4: calc(var(--t-0) / 4);
 
       --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
+    }
 
-      /* --y1: calc((100vw - var(--border2-w))/572);
-      --y2: calc((100vh - var(--border2-w))/988);
-      --y: min(var(--y1), var(--y2));
 
-      --t-0: calc(572 * var(--y));
-      --t-1: calc(352 * var(--y));
-      --t-2: calc(220 * var(--y));
-      --t-3: calc(132 * var(--y));
-      --t-4: calc(var(--t-0)/4);
-
-      --window-w2: calc(var(--t-0) + var(--border2-w));
-      --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
-
-      --dashboard_post_w: calc((var(--t-0) - 2*var(--border2-w)) / 4);
-      --dashboard_post_h: calc(var(--dashboard_post_w) * 2); */
+    html, body {
+      /* 모바일브라우저 검색바를 고정하기 위함
+      https://stackoverflow.com/questions/18061308/prevent-address-bar-hiding-in-mobile-browsers */
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
     }
 
     * {
@@ -103,6 +99,8 @@
     <posts v-if='session.posts' :session='session'></posts>
     <pages :session='session'></pages>
     <div class='border'></div>
+
+    <modal :pop='session.on_intro' name='intro'></modal>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -113,7 +111,10 @@
   <script src="{% static 'vue/vue.js' %}"></script>
   <script src="/static/swiper/swiper.js"></script>
   <script src="/static/sideb/sideb.js"></script>
+  <script src="/static/hammer/hammer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script>
+  <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
+  <script src="https://momentjs.com/downloads/moment.min.js"></script>
 
 
   {% include "getch/posts.html" %}
@@ -142,6 +143,13 @@
 
 
     $(document).ready(function(){
+      // 모바일키보드 등으로 viewport 사이즈가 변하므로,
+      // 애초에 처음 로딩할때 vw와 wh의 단위를 고정한다
+      const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      document.documentElement.style.setProperty('--vw-unit', w/100 + 'px');
+      document.documentElement.style.setProperty('--vh-unit', h/100 + 'px');
+
       var csrftoken = Cookies.get('csrftoken');
       $.ajaxSetup({
         beforeSend: function(xhr, settings) {
@@ -152,14 +160,7 @@
       });
     });
 
-
-    sideb.session.posts = {{posts|safe}};
     sideb.session.stats = {{stats|safe}};
-
-    {% if user.is_authenticated %}
-    // sideb.session.auth = new Auth({{user.serialized2|safe}});
-    {% endif %}
-
   </script>
 
 </body>

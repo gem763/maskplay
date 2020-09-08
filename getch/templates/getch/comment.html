@@ -1,0 +1,214 @@
+<style>
+  :root {
+    --comment-menu-h: 20px;
+  }
+
+  .comment.vcomp {
+    position: relative;
+    min-height: var(--s-menu);
+    /* min-height: calc(var(--s-menu) - var(--comment-menu-h)); */
+    background: none;
+    padding-left: calc(var(--s-menu) + 4px);
+    /* padding-bottom: var(--comment-menu-h); */
+    font-size: 11px;
+    white-space: pre-line;
+    margin-bottom: 5px;
+  }
+
+  .comment.commenter.vcomp {
+    margin-bottom: 0;
+  }
+
+  .comment.vcomp > span.nick {
+    font-weight: bold;
+  }
+
+  .comment.vcomp > span.text {
+    margin-left: 5px;
+  }
+
+  .comment.vcomp > span.text[contenteditable=true]:focus {
+    /* font-size: 20px;
+    line-height: 1.3; */
+    outline: none;
+  }
+
+  .comment.vcomp > span.text[contentEditable=true]:empty::before {
+    content: attr(placeholder);
+    color: lightgray;
+  }
+
+  .comment.vcomp > .pix {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--s-menu);
+    height: var(--s-menu);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .comment.vcomp > .pix > img.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .comment.vcomp > .menu {
+    /* position: absolute;
+    bottom: 0;
+    left: calc(var(--s-menu) + 4px);
+    right: 0; */
+    height: var(--comment-menu-h);
+    line-height: var(--comment-menu-h);
+    background: none;
+    padding-right: 5px;
+    font-size: 9px;
+    color: lightgray;
+  }
+
+  .comment.vcomp > .menu > span.action,
+  .comment.vcomp > .menu > span.status {
+    float: right;
+    margin-left: 10px;
+  }
+
+  .comment.vcomp > .menu > span.status.saving,
+  .comment.vcomp > .menu > span.status.editing,
+  .comment.vcomp > .menu > span.action.active {
+    color: var(--color-neg);
+  }
+</style>
+
+
+<script type='text/x-template' id='comment-template'>
+  <div class='comment vcomp' :class='type' @click='comment_focus'>
+    <span class='nick'>[[ boo.nick ]]</span>
+    <span class='text' ref='comment_text' spellcheck='false' placeholder='COMMENT HERE' :contenteditable='is_commenter' @input='change_text'>[[comment.text]]</span><br>
+
+    <div class='menu'>
+      <span class='date' v-if='!is_commenter'>[[ relative_date ]]</span>
+      <span class='status' :class='status' v-if='is_my_comment'>[[ status ]]</span>
+      <span class='action new' :class='{ active: rawtext_changed }' v-if='is_newable' @click='save'>NEW</span>
+      <span class='action change' :class='{ active: rawtext_changed }' v-if='is_changeable' @click='save'>CHANGE</span>
+      <span class='action cancel' v-if='is_cancelable' @click='cancel_comment_focus'>CANCEL</span>
+    </div>
+
+    <div class='pix'>
+      <img class='fit' :src='boo.profile.pix'>
+    </div>
+  </div>
+</script>
+
+<script>
+  Vue.component('comment', {
+    template: '#comment-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'comment', 'session', 'type', 'comment_focused' ],
+    data: function() {
+      return {
+        rawtext: ''
+      }
+    },
+
+    mounted: function() {
+      // 두개이상의 변수 watch 하기
+      // https://stackoverflow.com/questions/42737034/vue-js-watch-multiple-properties-with-single-handler
+      // 참고: watch object (deep)으로 하면 언제나 _new=_old 이다. reference로 접근하기에(2020.09.08)
+      // https://kr.vuejs.org/v2/api/#vm-watch
+      this.$watch(
+        function() {
+          return {id: this.comment.id, text: this.comment.text}
+        },
+
+        function(_new, _old) {
+          if (_new.id!=_old.id || _new.text=='') {
+            this.$refs.comment_text.innerHTML = this.comment.text;
+            this.rawtext = this.comment.text;
+          }
+        }, // { immediate: true } // mount 되자마자 바로 실행할지(맞나?)
+      )
+    },
+
+    computed: {
+      boo: function() {
+        if (this.comment.boo) {
+          return this.comment.boo
+
+        } else if (this.session.auth) {
+          return this.session.auth.boo
+        }
+      },
+
+      rawtext_changed: function() {
+        return this.rawtext !== this.comment.text
+      },
+
+      is_commenter: function() {
+        return this.type == 'commenter'
+      },
+
+      status: function() {
+        if (!this.is_commenter) {
+          if (!this.comment.id) {
+            return 'saving'
+
+          } else if (this.comment.id == this.comment_focused.id) {
+            return 'editing'
+
+          } else {
+            return 'edit'
+          }
+        }
+      },
+
+      is_newable: function() {
+        return this.is_commenter && !this.comment.id
+      },
+
+      is_changeable: function() {
+        return this.is_commenter && this.comment.id
+      },
+
+      is_cancelable: function() {
+        return this.is_commenter
+      },
+
+      is_my_comment: function() {
+        return !this.is_commenter && this.session.auth && this.session.auth.boo.id==this.boo.id
+      },
+
+      relative_date: function() {
+        if (this.comment.created_at) {
+          return moment(this.comment.created_at).fromNow()
+        }
+      }
+    },
+
+    methods: {
+      comment_focus: function() {
+        if (this.is_my_comment) {
+          this.comment_focused.id = this.comment.id;
+          this.comment_focused.text = this.comment.text;
+        }
+      },
+
+      cancel_comment_focus: function() {
+        this.comment_focused.id = undefined;
+        this.comment_focused.text = '';
+      },
+
+      change_text: function() {
+        this.comment.text = this.$refs.comment_text.innerHTML.replace(/<br>/gi,'\r\n').replace(/&nbsp;/gi,' ').trim();
+      },
+
+      save: function() {
+        if (this.rawtext_changed) {
+          this.$emit('save');
+        }
+      }
+    }
+  });
+</script>

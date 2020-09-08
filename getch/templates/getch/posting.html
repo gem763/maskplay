@@ -5,16 +5,16 @@
 <script type='text/x-template' id='posting-template'>
   <div class='posting'>
     <modal
-      :pop='session.open.posting'
+      :pop='session.page.posting.open'
       name='posting-type-selector'
       @posting='posting($event)'
     ></modal>
 
-    <page :open='postvoteab' @close='session.close_page()'>
+    <page :open='postvoteab' :from='session.page.posting.from' @close='session.close_page()'>
       <post type='postvoteab' :session='session'></post>
     </page>
 
-    <page :open='postvoteox' @close='session.close_page()'>
+    <page :open='postvoteox' :from='session.page.posting.from' @close='session.close_page()'>
       <post type='postvoteox' :session='session'></post>
     </page>
   </div>
@@ -35,7 +35,7 @@
 
     watch: {
       // 초기화
-      'session.open.posting': function(_new, _old) {
+      'session.page.posting.open': function(_new, _old) {
         this.postvoteab = false;
         this.postvoteox = false;
       }

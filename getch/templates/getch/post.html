@@ -308,6 +308,12 @@
       <img :src='post_boo_profile_pix'>
     </div>
 
+    <transition name='show-comment-button'>
+      <div class='comment menublock' v-show='is_active' @click='session.open_comments()'>
+        <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
+      </div>
+    </transition>
+
     <div class='score-label' v-show='is_active'>SCORE</div>
 
     <div class='description' v-show='!is_active'>
@@ -493,6 +499,10 @@
     },
 
     methods: {
+      open_comment: function() {
+        alert("댓글보이기")
+      },
+
       toggle_vote: function(act) {
         if (this.session.auth && this.session.mode.on=='journey' && !this.on_edit) {
           if (this.vote_state==act) {

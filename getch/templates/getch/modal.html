@@ -28,6 +28,7 @@
 
   .modal .content .sub {
     position: absolute;
+    text-align: center;
     top: 0;
     left: 0;
     background: none;
@@ -97,10 +98,29 @@
     height: 100%;
   }
 
+  .modal .content .sub.intro,
   .modal .content .sub.processing,
   .modal .content .sub.deleting {
     font-size: 30px;
     font-weight: bold;
+  }
+
+  .modal .content .sub.intro {
+    background: white;
+    color: black;
+  }
+
+  .modal .content .sub.intro img {
+    width: calc(30 * var(--vw-unit));
+    height: calc(30 * var(--vw-unit));
+    object-fit: contain;
+    animation: blink normal 2s infinite ease-in-out;
+  }
+
+  @keyframes blink {
+    0%   { opacity:1; }
+    50%  { opacity:0; }
+    100% { opacity:1; }
   }
 </style>
 
@@ -149,6 +169,13 @@
           잠시만...
         </div>
 
+        <div class='sub intro' v-if='is_intro'>
+          <div>
+            <!-- 놀 준비 됐어?<br> -->
+            <img src='/static/materials/imgs/sideb_logo.jpg'>
+          </div>
+        </div>
+
         <div class='sub deleting' v-if='is_deleting'>
           진짜 삭제?
 
@@ -186,6 +213,10 @@
 
       is_deleting: function() {
         return this.name == 'deleting'
+      },
+
+      is_intro: function() {
+        return this.name == 'intro'
       }
     }
   });

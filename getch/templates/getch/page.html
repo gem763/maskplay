@@ -27,16 +27,30 @@
     background: rgba(0,0,0,0.5);
   }
 
-  .page .show-content-enter-active,
-  .page .show-content-leave-active,
+  .page .show-content-from-right-enter-active,
+  .page .show-content-from-right-leave-active,
+  .page .show-content-from-left-enter-active,
+  .page .show-content-from-left-leave-active,
+  .page .show-content-from-bottom-enter-active,
+  .page .show-content-from-bottom-leave-active,
   .page .show-dimmer-enter-active,
   .page .show-dimmer-leave-active {
     transition: all .3s;
   }
 
-  .page .show-content-enter,
-  .page .show-content-leave-to {
+  .page .show-content-from-right-enter,
+  .page .show-content-from-right-leave-to {
     left: 100%;
+  }
+
+  .page .show-content-from-left-enter,
+  .page .show-content-from-left-leave-to {
+    left: -100%;
+  }
+
+  .page .show-content-from-bottom-enter,
+  .page .show-content-from-bottom-leave-to {
+    top: 100% !important;
   }
 
   .page .show-dimmer-enter,
@@ -67,7 +81,7 @@
       <div class='dimmer' v-show='open'></div>
     </transition>
 
-    <transition name='show-content'>
+    <transition :name='show_content_type'>
       <div class='content' v-show='open'>
         <slot></slot>
 
@@ -84,9 +98,15 @@
   Vue.component('page', {
     template: '#page-template',
     delimiters: ['[[', ']]'],
-    props: ['open'],
+    props: ['open', 'from'],
     data: function() {
       return { }
+    },
+
+    computed: {
+      show_content_type: function() {
+        return 'show-content-from-' + this.from
+      }
     },
 
     methods: { }

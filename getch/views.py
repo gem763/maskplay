@@ -22,7 +22,9 @@ import json
 # }
 
 characters = {ch.id:{'category':ch.category, 'pix':ch.pix.url} for ch in m.Character.objects.all()}
-maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
+eyemasks = {mb.id:{'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.filter(type='EYE')}
+mouthmasks = {mb.id:{'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.filter(type='MOUTH')}
+# maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
 stats = {
     'total_nboos': m.Boo.objects.count(),
@@ -39,7 +41,8 @@ def play(request):
     # _qs = m.PostSerializer.setup_eager_loading(_qs)
     # _posts = m.PostSerializer(_qs, many=True).data
     # ctx = {'posts': json.dumps(_posts), 'characters':characters, 'maskbases':maskbases, 'stats':stats}
-    ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
+    # ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
+    ctx = {'characters':characters, 'eyemasks':eyemasks, 'mouthmasks':mouthmasks, 'stats':stats}
     return render(request, 'getch/play.html', ctx)
 
 
@@ -238,7 +241,7 @@ def comment_save(request):
 
             else:
                 comment = m.Comment.objects.create(boo=request.user.boo, post_id=post_id, text=text)
-                
+
             return JsonResponse({'success':True, 'message':'successfully commented', 'comment_id':comment.id}, safe=False)
 
         else:

@@ -272,7 +272,7 @@
               ></aber>
 
               <div class='pixlabel' v-show='!is_active'>
-                <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A'></editext>
+                <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A' type='in-post'></editext>
               </div>
             </div>
           </td>
@@ -294,7 +294,7 @@
               ></aber>
 
               <div class='pixlabel' v-show='!is_active'>
-                <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B'></editext>
+                <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B' type='in-post'></editext>
               </div>
             </div>
           </td>
@@ -317,7 +317,7 @@
     <div class='score-label' v-show='is_active'>SCORE</div>
 
     <div class='description' v-show='!is_active'>
-      <editext ref='post_text' :rawtext='post_text' :header='"@" + post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE'></editext>
+      <editext ref='post_text' :rawtext='post_text' :header='"@" + post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post'></editext>
     </div>
 
     <span class='vs' v-show='!is_active'>VS</span>

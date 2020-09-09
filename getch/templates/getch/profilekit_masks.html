@@ -1,0 +1,66 @@
+<style>
+  .profilekit-masks.vcomp {
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .profilekit-masks.vcomp > .items {
+    width: 100%;
+    height: 100%;
+    background: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+
+  .profilekit-masks.vcomp > .items > .item {
+    width: 25%;
+    height: 25%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 3px solid white;
+    border-right: 3px solid white;
+    box-sizing: border-box;
+  }
+
+  .profilekit-masks.vcomp > .items > .item > img {
+    width: 180%;
+    height: 180%;
+    object-fit: contain;
+  }
+</style>
+
+<script type='text/x-template' id='profilekit-masks-template'>
+  <div class='profilekit-masks vcomp'>
+
+    <div class='items'>
+      <div class='item mask' v-for='(m, m_id) in masks' @click='mask_up(m_id)'>
+        <img :src='m.pix'>
+      </div>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('profilekit-masks', {
+    template: '#profilekit-masks-template',
+    delimiters: ['[[', ']]'],
+    props: ['masks', 'boo', 'type'],
+    data: function() {
+      return { }
+    },
+
+    methods: {
+      mask_up: function(id) {
+        this.boo.profile[this.type].maskbase = Number(id);
+        this.boo.profile[this.type].masked = true;
+      },
+    }
+  });
+</script>

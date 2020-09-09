@@ -1,0 +1,169 @@
+{% include "getch/profilekit_characters.html" %}
+{% include "getch/profilekit_masks.html" %}
+
+<style>
+  .profilekit.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .profilekit.vcomp > .menu {
+    position: relative;
+    width: 100%;
+    height: 25%;
+    background: white;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .profilekit.vcomp > .menu > .item {
+    width: 25%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .profilekit.vcomp > .menu > .item.sectionized {
+    background: black;
+    color: white;
+  }
+
+  .profilekit.vcomp > .menu > .item > img.icon {
+    width: 35%;
+    height: 35%;
+    object-fit: contain;
+  }
+
+  .profilekit.vcomp > .sections {
+    position: relative;
+    width: 100%;
+    height: 75%;
+    background: none;
+    overflow: hidden;
+  }
+
+  .profilekit.vcomp > .sections > table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300%;
+    height: 100%;
+    border-collapse: collapse;
+    transition: left 0.5s;
+  }
+
+  .profilekit.vcomp > .sections > table.characters {
+    left: 0;
+  }
+
+  .profilekit.vcomp > .sections > table.eyemasks {
+    left: -100%;
+  }
+
+  .profilekit.vcomp > .sections > table.mouthmasks {
+    left: -200%;
+  }
+
+  .profilekit.vcomp > .sections > table > tbody > tr > td {
+    position: relative;
+    width: calc(100% / 3);
+    height: 100%;
+    padding: 0;
+  }
+
+  .profilekit.vcomp > .sections > table > tbody > tr > td.characters {
+    background: lightyellow;
+  }
+
+  .profilekit.vcomp > .sections > table > tbody > tr > td.eyemasks {
+    background: lightblue;
+  }
+
+  .profilekit.vcomp > .sections > table > tbody > tr > td.mouthmasks {
+    background: lightpink;
+  }
+</style>
+
+<script type='text/x-template' id='profilekit-template'>
+  <div class='profilekit vcomp'>
+
+    <div class='menu'>
+      <div class='item' :class='{ sectionized: section=="characters" }' name='characters' @click='sectionize'>
+        <p>SELECT<br>CHARACTER</p>
+      </div>
+
+      <div class='item' :class='{ sectionized: section=="eyemasks" }' name='eyemasks' @click='sectionize'>
+        <p>SELECT<br>EYE-MASK</p>
+      </div>
+
+      <div class='item' :class='{ sectionized: section=="mouthmasks" }' name='mouthmasks' @click='sectionize'>
+        <p>SELECT<br>MASK</p>
+      </div>
+
+      <div class='item'>
+        <img class='icon' src='/static/materials/icons/arrow_down.png'>
+      </div>
+    </div>
+
+    <div class='sections'>
+      <table :class='section'>
+        <tbody>
+          <tr>
+            <td class='characters'>
+              <profilekit-characters :characters='characters' :boo='boo'></profilekit-characters>
+            </td>
+
+            <td class='eyemasks'>
+              <profilekit-masks :masks='eyemasks' :boo='boo' type='eyemask'></profilekit-masks>
+            </td>
+
+            <td class='mouthmasks'>
+              <profilekit-masks :masks='mouthmasks' :boo='boo' type='mouthmask'></profilekit-masks>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('profilekit', {
+    template: '#profilekit-template',
+    delimiters: ['[[', ']]'],
+    props: ['session', 'boo', 'characters', 'eyemasks', 'mouthmasks'],
+    data: function() {
+      return {
+        section: 'characters',
+        // characters: {{ characters|safe }},
+        // eyemasks: undefined,
+        // mouthmasks: undefined
+      }
+    },
+
+    // created: function() {
+    //   let maskbases = {{ maskbases|safe }};
+    //   maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
+    //   this.eyemasks = maskbases.EYE;
+    //   this.mouthmasks = maskbases.MOUTH;
+    // },
+
+    methods: {
+      sectionize: function(event) {
+        this.section = event.currentTarget.getAttribute('name');
+      }
+    }
+  });
+</script>

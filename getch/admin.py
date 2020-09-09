@@ -52,6 +52,7 @@ class MaskBaseAdmin(admin.ModelAdmin):
 class EyeMaskAdmin(admin.ModelAdmin):
     list_display = ['maskbase', 'owned_by', 'masked', 'top', 'left', 'width', 'height']
     list_display_links = ['maskbase']
+    list_editable = ['top', 'left', 'width', 'height']
 
     def owned_by(self, obj):
         if obj.profile and obj.profile.boo:
@@ -64,6 +65,7 @@ class EyeMaskAdmin(admin.ModelAdmin):
 class MouthMaskAdmin(admin.ModelAdmin):
     list_display = ['maskbase', 'owned_by', 'masked', 'top', 'left', 'width', 'height']
     list_display_links = ['maskbase']
+    list_editable = ['top', 'left', 'width', 'height']
 
     def owned_by(self, obj):
         if obj.profile and obj.profile.boo:

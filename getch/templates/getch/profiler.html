@@ -1,265 +1,119 @@
 {% include "getch/page.html" %}
 {% include "getch/struct.html" %}
+{% include "getch/profilekit.html" %}
+{% include "getch/editext.html" %}
 
 <style>
-  .profiler .struct .header-0 > .profile-container {
+  .profiler.vcomp .struct .header-0 > .canvas {
     position: absolute;
     top: 10%;
     left: 10%;
     width: 80%;
     height: 80%;
-    background: rgba(0,0,0,0.1);
-    /* border: 1px solid black; */
-    overflow: hidden;
-  }
-
-  .profiler .struct .header-0 > .profile-container img.profile {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     background: white;
+    /* overflow: hidden; */
+    border: 1px solid black;
+    box-sizing: border-box;
   }
 
-  .profiler .struct .header-1 > .description {
+  .profiler.vcomp .struct .header-0 > .canvas > .subcanvas {
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: none;
-    line-height: 1;
-    color: white;
-    /* white-space: pre; */
+    background: white;
+    background-size: cover;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .profiler .struct .header-1 > .description span.nick {
+  .profiler.vcomp .struct .header-0 > .canvas > .subcanvas.text {
     background: black;
-    font-size: 18px;
-    font-weight: bold;
   }
 
-  .profiler .struct .header-1 > .description span.text {
-    background: black;
-    font-size: 12px;
+  .profiler.vcomp .struct .header-0 > .canvas > .mask {
+    position: absolute;
+    background: none;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    text-align: center;
+    outline: 1px solid black;
   }
 
-  .profiler .struct .content > .container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .profiler .struct .content > .container > .section-names {
+  .profiler.vcomp .struct .header-0 > .canvas > .mask > img.remover {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 25%;
-    background: white;
-    display: flex;
-    flex-wrap: wrap;
+    right: 100%;
+    width: 20px;
+    height: 20px;
   }
 
-  .profiler .struct .content > .container > .sections {
+  .profiler.vcomp .struct .header-0 > .canvas > .eyemask.mask {
+    background-color: rgba(173,216,230,0.5);
+  }
+
+  .profiler.vcomp .struct .header-0 > .canvas > .mouthmask.mask {
+    background-color: rgba(255,182,193,0.5);
+  }
+
+  .profiler.vcomp .saver {
     position: absolute;
     bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 75%;
-    background: white;
-  }
-
-  .profiler .struct .content > .container > .sections > table {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 300%;
-    height: 100%;
-    border-collapse: collapse;
-    transition: left 0.5s;
-  }
-
-  .profiler .struct .content > .container > .sections > table.character {
-    left: 0;
-  }
-
-  .profiler .struct .content > .container > .sections > table.eyemask {
-    left: -100%;
-  }
-
-  .profiler .struct .content > .container > .sections > table.mouthmask {
-    left: -200%;
-  }
-
-  .profiler .struct .content > .container > .sections > table td {
-    position: relative;
-    width: calc(100% / 3);
-    height: 100%;
-    padding: 0;
-  }
-
-  .profiler .struct .content > .container > .sections > table td > div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-  }
-
-  /* .profiler .struct .content > .container > .sections > table td.character {
-    background: lightblue;
-  } */
-
-  /* .profiler .struct .content > .container > .sections > table td.eyemask {
-    background: lightpink;
-  } */
-
-  /* .profiler .struct .content > .container > .sections > table td.mouthmask {
-    background: lightyellow;
-  } */
-
-  .profiler .struct .content > .container > .sections > table td.character > div > .ch {
-    width: calc(100% / 4);
-    height: calc(100% / 3);
-    position: relative;
-    border: 1px solid black;
-    box-sizing: border-box;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-
-  .profiler .struct .content > .container > .sections > table td.eyemask > div > .emask {
-    width: calc(100% / 4);
-    height: calc(100% / 3);
-    position: relative;
-    border: 1px solid black;
-    box-sizing: border-box;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-
-  .profiler .struct .content > .container > .sections > table td.mouthmask > div > .mmask {
-    width: calc(100% / 4);
-    height: calc(100% / 3);
-    position: relative;
-    border: 1px solid black;
-    box-sizing: border-box;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-
-  .profiler .struct .content > .container .cbutton {
-    width: 25%;
-    height: 100%;
-    border-radius: 50%;
-    border: 1px solid black;
-    box-sizing: border-box;
+    right: 30%;
+    left: 30%;
+    width: 40%;
+    top: var(--window-h2);
+    background: black;
+    color: white;
+    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
-    font-weight: bold;
-    text-align: center;
-    line-height: 1;
-  }
-
-  .profiler .struct .content > .container .cbutton.sectionized {
-    background: black;
-    color: white;
-  }
-
-  .profiler .struct .content > .container .cbutton > img.icon {
-    width: 40%;
-    height: 40%;
-    object-fit: contain;
   }
 </style>
 
 
 <script type='text/x-template' id='profiler-template'>
-  <page class='profiler' :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
+  <page class='profiler vcomp' :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
 
     <struct>
       <template #header-0>
-        <div class='profile-container' @click='session.open_profiler()'>
-          <img class='profile' :src='boo.profile.pix'>
+        <div class='canvas' ref='canvas'>
+          <div class='subcanvas character' v-show='is_characterized' :style='character_canvas_style'></div>
+          <div class='subcanvas image' v-show='is_imagized' :style='image_canvas_style'></div>
+          <div class='subcanvas text' v-show='is_textized'>
+            <editext ref='boo_profile_text' :rawtext='boo.profile.text' :editable='true' placeholder='ㅋㅋ' type='in-profile-texting'></editext>
+          </div>
+
+          <div class='mask eyemask' ref='eyemask' v-show='is_eyemasked && (!is_textized)' :style='eyemask_style'>
+            <img class='remover' src='/static/materials/icons/times.png' @click='remove("eyemask")'>
+          </div>
+
+          <div class='mask mouthmask' ref='mouthmask' v-show='is_mouthmasked && (!is_textized)' :style='mouthmask_style'>
+            <img class='remover' src='/static/materials/icons/times.png' @click='remove("mouthmask")'>
+          </div>
         </div>
       </template>
 
       <template #header-1>
-        <div class='description'>
-          <div>
-            <span class='nick'>[[ boo.nick ]]</span>
-            <span class='text' v-if='boo.text'><br>[[ '"' + boo.text + '"' ]]</span>
-          </div>
-        </div>
+        <editext ref='boo_text' :rawtext='boo.text' :header='boo.nick' :editable='true' placeholder='NICKNAME HERE' type='in-boo-texting'></editext>
       </template>
 
       <template #content>
-        <div class='container'>
-          <div class='section-names'>
-            <div class='cbutton' :class='{sectionized:section=="character"}' section='character' @click='sectionize'>
-              <p>SELECT<br>CHARACTER</p>
-            </div>
-
-            <div class='cbutton' :class='{sectionized:section=="eyemask"}' section='eyemask' @click='sectionize'>
-              <p>SELECT<br>EYE-MASK</p>
-            </div>
-
-            <div class='cbutton' :class='{sectionized:section=="mouthmask"}' section='mouthmask' @click='sectionize'>
-              <p>SELECT<br>MASK</p>
-            </div>
-
-            <div class='cbutton'>
-              <img class='icon' src='/static/materials/icons/arrow_down.png'>
-            </div>
-          </div>
-
-          <div class='sections'>
-            <table :class='section'>
-              <tbody>
-                <tr>
-                  <td class='character'>
-                    <div>
-                      <div class='ch' v-for='(ch, ch_id) in characters'>
-                        <img :src='ch.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;'>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td class='eyemask'>
-                    <div>
-                      <div class='emask' v-for='(emask, emask_id) in eyemasks'>
-                        <img :src='emask.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transform:scale(2)'>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td class='mouthmask'>
-                    <div>
-                      <div class='mmask' v-for='(mmask, mmask_id) in mouthmasks'>
-                        <img :src='mmask.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transform:scale(2)'>
-                      </div>
-                    </div>
-                  </td>
-
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <profilekit
+          :boo='boo'
+          :session='session'
+          :characters='characters'
+          :eyemasks='eyemasks'
+          :mouthmasks='mouthmasks'
+        ></profilekit>
       </template>
     </struct>
+
+    <div class='saver' @click='save'>SAVE</div>
 
   </page>
 </script>
@@ -272,31 +126,132 @@
     props: ['session'],
     data: function() {
       return {
-        section: 'character',
-        characters: undefined,
-        eyemasks: undefined,
-        mouthmasks: undefined
+        boo: _.cloneDeep(this.session.auth.boo),
+        characters: {{ characters|safe }},
+        eyemasks: {{ eyemasks|safe }},
+        mouthmasks: {{ mouthmasks|safe }}
       }
     },
 
-    created: function() {
-      maskbases = {{ maskbases|safe }};
-      maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
-      this.eyemasks = maskbases.EYE;
-      this.mouthmasks = maskbases.MOUTH;
-      this.characters = {{ characters|safe }};
+    // created: function() {
+    //   let maskbases = {{ maskbases|safe }};
+    //   maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
+    //   this.eyemasks = maskbases.EYE;
+    //   this.mouthmasks = maskbases.MOUTH;
+    // },
+
+    methods: {
+      remove: function(mask) {
+        this.boo.profile[mask].masked = false;
+      },
+
+      save: function() {
+        const kk = _diff2(this.session.auth.boo, this.boo);
+        console.log(kk);
+      }
+    },
+
+    mounted: function() {
+      this.$watch(
+        function() {
+          return this.$refs.boo_text.text
+        },
+
+        function(_new, _old) {
+          this.boo.text = _new;
+        },
+      );
+
+      this.$watch(
+        function() {
+          return this.$refs.boo_profile_text.text
+        },
+
+        function(_new, _old) {
+          this.boo.profile.text = _new;
+        },
+      );
+
+      const self = this;
+      $(this.$refs.eyemask).draggable({
+        axis: 'y',
+        containment: 'parent',
+        stop: function(event, ui) {
+          const canvas = self.$refs.canvas;
+          const eyemask = self.$refs.eyemask;
+          self.boo.profile.eyemask.top = ui.position.top / canvas.clientHeight * 100;
+          // self.boo.profile.eyemask.left = ui.position.left / canvas.clientWidth * 100;
+          // self.boo.profile.eyemask.height = eyemask.clientHeight / canvas.clientHeight * 100;
+          // self.boo.profile.eyemask.width = eyemask.clientWidth / canvas.clientWidth * 100;
+        }
+      });
+
+      $(this.$refs.mouthmask).draggable({
+        axis: 'y',
+        containment: 'parent',
+        stop: function(event, ui) {
+          const canvas = self.$refs.canvas;
+          const mouthmask = self.$refs.mouthmask;
+          self.boo.profile.mouthmask.top = ui.position.top / canvas.clientHeight * 100;
+          // self.boo.profile.mouthmask.left = ui.position.left / canvas.clientWidth * 100;
+          // self.boo.profile.mouthmask.height = mouthmask.clientHeight / canvas.clientHeight * 100;
+          // self.boo.profile.mouthmask.width = mouthmask.clientWidth / canvas.clientWidth * 100;
+        }
+      });
     },
 
     computed: {
-      boo: function() {
-        return this.session.auth.boo
-      }
-    },
+      is_characterized: function() {
+        return (this.boo.profile.type=="CHARACTER")
+      },
 
-    methods: {
-      sectionize: function(event) {
-        this.section = event.currentTarget.getAttribute('section');
-      }
+      is_imagized: function() {
+        return (this.boo.profile.type=="IMAGE")
+      },
+
+      is_textized: function() {
+        return (this.boo.profile.type=="TEXT")
+      },
+
+      is_eyemasked: function() {
+        return this.boo.profile.eyemask.masked
+      },
+
+      is_mouthmasked: function() {
+        return this.boo.profile.mouthmask.masked
+      },
+
+      character_canvas_style: function() {
+        return {
+          backgroundImage: `url(${this.characters[this.boo.profile.character].pix})`
+        }
+      },
+
+      image_canvas_style: function() {
+        return {
+          backgroundImage: `url(${this.boo.profile.image})`
+        }
+      },
+
+      eyemask_style: function() {
+        return {
+          backgroundImage: `url(${this.eyemasks[this.boo.profile.eyemask.maskbase].pix})`,
+          top: this.boo.profile.eyemask.top + '%',
+          left: this.boo.profile.eyemask.left + '%',
+          width: this.boo.profile.eyemask.width + '%',
+          height: this.boo.profile.eyemask.height + '%'
+        }
+      },
+
+      mouthmask_style: function() {
+        return {
+          backgroundImage: `url(${this.mouthmasks[this.boo.profile.mouthmask.maskbase].pix})`,
+          top: this.boo.profile.mouthmask.top + '%',
+          left: this.boo.profile.mouthmask.left + '%',
+          width: this.boo.profile.mouthmask.width + '%',
+          height: this.boo.profile.mouthmask.height + '%'
+        }
+      },
     }
   });
 </script>

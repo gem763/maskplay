@@ -1,0 +1,290 @@
+{% include "getch/page.html" %}
+{% include "getch/struct.html" %}
+
+<style>
+  .profiler.vcomp .struct .header-0 > .profile-container {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: rgba(0,0,0,0.1);
+    /* border: 1px solid black; */
+    overflow: hidden;
+  }
+
+  .profiler.vcomp .struct .header-0 > .profile-container img.profile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: white;
+  }
+
+  .profiler.vcomp .struct .header-1 > .description {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    line-height: 1;
+    color: white;
+    /* white-space: pre; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profiler.vcomp .struct .header-1 > .description span.nick {
+    background: black;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .profiler.vcomp .struct .header-1 > .description span.text {
+    background: black;
+    font-size: 12px;
+  }
+
+  .profiler.vcomp .struct .content > .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .profiler.vcomp .struct .content > .container > .section-names {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background: white;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75%;
+    background: white;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300%;
+    height: 100%;
+    border-collapse: collapse;
+    transition: left 0.5s;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table.character {
+    left: 0;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table.eyemask {
+    left: -100%;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table.mouthmask {
+    left: -200%;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table td {
+    position: relative;
+    width: calc(100% / 3);
+    height: 100%;
+    padding: 0;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table td > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table td.character > div > .ch {
+    width: calc(100% / 4);
+    height: calc(100% / 3);
+    position: relative;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table td.eyemask > div > .emask {
+    width: calc(100% / 4);
+    height: calc(100% / 3);
+    position: relative;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .profiler.vcomp .struct .content > .container > .sections > table td.mouthmask > div > .mmask {
+    width: calc(100% / 4);
+    height: calc(100% / 3);
+    position: relative;
+    border: 1px solid black;
+    box-sizing: border-box;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .profiler.vcomp .struct .content > .container .cbutton {
+    width: 25%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .profiler.vcomp .struct .content > .container .cbutton.sectionized {
+    background: black;
+    color: white;
+  }
+
+  .profiler.vcomp .struct .content > .container .cbutton > img.icon {
+    width: 40%;
+    height: 40%;
+    object-fit: contain;
+  }
+</style>
+
+
+<script type='text/x-template' id='profiler-template'>
+  <page class='profiler vcomp' :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
+
+    <struct>
+      <template #header-0>
+        <div class='profile-container'>
+          <img class='profile' :src='boo.profile.pix'>
+        </div>
+      </template>
+
+      <template #header-1>
+        <div class='description'>
+          <div>
+            <span class='nick'>[[ boo.nick ]]</span>
+            <span class='text' v-if='boo.text'><br>[[ '"' + boo.text + '"' ]]</span>
+          </div>
+        </div>
+      </template>
+
+      <template #content>
+        <div class='container'>
+          <div class='section-names'>
+            <div class='cbutton' :class='{sectionized:section=="character"}' section='character' @click='sectionize'>
+              <p>SELECT<br>CHARACTER</p>
+            </div>
+
+            <div class='cbutton' :class='{sectionized:section=="eyemask"}' section='eyemask' @click='sectionize'>
+              <p>SELECT<br>EYE-MASK</p>
+            </div>
+
+            <div class='cbutton' :class='{sectionized:section=="mouthmask"}' section='mouthmask' @click='sectionize'>
+              <p>SELECT<br>MASK</p>
+            </div>
+
+            <div class='cbutton'>
+              <img class='icon' src='/static/materials/icons/arrow_down.png'>
+            </div>
+          </div>
+
+          <div class='sections'>
+            <table :class='section'>
+              <tbody>
+                <tr>
+                  <td class='character'>
+                    <div>
+                      <div class='ch' v-for='(ch, ch_id) in characters'>
+                        <img :src='ch.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;'>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class='eyemask'>
+                    <div>
+                      <div class='emask' v-for='(emask, emask_id) in eyemasks'>
+                        <img :src='emask.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transform:scale(2)'>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td class='mouthmask'>
+                    <div>
+                      <div class='mmask' v-for='(mmask, mmask_id) in mouthmasks'>
+                        <img :src='mmask.pix' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;transform:scale(2)'>
+                      </div>
+                    </div>
+                  </td>
+
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </template>
+    </struct>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('profiler', {
+    template: '#profiler-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        section: 'character',
+        characters: undefined,
+        eyemasks: undefined,
+        mouthmasks: undefined
+      }
+    },
+
+    created: function() {
+      maskbases = {{ maskbases|safe }};
+      maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
+      this.eyemasks = maskbases.EYE;
+      this.mouthmasks = maskbases.MOUTH;
+      this.characters = {{ characters|safe }};
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.auth.boo
+      }
+    },
+
+    methods: {
+      sectionize: function(event) {
+        this.section = event.currentTarget.getAttribute('section');
+      }
+    }
+  });
+</script>

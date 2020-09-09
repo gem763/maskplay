@@ -2,6 +2,7 @@
 {% include "getch/struct.html" %}
 {% include "getch/candiboo.html" %}
 {% include "getch/modal.html" %}
+{% include "getch/editext.html" %}
 
 <style>
   .boochooser.vcomp .struct .header-0 > .profile-container {
@@ -43,7 +44,7 @@
   }
 
 
-  .boochooser.vcomp .struct .header-1 > .description {
+  /* .boochooser.vcomp .struct .header-1 > .description {
     position: absolute;
     left: 0;
     top: 0;
@@ -52,7 +53,6 @@
     background: none;
     line-height: 1;
     color: white;
-    /* white-space: pre; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -67,7 +67,7 @@
   .boochooser.vcomp .struct .header-1 > .description span.text {
     background: black;
     font-size: 12px;
-  }
+  } */
 
   .boochooser.vcomp .struct .content .boo-candidate {
     position: relative;
@@ -124,12 +124,13 @@
       </template>
 
       <template #header-1>
-        <div class='description'>
+        <editext :rawtext='boo.text' :header='boo.nick' type='in-boo-texting'></editext>
+        <!-- <div class='description'>
           <div>
             <span class='nick'>[[ boo.nick ]]</span>
             <span class='text' v-if='boo.text'><br>[[ '"' + boo.text + '"' ]]</span>
           </div>
-        </div>
+        </div> -->
       </template>
 
       <template #content>

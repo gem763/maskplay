@@ -248,8 +248,8 @@ class Auth {
     this.email = cuser.email;
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = {[cuser.boo_selected]: cuser.boo};
-    this.load_other_boos();
     this.boos_fully_loaded = false;
+    // this.load_other_boos();
   }
 
 

@@ -89,7 +89,7 @@ class Mask(BigIdAbstract):
     top = models.FloatField(default=0, null=False, blank=False)
     left = models.FloatField(default=0, null=False, blank=False)
     width = models.FloatField(default=100, null=False, blank=False)
-    height = models.FloatField(default=20, null=False, blank=False)
+    # height = models.FloatField(default=15, null=False, blank=False)
 
     class Meta:
         abstract = True
@@ -101,10 +101,12 @@ class Mask(BigIdAbstract):
 
 class EyeMask(Mask):
     maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE, default=1)
+    height = models.FloatField(default=15, null=False, blank=False)
 
 
 class MouthMask(Mask):
     maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE, default=35)
+    height = models.FloatField(default=30, null=False, blank=False)
 
 
 def _characterpix_path(instance, fname):

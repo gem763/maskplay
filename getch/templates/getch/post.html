@@ -595,7 +595,7 @@
       save_post: function() {
         // text가 바뀌는 경우
         // 참고: console.log("")로 하면 <empty string>이라고 나온다 (이걸로 한참 헤맴)
-        let formdata = new FormData();
+        const formdata = new FormData();
         formdata.append('n_edited', 0);
 
         this.formdata_append('text', this.$refs.post_text, formdata);

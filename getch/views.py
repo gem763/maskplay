@@ -129,13 +129,14 @@ def profile_save(request):
     if request.method=='POST':
         print(request.POST, request.FILES)
         _nick = request.POST.get('nick', None)
-        _type = request.POST.get('type', None)
-        _pix = request.FILES.get('pix', None)
-        _image = request.FILES.get('image', None)
-        _character = request.POST.get('character', None)
         _text = request.POST.get('text', None)
-        _eyemask = request.POST.get('eyemask', None)
-        _mouthmask = request.POST.get('mouthmask', None)
+        _profile_type = request.POST.get('profile_type', None)
+        _profile_pix = request.FILES.get('profile_pix', None)
+        _profile_image = request.FILES.get('profile_image_file', None)
+        _profile_character = request.POST.get('profile_character', None)
+        _profile_text = request.POST.get('profile_text', None)
+        _profile_eyemask = request.POST.get('profile_eyemask', None)
+        _profile_mouthmask = request.POST.get('profile_mouthmask', None)
 
         user = request.user
         boo_data = { 'profile': {} }
@@ -143,26 +144,29 @@ def profile_save(request):
         if _nick:
             boo_data['nick'] = _nick
 
-        if _type:
-            boo_data['profile']['type'] = _type
-
-        if _pix:
-            boo_data['profile']['pix'] = _pix
-
-        if _character:
-            boo_data['profile']['character'] = _character
-
-        if _image:
-            boo_data['profile']['image'] = _image
-
         if _text:
-            boo_data['profile']['text'] = _text
+            boo_data['text'] = _text
 
-        if _eyemask:
-            boo_data['profile']['eyemask'] = json.loads(_eyemask)
+        if _profile_type:
+            boo_data['profile']['type'] = _profile_type
 
-        if _mouthmask:
-            boo_data['profile']['mouthmask'] = json.loads(_mouthmask)
+        if _profile_pix:
+            boo_data['profile']['pix'] = _profile_pix
+
+        if _profile_character:
+            boo_data['profile']['character'] = _profile_character
+
+        if _profile_image:
+            boo_data['profile']['image'] = _profile_image
+
+        if _profile_text:
+            boo_data['profile']['text'] = _profile_text
+
+        if _profile_eyemask:
+            boo_data['profile']['eyemask'] = json.loads(_profile_eyemask)
+
+        if _profile_mouthmask:
+            boo_data['profile']['mouthmask'] = json.loads(_profile_mouthmask)
 
         ser = m.BooSerializer(user.boo, data=boo_data)
 

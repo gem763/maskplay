@@ -4,7 +4,7 @@ class Session {
       mypage:     { open: false, from: 'left'},
       loginpage:  { open: false, from: 'left'},
       boochooser: { open: false, from: 'left'},
-      profiler:   { open: false, from: 'left'},
+      profiler:   { open: false, from: 'left', key: undefined},
       authorpage: { open: false, from: 'right'},
       network:    { open: false, from: 'right'},
       posting:    { open: false, from: 'right'},
@@ -119,6 +119,12 @@ class Session {
   }
 
   open_profiler() {
+    this.page.profiler.key = undefined;
+    this.open_page('profiler');
+  }
+
+  open_newprofiler(bookey) {
+    this.page.profiler.key = bookey;
     this.open_page('profiler');
   }
 
@@ -249,7 +255,7 @@ class Auth {
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = {[cuser.boo_selected]: cuser.boo};
     this.boos_fully_loaded = false;
-    // this.load_other_boos();
+    this.load_other_boos();
   }
 
 

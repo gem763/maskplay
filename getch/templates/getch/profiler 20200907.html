@@ -114,12 +114,11 @@
           :characters='characters'
           :eyemasks='eyemasks'
           :mouthmasks='mouthmasks'
-          @download='download'
         ></profilekit>
       </template>
     </struct>
 
-    <div class='saver' @click='save'>[[ is_making_new ? 'NEW' : 'SAVE' ]]</div>
+    <div class='saver' @click='save'>SAVE</div>
     <modal :pop='on_saving' name='processing'></modal>
   </page>
 </script>
@@ -132,7 +131,7 @@
     props: ['session'],
     data: function() {
       return {
-        boo: this.current_boo(),
+        boo: _.cloneDeep(this.session.auth.boo),
         characters: {{ characters|safe }},
         eyemasks: {{ eyemasks|safe }},
         mouthmasks: {{ mouthmasks|safe }},
@@ -140,51 +139,14 @@
       }
     },
 
-    watch: {
-      'session.auth.boo_selected': function(_new, _old) {
-        if (!this.is_making_new) {
-          this.boo = this.current_boo();
-
-          this.$nextTick(function() {
-            this.$refs.boo_nick.reset();
-            this.$refs.boo_text.reset();
-            this.$refs.boo_profile_text.reset();
-          });
-        }
-      },
-
-      is_making_new: function(_new, _old) {
-        this.boo = this.current_boo();
-
-        this.$nextTick(function() {
-          this.$refs.boo_nick.reset();
-          this.$refs.boo_text.reset();
-          this.$refs.boo_profile_text.reset();
-        });
-      }
-    },
+    // created: function() {
+    //   let maskbases = {{ maskbases|safe }};
+    //   maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
+    //   this.eyemasks = maskbases.EYE;
+    //   this.mouthmasks = maskbases.MOUTH;
+    // },
 
     methods: {
-      current_boo: function() {
-        if (this.is_making_new) {
-          return {
-            nick: this.session.auth.email.split('@')[0],
-            text: '',
-            profile: {
-              character: 1,
-              image: undefined,
-              text: 'ㅋㅋ',
-              type: 'CHARACTER',
-              eyemask: { masked:false, maskbase:1, top:20 },
-              mouthmask: { masked:false, maskbase:35, top:60 },
-            }
-          }
-
-        } else {
-          return _.cloneDeep(this.session.auth.boo)
-        }
-      },
-
       remove: function(mask) {
         this.boo.profile[mask].masked = false;
       },
@@ -222,93 +184,57 @@
         }
       },
 
-      pix_changed: function(formdata) {
-        return formdata.has('profile_character') ||
-               formdata.has('profile_text') ||
-               formdata.has('profile_image_file') ||
-               formdata.has('profile_eyemask') ||
-               formdata.has('profile_mouthmask')
-      },
-
       save: function() {
-        const formdata = new FormData();
-        formdata.append('n_edited', 0);
-
-        this.formdata_append('nick', formdata);
-        this.formdata_append('text', formdata);
-        this.formdata_append('profile.type', formdata);
-        this.formdata_append('profile.eyemask', formdata);
-        this.formdata_append('profile.mouthmask', formdata);
-
-        if (this.is_characterized) {
-          this.formdata_append('profile.character', formdata);
-        }
-
-        if (this.is_textized) {
-          this.formdata_append('profile.text', formdata);
-        }
-
-        if (this.is_imagized) {
-          this.formdata_append('profile.image_file', formdata);
-        }
-
-        if (Number(formdata.get('n_edited')) > 0) {
-          this.on_saving = true;
-          formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
-
-          if (this.is_making_new) {
-            formdata.append('key', this.session.page.profiler.key);
-          }
-
-          if (this.pix_changed(formdata)) {
-            const self = this;
-            html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
-              .then(function(canvas) {
-                canvas.toBlob(function(blob) {
-                  // self.boo.profile.pix = URL.createObjectURL(blob);
-                  formdata.append('profile_pix', blob, 'mypix.png');
-                  self.save_to_db(formdata);
-                });
-              });
-
-          } else {
-            this.save_to_db(formdata);
-          }
-        }
-      },
-
-      save_to_db: function(formdata) {
-        fetch('boo/profile/save/', { method: 'POST', body: formdata })
-          .then(res => res.json())
-          .then(js => {
-            this.on_saving = false;
-
-            if (js.success) {
-              const boo_saved = JSON.parse(js.boo);
-              console.log(boo_saved);
-              // this.session.auth.boos[boo_saved.id] = boo_saved;
-              Vue.set(this.session.auth.boos, boo_saved.id, boo_saved);
-              this.session.auth.boo = boo_saved.id;
-              this.session.close_page();
-            }
-          });
-      },
-
-      download: function() {
+        const self = this;
         html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
           .then(function(canvas) {
-            if (navigator.msSaveBlob) {
-              const blob = canvas.msToBlob();
-              return navigator.msSaveBlob(blob, 'mypix.png');
+            canvas.toBlob(function(blob) {
+              self.boo.profile.pix = URL.createObjectURL(blob);
 
-            } else {
-              const el = document.createElement("a");
-              el.href = canvas.toDataURL("image/png");
-              el.download = 'mypix.png';
-              el.click();
-            }
+              const formdata = new FormData();
+              formdata.append('n_edited', 0);
+              formdata.append('profile_pix', blob, 'mypix.png');
+
+              self.formdata_append('nick', formdata);
+              self.formdata_append('text', formdata);
+              self.formdata_append('profile.type', formdata);
+
+              if (self.is_characterized) {
+                self.formdata_append('profile.character', formdata);
+              }
+
+              if (self.is_textized) {
+                self.formdata_append('profile.text', formdata);
+              }
+
+              if (self.is_imagized) {
+                self.formdata_append('profile.image_file', formdata);
+              }
+
+              if (self.is_eyemasked && (!this.is_textized)) {
+                self.formdata_append('profile.eyemask', formdata);
+              }
+
+              if (self.is_mouthmasked && (!this.is_textized)) {
+                self.formdata_append('profile.mouthmask', formdata);
+              }
+
+              if (Number(formdata.get('n_edited')) > 0) {
+                formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+
+                fetch('boo/profile/save/', { method: 'POST', body: formdata })
+                  .then(res => res.json())
+                  .then(js => {
+                    if (js.success) {
+                      const boo_saved = JSON.parse(js.boo);
+                      console.log(boo_saved);
+                      self.session.auth.boos[boo_saved.id] = boo_saved;
+                    }
+                  });
+              }
+            });
           });
-      },
+      }
     },
 
     mounted: function() {
@@ -371,10 +297,6 @@
     },
 
     computed: {
-      is_making_new: function() {
-        return this.session.page.profiler.key ? true : false
-      },
-
       is_characterized: function() {
         return (this.boo.profile.type=="CHARACTER")
       },
@@ -402,8 +324,8 @@
       },
 
       image_canvas_style: function() {
-        if (this.boo.profile.image) {
-          return { backgroundImage: `url(${this.boo.profile.image})` }
+        return {
+          backgroundImage: `url(${this.boo.profile.image})`
         }
       },
 
@@ -411,7 +333,7 @@
         return {
           backgroundImage: `url(${this.eyemasks[this.boo.profile.eyemask.maskbase].pix})`,
           top: this.boo.profile.eyemask.top + '%',
-          left: this.boo.profile.eyemask.left + '%',
+          // left: this.boo.profile.eyemask.left + '%',
           width: this.boo.profile.eyemask.width + '%',
           height: this.boo.profile.eyemask.height + '%'
         }
@@ -421,7 +343,7 @@
         return {
           backgroundImage: `url(${this.mouthmasks[this.boo.profile.mouthmask.maskbase].pix})`,
           top: this.boo.profile.mouthmask.top + '%',
-          left: this.boo.profile.mouthmask.left + '%',
+          // left: this.boo.profile.mouthmask.left + '%',
           width: this.boo.profile.mouthmask.width + '%',
           height: this.boo.profile.mouthmask.height + '%'
         }

@@ -167,7 +167,8 @@
       <!-- <div class='author menublock' v-if='session.swiper && !session.swiper.animating' @click='session.open_authorpage()'> -->
       <div class='author menublock' :key='cpost_boo_id' @click='session.open_authorpage()'>
         <!-- <img class='fit' :src='cpost_boo_profile'> -->
-        <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'>
+        <!-- <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'> -->
+        <img class='fit' v-if='session.cpost' :src='cpost_boo_profile'>
       </div>
     </transition>
 
@@ -214,6 +215,15 @@
       cpost_boo_id: function() {
         if (this.session.cpost) {
           return this.session.cpost.boo.id
+        }
+      },
+
+      cpost_boo_profile: function() {
+        if (this.session.auth && this.cpost_boo_id==this.session.auth.boo_selected) {
+          return this.session.auth.boo.profile.pix
+
+        } else {
+          return this.session.cpost.boo.profile.pix
         }
       }
     },

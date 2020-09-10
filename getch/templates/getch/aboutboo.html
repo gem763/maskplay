@@ -175,7 +175,7 @@
 
 
     <template #header-1>
-      <editext :rawtext='boo.text' :header='boo.nick' type='in-boo-texting'></editext>
+      <editext :rawtext='boo.text' :header='boo.nick' type='in-boo' freeze='true'></editext>
       <!-- <div class='description'>
         <div>
           <span class='nick'>[[ boo.nick ]]</span>
@@ -294,15 +294,15 @@
       },
 
       load_posts: function() {
-        // this.show_postloading();
-        //
-        // const self = this;
-        // fetch(`/boo/${self.boo.id}/posts/`)
-        //   .then(x => x.json())
-        //   .then(js => {
-        //     self.posts = JSON.parse(js.posts);
-        //     self.hide_postloading();
-        //   })
+        this.show_postloading();
+
+        const self = this;
+        fetch(`/boo/${self.boo.id}/posts/`)
+          .then(x => x.json())
+          .then(js => {
+            self.posts = JSON.parse(js.posts);
+            self.hide_postloading();
+          })
       },
 
       show_postloading: function() {

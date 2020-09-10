@@ -54,7 +54,7 @@ def get_user(request):
 
 
 def get_posts(request):
-    _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
+    _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     _qs = m.PostSerializer.setup_eager_loading(_qs)
     _posts = m.PostSerializer(_qs, many=True).data
     return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
@@ -130,6 +130,7 @@ def profile_save(request):
         print(request.POST, request.FILES)
         _nick = request.POST.get('nick', None)
         _text = request.POST.get('text', None)
+        _key = request.POST.get('key', None)
         _profile_type = request.POST.get('profile_type', None)
         _profile_pix = request.FILES.get('profile_pix', None)
         _profile_image = request.FILES.get('profile_image_file', None)
@@ -168,7 +169,15 @@ def profile_save(request):
         if _profile_mouthmask:
             boo_data['profile']['mouthmask'] = json.loads(_profile_mouthmask)
 
-        ser = m.BooSerializer(user.boo, data=boo_data)
+
+        if _key:
+            boo_data['key'] = _key
+            boo = m.Boo.objects.create(user=user)
+            user.set_boo(boo.id) # 새로 생성한 부캐를 선택하는 것이 디폴트
+            ser = m.BooSerializer(boo, data=boo_data)
+
+        else:
+            ser = m.BooSerializer(user.boo, data=boo_data)
 
         if ser.is_valid():
             boo = ser.save()

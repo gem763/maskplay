@@ -398,7 +398,7 @@
       },
 
       post_boo_profile_pix: function() {
-        if (this.post) {
+        if (this.post && !this.is_mypost) {
           return this.post.boo.profile.pix
         } else {
           return this.session.auth.boo.profile.pix
@@ -406,7 +406,7 @@
       },
 
       post_boo_nick: function() {
-        if (this.post) {
+        if (this.post && !this.is_mypost) {
           return this.post.boo.nick
         } else {
           return this.session.auth.boo.nick
@@ -499,10 +499,6 @@
     },
 
     methods: {
-      open_comment: function() {
-        alert("댓글보이기")
-      },
-
       toggle_vote: function(act) {
         if (this.session.auth && this.session.mode.on=='journey' && !this.on_edit) {
           if (this.vote_state==act) {

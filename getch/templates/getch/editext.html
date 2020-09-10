@@ -36,14 +36,22 @@
   }
 
 
+  .editext.in-boo.vcomp {
+    line-height: 1.2;
+  }
+
+  .editext.in-boo.vcomp > span.header {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+
   .editext.in-boo-texting.vcomp {
     font-size: 16px;
     line-height: 1.2;
   }
 
   .editext.in-boo-texting.vcomp > span.header {
-    /* font-size: 18px;
-    font-weight: bold; */
     font-size: 9px;
     color: gray;
   }
@@ -71,7 +79,8 @@
       <span class='header'>[[ header ]]</span><br>
     </template>
 
-    <span class='text' v-show='text || editable' :contenteditable='editable' spellcheck='false' :placeholder='placeholder' @input='change_text'></span>
+    <span class='text' v-if='freeze'>[[ rawtext ]]</span>
+    <span class='text' v-else v-show='text || editable' :contenteditable='editable' spellcheck='false' :placeholder='placeholder' @input='change_text'></span>
   </div>
 </script>
 
@@ -79,7 +88,7 @@
   Vue.component('editext', {
     template: '#editext-template',
     delimiters: ['[[', ']]'],
-    props: ['rawtext', 'header', 'editable', 'placeholder', 'type'],
+    props: ['rawtext', 'header', 'editable', 'placeholder', 'type', 'freeze'],
     data: function() {
       return {
         text: (this.rawtext ? this.rawtext : ''),
@@ -88,8 +97,9 @@
     },
 
     mounted: function() {
-      this.$el.querySelector('span.text').innerHTML = this.text;
-      // this.$refs.text.innerHTML = this.text;
+      if (!this.freeze) {
+        this.$el.querySelector('span.text').innerHTML = this.text;
+      }
     },
 
     watch: {
@@ -101,6 +111,10 @@
     methods: {
       change_text: function(event) {
         this.text = event.currentTarget.innerHTML.replace(/<br>/gi,'\r\n').replace(/&nbsp;/gi,' ');
+      },
+
+      reset: function() {
+        this.$el.querySelector('span.text').innerHTML = this.rawtext;
       },
 
       get: function() {

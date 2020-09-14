@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 import getch.models as m
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 import os
 import json
 
@@ -35,6 +36,11 @@ stats = {
 def test(request):
     return render(request, 'getch/test.html')
 
+def policy(request):
+    return render(request, 'getch/policy.html')
+
+def privacy(request):
+    return render(request, 'getch/privacy.html')
 
 def play(request):
     # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
@@ -54,7 +60,8 @@ def get_user(request):
 
 
 def get_posts(request):
-    _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
+    _qs = m.Post.objects.all().select_subclasses().order_by('created_at')[:2]
+    # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
     _qs = m.PostSerializer.setup_eager_loading(_qs)
     _posts = m.PostSerializer(_qs, many=True).data
     return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
@@ -115,11 +122,26 @@ def boo_posts(request, boo_id):
     return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
 
 
+def boo_pix(request, boo_id):
+    _boo = m.Boo.objects.get(pk=boo_id)
+    return JsonResponse({'success':True, 'pix':_boo.profile.pix.url}, safe=False)
+    # return Response(_boo.data)
+
+
 def post_delete(request, post_id):
     try:
         post = m.Post.objects.get_subclass(pk=post_id)
         post.delete()
         return JsonResponse({'success':True}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def voters(request, post_id):
+    try:
+        post = m.Post.objects.get(pk=post_id)
+        return JsonResponse({'success':True, 'voters':post.voters}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)

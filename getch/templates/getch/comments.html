@@ -1,5 +1,6 @@
 {% include "getch/page.html" %}
 {% include "getch/comment.html" %}
+{% include "getch/scorekit.html" %}
 
 <style>
   .comments.vcomp .comments-layout {
@@ -10,11 +11,19 @@
     bottom: 40px;
     display: flex;
     flex-direction: column;
-    background: lightpink;
+    background: white;
   }
 
   .comments.vcomp .comments-layout > .section {
+    position: relative;
     padding: 10px;
+  }
+
+  .comments.vcomp .comments-layout > .score.section {
+    background: none;
+    border-bottom: 1px solid black;
+    box-sizing: content-box;
+    /* height: calc(var(--s-0) * 0.6); */
   }
 
   .comments.vcomp .comments-layout > .commentlist.section {
@@ -57,6 +66,10 @@
 <script type='text/x-template' id='comments-template'>
   <page class='comments vcomp' :open='session.page.comments.open' :from='session.page.comments.from' @close='session.close_page()'>
     <div class='comments-layout'>
+
+      <div class='score section'>
+        <scorekit :session='session'></scorekit>
+      </div>
 
       <div class='commentlist section'>
         <div class='scroll-to-top' ref='scroll_to_top'></div>

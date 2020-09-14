@@ -60,6 +60,10 @@
     height: calc(100% - var(--pix-margin)*2);
   }
 
+  .post .backbone > tbody > tr:last-child > td > .spacer {
+    top: 0;
+  }
+
   .post .description {
     position: absolute;
     top: 20%;
@@ -96,13 +100,13 @@
   }
 
   .post.postvoteox span.vs {
-    bottom: var(--s-1);
+    bottom: calc(var(--s-1) + var(--pix-margin));
     left: calc(var(--s-1) + var(--border-w)/2);
     transform: translate(-50%,50%);
   }
 
   .post.postvoteab span.vs {
-    top: calc(var(--s-0) + var(--border-w)/2);
+    top: calc(var(--s-0) - var(--pix-margin)/2 + var(--border-w)/2);
     left: calc(var(--s-1) + var(--border-w)/2);
     transform: translate(-50%,-50%);
   }
@@ -116,12 +120,12 @@
   }
 
   .post.postvoteox .score-label {
-    top: calc(var(--s-0) + var(--s-1));
+    top: calc(var(--s-0) + var(--s-1) - var(--pix-margin));
     left: calc(var(--s-1) + var(--border-w)/2);
   }
 
   .post.postvoteab .score-label {
-    top: calc(var(--s-0));
+    top: calc(var(--s-0) - var(--pix-margin)/2);
     left: calc(var(--s-2));
   }
 
@@ -206,7 +210,7 @@
 
 
 <script type='text/x-template' id='post-template'>
-  <div class='post' :class='post_type'>
+  <div class='post' :class='post_type' ref='post'>
 
     <table v-if='is_postvoteox' class='backbone'>
       <tbody>
@@ -308,11 +312,6 @@
       <img :src='post_boo_profile_pix'>
     </div>
 
-    <transition name='show-comment-button'>
-      <div class='comment menublock' v-show='is_active' @click='session.open_comments()'>
-        <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
-      </div>
-    </transition>
 
     <div class='score-label' v-show='is_active'>SCORE</div>
 
@@ -354,6 +353,32 @@
         on_delete: false
       }
     },
+
+    // mounted: function() {
+    //   const fac = new FastAverageColor();
+    //   const self = this;
+    //   const img = new Image();
+    //
+    //   img.addEventListener('load', function() {
+    //     fac.getColorAsync(img)
+    //       .then(function(color) {
+    //         self.$refs.post.style.backgroundColor = color.rgba;
+    //         // container.style.color = color.isDark ? '#fff' : '#000';
+    //         // console.log('Average color', color);
+    //
+    //       }).catch(function(e) {
+    //         console.log(e);
+    //       });
+    //   });
+    //
+    //   img.crossOrigin = 'Anonymous';
+    //
+    //   if (this.is_postvoteox) {
+    //     img.src = this.post_pix;
+    //   } else if (this.is_postvoteab) {
+    //     img.src = this.post_pix_a;
+    //   }
+    // },
 
     computed: {
       is_postvoteox: function() {

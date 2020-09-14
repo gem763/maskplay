@@ -1,0 +1,254 @@
+<style>
+  .scorekit.vcomp {
+    position: relative;
+    width: 100%;
+    background: white;
+  }
+
+  .scorekit.vcomp * {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+  }
+
+  .scorekit.vcomp > .scores {
+    position: relative;
+    width: 100%;
+    height: calc(var(--s-menu) * 2);
+    background: white;
+    font-size: calc(var(--s-menu) * 1);
+  }
+
+  .scorekit.vcomp > .scores > .score {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.2;
+  }
+
+  .scorekit.vcomp > .scores > .score.is_focused {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .scorekit.vcomp > .scores > .score.up {
+    left: 0;
+    /* background: lightpink; */
+  }
+
+  .scorekit.vcomp > .scores > .score.down {
+    right: 0;
+    /* background: lightyellow; */
+  }
+
+  .scorekit.vcomp > .scores > .label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: calc(var(--s-menu) * 0.3);
+    transform: translate(-50%, -50%);
+  }
+
+  .scorekit.vcomp > .scores > .score > .yourpick {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    color: red;
+    font-size: calc(var(--s-menu) * 0.2);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+  }
+
+  .scorekit.vcomp > .scores > .score.is_yourpick > .yourpick {
+    opacity: 1;
+  }
+
+  .scorekit.vcomp .voters {
+    position: relative;
+    width: 100%;
+    background: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+  }
+
+  .scorekit.vcomp .voters > .voter {
+    position: relative;
+    width: calc(100% / 7);
+    padding-top: calc(100% / 7);
+    background: none;
+  }
+
+  .scorekit.vcomp .voters > .voter > img {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    width: 96%;
+    height: 96%;
+    object-fit: cover;
+    background: white;
+  }
+
+
+  .scorekit.vcomp .voters-list-0-enter-active,
+  .scorekit.vcomp .voters-list-0-leave-active,
+  .scorekit.vcomp .voters-list-1-enter-active,
+  .scorekit.vcomp .voters-list-1-leave-active {
+    transition: all 0.5s;
+  }
+
+  .scorekit.vcomp .voters-list-0-enter,
+  .scorekit.vcomp .voters-list-0-leave-to,
+  .scorekit.vcomp .voters-list-1-enter,
+  .scorekit.vcomp .voters-list-1-leave-to {
+    opacity: 0 !important;
+    transform: translateY(100px);
+  }
+
+  .scorekit.vcomp .voters-list-0-move,
+  .scorekit.vcomp .voters-list-1-move {
+    transition: all 0.5s;
+  }
+</style>
+
+
+<script type='text/x-template' id='scorekit-template'>
+  <div class='scorekit vcomp'>
+
+    <div class='scores'>
+      <div class='score up' :class='score_0_class' @click='focus_this(0)'>
+        <div class='yourpick'>your pick</div>
+        [[ post.nvotes_up ]]
+      </div>
+
+      <div class='score down' :class='score_1_class' @click='focus_this(1)'>
+        <div class='yourpick'>your pick</div>
+        [[ post.nvotes_down ]]
+      </div>
+
+      <div class='label'>SCORE</div>
+    </div>
+
+    <!-- <div class='voters'> -->
+      <!-- <template v-if='focused==0'> -->
+    <div v-show='focused==0'>
+      <transition-group tag='div' class='voters' name='voters-list-0'>
+        <div class='voter' v-for='pix in up_voters' :key='pix'>
+          <img :src='pix'>
+        </div>
+      </transition-group>
+    </div>
+
+    <div v-show='focused==1'>
+      <transition-group tag='div' class='voters' name='voters-list-1'>
+        <div class='voter' v-for='pix in down_voters' :key='pix'>
+          <img :src='pix'>
+        </div>
+      </transition-group>
+    </div>
+
+      <!-- <template v-if='focused==1'>
+        <div class='voter' v-for='(pix, idx) in down_voters' :key='idx'>
+          <img :src='pix'>
+        </div>
+      </template> -->
+    <!-- </div> -->
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('scorekit', {
+    template: '#scorekit-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        focused: undefined,
+        up_voters: [],
+        down_voters: []
+      }
+    },
+
+    created: function() {
+      this.focused = this.yourpick;
+      this.fetch_boopix_all();
+    },
+
+    watch: {
+      'post.id': function(_new, _old) {
+        this.fetch_boopix_all();
+      }
+    },
+
+    computed: {
+      // voters: function() {
+      //   if (this.focused == 0) {
+      //     return this.session.cvoters.up
+      //
+      //   } else if (this.focused == 1) {
+      //     return this.session.cvoters.down
+      //   }
+      // },
+
+      post: function() {
+        return this.session.cpost
+      },
+
+      yourpick: function() {
+        return this.session.auth.has_voted_as(this.post.id)
+      },
+
+      score_0_class: function() {
+        return {
+          is_yourpick: this.yourpick == 0,
+          is_focused: this.focused == 0
+        }
+      },
+
+      score_1_class: function() {
+        return {
+          is_yourpick: this.yourpick == 1,
+          is_focused: this.focused == 1
+        }
+      },
+    },
+
+    methods: {
+      focus_this: function(act) {
+        this.focused = act;
+      },
+
+      fetch_boopix_all: function() {
+        // this.up_voters = [];
+        // this.down_voters = [];
+        this.up_voters.splice(0, this.up_voters.length);
+        this.down_voters.splice(0, this.down_voters.length);
+
+        const voters = this.post.voters_list;
+        for (const [boo_id, act] of Object.entries(voters)) {
+          this.fetch_boopix(boo_id, act);
+        }
+      },
+
+      fetch_boopix: function(boo_id, act) {
+        fetch(`/boo/${boo_id}/pix/`)
+          .then(x => x.json())
+          .then(js => {
+            switch(act) {
+              case 0:
+                this.up_voters.push(js.pix);
+                break;
+              case 1:
+                this.down_voters.push(js.pix);
+                break;
+            }
+          })
+      }
+    }
+  });
+</script>

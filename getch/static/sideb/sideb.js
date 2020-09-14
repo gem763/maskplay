@@ -14,6 +14,7 @@ class Session {
     this.on_intro = true;
     this.mode = { on: 'journey', prev: undefined };
     this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
+    this.cvoters = { up: undefined, down: undefined };
     this.auth = undefined;
     this.swiper = undefined;
     this.posts = undefined;
@@ -129,6 +130,15 @@ class Session {
   }
 
   open_comments() {
+    // fetch(`/post/${this.cpost.id}/voters/`)
+    //   .then(x => x.json())
+    //   .then(js => {
+    //     const _voters = JSON.parse(js.voters);
+    //     console.log(_voters);
+    //     this.cvoters.up = _voters.up;
+    //     this.cvoters.down = _voters.down;
+    //   })
+
     this.open_page('comments');
   }
 
@@ -214,28 +224,30 @@ class Session {
 
 
   pscore(boo) {
-    return (boo.nfollowers*1 + boo.nposts*0.2) + 10
+    return (1*boo.nfollowers + 0.2*boo.nposts) + 10
   }
 
   get total_pscore() {
-    return (this.stats.total_nfollowers*1 + this.stats.total_nposts*0.2) + 10*this.stats.total_nboos
+    return (1*this.stats.total_nfollowers + 0.2*this.stats.total_nposts) + 10*this.stats.total_nboos
   }
 
   level(boo) {
+    const scaler = 0.1;
+    const unit = 0.15 * scaler;
     const _ps = this.pscore(boo) / this.total_pscore;
 
     switch (true) {
-      case (0<=_ps && _ps<0.05):
+      case (0 <= _ps && _ps < unit):
         return 0
-      case (0.05<=_ps && _ps<0.10):
+      case (unit <= _ps && _ps < 2*unit):
         return 1
-      case (0.10<=_ps && _ps<0.15):
+      case (2*unit <= _ps && _ps < 3*unit):
         return 2
-      case (0.15<=_ps && _ps<0.20):
+      case (3*unit <= _ps && _ps < 4*unit):
         return 3
-      case (0.20<=_ps && _ps<0.25):
+      case (4*unit <= _ps && _ps < 5*unit):
         return 4
-      case (0.25<=_ps):
+      case (5*unit <= _ps):
         return 5
     }
   }
@@ -243,9 +255,24 @@ class Session {
   barcode(boo) {
     return `/static/materials/icons/barcode_${this.level(boo)}.png`
   }
+
+  levelcolor(boo) {
+    switch (this.level(boo)) {
+      case (0):
+        return 'black'
+      case (1):
+        return 'rgba(0, 176, 240, 1)'
+      case (2):
+        return 'rgba(33, 170, 74, 1)'
+      case (3):
+        return 'rgba(247, 232, 3, 1)'
+      case (4):
+        return 'rgba(247, 123, 37, 1)'
+      case (5):
+        return 'rgba(255, 0, 0, 1)'
+    }
+  }
 }
-
-
 
 
 class Auth {

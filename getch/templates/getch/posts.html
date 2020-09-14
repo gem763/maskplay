@@ -26,15 +26,16 @@
     width: 100%;
     height: calc(572 * var(--x));
     /* background: orange; */
-    background: rgba(255,242,204,0.25);
+    /* background: rgba(255,242,204,0.25); */
+    background: rgba(0,0,0,0.1);
   }
 
   .posts > .back > img.logo {
     position: absolute;
     top: 0;
     right: 0;
-    width: calc(90 * var(--x));
-    height: calc(90 * var(--x));
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--s-menu) + var(--pix-margin));
   }
 
   .posts .menublock {
@@ -51,7 +52,33 @@
   .posts .menublock.author {
     top: 0;
     right: 0;
+    background: white;
   }
+
+  /* .posts .menublock.author.level-0 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid black;
+  }
+
+  .posts .menublock.author.level-1 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(0, 176, 240, 1);
+  }
+
+  .posts .menublock.author.level-2 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(33, 170, 74, 1);
+  }
+
+  .posts .menublock.author.level-3 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(247, 232, 3, 1);
+  }
+
+  .posts .menublock.author.level-4 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(247, 123, 37, 1);
+  }
+
+  .posts .menublock.author.level-5 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(255, 0, 0, 1);
+  } */
+
 
   .posts .menublock.my {
     bottom: calc(64 * var(--x));
@@ -101,32 +128,18 @@
     transition: all 0.5s;
   }
 
-  .posts .show-author-profile-enter {
-    top: calc(var(--s-menu) * (-1)) !important;
-  }
-
   .posts .show-author-profile-leave-active {
     transition: all 0.1s;
   }
 
+  .posts .show-author-profile-enter,
   .posts .show-author-profile-leave-to {
     opacity: 0;
+    /* top: calc(var(--s-menu) * (-1)) !important; */
   }
 
 
-
-  .posts .show-comment-button-enter-active,
-  .posts .show-comment-button-leave-active {
-    transition: all 0.2s;
-  }
-
-  .posts .show-comment-button-enter,
-  .posts .show-comment-button-leave-to {
-    right: -50px !important;
-  }
-
-
-  .posts img.author-barcode {
+  /* .posts img.author-barcode {
     position: absolute;
     top: var(--pix-margin);
     left: calc(var(--s-0) + var(--pix-margin));
@@ -134,14 +147,43 @@
     width: auto;
     transform: rotate(90deg);
     transform-origin: 0 0;
-  }
+  } */
 
-  .posts img.base-barcode {
+  .posts > .post-score {
     position: absolute;
     bottom: 0;
     right: 0;
-    height: calc(3.5 * var(--pix-margin));
-    width: auto;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--x) * 64);
+  }
+
+  .posts > .post-score > img.barcode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--pix-margin) * 2);
+  }
+
+  .posts > .post-score > .score {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--pix-margin) * 2);
+    background: none;
+    text-align: right;
+    font-size: calc(var(--pix-margin) * 1.3);
+  }
+
+  .posts > .post-score > .score > span { }
+
+  .posts > .post-score > .score > img {
+    float: right;
+    width: calc(var(--pix-margin) * 2);
+    height: calc(var(--pix-margin) * 2);
+    object-fit: contain;
+    margin-left: 3px;
   }
 </style>
 
@@ -153,8 +195,13 @@
     </div>
 
 
-    <img class='author-barcode' v-if='session && session.cpost' :src='session.barcode(session.cpost.boo)'>
-    <img class='base-barcode' src='/static/materials/icons/barcode_0.png'>
+    <div class='post-score'>
+      <img class='barcode' src='/static/materials/icons/barcode_0.png'>
+      <div class='score'>
+        264
+        <img src='/static/materials/icons/fire.png'>
+      </div>
+    </div>
 
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
@@ -165,18 +212,18 @@
 
     <transition name='show-author-profile' mode=in-out>
       <!-- <div class='author menublock' v-if='session.swiper && !session.swiper.animating' @click='session.open_authorpage()'> -->
-      <div class='author menublock' :key='cpost_boo_id' @click='session.open_authorpage()'>
+      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_authorpage()'>
         <!-- <img class='fit' :src='cpost_boo_profile'> -->
         <!-- <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'> -->
         <img class='fit' v-if='session.cpost' :src='cpost_boo_profile'>
       </div>
     </transition>
 
-    <!-- <transition name='show-comment-button'>
-      <div class='comment menublock' v-if='' @click='open_comment'>
+    <!-- <transition name='show-comment-button'> -->
+      <div class='comment menublock' @click='session.open_comments()'>
         <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
       </div>
-    <transition> -->
+    <!-- </transition> -->
 
     <div class='posting menublock' @click='session.open_posting()'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
@@ -212,6 +259,20 @@
     },
 
     computed: {
+      level_style: function() {
+        if (this.session && this.session.cpost) {
+          return {
+            borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.session.cpost.boo)}`
+          }
+        }
+      },
+
+      // level: function() {
+      //   if (this.session && this.session.cpost) {
+      //     return 'level-' + this.session.level(this.session.cpost.boo)
+      //   }
+      // },
+
       cpost_boo_id: function() {
         if (this.session.cpost) {
           return this.session.cpost.boo.id
@@ -230,12 +291,6 @@
 
     mounted: function() {
       this.session.swiper = this.$refs.swiper.$swiper;
-    },
-
-    methods: {
-      // open_comment: function() {
-      //   alert("댓글보이기")
-      // }
     }
   });
 </script>

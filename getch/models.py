@@ -249,8 +249,8 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def network(self):
         _network = {
-            'followers': NetworkSerializer(self.followers, many=True).data,
-            'followees': NetworkSerializer(self.followees, many=True).data
+            'followers': SimplebooSerializer(self.followers, many=True).data,
+            'followees': SimplebooSerializer(self.followees, many=True).data
         }
         return json.dumps(_network)
 
@@ -330,10 +330,34 @@ class Post(BigIdAbstract, ModelWithFlag):
         self.nvotes_down = self._nvotes_down
         self.save()
 
-    # @property
-    # def voters(self):
-    #     q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
-    #     return Flager.objects.filter(q)
+
+    @property
+    def up_voters(self):
+        # return Flager.objects.filter(status=VOTE_UP, object_id=self.id).values_list('user', flat=True)
+        _flags = Flager.objects.filter(status=VOTE_UP, object_id=self.id)
+        return [f.user for f in _flags]
+
+
+    @property
+    def down_voters(self):
+        # return Flager.objects.filter(status=VOTE_DOWN, object_id=self.id).values_list('user', flat=True)
+        _flags = Flager.objects.filter(status=VOTE_DOWN, object_id=self.id)
+        return [f.user for f in _flags]
+
+    @property
+    def voters(self):
+        _voters = {
+            'up': SimplebooSerializer(self.up_voters, many=True).data,
+            'down': SimplebooSerializer(self.down_voters, many=True).data
+        }
+        return json.dumps(_voters)
+
+    @property
+    def voters_list(self):
+        _voters = {f.user.id:f.status for f in Flager.objects.filter(object_id=self.id)}
+        return _voters
+        # return json.dumps(_voters)
+
 
     @property
     def _nvotes_up(self):
@@ -440,7 +464,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
-class NetworkSerializer(serializers.ModelSerializer):
+class SimplebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
 
     class Meta:
@@ -517,7 +541,7 @@ class PostVoteOXSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'comments']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'comments', 'voters_list']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -527,7 +551,7 @@ class PostVoteABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'comments']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'comments', 'voters_list']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 

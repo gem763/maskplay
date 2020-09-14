@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'l9naapdhlj2wfi5e26u+urm_1sn28umx!0f3@v60hn_(33%)j+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -82,7 +82,8 @@ INTERNAL_IPS = ('127.0.0.1')
 # https://django-allauth.readthedocs.io/en/latest/installation.html#django
 # https://ldgeao99.tistory.com/117
 
-#1331691227003429:eedf26d0e0df7b15784591d5eeabf513f
+#486275532242770:2eb3cd8566851c0df80286f64e801edaf
+#1331691227003429:eedf26d0e0df7b15784591d5eeabf513f:test
 #Q60jbPX1POJFmqb0dgGl:5RnWiWQnmln
 #671339125678-c9in180buoiu79t797tppifmm8qk24ja.apps.googleusercontent.com:JPgwwfpI5lnlC4M7IgqFaUpTg
 

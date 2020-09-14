@@ -4,10 +4,13 @@ from . import views as v
 
 urlpatterns = [
     path('', v.play, name='play'),
+    path('privacy/', v.privacy, name='privacy'),
+    path('policy/', v.policy, name='policy'),
     path('accounts/', include('allauth.urls')),
     # path('authorpage/<int:boo_id>/', v.authorpage, name='authorpage'),
     path('posts/', v.get_posts, name='get_posts'),
     path('post/<int:post_id>/vote/', v.vote, name='vote'),
+    path('post/<int:post_id>/voters/', v.voters, name='voters'),
     path('post/save/', v.post_save, name='post_save'),
     path('post/<int:post_id>/delete/', v.post_delete, name='post_delete'),
     path('comment/save/', v.comment_save, name='comment_save'),
@@ -16,6 +19,7 @@ urlpatterns = [
     path('boo/<int:boo_id>/set/', v.set_boo, name='set_boo'),
     path('boo/<int:boo_id>/network/', v.network, name='network'),
     path('boo/<int:boo_id>/posts/', v.boo_posts, name='boo_posts'),
+    path('boo/<int:boo_id>/pix/', v.boo_pix, name='boo_pix'),
     path('boo/profile/save/', v.profile_save, name='profile_save'),
     path('boo/new/', v.boo_new, name='boo_new'),
     path('user/', v.get_user, name='get_user'),

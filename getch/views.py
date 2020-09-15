@@ -60,7 +60,7 @@ def get_user(request):
 
 
 def get_posts(request):
-    _qs = m.Post.objects.all().select_subclasses().order_by('created_at')[:2]
+    _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
     _qs = m.PostSerializer.setup_eager_loading(_qs)
     _posts = m.PostSerializer(_qs, many=True).data
@@ -122,10 +122,17 @@ def boo_posts(request, boo_id):
     return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
 
 
-def boo_pix(request, boo_id):
+def boo_profilepix(request, boo_id):
     _boo = m.Boo.objects.get(pk=boo_id)
     return JsonResponse({'success':True, 'pix':_boo.profile.pix.url}, safe=False)
     # return Response(_boo.data)
+
+
+def baseboo(request, boo_id):
+    _boo = m.Boo.objects.get(pk=boo_id)
+    _boo = m.BasebooSerializer(_boo).data
+    # print(_boo.data)
+    return JsonResponse({'success':True, 'boo':_boo}, safe=False)
 
 
 def post_delete(request, post_id):

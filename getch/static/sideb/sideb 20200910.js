@@ -5,7 +5,7 @@ class Session {
       loginpage:  { open: false, from: 'left'},
       boochooser: { open: false, from: 'left'},
       profiler:   { open: false, from: 'left', key: undefined},
-      authorpage: { open: false, from: 'right', boo_id: undefined},
+      authorpage: { open: false, from: 'right'},
       network:    { open: false, from: 'right'},
       posting:    { open: false, from: 'right'},
       comments:    { open: false, from: 'bottom'},
@@ -356,9 +356,15 @@ class Auth {
   }
 
   vote(post_id, action) {
-    const feed_act = {};
-    feed_act[post_id] = action;
-    this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+    // if (action==-1) {
+    //   delete this.boo.voting_record[post_id];
+    //
+    // } else {
+      const feed_act = {};
+      feed_act[post_id] = action;
+      this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+      // this.boo.voting_record[post_id] = action;
+    // }
 
     this.api_get(`post/${post_id}/vote?action=${action}`);
   }

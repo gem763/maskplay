@@ -116,31 +116,30 @@
 
 <script type='text/x-template' id='aboutboo-template'>
 
-  <struct class='aboutboo vcomp'>
+  <struct class='aboutboo vcomp' v-if='boo'>
     <template #header-0>
       <div class='profilepix' :style='level_style'>
-        <img class='fit' :src='boo_profilepix' @click='open_boochooser'>
+        <img class='fit' :src='boo.profile.pix' @click='open_boochooser'>
       </div>
 
       <div class='scorecard' @click='session.open_network()'>
         <div class='score pscore'>
           <div>
             <span class='score-name'>POWER SCORE</span><br>
-            <span class='score-value'>[[ pscore ]]</span>
-            <!-- <span class='score-value'>[[ session.pscore(boo) ]]</span> -->
+            <span class='score-value'>[[ session.pscore(boo) ]]</span>
           </div>
         </div>
 
         <div class='score nfollowers'>
           <div>
-            <span class='score-value'>[[ nfollowers ]]</span><br>
+            <span class='score-value'>[[ boo.nfollowers ]]</span><br>
             <span class='score-name'>FOLLOWERS</span>
           </div>
         </div>
 
         <div class='score npostings'>
           <div>
-            <span class='score-value'>[[ nposts ]]</span><br>
+            <span class='score-value'>[[ boo.nposts ]]</span><br>
             <span class='score-name'>POSTINGS</span>
           </div>
         </div>
@@ -150,7 +149,7 @@
 
 
     <template #header-1>
-      <editext :rawtext='text' :header='nick' type='in-boo' freeze='true'></editext>
+      <editext :rawtext='boo.text' :header='boo.nick' type='in-boo' freeze='true'></editext>
 
       <!-- <div v-if='type=="author" && session.auth' class='follow' :class='{ onfollow:is_following }' @click='toggle_follow'>
         [[ follow_button_message ]]
@@ -209,18 +208,16 @@
     },
 
     created: function() {
-      // if (this.type == 'my') {
-      //   this.boo_id = this.boo.id;
-      //   this.load_posts();
-      // }
+      if (this.type == 'my') {
+        this.boo_id = this.boo.id;
+        this.load_posts();
+      }
     },
 
     watch: {
       is_active: function(_new, _old) {
-        if (_new && this.type!='my' && this.session.cpost) {
-          if (!this.boo || (this.boo && this.boo.id!=this.session.cpost.boo.id)) {
-            this.fetch_boo(this.session.cpost.boo.id);
-          }
+        if (_new && !this.boo) {
+          console.log(11111111111)
         }
       }
       // 'boo.id': function(_new, _old) {
@@ -245,44 +242,8 @@
         if (this.type=='my' && this.session.auth) {
           return this.session.auth.boo
 
-        } else if (this.type=='author') {
-          return this.boo_fetched
-        }
-      },
-
-      boo_profilepix: function() {
-        if (this.boo) {
-          return this.boo.profile.pix
-        }
-      },
-
-      pscore: function() {
-        if (this.boo) {
-          return this.session.pscore(this.boo)
-        }
-      },
-
-      nfollowers: function() {
-        if (this.boo) {
-          return this.boo.nfollowers
-        }
-      },
-
-      nposts: function() {
-        if (this.boo) {
-          return this.boo.nposts
-        }
-      },
-
-      text: function() {
-        if (this.boo) {
-          return this.boo.text
-        }
-      },
-
-      nick: function() {
-        if (this.boo) {
-          return this.boo.nick
+        } else if (this.type=='author' && this.session.cpost) {
+          // return this.session.cpost.boo
         }
       },
 
@@ -312,7 +273,7 @@
         fetch(`/boo/${boo_id}/baseboo/`)
           .then(x => x.json())
           .then(js => {
-            this.boo_fetched = js.boo;
+            this.$set(this.voters[act], boo_id, js.pix);
           })
       },
 

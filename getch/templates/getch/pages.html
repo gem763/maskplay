@@ -13,11 +13,6 @@
 
 <script type='text/x-template' id='pages-template'>
   <div class='pages'>
-    <loginpage
-      v-if='!session.auth'
-      :session='session'
-    ></loginpage>
-
     <mypage
       v-if='session.auth'
       :session='session'
@@ -52,6 +47,11 @@
       v-if='session.cpost'
       :session='session'
     ></comments>
+
+    <loginpage
+      v-if='!session.auth'
+      :session='session'
+    ></loginpage>
   </div>
 </script>
 

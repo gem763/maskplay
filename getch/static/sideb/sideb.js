@@ -5,7 +5,8 @@ class Session {
       loginpage:  { open: false, from: 'left'},
       boochooser: { open: false, from: 'left'},
       profiler:   { open: false, from: 'left', key: undefined},
-      authorpage: { open: false, from: 'right', boo_id: undefined},
+      // authorpage: { open: false, from: 'right'},
+      boopage:    { open: false, from: 'right', boo_id: undefined},
       network:    { open: false, from: 'right'},
       posting:    { open: false, from: 'right'},
       comments:    { open: false, from: 'bottom'},
@@ -13,8 +14,8 @@ class Session {
 
     this.on_intro = true;
     this.mode = { on: 'journey', prev: undefined };
-    this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
-    this.cvoters = { up: undefined, down: undefined };
+    // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
+    // this.cvoters = { up: undefined, down: undefined };
     this.auth = undefined;
     this.swiper = undefined;
     this.posts = undefined;
@@ -65,18 +66,21 @@ class Session {
       const x = getStartX(e);
 
       if (self.mode.on == 'journey') {
-        if (e.type=='swiperight' && x <= 0.3) {
+        if (e.type=='swiperight') {// && x <= 0.3) {
           self.open_boochooser();
 
-        } else if (e.type=='swipeleft' && x >= 0.7) {
-          self.open_authorpage();
+        } else if (e.type=='swipeleft') {// && x >= 0.7) {
+          self.open_boopage(self.cpost.boo.id);
+          // self.open_authorpage();
         }
 
       } else {
-        if (e.type=='swiperight' && x <= 0.3 && self.page[self.mode.on].from=='right') {
+        // if (e.type=='swiperight' && x <= 0.3 && self.page[self.mode.on].from=='right') {
+        if (e.type=='swiperight' && self.page[self.mode.on].from=='right') {
           self.close_page();
 
-        } else if (e.type=='swipeleft' && x >= 0.7 && self.page[self.mode.on].from=='left') {
+        // } else if (e.type=='swipeleft' && x >= 0.7 && self.page[self.mode.on].from=='left') {
+        } else if (e.type=='swipeleft' && self.page[self.mode.on].from=='left') {
           self.close_page();
         }
       }
@@ -130,15 +134,6 @@ class Session {
   }
 
   open_comments() {
-    // fetch(`/post/${this.cpost.id}/voters/`)
-    //   .then(x => x.json())
-    //   .then(js => {
-    //     const _voters = JSON.parse(js.voters);
-    //     console.log(_voters);
-    //     this.cvoters.up = _voters.up;
-    //     this.cvoters.down = _voters.down;
-    //   })
-
     this.open_page('comments');
   }
 
@@ -150,37 +145,47 @@ class Session {
     }
   }
 
-  open_authorpage() {
-    if (this.auth && this.auth.boo_selected==this.cpost.boo.id) {
+  // open_authorpage() {
+  //   if (this.auth && this.auth.boo_selected==this.cpost.boo.id) {
+  //     this.open_mypage();
+  //
+  //   } else {
+  //     this.open_page('authorpage');
+  //   }
+  // }
+
+  open_boopage(boo_id) {
+    if (this.auth && this.auth.boo_selected==boo_id) {
       this.open_mypage();
 
     } else {
-      this.open_page('authorpage');
+      this.page.boopage.boo_id = boo_id;
+      this.open_page('boopage');
     }
   }
 
-  open_network() {
-    if (this.mode.on=='mypage') {
-      this.cnetwork.boo = this.auth.boo;
-    } else if (this.mode.on=='authorpage') {
-      this.cnetwork.boo = this.cpost.boo;
-    }
-
-    this.cnetwork.followers = undefined;
-    this.cnetwork.followees = undefined;
-
-    self = this;
-    fetch(`/boo/${self.cnetwork.boo.id}/network/`)
-      .then(x => x.json())
-      .then(js => {
-        const _network = JSON.parse(js.network);
-        console.log(_network);
-        self.cnetwork.followers = _network.followers;
-        self.cnetwork.followees = _network.followees;
-      })
-
-    this.open_page('network');
-  }
+  // open_network() {
+  //   if (this.mode.on=='mypage') {
+  //     this.cnetwork.boo = this.auth.boo;
+  //   } else if (this.mode.on=='authorpage') {
+  //     this.cnetwork.boo = this.cpost.boo;
+  //   }
+  //
+  //   this.cnetwork.followers = undefined;
+  //   this.cnetwork.followees = undefined;
+  //
+  //   self = this;
+  //   fetch(`/boo/${self.cnetwork.boo.id}/network/`)
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       const _network = JSON.parse(js.network);
+  //       console.log(_network);
+  //       self.cnetwork.followers = _network.followers;
+  //       self.cnetwork.followees = _network.followees;
+  //     })
+  //
+  //   this.open_page('network');
+  // }
 
   checkin(on) {
     console.log(`check-in to ${on}`);

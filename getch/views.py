@@ -60,7 +60,7 @@ def get_user(request):
 
 
 def get_posts(request):
-    _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
+    _qs = m.Post.objects.all().select_subclasses().order_by('created_at')[:3]
     # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
     _qs = m.PostSerializer.setup_eager_loading(_qs)
     _posts = m.PostSerializer(_qs, many=True).data
@@ -83,9 +83,9 @@ def vote(request, post_id):
         return JsonResponse({'success':False}, safe=False)
 
 
-def authorpage(request, boo_id):
-    boo = m.Boo.objects.get(pk=boo_id)
-    return render(request, 'getch/authorpage.html', {'author':boo})
+# def authorpage(request, boo_id):
+#     boo = m.Boo.objects.get(pk=boo_id)
+#     return render(request, 'getch/authorpage.html', {'author':boo})
 
 
 def set_boo(request, boo_id):

@@ -1,5 +1,5 @@
 {% include "getch/struct.html" %}
-<!-- {% include "getch/modal.html" %} -->
+{% include "getch/modal.html" %}
 {% include "getch/editext.html" %}
 
 <style>
@@ -111,15 +111,6 @@
     width: 25%;
     height: calc(var(--t-0) / 2);
   }
-
-  .aboutboo.vcomp .show-boo-enter-active {
-    transition: all 0.3s;
-  }
-
-  .aboutboo.vcomp .show-boo-enter,
-  .aboutboo.vcomp .show-boo-leave-to {
-    filter: blur(10px);
-  }
 </style>
 
 
@@ -127,52 +118,44 @@
 
   <struct class='aboutboo vcomp'>
     <template #header-0>
+      <div class='profilepix' :style='level_style'>
+        <img class='fit' :src='boo_profilepix' @click='open_boochooser'>
+      </div>
 
-      <transition name='show-boo'>
-        <div class='profilepix' :style='level_style' v-if='!on_booloading'>
-          <img class='fit' :src='profilepix' @click='open_boochooser'>
-        </div>
-      </transition>
-
-      <transition name='show-boo'>
-        <div class='scorecard' @click='session.open_network()' v-if='!on_booloading'>
-          <div class='score pscore'>
-            <div>
-              <span class='score-name'>POWER SCORE</span><br>
-              <span class='score-value'>[[ pscore ]]</span>
-            </div>
-          </div>
-
-          <div class='score nfollowers'>
-            <div>
-              <span class='score-value'>[[ nfollowers ]]</span><br>
-              <span class='score-name'>FOLLOWERS</span>
-            </div>
-          </div>
-
-          <div class='score npostings'>
-            <div>
-              <span class='score-value'>[[ nposts ]]</span><br>
-              <span class='score-name'>POSTINGS</span>
-            </div>
+      <div class='scorecard' @click='session.open_network()'>
+        <div class='score pscore'>
+          <div>
+            <span class='score-name'>POWER SCORE</span><br>
+            <span class='score-value'>[[ pscore ]]</span>
+            <!-- <span class='score-value'>[[ session.pscore(boo) ]]</span> -->
           </div>
         </div>
-      </transition>
 
-      <scale-loader class='spinner' :loading='on_booloading'></scale-loader>
+        <div class='score nfollowers'>
+          <div>
+            <span class='score-value'>[[ nfollowers ]]</span><br>
+            <span class='score-name'>FOLLOWERS</span>
+          </div>
+        </div>
+
+        <div class='score npostings'>
+          <div>
+            <span class='score-value'>[[ nposts ]]</span><br>
+            <span class='score-name'>POSTINGS</span>
+          </div>
+        </div>
+      </div>
+
     </template>
 
 
     <template #header-1>
-      <transition name='show-boo'>
-        <editext :rawtext='text' :header='nick' type='in-boo' freeze='true' v-if='!on_booloading'></editext>
-      </transition>
+      <editext :rawtext='text' :header='nick' type='in-boo' freeze='true'></editext>
 
       <!-- <div v-if='type=="author" && session.auth' class='follow' :class='{ onfollow:is_following }' @click='toggle_follow'>
         [[ follow_button_message ]]
       </div>
       <div v-else></div> -->
-      <scale-loader class='spinner' :loading='on_booloading'></scale-loader>
     </template>
 
 
@@ -181,7 +164,7 @@
 
     <template #content>
       <div class='booposts' style='position:relative;width:100%;height:100%;display:flex;flex-wrap:wrap;overflow:hidden;'>
-        <div class='boopost' v-for='post in posts_fetched.posts'>
+        <div class='boopost' v-for='post in posts'>
 
           <template v-if='post.type=="postvoteab"'>
             <div style='position:absolute;top:0;left:0;width:100%;height:50%;'>
@@ -203,7 +186,7 @@
 
         </div>
 
-        <!-- <modal :pop='on_postloading' name='processing'></modal> -->
+        <modal :pop='on_postloading' name='processing'></modal>
       </div>
     </template>
   </struct>
@@ -219,30 +202,42 @@
     data: function() {
       return {
         boo_fetched: undefined,
-        posts_fetched: { boo_id:undefined, posts:[] },
+        posts: undefined,
         on_postloading: false,
-        on_booloading: false,
+        boo_id: undefined
       }
+    },
+
+    created: function() {
+      // if (this.type == 'my') {
+      //   this.boo_id = this.boo.id;
+      //   this.load_posts();
+      // }
     },
 
     watch: {
       is_active: function(_new, _old) {
-        if (_new) {
-          if (this.type!='my') {
-            // if (!this.boo || (this.boo && this.boo.id!=this.session.page.boopage.boo_id)) {
-            if (!this.boo || this.boo_id!=this.session.page.boopage.boo_id) {
-              this.load_boo(this.session.page.boopage.boo_id);
-            }
-          }
-
-          if (this.type=='my' && this.posts_fetched.boo_id!=this.boo.id) {
-            this.load_posts(this.boo.id);
-
-          } else if (this.type!='my' && this.posts_fetched.boo_id!=this.session.page.boopage.boo_id) {
-            this.load_posts(this.session.page.boopage.boo_id);
+        if (_new && this.type!='my' && this.session.cpost) {
+          if (!this.boo || (this.boo && this.boo.id!=this.session.cpost.boo.id)) {
+            this.fetch_boo(this.session.cpost.boo.id);
           }
         }
       }
+      // 'boo.id': function(_new, _old) {
+      //   if (this.type == 'my') {
+      //     this.boo_id = this.boo.id;
+      //     this.load_posts();
+      //   }
+      // },
+      //
+      // is_active: function(_new, _old) {
+      //   if (_new) {
+      //     if (this.boo && this.boo.id != this.boo_id) {
+      //       this.boo_id = this.boo.id;
+      //       this.load_posts();
+      //     }
+      //   }
+      // }
     },
 
     computed: {
@@ -255,18 +250,9 @@
         }
       },
 
-      boo_id: function() {
-        if (this.boo) {
-          return this.boo.id
-        }
-      },
-
-      profilepix: function() {
+      boo_profilepix: function() {
         if (this.boo) {
           return this.boo.profile.pix
-
-        } else {
-          return '/static/materials/characters/SIDEB_CHARACTER_M_01.png'
         }
       },
 
@@ -322,14 +308,11 @@
     },
 
     methods: {
-      load_boo: function(boo_id) {
-        this.on_booloading = true;
-
+      fetch_boo: function(boo_id) {
         fetch(`/boo/${boo_id}/baseboo/`)
           .then(x => x.json())
           .then(js => {
             this.boo_fetched = js.boo;
-            this.on_booloading = false;
           })
       },
 
@@ -339,17 +322,16 @@
         }
       },
 
-      load_posts: function(boo_id) {
+      load_posts: function() {
         // this.show_postloading();
         //
-
-        fetch(`/boo/${boo_id}/posts/`)
-          .then(x => x.json())
-          .then(js => {
-            this.posts_fetched.boo_id = boo_id;
-            this.posts_fetched.posts = JSON.parse(js.posts);
-            // self.hide_postloading();
-          })
+        // const self = this;
+        // fetch(`/boo/${self.boo.id}/posts/`)
+        //   .then(x => x.json())
+        //   .then(js => {
+        //     self.posts = JSON.parse(js.posts);
+        //     self.hide_postloading();
+        //   })
       },
 
       show_postloading: function() {

@@ -1,3 +1,12 @@
+{% include "getch/loginpage.html" %}
+{% include "getch/mypage.html" %}
+{% include "getch/boochooser.html" %}
+{% include "getch/profiler.html" %}
+{% include "getch/boopage.html" %}
+{% include "getch/network.html" %}
+{% include "getch/posting.html" %}
+{% include "getch/comments.html" %}
+
 <style>
   .pages {
     position: absolute;
@@ -13,6 +22,25 @@
 
 <script type='text/x-template' id='pages-template'>
   <div class='pages'>
+    <!-- <network
+      v-if='session.cnetwork.boo'
+      :session='session'
+    ></network> -->
+
+    <posting
+      v-if='session.auth'
+      :session='session'
+    ></posting>
+
+    <comments
+      v-if='session.cpost'
+      :session='session'
+    ></comments>
+
+    <boopage
+      :session='session'
+    ></boopage>
+
     <mypage
       v-if='session.auth'
       :session='session'
@@ -28,42 +56,12 @@
       :session='session'
     ></profiler>
 
-    <authorpage
-      v-if='session.cpost'
-      :session='session'
-    ></authorpage>
-
-    <network
-      v-if='session.cnetwork.boo'
-      :session='session'
-    ></network>
-
-    <posting
-      v-if='session.auth'
-      :session='session'
-    ></posting>
-
-    <comments
-      v-if='session.cpost'
-      :session='session'
-    ></comments>
-
     <loginpage
       v-if='!session.auth'
       :session='session'
     ></loginpage>
   </div>
 </script>
-
-
-{% include "getch/loginpage.html" %}
-{% include "getch/mypage.html" %}
-{% include "getch/boochooser.html" %}
-{% include "getch/profiler.html" %}
-{% include "getch/authorpage.html" %}
-{% include "getch/network.html" %}
-{% include "getch/posting.html" %}
-{% include "getch/comments.html" %}
 
 <script>
   Vue.component('pages', {

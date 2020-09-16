@@ -259,6 +259,10 @@ class Boo(BigIdAbstract, ModelWithFlag):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
+    @property
+    def posts(self):
+        return list(self.post_set.values_list('id', flat=True))
+
     # @property
     # def nfollowers(self):
     #     return self.get_flags(status=FOLLOW).count()
@@ -479,7 +483,7 @@ class BasebooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'posts']
         read_only_fields = fields
 
     def get_profile(self, obj):
@@ -492,7 +496,7 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts', 'posts']
         read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'nposts']
 
     def update(self, instance, validated_data):

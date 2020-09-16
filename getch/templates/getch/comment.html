@@ -97,7 +97,7 @@
     </div>
 
     <div class='pix'>
-      <img class='fit' :src='boo.profile.pix'>
+      <img class='fit' :src='boo.profile.pix' @click.stop='session.open_boopage(boo.id)'>
     </div>
   </div>
 </script>

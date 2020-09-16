@@ -1,0 +1,20 @@
+{% include "getch/page.html" %}
+{% include "getch/aboutboo.html" %}
+
+<script type='text/x-template' id='boopage-template'>
+  <page class='boopage vcomp' :open='session.page.boopage.open' :from='session.page.boopage.from' @close='session.close_page()'>
+    <aboutboo :session='session' type='boo' :is_active='session.page.boopage.open'></aboutboo>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('boopage', {
+    template: '#boopage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    }
+  });
+</script>

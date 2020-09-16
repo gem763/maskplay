@@ -212,7 +212,7 @@
 
     <transition name='show-author-profile' mode=in-out>
       <!-- <div class='author menublock' v-if='session.swiper && !session.swiper.animating' @click='session.open_authorpage()'> -->
-      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_authorpage()'>
+      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo_id)'>
         <!-- <img class='fit' :src='cpost_boo_profile'> -->
         <!-- <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'> -->
         <img class='fit' v-if='session.cpost' :src='cpost_boo_profile'>

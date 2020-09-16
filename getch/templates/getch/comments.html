@@ -124,8 +124,6 @@
 
     methods: {
       save: function() {
-        this.$refs.scroll_to_top.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
-
         let when;
 
         const formdata = new FormData();
@@ -141,6 +139,7 @@
           when = comment_changed.created_at;
 
         } else {
+          this.$refs.scroll_to_top.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
           when = new Date().toISOString();
 
           const _comment = {

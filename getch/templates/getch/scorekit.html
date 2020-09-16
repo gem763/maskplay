@@ -87,24 +87,41 @@
     opacity: 1;
   }
 
-  .scorekit.vcomp > .voters {
+  .scorekit.vcomp > .voters-section {
     position: relative;
     width: 100%;
     min-height: calc(var(--s-menu) * 1);
     background: none;
+  }
+
+  .scorekit.vcomp > .voters-section > .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .scorekit.vcomp > .voters-section > .voters {
+    position: relative;
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
+    transition: opacity 0.5s;
   }
 
-  .scorekit.vcomp > .voters > .voter {
+  .scorekit.vcomp > .voters-section > .voters.loading {
+    opacity: 0.5;
+  }
+
+  .scorekit.vcomp > .voters-section > .voters > .voter {
     position: relative;
     width: calc(100% / 7);
     padding-top: calc(100% / 7);
     background: none;
   }
 
-  .scorekit.vcomp > .voters > .voter > img {
+  .scorekit.vcomp > .voters-section > .voters > .voter > img {
     position: absolute;
     top: 2%;
     left: 2%;
@@ -151,17 +168,21 @@
         <div class='label'>SCORE</div>
       </div>
 
-      <transition-group tag='div' class='voters' name='voters-list' v-show='focused==0'>
-        <div class='voter' v-for='(pix, boo_id) in voters[0]' :key='pix' @click='open_boopage(boo_id)'>
-          <img :src='pix'>
-        </div>
-      </transition-group>
+      <div class='voters-section'>
+        <transition-group tag='div' class='voters' :class='{loading:onloading}' name='voters-list' v-show='focused==0'>
+          <div class='voter' v-for='(pix, boo_id) in voters[0]' :key='pix' @click='session.open_boopage(boo_id)'>
+            <img :src='pix'>
+          </div>
+        </transition-group>
 
-      <transition-group tag='div' class='voters' name='voters-list' v-show='focused==1'>
-        <div class='voter' v-for='(pix, boo_id) in voters[1]' :key='pix' @click='open_boopage(boo_id)'>
-          <img :src='pix'>
-        </div>
-      </transition-group>
+        <transition-group tag='div' class='voters' :class='{loading:onloading}' name='voters-list' v-show='focused==1'>
+          <div class='voter' v-for='(pix, boo_id) in voters[1]' :key='pix' @click='session.open_boopage(boo_id)'>
+            <img :src='pix'>
+          </div>
+        </transition-group>
+
+        <scale-loader class='spinner' :loading='onloading'></scale-loader>
+      </div>
     </template>
 
     <template v-else>
@@ -181,9 +202,10 @@
     props: [ 'session', 'post' ],
     data: function() {
       return {
-        focused: undefined,
+        focused: 0, // 디폴트
         post_id: undefined,
-        voters: { 0:{}, 1:{} }
+        voters: { 0:{}, 1:{} },
+        onloading: false
       }
     },
 
@@ -191,29 +213,38 @@
       'session.page.comments.open': function(_new, _old) {
         if (_new && this.post.id!=this.post_id) {
           this.post_id = this.post.id;
-          this.fetch_boopix_all();
+          this.load_voters();
+        }
+
+        if (this.yourpick != -1) {
+          this.focused = this.yourpick;
         }
       },
 
       yourpick: {
         handler: function(_new, _old) {
-          this.focused = _new;
-
           if (this.boo) {
-            if (this.voters[_old] && this.boo.id in this.voters[_old]) {
+            if (_old==-1) {
+              this.$set(this.voters[_new], this.boo.id, this.boo.profile.pix);
+
+            } else if (_new==-1) {
+              this.$delete(this.voters[_old], this.boo.id);
+
+            } else {
               this.$delete(this.voters[_old], this.boo.id);
               this.$set(this.voters[_new], this.boo.id, this.boo.profile.pix);
             }
 
-            if (this.boo.id in this.post.voters) {
-              this.post.voters[this.boo.id] = _new;
+
+            if (_new==-1) {
+              this.$delete(this.post.voters, this.boo.id);
 
             } else {
-              this.$set(this.post.voters, this.boo.id, this.boo.profile.pix);
+              this.$set(this.post.voters, this.boo.id, _new);
             }
           }
 
-        }, immediate: true
+        }//, immediate: true
       }
     },
 
@@ -227,6 +258,8 @@
       yourpick: function() {
         if (this.session.auth) {
           return this.session.auth.has_voted_as(this.post.id)
+        } else {
+          return -1
         }
       },
 
@@ -250,26 +283,23 @@
         this.focused = act;
       },
 
-      fetch_boopix_all: function() {
+      load_voters: function() {
+        this.onloading = true;
         this.voters[0] = {};
         this.voters[1] = {};
 
-        console.log(this.post.voters)
-        for (const [boo_id, act] of Object.entries(this.post.voters)) {
-          this.fetch_boopix(boo_id, act);
-        }
+        const promises = Object.entries(this.post.voters).map(([boo_id, act]) => this.load_voter(boo_id, act));
+        Promise.all(promises).then(results => {
+          this.onloading = false;
+        });
       },
 
-      fetch_boopix: function(boo_id, act) {
-        fetch(`/boo/${boo_id}/profile/pix/`)
-          .then(x => x.json())
-          .then(js => {
-            this.$set(this.voters[act], boo_id, js.pix);
-          })
-      },
-
-      open_boopage: function(boo_id) {
-        alert(boo_id);
+      load_voter: function(boo_id, act) {
+        return fetch(`/boo/${boo_id}/profile/pix/`)
+                .then(x => x.json())
+                .then(js => {
+                  this.$set(this.voters[act], boo_id, js.pix);
+                })
       }
     }
   });

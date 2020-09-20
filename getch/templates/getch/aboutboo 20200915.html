@@ -1,7 +1,6 @@
 {% include "getch/struct.html" %}
 <!-- {% include "getch/modal.html" %} -->
 {% include "getch/editext.html" %}
-{% include "getch/minipost.html" %}
 
 <style>
   .aboutboo.vcomp .header-0 > .profilepix {
@@ -107,24 +106,7 @@
   }
 
 
-  .aboutboo.vcomp .content > .booposts-section {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .aboutboo.vcomp .content > .booposts-section > .booposts {
-    position: relative;
-    /* minipost의 좌우여백을 동일하게 맞출수 없어서, booposts 자체의 너비를 여백만큼 줄였다
-    minipost.html에 가보면, 오른쪽 border=0 으로 한것을 알 수 있다. */
-    width: calc(100% - 1px);
-    height: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    overflow: hidden;
-  }
-
-  .aboutboo.vcomp .content > .booposts-section > .booposts > .boopost {
+  .aboutboo.vcomp .content > .booposts > .boopost {
     position: relative;
     width: 25%;
     height: calc(var(--t-0) / 2);
@@ -137,25 +119,6 @@
   .aboutboo.vcomp .show-boo-enter,
   .aboutboo.vcomp .show-boo-leave-to {
     filter: blur(10px);
-  }
-
-  .aboutboo.vcomp .show-booposts-enter-active,
-  .aboutboo.vcomp .show-booposts-leave-active {
-    transition: all 1s;
-  }
-
-  .aboutboo.vcomp .show-booposts-enter,
-  .aboutboo.vcomp .show-booposts-leave-to {
-    opacity: 0;
-    /* transform: translateY(30px); */
-  }
-
-
-  .aboutboo.vcomp .spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
 </style>
 
@@ -217,14 +180,30 @@
 
 
     <template #content>
-      <div class='booposts-section'>
-        <transition-group name='show-booposts' tag='div' class='booposts' v-if='boo.posts'>
-          <div class='boopost' v-for='post in boo.posts.contents' :key='post.id'>
-            <minipost :post='post'></minipost>
-          </div>
-        </transition-group>
+      <div class='booposts' style='position:relative;width:100%;height:100%;display:flex;flex-wrap:wrap;overflow:hidden;'>
+        <div class='boopost' v-for='post in posts_fetched.posts'>
 
-        <scale-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading'></scale-loader>
+          <template v-if='post.type=="postvoteab"'>
+            <div style='position:absolute;top:0;left:0;width:100%;height:50%;'>
+              <img :src='post.pix_a' style='width:100%;height:100%;object-fit:cover;'>
+            </div>
+            <div style='position:absolute;top:50%;left:0;width:100%;height:50%;'>
+              <img :src='post.pix_b' style='width:100%;height:100%;object-fit:cover;'>
+            </div>
+          </template>
+
+          <template v-else>
+            <div style='position:absolute;top:0;left:0;width:100%;height:50%;'>
+              <img :src='post.pix' style='width:100%;height:100%;object-fit:cover;'>
+            </div>
+            <div style='position:absolute;top:50%;left:0;width:100%;height:50%;'>
+              OX
+            </div>
+          </template>
+
+        </div>
+
+        <!-- <modal :pop='on_postloading' name='processing'></modal> -->
       </div>
     </template>
   </struct>
@@ -236,36 +215,93 @@
   Vue.component('aboutboo', {
     template: '#aboutboo-template',
     delimiters: ['[[', ']]'],
-    props: ['boo', 'session', 'type'],
+    props: ['session', 'type', 'is_active'],
     data: function() {
       return {
+        // boo_fetched: undefined,
+        posts_fetched: { boo_id:undefined, posts:[] },
+        on_postloading: false,
         on_booloading: false,
       }
     },
 
+    watch: {
+      is_active: function(_new, _old) {
+        if (_new) {
+          if (this.type!='my') {
+            // if (!this.boo || (this.boo && this.boo.id!=this.session.page.boopage.boo_id)) {
+            // if (!this.boo || this.boo_id!=this.session.page.boopage.boo_id) {
+            //   this.load_boo(this.session.page.boopage.boo_id);
+            // }
+            if (this.boo_id!=this.session.page.boopage.boo_id) {
+              this.load_boo(this.session.page.boopage.boo_id);
+            }
+          }
+
+          // if (this.type=='my' && this.posts_fetched.boo_id!=this.boo.id) {
+          //   this.load_posts(this.boo.id);
+          //
+          // } else if (this.type!='my' && this.posts_fetched.boo_id!=this.session.page.boopage.boo_id) {
+          //   this.load_posts(this.session.page.boopage.boo_id);
+          // }
+        }
+      }
+    },
+
     computed: {
+      boo: function() {
+        if (this.type=='my' && this.session.auth) {
+          return this.session.auth.boo
+
+        } else {
+          return this.session.page.boopage.boo
+          // return this.boo_fetched
+        }
+      },
+
+      // boo_id: function() {
+      //   // if (this.boo) {
+      //     return this.boo.id
+      //   // }
+      // },
+
       profilepix: function() {
-        return this.boo.profile.pix
+        // if (this.boo) {
+          return this.boo.profile.pix
+
+        // } else {
+        //   return '/static/materials/characters/SIDEB_CHARACTER_M_01.png'
+        // }
       },
 
       pscore: function() {
-        return this.session.pscore(this.boo)
+        if (this.boo) {
+          return this.session.pscore(this.boo)
+        }
       },
 
       nfollowers: function() {
-        return this.boo.nfollowers
+        if (this.boo) {
+          return this.boo.nfollowers
+        }
       },
 
       nposts: function() {
-        return this.boo.nposts
+        if (this.boo) {
+          return this.boo.nposts
+        }
       },
 
       text: function() {
-        return this.boo.text
+        if (this.boo) {
+          return this.boo.text
+        }
       },
 
       nick: function() {
-        return this.boo.nick
+        if (this.boo) {
+          return this.boo.nick
+        }
       },
 
       // is_following: function() {
@@ -281,17 +317,51 @@
       // },
 
       level_style: function() {
-        return {
-          borderBottom: `calc(var(--t-3) * 0.3) solid ${this.session.levelcolor(this.boo)}`
+        if (this.boo) {
+          return {
+            borderBottom: `calc(var(--t-3) * 0.3) solid ${this.session.levelcolor(this.boo)}`
+          }
         }
       },
     },
 
     methods: {
+      load_boo: function(boo_id) {
+        this.on_booloading = true;
+
+        fetch(`/boo/${boo_id}/baseboo/`)
+          .then(x => x.json())
+          .then(js => {
+            this.boo_fetched = js.boo;
+            this.on_booloading = false;
+          })
+      },
+
       open_boochooser: function() {
         if (this.type == 'my') {
           this.session.open_boochooser();
         }
+      },
+
+      load_posts: function(boo_id) {
+        // this.show_postloading();
+        //
+
+        // fetch(`/boo/${boo_id}/posts/`)
+        //   .then(x => x.json())
+        //   .then(js => {
+        //     this.posts_fetched.boo_id = boo_id;
+        //     this.posts_fetched.posts = JSON.parse(js.posts);
+        //     // self.hide_postloading();
+        //   })
+      },
+
+      show_postloading: function() {
+        this.on_postloading = true;
+      },
+
+      hide_postloading: function() {
+        this.on_postloading = false;
       },
 
       toggle_follow: function() {

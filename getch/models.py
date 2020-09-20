@@ -246,13 +246,13 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def followees(self):
         return Boo.objects.filter(id__in=self.followees_id)
 
-    @property
-    def network(self):
-        _network = {
-            'followers': SimplebooSerializer(self.followers, many=True).data,
-            'followees': SimplebooSerializer(self.followees, many=True).data
-        }
-        return json.dumps(_network)
+    # @property
+    # def network(self):
+    #     _network = {
+    #         'followers': SimplebooSerializer(self.followers, many=True).data,
+    #         'followees': SimplebooSerializer(self.followees, many=True).data
+    #     }
+    #     return json.dumps(_network)
 
     @property
     def voting_record(self):
@@ -260,7 +260,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
     @property
-    def posts(self):
+    def iposts(self):
         return list(self.post_set.values_list('id', flat=True))
 
     # @property
@@ -465,29 +465,30 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
-class SimplebooSerializer(serializers.ModelSerializer):
-    profile = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Boo
-        fields = ['id', 'nick', 'profile']
-        read_only_fields = fields
-
-    def get_profile(self, obj):
-        return {'pix': obj.profile.pix.url}
-
-
 # https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
 class BasebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'posts']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
+
+
+
+# class BasebooSerializer(serializers.ModelSerializer):
+#     profile = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Boo
+#         fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'posts']
+#         read_only_fields = fields
+#
+#     def get_profile(self, obj):
+#         return {'pix': obj.profile.pix.url}
 
 
 
@@ -496,7 +497,7 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts', 'posts']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts']#, 'iposts']
         read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'nposts']
 
     def update(self, instance, validated_data):
@@ -528,12 +529,40 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    boo = SimplebooSerializer()
+    boo = BasebooSerializer()
 
     class Meta:
         model = Comment
         fields = ['id', 'boo', 'text', 'created_at']
         read_only_fields = ['id']
+
+
+
+class BasepostVoteOXSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostVoteOX
+        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']#, 'voters']
+        read_only_fields = fields
+
+
+class BasepostVoteABSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostVoteAB
+        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']#, 'voters']
+        read_only_fields = fields
+
+
+class BasepostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        if isinstance(instance, PostVoteOX):
+            return {'type':'postvoteox', **BasepostVoteOXSerializer(instance=instance).data}
+
+        elif isinstance(instance, PostVoteAB):
+            return {'type':'postvoteab', **BasepostVoteABSerializer(instance=instance).data}
 
 
 class PostVoteOXSerializer(serializers.ModelSerializer):

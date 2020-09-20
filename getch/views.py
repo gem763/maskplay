@@ -64,7 +64,20 @@ def get_posts(request):
     # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
     _qs = m.PostSerializer.setup_eager_loading(_qs)
     _posts = m.PostSerializer(_qs, many=True).data
-    return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
+    return JsonResponse({'success':True, 'posts':_posts}, safe=False)
+    # return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
+
+
+def get_post(request, post_id):
+    _post = m.Post.objects.get_subclass(pk=post_id)
+    _post = m.PostSerializer(_post).data
+    return JsonResponse({'success':True, 'post':_post}, safe=False)
+
+
+def get_basepost(request, post_id):
+    _post = m.Post.objects.get_subclass(pk=post_id)
+    _post = m.BasepostSerializer(_post).data
+    return JsonResponse({'success':True, 'post':_post}, safe=False)
 
 
 def other_boos(request):
@@ -128,11 +141,16 @@ def boo_profilepix(request, boo_id):
     # return Response(_boo.data)
 
 
-def baseboo(request, boo_id):
+# def baseboo(request, boo_id):
+#     _boo = m.Boo.objects.get(pk=boo_id)
+#     _boo = m.BasebooSerializer(_boo).data
+#     # print(_boo.data)
+#     return JsonResponse({'success':True, 'boo':_boo}, safe=False)
+
+def boo_moreinfo(request, boo_id):
     _boo = m.Boo.objects.get(pk=boo_id)
-    _boo = m.BasebooSerializer(_boo).data
-    # print(_boo.data)
-    return JsonResponse({'success':True, 'boo':_boo}, safe=False)
+    boo = { 'iposts': _boo.iposts }
+    return JsonResponse({'success':True, 'boo':boo}, safe=False)
 
 
 def post_delete(request, post_id):

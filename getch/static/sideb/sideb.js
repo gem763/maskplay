@@ -6,7 +6,8 @@ class Session {
       boochooser: { open: false, from: 'left'},
       profiler:   { open: false, from: 'left', key: undefined},
       // authorpage: { open: false, from: 'right'},
-      boopage:    { open: false, from: 'right', boo_id: undefined},
+      // boopage:    { open: false, from: 'right', boo_id: undefined},
+      boopage:    { open: false, from: 'right', boo: undefined},
       network:    { open: false, from: 'right'},
       posting:    { open: false, from: 'right'},
       comments:    { open: false, from: 'bottom'},
@@ -43,7 +44,8 @@ class Session {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          this.posts = JSON.parse(js.posts);
+          // this.posts = JSON.parse(js.posts);
+          this.posts = js.posts;
           this.on_intro = false;
         }
       });
@@ -154,12 +156,15 @@ class Session {
   //   }
   // }
 
-  open_boopage(boo_id) {
-    if (this.auth && this.auth.boo_selected==boo_id) {
+  // open_boopage(boo_id) {
+  //   if (this.auth && this.auth.boo_selected==boo_id) {
+  open_boopage(boo) {
+    if (this.auth && this.auth.boo_selected==boo.id) {
       this.open_mypage();
 
     } else {
-      this.page.boopage.boo_id = boo_id;
+      // this.page.boopage.boo_id = boo_id;
+      this.page.boopage.boo = boo;
       this.open_page('boopage');
     }
   }
@@ -277,8 +282,54 @@ class Session {
         return 'rgba(255, 0, 0, 1)'
     }
   }
+
+  load_boo_moreinfo(boo) {
+    fetch(`/boo/${boo.id}/moreinfo/`)
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          boo.posts.list = js.boo.iposts;
+          boo.posts.load();
+        }
+      });
+  }
 }
 
+
+
+class ContentLoader {
+  constructor() {
+    this.list = [];
+    this.onloading = true;
+    this.contents = [];
+  }
+
+  load() {
+    this.onloading = true;
+    const promises = this.list.map(id => this.load_by_id(id));
+    Promise.all(promises).then(results => {
+      console.log('complete');
+      this.onloading = false;
+    });
+  }
+}
+
+
+class Booposts extends ContentLoader {
+  constructor() {
+    super();
+    this.model = 'post';
+    this.filter = {};
+  }
+
+  load_by_id(id) {
+    return fetch(`/post/${id}/base/`)
+            .then(x => x.json())
+            .then(js => {
+              this.contents.push(js.post);
+            })
+  }
+}
 
 class Auth {
   constructor(cuser) {

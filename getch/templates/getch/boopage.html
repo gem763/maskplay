@@ -3,7 +3,7 @@
 
 <script type='text/x-template' id='boopage-template'>
   <page class='boopage vcomp' :open='session.page.boopage.open' :from='session.page.boopage.from' @close='session.close_page()'>
-    <aboutboo :session='session' type='boo' :is_active='session.page.boopage.open'></aboutboo>
+    <aboutboo v-if='boo' :boo='boo' :session='session' type='boo'></aboutboo>
   </page>
 </script>
 
@@ -14,7 +14,43 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return { }
+      return {
+        boo_changed: false
+      }
+    },
+
+    watch: {
+      boo_id: function(_new, _old) {
+        this.boo_changed = true;
+      },
+
+      'session.page.boopage.open': function(_new, _old) {
+        if (_new && this.boo && this.boo_changed) {
+          this.load_boo_moreinfo();
+          this.boo_changed = false;
+        }
+      }
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.page.boopage.boo
+      },
+
+      boo_id: function() {
+        if (this.boo) {
+          return this.boo.id
+        }
+      }
+    },
+
+    methods: {
+      load_boo_moreinfo: function() {
+        if (!this.boo.posts) {
+          this.$set(this.boo, 'posts', new Booposts());
+          this.session.load_boo_moreinfo(this.boo);
+        }
+      }
     }
   });
 </script>

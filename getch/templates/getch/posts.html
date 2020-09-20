@@ -212,7 +212,7 @@
 
     <transition name='show-author-profile' mode=in-out>
       <!-- <div class='author menublock' v-if='session.swiper && !session.swiper.animating' @click='session.open_authorpage()'> -->
-      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo_id)'>
+      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo)'>
         <!-- <img class='fit' :src='cpost_boo_profile'> -->
         <!-- <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'> -->
         <img class='fit' v-if='session.cpost' :src='cpost_boo_profile'>
@@ -262,7 +262,7 @@
       level_style: function() {
         if (this.session && this.session.cpost) {
           return {
-            borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.session.cpost.boo)}`
+            borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.cpost_boo)}`
           }
         }
       },
@@ -273,20 +273,41 @@
       //   }
       // },
 
+      cpost_boo: function() {
+        if (this.session.auth && this.session.cpost && this.session.cpost.boo.id==this.session.auth.boo_selected) {
+          return this.session.auth.boo
+
+        } else if (this.session.cpost) {
+          return this.session.cpost.boo
+        }
+      },
+
       cpost_boo_id: function() {
-        if (this.session.cpost) {
-          return this.session.cpost.boo.id
+        if (this.cpost_boo) {
+          return this.cpost_boo.id
         }
       },
 
       cpost_boo_profile: function() {
-        if (this.session.auth && this.cpost_boo_id==this.session.auth.boo_selected) {
-          return this.session.auth.boo.profile.pix
-
-        } else {
-          return this.session.cpost.boo.profile.pix
+        if (this.cpost_boo) {
+          return this.cpost_boo.profile.pix
         }
-      }
+      },
+
+      // cpost_boo_id: function() {
+      //   if (this.session.cpost) {
+      //     return this.session.cpost.boo.id
+      //   }
+      // },
+
+      // cpost_boo_profile: function() {
+      //   if (this.session.auth && this.cpost_boo_id==this.session.auth.boo_selected) {
+      //     return this.session.auth.boo.profile.pix
+      //
+      //   } else {
+      //     return this.session.cpost.boo.profile.pix
+      //   }
+      // }
     },
 
     mounted: function() {

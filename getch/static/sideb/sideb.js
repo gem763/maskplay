@@ -1,30 +1,30 @@
 class Session {
   constructor() {
     this.page = {
-      mypage:     { open: false, from: 'left'},
-      loginpage:  { open: false, from: 'left'},
+      mypage:     { open: false, from: 'right'},
+      loginpage:  { open: false, from: 'right'},
       boochooser: { open: false, from: 'left'},
-      profiler:   { open: false, from: 'left', key: undefined},
+      profiler:   { open: false, from: 'right', key: undefined},
       // authorpage: { open: false, from: 'right'},
       // boopage:    { open: false, from: 'right', boo_id: undefined},
       boopage:    { open: false, from: 'right', boo: undefined},
       network:    { open: false, from: 'right'},
       posting:    { open: false, from: 'right'},
-      comments:    { open: false, from: 'bottom'},
+      comments:    { open: false, from: 'right'},
+      booposts:    { open: false, from: 'right', posts: [], open_at: 0},
     };
 
-    this.on_intro = true;
+    // this.on_intro = true;
     this.mode = { on: 'journey', prev: undefined };
     // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
     // this.cvoters = { up: undefined, down: undefined };
     this.auth = undefined;
     this.swiper = undefined;
-    this.posts = undefined;
+    this.posts = new Posts();
     this.stats = undefined;
     this.hammer = this.get_hammer();
 
     this.fetch_user();
-    this.fetch_posts();
   }
 
 
@@ -39,18 +39,38 @@ class Session {
       });
   }
 
-  fetch_posts() {
-    fetch('/posts')
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          // this.posts = JSON.parse(js.posts);
-          this.posts = js.posts;
-          this.on_intro = false;
-        }
-      });
-  }
-
+  // fetch_posts() {
+  //   fetch('/posts')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         this.posts = js.posts;
+  //         this.on_intro = false;
+  //       }
+  //     });
+  // }
+  //
+  // load_posts() {
+  //   fetch('/posts/ids')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         const promises = js.iposts.splice(0,5).map(id => this.load_post(id));
+  //         Promise.all(promises).then(results => {
+  //           console.log('complete');
+  //         });
+  //       }
+  //     });
+  // }
+  //
+  // load_post(id) {
+  //   return fetch(`/post/${id}`)
+  //           .then(x => x.json())
+  //           .then(js => {
+  //             this.posts.push(js.post);
+  //             this.on_intro = false;
+  //           })
+  // }
 
   get_hammer() {
     const self = this;
@@ -68,20 +88,17 @@ class Session {
       const x = getStartX(e);
 
       if (self.mode.on == 'journey') {
-        if (e.type=='swiperight') {// && x <= 0.3) {
+        if (e.type=='swiperight') {
           self.open_boochooser();
 
-        } else if (e.type=='swipeleft') {// && x >= 0.7) {
-          self.open_boopage(self.cpost.boo.id);
-          // self.open_authorpage();
+        } else if (e.type=='swipeleft') {
+          self.open_boopage(self.cpost.boo);
         }
 
       } else {
-        // if (e.type=='swiperight' && x <= 0.3 && self.page[self.mode.on].from=='right') {
         if (e.type=='swiperight' && self.page[self.mode.on].from=='right') {
           self.close_page();
 
-        // } else if (e.type=='swipeleft' && x >= 0.7 && self.page[self.mode.on].from=='left') {
         } else if (e.type=='swipeleft' && self.page[self.mode.on].from=='left') {
           self.close_page();
         }
@@ -90,14 +107,6 @@ class Session {
 
     return hammer
   }
-
-  // hammer_on() {
-  //   this.hammer.set({ enable: true });
-  // }
-  //
-  // hammer_off() {
-  //   this.hammer.set({ enable: false });
-  // }
 
   close_page() {
     this.page[this.mode.on].open = false;
@@ -139,6 +148,12 @@ class Session {
     this.open_page('comments');
   }
 
+  open_booposts(posts, where) {
+    this.page.booposts.posts = posts;
+    this.page.booposts.open_at = where;
+    this.open_page('booposts');
+  }
+
   open_posting() {
     if (this.auth) {
       this.open_page('posting');
@@ -147,23 +162,12 @@ class Session {
     }
   }
 
-  // open_authorpage() {
-  //   if (this.auth && this.auth.boo_selected==this.cpost.boo.id) {
-  //     this.open_mypage();
-  //
-  //   } else {
-  //     this.open_page('authorpage');
-  //   }
-  // }
 
-  // open_boopage(boo_id) {
-  //   if (this.auth && this.auth.boo_selected==boo_id) {
   open_boopage(boo) {
     if (this.auth && this.auth.boo_selected==boo.id) {
       this.open_mypage();
 
     } else {
-      // this.page.boopage.boo_id = boo_id;
       this.page.boopage.boo = boo;
       this.open_page('boopage');
     }
@@ -196,17 +200,12 @@ class Session {
     console.log(`check-in to ${on}`);
     this.mode.prev = {...this.mode};
     this.mode.on = on;
-    // this.hammer_off();
   }
 
   checkout() {
     try {
       console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
       this.mode = this.mode.prev;
-
-      // if (this.mode.on == 'journey') {
-      //   this.hammer_on();
-      // }
 
     } catch(e) {
       console.log('abnormal access')
@@ -215,20 +214,29 @@ class Session {
 
   get cpost() {
     if (this.swiper) {
-      return this.posts[this.swiper.realIndex]
+      return this.posts.list[this.swiper.realIndex]
+    }
+  }
+
+  get cpost_boo() {
+    if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
+      return this.auth.boo
+
+    } else if (this.cpost) {
+      return this.cpost.boo
     }
   }
 
   push_post(post) {
     const where = this.swiper.realIndex + 1;
-    this.posts.splice(where, 0, post);
+    this.posts.list.splice(where, 0, post);
     this.swiper.slideTo(where);
   }
 
   delete_cpost() {
     const where = this.swiper.realIndex;
     this.swiper.slideTo(where - 1);
-    this.posts.splice(where, 1);
+    this.posts.list.splice(where, 1);
     // this.swiper.removeSlide(where);
   }
 
@@ -283,53 +291,104 @@ class Session {
     }
   }
 
-  load_boo_moreinfo(boo) {
-    fetch(`/boo/${boo.id}/moreinfo/`)
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          boo.posts.list = js.boo.iposts;
-          boo.posts.load();
-        }
-      });
-  }
+  // load_boo_moreinfo(boo) {
+  //   fetch(`/boo/${boo.id}/moreinfo/`)
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         boo.posts.idlist = js.boo.iposts;
+  //         boo.posts.load(16);
+  //       }
+  //     });
+  // }
 }
 
 
 
 class ContentLoader {
   constructor() {
-    this.list = [];
+    this.idlist = [];
     this.onloading = true;
-    this.contents = [];
+    this.list = [];
   }
 
-  load() {
+  load(n) {
+    if (this.idlist.length == 0) {
+      return
+    }
+
     this.onloading = true;
-    const promises = this.list.map(id => this.load_by_id(id));
+    if (!n) { var n = 1; }
+    n = Math.min(n, this.idlist.length);
+
+    // const promises = this.idlist.map(id => this.load_by_id(id));
+    const promises = [];
+    for (let i = 0; i < n; i++) {
+      promises.push(this.load_by_id(this.idlist.shift()));
+    };
+
     Promise.all(promises).then(results => {
-      console.log('complete');
+      console.log('contents loaded');
       this.onloading = false;
     });
   }
 }
 
 
-class Booposts extends ContentLoader {
+class Posts extends ContentLoader {
   constructor() {
     super();
-    this.model = 'post';
-    this.filter = {};
+    this.load_idlist();
+  }
+
+  load_idlist() {
+    fetch('/posts/ids')
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.idlist = js.iposts;
+          this.load(5);
+        }
+      });
   }
 
   load_by_id(id) {
-    return fetch(`/post/${id}/base/`)
+    return fetch(`/post/${id}`)
             .then(x => x.json())
             .then(js => {
-              this.contents.push(js.post);
+              this.list.push(js.post);
             })
   }
 }
+
+class Booposts extends ContentLoader {
+  constructor(boo) {
+    super();
+    this.boo = boo;
+    this.load_idlist();
+  }
+
+  load_idlist() {
+    fetch(`/boo/${this.boo.id}/iposts/`)
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.idlist = js.iposts;
+          this.load(16);
+        }
+      });
+  }
+
+  load_by_id(id) {
+    return fetch(`/post/${id}/boo/`)
+            .then(x => x.json())
+            .then(js => {
+              js.post.boo = this.boo;
+              this.list.push(js.post);
+            })
+  }
+}
+
 
 class Auth {
   constructor(cuser) {

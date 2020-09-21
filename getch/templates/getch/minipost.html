@@ -92,9 +92,15 @@
   Vue.component('minipost', {
     template: '#minipost-template',
     delimiters: ['[[', ']]'],
-    props: [ 'post' ],
+    props: [ 'post', 'session' ],
     data: function() {
       return {}
+    },
+
+    methods: {
+      open_booposts: function() {
+        alert('open booposts page')
+      }
     }
   });
 </script>

@@ -61,7 +61,6 @@ class Session {
           const promises = js.iposts.map(id => this.load_post(id));
           Promise.all(promises).then(results => {
             console.log('complete');
-            // this.on_intro = false;
           });
         }
       });
@@ -327,7 +326,7 @@ class Session {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          boo.posts.list = js.boo.iposts;
+          boo.posts.idlist = js.boo.iposts;
           boo.posts.load();
         }
       });
@@ -338,14 +337,14 @@ class Session {
 
 class ContentLoader {
   constructor() {
-    this.list = [];
+    this.idlist = [];
     this.onloading = true;
     this.contents = [];
   }
 
   load() {
     this.onloading = true;
-    const promises = this.list.map(id => this.load_by_id(id));
+    const promises = this.idlist.map(id => this.load_by_id(id));
     Promise.all(promises).then(results => {
       console.log('complete');
       this.onloading = false;
@@ -353,6 +352,10 @@ class ContentLoader {
   }
 }
 
+
+class Posts extends ContentLoader {
+
+}
 
 class Booposts extends ContentLoader {
   constructor(boo) {

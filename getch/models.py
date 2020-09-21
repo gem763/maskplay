@@ -538,31 +538,31 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 
-class BasepostVoteOXSerializer(serializers.ModelSerializer):
+class BoopostVoteOXSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']#, 'voters']
+        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']
         read_only_fields = fields
 
 
-class BasepostVoteABSerializer(serializers.ModelSerializer):
+class BoopostVoteABSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']#, 'voters']
+        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']
         read_only_fields = fields
 
 
-class BasepostSerializer(serializers.ModelSerializer):
+class BoopostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
 
     def to_representation(self, instance):
         if isinstance(instance, PostVoteOX):
-            return {'type':'postvoteox', **BasepostVoteOXSerializer(instance=instance).data}
+            return {'type':'postvoteox', **BoopostVoteOXSerializer(instance=instance).data}
 
         elif isinstance(instance, PostVoteAB):
-            return {'type':'postvoteab', **BasepostVoteABSerializer(instance=instance).data}
+            return {'type':'postvoteab', **BoopostVoteABSerializer(instance=instance).data}
 
 
 class PostVoteOXSerializer(serializers.ModelSerializer):

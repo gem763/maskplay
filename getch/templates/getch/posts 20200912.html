@@ -1,0 +1,244 @@
+{% include "getch/post.html" %}
+
+<style>
+  .posts.vcomp {
+    width: 100%;
+    height: 100%;
+  }
+
+  .posts.vcomp > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .posts.vcomp > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .posts.vcomp > .back {
+    position: absolute;
+    top: calc(352 * var(--x));
+    left: 0;
+    width: 100%;
+    height: calc(572 * var(--x));
+    /* background: rgba(255,242,204,0.25); */
+    background: rgba(0,0,0,0.1);
+  }
+
+  .posts.vcomp > .back > img.logo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--s-menu) + var(--pix-margin));
+  }
+
+  .posts.vcomp > .menublock {
+    position: absolute;
+    width: calc(var(--s-menu) - var(--border-w));
+    height: calc(var(--s-menu) - var(--border-w));
+    border: var(--border);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .posts.vcomp > .menublock.author {
+    top: 0;
+    right: 0;
+    background: white;
+  }
+
+
+  .posts.vcomp > .menublock.my {
+    bottom: calc(64 * var(--x));
+    right: 0;
+  }
+
+  .posts.vcomp > .menublock.posting {
+    bottom: calc(64 * var(--x) + var(--s-menu));;
+    right: 0;
+  }
+
+  .posts.vcomp > .menublock.comment {
+    bottom: calc(64 * var(--x) + 2 * var(--s-menu));;
+    right: 0;
+  }
+
+  .posts.vcomp > .menublock > img.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .posts.vcomp > .menublock > img.icon {
+    object-fit: contain;
+    width: 80%;
+    height: 80%;
+  }
+
+
+  .posts.vcomp .show-author-profile-enter-active {
+    transition: all 0.5s;
+  }
+
+  .posts.vcomp .show-author-profile-leave-active {
+    transition: all 0.1s;
+  }
+
+  .posts.vcomp .show-author-profile-enter,
+  .posts.vcomp .show-author-profile-leave-to {
+    opacity: 0;
+  }
+
+
+  .posts.vcomp > .post-score {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--x) * 64);
+  }
+
+  .posts.vcomp > .post-score > img.barcode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--pix-margin) * 2);
+  }
+
+  .posts.vcomp > .post-score > .score {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--pix-margin) * 2);
+    background: none;
+    text-align: right;
+    font-size: calc(var(--pix-margin) * 1.3);
+  }
+
+
+  .posts.vcomp > .post-score > .score > img {
+    float: right;
+    width: calc(var(--pix-margin) * 2);
+    height: calc(var(--pix-margin) * 2);
+    object-fit: contain;
+    margin-left: 3px;
+  }
+</style>
+
+
+<script type='text/x-template' id='posts-template'>
+  <div class='posts vcomp'>
+    <div class='back'>
+      <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
+    </div>
+
+    <div class='post-score'>
+      <img class='barcode' src='/static/materials/icons/barcode_0.png'>
+      <div class='score'>
+        264
+        <img src='/static/materials/icons/fire.png'>
+      </div>
+    </div>
+
+    <swiper ref='swiper' :options='swiper_options'>
+      <swiper-slide v-for='post in posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
+        <post :post='post' :session='session'></post>
+      </swiper-slide>
+    </swiper>
+
+
+    <transition name='show-author-profile' mode=in-out>
+      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo)'>
+        <img class='fit' :src='cpost_boo_profile'>
+      </div>
+    </transition>
+
+
+    <div class='comment menublock' @click='session.open_comments()'>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
+    </div>
+
+    <div class='posting menublock' @click='session.open_posting()'>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
+    </div>
+
+    <div class='my menublock' @click='session.open_mypage()'>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png'>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.use(VueAwesomeSwiper);
+
+  Vue.component('posts', {
+    template: '#posts-template',
+    delimiters: ['[[', ']]'],
+    props: ['session', 'posts'],
+
+    data: function() {
+      return {
+        swiper: undefined,
+        swiper_options: {
+          direction: 'vertical'
+        }
+      }
+    },
+
+    computed: {
+      cpost: function() {
+        if (this.swiper) {
+          return this.posts[this.swiper.realIndex]
+        }
+      },
+
+      cpost_boo: function() {
+        if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
+          return this.auth.boo
+
+        } else if (this.cpost) {
+          return this.cpost.boo
+        }
+      },
+
+      // cpost_boo: function() {
+      //   return this.session.cpost_boo
+      // },
+
+      cpost_boo_id: function() {
+        if (this.cpost_boo) {
+          return this.cpost_boo.id
+        }
+      },
+
+      cpost_boo_profile: function() {
+        if (this.cpost_boo) {
+          return this.cpost_boo.profile.pix
+        }
+      },
+
+      level_style: function() {
+        if (this.cpost_boo) {
+          return {
+            borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.cpost_boo)}`
+          }
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = this.$refs.swiper.$swiper;
+      this.session.swiper = this.$refs.swiper.$swiper;
+    }
+  });
+</script>

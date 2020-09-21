@@ -47,8 +47,7 @@
     methods: {
       load_boo_moreinfo: function() {
         if (!this.boo.posts) {
-          this.$set(this.boo, 'posts', new Booposts());
-          this.session.load_boo_moreinfo(this.boo);
+          this.$set(this.boo, 'posts', new Booposts(this.boo));
         }
       }
     }

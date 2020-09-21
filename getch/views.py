@@ -61,11 +61,15 @@ def get_user(request):
 
 def get_posts(request):
     _qs = m.Post.objects.all().select_subclasses().order_by('created_at')[:3]
-    # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:3]
+    # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
     _qs = m.PostSerializer.setup_eager_loading(_qs)
     _posts = m.PostSerializer(_qs, many=True).data
     return JsonResponse({'success':True, 'posts':_posts}, safe=False)
     # return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
+
+def get_iposts(request):
+    _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
+    return JsonResponse({'success':True, 'iposts':list(_iposts)}, safe=False)
 
 
 def get_post(request, post_id):
@@ -74,10 +78,15 @@ def get_post(request, post_id):
     return JsonResponse({'success':True, 'post':_post}, safe=False)
 
 
-def get_basepost(request, post_id):
+def get_boopost(request, post_id):
     _post = m.Post.objects.get_subclass(pk=post_id)
-    _post = m.BasepostSerializer(_post).data
+    _post = m.BoopostSerializer(_post).data
     return JsonResponse({'success':True, 'post':_post}, safe=False)
+
+
+def get_ibooposts(request, boo_id):
+    _boo = m.Boo.objects.get(pk=boo_id)
+    return JsonResponse({'success':True, 'iposts':_boo.iposts}, safe=False)
 
 
 def other_boos(request):
@@ -129,10 +138,10 @@ def unfollow(request, boo_id):
         return JsonResponse({'success':False}, safe=False)
 
 
-def boo_posts(request, boo_id):
-    _posts = m.Post.objects.filter(boo_id=boo_id).select_subclasses().order_by('-created_at')
-    _posts = m.PostSerializer(_posts, many=True).data
-    return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
+# def boo_posts(request, boo_id):
+#     _posts = m.Post.objects.filter(boo_id=boo_id).select_subclasses().order_by('-created_at')
+#     _posts = m.PostSerializer(_posts, many=True).data
+#     return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
 
 
 def boo_profilepix(request, boo_id):

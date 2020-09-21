@@ -1,32 +1,28 @@
 class Session {
   constructor() {
     this.page = {
-      mypage:     { open: false, from: 'right'},
-      loginpage:  { open: false, from: 'right'},
+      mypage:     { open: false, from: 'left'},
+      loginpage:  { open: false, from: 'left'},
       boochooser: { open: false, from: 'left'},
-      profiler:   { open: false, from: 'right', key: undefined},
-      // authorpage: { open: false, from: 'right'},
-      // boopage:    { open: false, from: 'right', boo_id: undefined},
-      boopage:    { open: false, from: 'right', boo: undefined},
+      profiler:   { open: false, from: 'left', key: undefined},
+      authorpage: { open: false, from: 'right'},
       network:    { open: false, from: 'right'},
       posting:    { open: false, from: 'right'},
-      comments:    { open: false, from: 'right'},
-      booposts:    { open: false, from: 'right', posts: [], open_at: 0},
+      comments:    { open: false, from: 'bottom'},
     };
 
     this.on_intro = true;
     this.mode = { on: 'journey', prev: undefined };
-    // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
-    // this.cvoters = { up: undefined, down: undefined };
+    this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
+    this.cvoters = { up: undefined, down: undefined };
     this.auth = undefined;
     this.swiper = undefined;
-    this.posts = [];
+    this.posts = undefined;
     this.stats = undefined;
     this.hammer = this.get_hammer();
 
     this.fetch_user();
-    this.load_posts();
-    // this.fetch_posts();
+    this.fetch_posts();
   }
 
 
@@ -46,35 +42,12 @@ class Session {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          // this.posts = JSON.parse(js.posts);
-          this.posts = js.posts;
+          this.posts = JSON.parse(js.posts);
           this.on_intro = false;
         }
       });
   }
 
-  load_posts() {
-    fetch('/posts/ids')
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          const promises = js.iposts.map(id => this.load_post(id));
-          Promise.all(promises).then(results => {
-            console.log('complete');
-            // this.on_intro = false;
-          });
-        }
-      });
-  }
-
-  load_post(id) {
-    return fetch(`/post/${id}`)
-            .then(x => x.json())
-            .then(js => {
-              this.posts.push(js.post);
-              this.on_intro = false;
-            })
-  }
 
   get_hammer() {
     const self = this;
@@ -92,21 +65,18 @@ class Session {
       const x = getStartX(e);
 
       if (self.mode.on == 'journey') {
-        if (e.type=='swiperight') {// && x <= 0.3) {
+        if (e.type=='swiperight' && x <= 0.3) {
           self.open_boochooser();
 
-        } else if (e.type=='swipeleft') {// && x >= 0.7) {
-          self.open_boopage(self.cpost.boo);
-          // self.open_authorpage();
+        } else if (e.type=='swipeleft' && x >= 0.7) {
+          self.open_authorpage();
         }
 
       } else {
-        // if (e.type=='swiperight' && x <= 0.3 && self.page[self.mode.on].from=='right') {
-        if (e.type=='swiperight' && self.page[self.mode.on].from=='right') {
+        if (e.type=='swiperight' && x <= 0.3 && self.page[self.mode.on].from=='right') {
           self.close_page();
 
-        // } else if (e.type=='swipeleft' && x >= 0.7 && self.page[self.mode.on].from=='left') {
-        } else if (e.type=='swipeleft' && self.page[self.mode.on].from=='left') {
+        } else if (e.type=='swipeleft' && x >= 0.7 && self.page[self.mode.on].from=='left') {
           self.close_page();
         }
       }
@@ -160,13 +130,16 @@ class Session {
   }
 
   open_comments() {
-    this.open_page('comments');
-  }
+    // fetch(`/post/${this.cpost.id}/voters/`)
+    //   .then(x => x.json())
+    //   .then(js => {
+    //     const _voters = JSON.parse(js.voters);
+    //     console.log(_voters);
+    //     this.cvoters.up = _voters.up;
+    //     this.cvoters.down = _voters.down;
+    //   })
 
-  open_booposts(posts, where) {
-    this.page.booposts.posts = posts;
-    this.page.booposts.open_at = where;
-    this.open_page('booposts');
+    this.open_page('comments');
   }
 
   open_posting() {
@@ -177,50 +150,37 @@ class Session {
     }
   }
 
-  // open_authorpage() {
-  //   if (this.auth && this.auth.boo_selected==this.cpost.boo.id) {
-  //     this.open_mypage();
-  //
-  //   } else {
-  //     this.open_page('authorpage');
-  //   }
-  // }
-
-  // open_boopage(boo_id) {
-  //   if (this.auth && this.auth.boo_selected==boo_id) {
-  open_boopage(boo) {
-    if (this.auth && this.auth.boo_selected==boo.id) {
+  open_authorpage() {
+    if (this.auth && this.auth.boo_selected==this.cpost.boo.id) {
       this.open_mypage();
 
     } else {
-      // this.page.boopage.boo_id = boo_id;
-      this.page.boopage.boo = boo;
-      this.open_page('boopage');
+      this.open_page('authorpage');
     }
   }
 
-  // open_network() {
-  //   if (this.mode.on=='mypage') {
-  //     this.cnetwork.boo = this.auth.boo;
-  //   } else if (this.mode.on=='authorpage') {
-  //     this.cnetwork.boo = this.cpost.boo;
-  //   }
-  //
-  //   this.cnetwork.followers = undefined;
-  //   this.cnetwork.followees = undefined;
-  //
-  //   self = this;
-  //   fetch(`/boo/${self.cnetwork.boo.id}/network/`)
-  //     .then(x => x.json())
-  //     .then(js => {
-  //       const _network = JSON.parse(js.network);
-  //       console.log(_network);
-  //       self.cnetwork.followers = _network.followers;
-  //       self.cnetwork.followees = _network.followees;
-  //     })
-  //
-  //   this.open_page('network');
-  // }
+  open_network() {
+    if (this.mode.on=='mypage') {
+      this.cnetwork.boo = this.auth.boo;
+    } else if (this.mode.on=='authorpage') {
+      this.cnetwork.boo = this.cpost.boo;
+    }
+
+    this.cnetwork.followers = undefined;
+    this.cnetwork.followees = undefined;
+
+    self = this;
+    fetch(`/boo/${self.cnetwork.boo.id}/network/`)
+      .then(x => x.json())
+      .then(js => {
+        const _network = JSON.parse(js.network);
+        console.log(_network);
+        self.cnetwork.followers = _network.followers;
+        self.cnetwork.followees = _network.followees;
+      })
+
+    this.open_page('network');
+  }
 
   checkin(on) {
     console.log(`check-in to ${on}`);
@@ -246,15 +206,6 @@ class Session {
   get cpost() {
     if (this.swiper) {
       return this.posts[this.swiper.realIndex]
-    }
-  }
-
-  get cpost_boo() {
-    if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
-      return this.auth.boo
-
-    } else if (this.cpost) {
-      return this.cpost.boo
     }
   }
 
@@ -321,56 +272,8 @@ class Session {
         return 'rgba(255, 0, 0, 1)'
     }
   }
-
-  load_boo_moreinfo(boo) {
-    fetch(`/boo/${boo.id}/moreinfo/`)
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          boo.posts.list = js.boo.iposts;
-          boo.posts.load();
-        }
-      });
-  }
 }
 
-
-
-class ContentLoader {
-  constructor() {
-    this.list = [];
-    this.onloading = true;
-    this.contents = [];
-  }
-
-  load() {
-    this.onloading = true;
-    const promises = this.list.map(id => this.load_by_id(id));
-    Promise.all(promises).then(results => {
-      console.log('complete');
-      this.onloading = false;
-    });
-  }
-}
-
-
-class Booposts extends ContentLoader {
-  constructor(boo) {
-    super();
-    // this.model = 'post';
-    // this.filter = {};
-    this.boo = boo;
-  }
-
-  load_by_id(id) {
-    return fetch(`/post/${id}/boo/`)
-            .then(x => x.json())
-            .then(js => {
-              js.post.boo = this.boo;
-              this.contents.push(js.post);
-            })
-  }
-}
 
 class Auth {
   constructor(cuser) {
@@ -453,9 +356,15 @@ class Auth {
   }
 
   vote(post_id, action) {
-    const feed_act = {};
-    feed_act[post_id] = action;
-    this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+    // if (action==-1) {
+    //   delete this.boo.voting_record[post_id];
+    //
+    // } else {
+      const feed_act = {};
+      feed_act[post_id] = action;
+      this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+      // this.boo.voting_record[post_id] = action;
+    // }
 
     this.api_get(`post/${post_id}/vote?action=${action}`);
   }

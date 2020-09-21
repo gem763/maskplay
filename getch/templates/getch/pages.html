@@ -6,6 +6,7 @@
 {% include "getch/network.html" %}
 {% include "getch/posting.html" %}
 {% include "getch/comments.html" %}
+{% include "getch/booposts.html" %}
 
 <style>
   .pages {
@@ -27,11 +28,6 @@
       :session='session'
     ></network> -->
 
-    <posting
-      v-if='session.auth'
-      :session='session'
-    ></posting>
-
     <comments
       v-if='session.cpost'
       :session='session'
@@ -45,6 +41,15 @@
       v-if='session.auth'
       :session='session'
     ></mypage>
+
+    <booposts
+      :session='session'
+    ></booposts>
+
+    <posting
+      v-if='session.auth'
+      :session='session'
+    ></posting>
 
     <boochooser
       v-if='session.auth'

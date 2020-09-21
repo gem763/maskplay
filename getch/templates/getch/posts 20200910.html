@@ -1,0 +1,317 @@
+{% include "getch/post.html" %}
+
+<style>
+  .posts {
+    width: 100%;
+    height: 100%;
+  }
+
+  .posts .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .posts .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .posts > .back {
+    position: absolute;
+    top: calc(352 * var(--x));
+    left: 0;
+    width: 100%;
+    height: calc(572 * var(--x));
+    /* background: orange; */
+    /* background: rgba(255,242,204,0.25); */
+    background: rgba(0,0,0,0.1);
+  }
+
+  .posts > .back > img.logo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--s-menu) + var(--pix-margin));
+  }
+
+  .posts .menublock {
+    position: absolute;
+    width: calc(var(--s-menu) - var(--border-w));
+    height: calc(var(--s-menu) - var(--border-w));
+    border: var(--border);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .posts .menublock.author {
+    top: 0;
+    right: 0;
+    background: white;
+  }
+
+  /* .posts .menublock.author.level-0 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid black;
+  }
+
+  .posts .menublock.author.level-1 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(0, 176, 240, 1);
+  }
+
+  .posts .menublock.author.level-2 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(33, 170, 74, 1);
+  }
+
+  .posts .menublock.author.level-3 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(247, 232, 3, 1);
+  }
+
+  .posts .menublock.author.level-4 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(247, 123, 37, 1);
+  }
+
+  .posts .menublock.author.level-5 {
+    border-bottom: calc(var(--s-menu) * 0.3) solid rgba(255, 0, 0, 1);
+  } */
+
+
+  .posts .menublock.my {
+    bottom: calc(64 * var(--x));
+    right: 0;
+  }
+
+  .posts .menublock.posting {
+    bottom: calc(64 * var(--x) + var(--s-menu));;
+    right: 0;
+  }
+
+  .posts .menublock.comment {
+    bottom: calc(64 * var(--x) + 2 * var(--s-menu));;
+    right: 0;
+  }
+
+  .posts .menublock > img.fit {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .posts .menublock > img.icon {
+    object-fit: contain;
+    width: 80%;
+    height: 80%;
+  }
+
+  .posts .menublock > .circle {
+    width: 80%;
+    height: 80%;
+    background: black;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .posts .menublock > .circle > .red-dot {
+    width: 30%;
+    height: 30%;
+    background: red;
+    border-radius: 50%;
+  }
+
+  .posts .show-author-profile-enter-active {
+    transition: all 0.5s;
+  }
+
+  .posts .show-author-profile-leave-active {
+    transition: all 0.1s;
+  }
+
+  .posts .show-author-profile-enter,
+  .posts .show-author-profile-leave-to {
+    opacity: 0;
+    /* top: calc(var(--s-menu) * (-1)) !important; */
+  }
+
+
+  /* .posts img.author-barcode {
+    position: absolute;
+    top: var(--pix-margin);
+    left: calc(var(--s-0) + var(--pix-margin));
+    height: calc(3.5 * var(--pix-margin));
+    width: auto;
+    transform: rotate(90deg);
+    transform-origin: 0 0;
+  } */
+
+  .posts > .post-score {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--x) * 64);
+  }
+
+  .posts > .post-score > img.barcode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--pix-margin) * 2);
+  }
+
+  .posts > .post-score > .score {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--pix-margin) * 2);
+    background: none;
+    text-align: right;
+    font-size: calc(var(--pix-margin) * 1.3);
+  }
+
+  .posts > .post-score > .score > span { }
+
+  .posts > .post-score > .score > img {
+    float: right;
+    width: calc(var(--pix-margin) * 2);
+    height: calc(var(--pix-margin) * 2);
+    object-fit: contain;
+    margin-left: 3px;
+  }
+</style>
+
+
+<script type='text/x-template' id='posts-template'>
+  <div class='posts'>
+    <div class='back'>
+      <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
+    </div>
+
+
+    <div class='post-score'>
+      <img class='barcode' src='/static/materials/icons/barcode_0.png'>
+      <div class='score'>
+        264
+        <img src='/static/materials/icons/fire.png'>
+      </div>
+    </div>
+
+    <swiper ref='swiper' :options='swiper_options'>
+      <swiper-slide v-for='post in session.posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
+        <post :post='post' :session='session'></post>
+      </swiper-slide>
+    </swiper>
+
+
+    <transition name='show-author-profile' mode=in-out>
+      <!-- <div class='author menublock' v-if='session.swiper && !session.swiper.animating' @click='session.open_authorpage()'> -->
+      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo)'>
+        <!-- <img class='fit' :src='cpost_boo_profile'> -->
+        <!-- <img class='fit' v-if='session.cpost' :src='session.cpost.boo.profile.pix'> -->
+        <img class='fit' v-if='session.cpost' :src='cpost_boo_profile'>
+      </div>
+    </transition>
+
+    <!-- <transition name='show-comment-button'> -->
+      <div class='comment menublock' @click='session.open_comments()'>
+        <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
+      </div>
+    <!-- </transition> -->
+
+    <div class='posting menublock' @click='session.open_posting()'>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
+      <!-- <div class='circle'>
+        <div class='red-dot'></div>
+      </div> -->
+    </div>
+
+    <div class='my menublock' @click='session.open_mypage()'>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png'>
+      <!-- <div class='circle'>
+        <img class='icon' src='/static/materials/icons/profile.png' style='filter:invert(100%)'>
+      </div> -->
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.use(VueAwesomeSwiper);
+
+  Vue.component('posts', {
+    template: '#posts-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+
+    data: function() {
+      return {
+        swiper_options: {
+          direction: 'vertical'
+        }
+      }
+    },
+
+    computed: {
+      level_style: function() {
+        if (this.session && this.session.cpost) {
+          return {
+            borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.cpost_boo)}`
+          }
+        }
+      },
+
+      // level: function() {
+      //   if (this.session && this.session.cpost) {
+      //     return 'level-' + this.session.level(this.session.cpost.boo)
+      //   }
+      // },
+
+      cpost_boo: function() {
+        if (this.session.auth && this.session.cpost && this.session.cpost.boo.id==this.session.auth.boo_selected) {
+          return this.session.auth.boo
+
+        } else if (this.session.cpost) {
+          return this.session.cpost.boo
+        }
+      },
+
+      cpost_boo_id: function() {
+        if (this.cpost_boo) {
+          return this.cpost_boo.id
+        }
+      },
+
+      cpost_boo_profile: function() {
+        if (this.cpost_boo) {
+          return this.cpost_boo.profile.pix
+        }
+      },
+
+      // cpost_boo_id: function() {
+      //   if (this.session.cpost) {
+      //     return this.session.cpost.boo.id
+      //   }
+      // },
+
+      // cpost_boo_profile: function() {
+      //   if (this.session.auth && this.cpost_boo_id==this.session.auth.boo_selected) {
+      //     return this.session.auth.boo.profile.pix
+      //
+      //   } else {
+      //     return this.session.cpost.boo.profile.pix
+      //   }
+      // }
+    },
+
+    mounted: function() {
+      this.session.swiper = this.$refs.swiper.$swiper;
+    }
+  });
+</script>

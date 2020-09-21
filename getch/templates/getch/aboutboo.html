@@ -122,6 +122,8 @@
     display: flex;
     flex-wrap: wrap;
     overflow: hidden;
+    /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
+    /* overflow-y: auto; */
   }
 
   .aboutboo.vcomp .content > .booposts-section > .booposts > .boopost {
@@ -139,8 +141,8 @@
     filter: blur(10px);
   }
 
-  .aboutboo.vcomp .show-booposts-enter-active,
-  .aboutboo.vcomp .show-booposts-leave-active {
+  /* .aboutboo.vcomp .show-booposts-leave-active, */
+  .aboutboo.vcomp .show-booposts-enter-active {
     transition: all 1s;
   }
 
@@ -219,8 +221,8 @@
     <template #content>
       <div class='booposts-section'>
         <transition-group name='show-booposts' tag='div' class='booposts' v-if='boo.posts'>
-          <div class='boopost' v-for='post in boo.posts.contents' :key='post.id'>
-            <minipost :post='post'></minipost>
+          <div class='boopost' v-for='(post, idx) in boo.posts.list' :key='post.id' @click='open_booposts(idx)'>
+            <minipost :post='post' :session='session'></minipost>
           </div>
         </transition-group>
 
@@ -292,6 +294,10 @@
         if (this.type == 'my') {
           this.session.open_boochooser();
         }
+      },
+
+      open_booposts: function(where) {
+        this.session.open_booposts(this.boo.posts.list, where);
       },
 
       toggle_follow: function() {

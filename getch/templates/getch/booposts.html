@@ -1,0 +1,33 @@
+{% include "getch/page.html" %}
+{% include "getch/baseposts.html" %}
+
+<style>
+  .booposts.vcomp {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script type='text/x-template' id='booposts-template'>
+  <page class='booposts' :open='session.page.booposts.open' :from='session.page.booposts.from' @close='session.close_page()'>
+    <baseposts :session='session' :posts='posts' type='booposts' :open_at='session.page.booposts.open_at'></baseposts>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('booposts', {
+    template: '#booposts-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      posts: function() {
+        return this.session.page.booposts.posts
+      }
+    }
+  });
+</script>

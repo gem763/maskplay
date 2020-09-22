@@ -5,16 +5,21 @@ class Session {
       loginpage:  { open: false, from: 'right'},
       boochooser: { open: false, from: 'left'},
       profiler:   { open: false, from: 'right', key: undefined},
+      // authorpage: { open: false, from: 'right'},
+      // boopage:    { open: false, from: 'right', boo_id: undefined},
       boopage:    { open: false, from: 'right', boo: undefined},
       network:    { open: false, from: 'right'},
-      posting:    { open: false, from: 'right', posts: undefined},
+      posting:    { open: false, from: 'right'},
       comments:    { open: false, from: 'right'},
-      booposts:    { open: false, from: 'right', posts: undefined, open_at: 0},
+      booposts:    { open: false, from: 'right', posts: [], open_at: 0},
     };
 
+    // this.on_intro = true;
     this.mode = { on: 'journey', prev: undefined };
     // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
+    // this.cvoters = { up: undefined, down: undefined };
     this.auth = undefined;
+    this.swiper = undefined;
     this.posts = new Posts();
     this.stats = undefined;
     this.hammer = this.get_hammer();
@@ -34,6 +39,38 @@ class Session {
       });
   }
 
+  // fetch_posts() {
+  //   fetch('/posts')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         this.posts = js.posts;
+  //         this.on_intro = false;
+  //       }
+  //     });
+  // }
+  //
+  // load_posts() {
+  //   fetch('/posts/ids')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         const promises = js.iposts.splice(0,5).map(id => this.load_post(id));
+  //         Promise.all(promises).then(results => {
+  //           console.log('complete');
+  //         });
+  //       }
+  //     });
+  // }
+  //
+  // load_post(id) {
+  //   return fetch(`/post/${id}`)
+  //           .then(x => x.json())
+  //           .then(js => {
+  //             this.posts.push(js.post);
+  //             this.on_intro = false;
+  //           })
+  // }
 
   get_hammer() {
     const self = this;
@@ -117,9 +154,8 @@ class Session {
     this.open_page('booposts');
   }
 
-  open_posting(posts) {
+  open_posting() {
     if (this.auth) {
-      this.page.posting.posts = posts;
       this.open_page('posting');
     } else {
       this.open_loginpage();
@@ -176,33 +212,33 @@ class Session {
     }
   }
 
-  // get cpost() {
-  //   if (this.swiper) {
-  //     return this.posts.list[this.swiper.realIndex]
-  //   }
-  // }
-  //
-  // get cpost_boo() {
-  //   if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
-  //     return this.auth.boo
-  //
-  //   } else if (this.cpost) {
-  //     return this.cpost.boo
-  //   }
-  // }
+  get cpost() {
+    if (this.swiper) {
+      return this.posts.list[this.swiper.realIndex]
+    }
+  }
 
-  // push_post(post) {
-  //   const where = this.swiper.realIndex + 1;
-  //   this.posts.list.splice(where, 0, post);
-  //   this.swiper.slideTo(where);
-  // }
+  get cpost_boo() {
+    if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
+      return this.auth.boo
 
-  // delete_cpost() {
-  //   const where = this.swiper.realIndex;
-  //   this.swiper.slideTo(where - 1);
-  //   this.posts.list.splice(where, 1);
-  //   // this.swiper.removeSlide(where);
-  // }
+    } else if (this.cpost) {
+      return this.cpost.boo
+    }
+  }
+
+  push_post(post) {
+    const where = this.swiper.realIndex + 1;
+    this.posts.list.splice(where, 0, post);
+    this.swiper.slideTo(where);
+  }
+
+  delete_cpost() {
+    const where = this.swiper.realIndex;
+    this.swiper.slideTo(where - 1);
+    this.posts.list.splice(where, 1);
+    // this.swiper.removeSlide(where);
+  }
 
 
   pscore(boo) {
@@ -254,6 +290,17 @@ class Session {
         return 'rgba(255, 0, 0, 1)'
     }
   }
+
+  // load_boo_moreinfo(boo) {
+  //   fetch(`/boo/${boo.id}/moreinfo/`)
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         boo.posts.idlist = js.boo.iposts;
+  //         boo.posts.load(16);
+  //       }
+  //     });
+  // }
 }
 
 
@@ -288,62 +335,7 @@ class ContentLoader {
 }
 
 
-class Baseposts extends ContentLoader {
-  constructor() {
-    super();
-    this.swiper = undefined;
-  }
-
-  get cpost() {
-    if (this.swiper) {
-      return this.list[this.swiper.realIndex]
-    }
-  }
-
-  freeze() {
-    this.swiper.detachEvents();
-  }
-
-  activate() {
-    this.swiper.attachEvents();
-  }
-
-  add_newpost(post) {
-    const where = this.swiper.realIndex + 1;
-    this.list.splice(where, 0, post);
-    this.swiper.slideTo(where);
-  }
-
-  delete_cpost() {
-    const where = this.swiper.realIndex;
-    this.swiper.slideTo(where - 1);
-    this.list.splice(where, 1);
-    // this.swiper.removeSlide(where);
-  }
-
-  listout(post) {
-    const where = _.findIndex(this.list, ['id', post.id]);
-    this.list.splice(where, 1);
-  }
-
-  listin(post) {
-    let where = _.findIndex(this.list, ['id', post.id]);
-
-    if (where==-1) {
-      this.list.push(post);
-
-    } else {
-      this.list.splice(where, 1, post);
-    }
-  }
-
-  open_at(islide) {
-    this.swiper.slideTo(islide, 1, false);
-  }
-}
-
-
-class Posts extends Baseposts {
+class Posts extends ContentLoader {
   constructor() {
     super();
     this.load_idlist();
@@ -369,7 +361,7 @@ class Posts extends Baseposts {
   }
 }
 
-class Booposts extends Baseposts {
+class Booposts extends ContentLoader {
   constructor(boo) {
     super();
     this.boo = boo;

@@ -150,11 +150,18 @@
     </div>
 
     <swiper ref='swiper' :options='swiper_options'>
-      <swiper-slide v-for='post in posts' :post_id='post.id' :author_id='post.boo.id' :key='post.id'>
-        <post :post='post' :session='session'></post>
+      <!-- <swiper-slide v-for='post in posts_list' :post_id='post.id' :author_id='post.boo.id' :key='post.id'> -->
+      <swiper-slide v-for='post in posts_list' :key='post.id'>
+        <post
+          :post='post'
+          :posts = 'posts'
+          :session='session'
+        ></post>
       </swiper-slide>
     </swiper>
-
+    <!-- @postize1='postize'
+    @delete='delete_cpost'
+    @onswipe='onswipe($event)' -->
 
     <transition name='show-author-profile' mode=in-out>
       <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='open_boopage'>
@@ -188,7 +195,7 @@
 
     data: function() {
       return {
-        swiper: undefined,
+        // swiper: undefined,
         swiper_options: {
           direction: 'vertical'
         }
@@ -196,15 +203,24 @@
     },
 
     computed: {
+      posts_list: function() {
+        if (this.posts) {
+          return  this.posts.list
+
+        } else {
+          return []
+        }
+      },
+
       cpost: function() {
-        if (this.swiper) {
-          return this.posts[this.swiper.realIndex]
+        if (this.posts) {
+          return this.posts.cpost
         }
       },
 
       cpost_boo: function() {
-        if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
-          return this.auth.boo
+        if (this.session.auth && this.cpost && this.cpost.boo.id==this.session.auth.boo_selected) {
+          return this.session.auth.boo
 
         } else if (this.cpost) {
           return this.cpost.boo
@@ -233,12 +249,25 @@
     },
 
     mounted: function() {
-      this.swiper = this.$refs.swiper.$swiper;
+      if (this.type=='booposts') {
+        this.$watch(
+          'posts.boo.id',
+          function(_new, _old) {
+            this.posts.swiper = this.$refs.swiper.$swiper;
+          }, 
+        );
+
+      } else {
+        this.posts.swiper = this.$refs.swiper.$swiper;
+      }
     },
 
     watch: {
       open_at: function(_new, _old) {
-        this.swiper.slideTo(_new);
+        // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
+        this.$nextTick(function() {
+          this.posts.open_at(_new);
+        })
       }
     },
 
@@ -268,10 +297,7 @@
       },
 
       open_posting: function() {
-        if (this.type=='booposts') {
-        } else {
-          this.session.open_posting();
-        }
+        this.session.open_posting(this.posts)
       }
     }
   });

@@ -11,11 +11,11 @@
     ></modal>
 
     <page :open='postvoteab' :from='session.page.posting.from' @close='session.close_page()'>
-      <post type='postvoteab' :session='session'></post>
+      <post type='postvoteab' :session='session' :posts='session.page.posting.posts'></post>
     </page>
 
     <page :open='postvoteox' :from='session.page.posting.from' @close='session.close_page()'>
-      <post type='postvoteox' :session='session'></post>
+      <post type='postvoteox' :session='session' :posts='session.page.posting.posts'></post>
     </page>
   </div>
 </script>

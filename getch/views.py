@@ -59,13 +59,11 @@ def get_user(request):
         return JsonResponse({'success':False})
 
 
-def get_posts(request):
-    _qs = m.Post.objects.all().select_subclasses().order_by('created_at')[:3]
-    # _qs = m.Post.objects.all().select_subclasses().order_by('-created_at')[:]
-    _qs = m.PostSerializer.setup_eager_loading(_qs)
-    _posts = m.PostSerializer(_qs, many=True).data
-    return JsonResponse({'success':True, 'posts':_posts}, safe=False)
-    # return JsonResponse({'success':True, 'posts':json.dumps(_posts)}, safe=False)
+# def get_posts(request):
+#     _qs = m.Post.objects.all().select_subclasses().order_by('created_at')[:3]
+#     _qs = m.PostSerializer.setup_eager_loading(_qs)
+#     _posts = m.PostSerializer(_qs, many=True).data
+#     return JsonResponse({'success':True, 'posts':_posts}, safe=False)
 
 def get_iposts(request):
     _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
@@ -156,20 +154,20 @@ def boo_profilepix(request, boo_id):
 #     # print(_boo.data)
 #     return JsonResponse({'success':True, 'boo':_boo}, safe=False)
 
-def boo_moreinfo(request, boo_id):
-    _boo = m.Boo.objects.get(pk=boo_id)
-    boo = { 'iposts': _boo.iposts }
-    return JsonResponse({'success':True, 'boo':boo}, safe=False)
+# def boo_moreinfo(request, boo_id):
+#     _boo = m.Boo.objects.get(pk=boo_id)
+#     boo = { 'iposts': _boo.iposts }
+#     return JsonResponse({'success':True, 'boo':boo}, safe=False)
 
 
 def post_delete(request, post_id):
     try:
         post = m.Post.objects.get_subclass(pk=post_id)
         post.delete()
-        return JsonResponse({'success':True}, safe=False)
+        return JsonResponse({'success':True, 'message':'post deleted successfully'}, safe=False)
 
     except:
-        return JsonResponse({'success':False}, safe=False)
+        return JsonResponse({'success':False, 'message':'something wrong while deleting post'}, safe=False)
 
 
 def voters(request, post_id):
@@ -351,10 +349,12 @@ def post_save(request):
         post.save()
 
         if mode == 'edited':
-            js = {'success':True, 'mode':mode}
+            _post = m.PostSerializer(post).data
+            js = {'success':True, 'mode':mode, 'post':_post}
 
         elif mode == 'created':
-            _post = json.dumps(m.PostSerializer(post).data)
+            # _post = json.dumps(m.PostSerializer(post).data)
+            _post = m.PostSerializer(post).data
             js = {'success':True, 'mode':mode, 'post':_post}
             # post_created = render_to_string('getch/post.html', {'post':post, 'type':post_type})
             # js = {'success':True, 'mode':mode, 'post_id':post.id, 'post_created':post_created}

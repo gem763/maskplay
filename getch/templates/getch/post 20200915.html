@@ -344,7 +344,7 @@
   Vue.component('post', {
     template: '#post-template',
     delimiters: ['[[', ']]'],
-    props: ['post', 'posts', 'session', 'type'],
+    props: ['post', 'session', 'type'],
 
     data: function() {
       return {
@@ -354,21 +354,47 @@
       }
     },
 
-    computed: {
-      post_type: function() {
-        if (this.post) {
-          return this.post.type
-        } else {
-          return this.type
-        }
-      },
+    // mounted: function() {
+    //   const fac = new FastAverageColor();
+    //   const self = this;
+    //   const img = new Image();
+    //
+    //   img.addEventListener('load', function() {
+    //     fac.getColorAsync(img)
+    //       .then(function(color) {
+    //         self.$refs.post.style.backgroundColor = color.rgba;
+    //         // container.style.color = color.isDark ? '#fff' : '#000';
+    //         // console.log('Average color', color);
+    //
+    //       }).catch(function(e) {
+    //         console.log(e);
+    //       });
+    //   });
+    //
+    //   img.crossOrigin = 'Anonymous';
+    //
+    //   if (this.is_postvoteox) {
+    //     img.src = this.post_pix;
+    //   } else if (this.is_postvoteab) {
+    //     img.src = this.post_pix_a;
+    //   }
+    // },
 
+    computed: {
       is_postvoteox: function() {
         return (this.post_type == 'postvoteox')
       },
 
       is_postvoteab: function() {
         return (this.post_type == 'postvoteab')
+      },
+
+      post_type: function() {
+        if (this.post) {
+          return this.post.type
+        } else {
+          return this.type
+        }
       },
 
       post_pix: function() {
@@ -396,30 +422,20 @@
         catch(e) { return '' }
       },
 
-      post_boo: function() {
+      post_boo_profile_pix: function() {
         if (this.post && !this.is_mypost) {
-          return this.post.boo
+          return this.post.boo.profile.pix
         } else {
-          return this.session.auth.boo
+          return this.session.auth.boo.profile.pix
         }
       },
 
-      post_boo_profile_pix: function() {
-        return this.post_boo.profile.pix
-        // if (this.post && !this.is_mypost) {
-        //   return this.post.boo.profile.pix
-        // } else {
-        //   return this.session.auth.boo.profile.pix
-        // }
-      },
-
       post_boo_nick: function() {
-        return this.post_boo.nick
-        // if (this.post && !this.is_mypost) {
-        //   return this.post.boo.nick
-        // } else {
-        //   return this.session.auth.boo.nick
-        // }
+        if (this.post && !this.is_mypost) {
+          return this.post.boo.nick
+        } else {
+          return this.session.auth.boo.nick
+        }
       },
 
       post_text: function() {
@@ -461,8 +477,8 @@
       },
 
       is_cpost: function() {
-        if (this.post && this.posts.cpost) {
-          return (this.post.id == this.posts.cpost.id)
+        if (this.session.cpost && this.post) {
+          return (this.session.cpost.id == this.post.id)
 
         } else {
           return false
@@ -489,20 +505,20 @@
     watch: {
       on_edit: function(_new, _old) {
         if (_new) {
-          this.posts.freeze();
+          this.session.swiper.detachEvents()
 
         } else if (_old) {
-          this.posts.activate();
+          this.session.swiper.attachEvents();
           this.save_post();
         }
       },
 
       on_delete: function(_new, _old) {
         if (_new) {
-          this.posts.freeze();
+          this.session.swiper.detachEvents()
 
         } else if (_old) {
-          this.posts.activate();
+          this.session.swiper.attachEvents();
         }
       }
     },
@@ -575,19 +591,14 @@
         // this.on_delete = false가 갱신된 후에 아래를 실행한다
         this.$nextTick(function() {
           if (how==1) {
+            const self = this;
             fetch(`post/${this.post.id}/delete`)
               .then(res => res.json())
               .then(js => {
                 console.log(js);
               });
 
-            // 아래 순서가 중요하다
-            // post_boo에서 지우고 > 이 포스트를 지운다
-            if (this.post_boo.posts) {
-              this.post_boo.posts.listout(this.post);
-            }
-
-            this.posts.delete_cpost();
+            self.session.delete_cpost();
           }
         });
       },
@@ -618,8 +629,6 @@
 
 
         if (Number(formdata.get('n_edited')) > 0) {
-          this.show_processing();
-
           formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
           formdata.append('type', this.post_type);
 
@@ -628,24 +637,22 @@
             formdata.append('post_id', this.post.id);
 
           } else {
-            // this.show_processing();
+            this.show_processing();
           }
 
+          const self = this;
           fetch('post/save/', { method: 'POST', body: formdata })
             .then(res => res.json())
             .then(js => {
-              console.log(js);
+              console.log(js)
+              self.hide_processing();
 
               if (js.success && js.mode=='created') {
-                this.posts.add_newpost(js.post);
-                this.session.close_page();
+                const post = JSON.parse(js.post);
+                console.log(post);
+                self.session.push_post(post);
+                self.session.close_page();
               }
-
-              if (js.success && this.post_boo.posts) {
-                this.post_boo.posts.listin(js.post);
-              }
-
-              this.hide_processing();
             });
         }
       }

@@ -10,7 +10,7 @@
 
 <script type='text/x-template' id='booposts-template'>
   <page class='booposts' :open='session.page.booposts.open' :from='session.page.booposts.from' @close='session.close_page()'>
-    <baseposts :session='session' :posts='posts' type='booposts' :open_at='session.page.booposts.open_at'></baseposts>
+    <baseposts :session='session' :posts='posts' type='booposts' :open_at='session.page.booposts.open_at' ref='baseposts'></baseposts>
   </page>
 </script>
 
@@ -28,6 +28,10 @@
       posts: function() {
         return this.session.page.booposts.posts
       }
-    }
+    },
+
+    // mounted: function() {
+    //   this.posts.swiper = this.$refs.baseposts.swiper;
+    // }
   });
 </script>

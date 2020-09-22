@@ -9,7 +9,8 @@
 
 <script type='text/x-template' id='posts-template'>
   <div class='posts vcomp'>
-    <baseposts :session='session' :posts='session.posts.list' ref='baseposts'></baseposts>
+    <baseposts :session='session' :posts='session.posts' ref='baseposts'></baseposts>
+    <!-- <baseposts :session='session' :posts='session.posts.list' ref='baseposts'></baseposts> -->
   </div>
 </script>
 
@@ -21,10 +22,6 @@
     props: ['session'],
     data: function() {
       return {}
-    },
-
-    mounted: function() {
-      this.session.swiper = this.$refs.baseposts.swiper;
     }
   });
 </script>

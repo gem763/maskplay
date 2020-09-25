@@ -152,29 +152,29 @@
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in posts_list' :key='post.id'>
         <post
-          :post='postized(post)'
+          :post='post'
+          :posts = 'posts'
           :session='session'
-          :swiper='swiper'
         ></post>
       </swiper-slide>
     </swiper>
 
     <transition name='show-author-profile' mode=in-out>
-      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo)'>
+      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='open_boopage'>
         <img class='fit' :src='cpost_boo_profile'>
       </div>
     </transition>
 
 
-    <div class='comment menublock'>
+    <div class='comment menublock' @click='open_comments'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
     </div>
 
-    <div class='posting menublock'>
+    <div class='posting menublock' @click='open_posting'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
     </div>
 
-    <div class='my menublock'>
+    <div class='my menublock' @click='open_mypage'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png'>
     </div>
   </div>
@@ -187,11 +187,11 @@
   Vue.component('baseposts', {
     template: '#baseposts-template',
     delimiters: ['[[', ']]'],
-    props: ['posts', 'session', 'open_at'],
+    props: ['session', 'posts', 'type', 'open_at'],
 
     data: function() {
       return {
-        swiper: undefined,
+        // swiper: undefined,
         swiper_options: {
           direction: 'vertical'
         }
@@ -209,14 +209,8 @@
       },
 
       cpost: function() {
-        if (this.swiper && this.posts) {
-          return this.posts.list[this.swiper.realIndex]
-        }
-      },
-
-      cpost_id: function() {
-        if (this.cpost) {
-          return this.cpost.id
+        if (this.posts) {
+          return this.posts.cpost
         }
       },
 
@@ -252,59 +246,56 @@
 
     mounted: function() {
       this.swiper = this.$refs.swiper.$swiper;
+      // if (this.type=='booposts') {
+      //   this.$watch(
+      //     'posts.boo.id',
+      //     function(_new, _old) {
+      //       this.posts.swiper = this.$refs.swiper.$swiper;
+      //     },
+      //   );
+      //
+      // } else {
+      //   this.posts.swiper = this.$refs.swiper.$swiper;
+      // }
     },
 
-    // watch: {
-    //   open_at: function(_new, _old) {
-    //     // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
-    //     this.$nextTick(function() {
-    //       this.posts.open_at(_new);
-    //     })
-    //   }
-    // },
+    watch: {
+      open_at: function(_new, _old) {
+        // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
+        this.$nextTick(function() {
+          this.posts.open_at(_new);
+        })
+      }
+    },
 
     methods: {
-      postized: function(post) {
-        if (post.boo && this.session.auth && this.session.auth.boo.id==post.boo.id) {
-          post.boo = this.session.auth.boo;
-
-        } else if (!post.boo && this.session.mode.prev.on=='mypage') {
-          post.boo = this.session.auth.boo;
-
-        } else if (!post.boo && this.session.mode.prev.on=='boopage') {
-          post.boo = this.session.page.boopage.boo;
+      open_mypage: function() {
+        if (this.type=='booposts') {
+          this.session.close_page();
         }
 
-        return post
-      }
+        this.session.open_mypage();
+      },
 
-      // open_mypage: function() {
-      //   if (this.type=='booposts') {
-      //     this.session.close_page();
-      //   }
-      //
-      //   this.session.open_mypage();
-      // },
-      //
-      // open_boopage: function() {
-      //   if (this.type=='booposts') {
-      //     this.session.close_page();
-      //
-      //   } else {
-      //     this.session.open_boopage(this.cpost_boo);
-      //   }
-      // },
-      //
-      // open_comments: function() {
-      //   if (this.type=='booposts') {
-      //   } else {
-      //     this.session.open_comments();
-      //   }
-      // },
-      //
-      // open_posting: function() {
-      //   this.session.open_posting(this.posts)
-      // }
+      open_boopage: function() {
+        if (this.type=='booposts') {
+          this.session.close_page();
+
+        } else {
+          this.session.open_boopage(this.cpost_boo);
+        }
+      },
+
+      open_comments: function() {
+        if (this.type=='booposts') {
+        } else {
+          this.session.open_comments();
+        }
+      },
+
+      open_posting: function() {
+        this.session.open_posting(this.posts)
+      }
     }
   });
 </script>

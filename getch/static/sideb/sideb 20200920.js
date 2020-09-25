@@ -1,25 +1,21 @@
 class Session {
   constructor() {
     this.page = {
-      mypage:     { open: false, from: 'right' },
-      loginpage:  { open: false, from: 'right' },
-      boochooser: { open: false, from: 'left' },
-      profiler:   { open: false, from: 'right', key: undefined },
-      boopage:    { open: false, from: 'right', boo: undefined },
-      network:    { open: false, from: 'right' },
-      posting:    { open: false, from: 'right' },
-      // posting:    { open: false, from: 'right', posts: undefined},
-      comments:    { open: false, from: 'right' },
-      // booposts:    { open: false, from: 'right', posts: undefined, open_at: 0},
-      booposts:    { open: false, from: 'right' },
+      mypage:     { open: false, from: 'right'},
+      loginpage:  { open: false, from: 'right'},
+      boochooser: { open: false, from: 'left'},
+      profiler:   { open: false, from: 'right', key: undefined},
+      boopage:    { open: false, from: 'right', boo: undefined},
+      network:    { open: false, from: 'right'},
+      posting:    { open: false, from: 'right', posts: undefined},
+      comments:    { open: false, from: 'right'},
+      booposts:    { open: false, from: 'right', posts: undefined, open_at: 0},
     };
 
     this.mode = { on: 'journey', prev: undefined };
     // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
     this.auth = undefined;
     this.posts = new Posts();
-    this.booposts = undefined;
-
     this.stats = undefined;
     this.hammer = this.get_hammer();
 
@@ -116,7 +112,7 @@ class Session {
   }
 
   open_booposts(posts, where) {
-    this.booposts = posts;
+    this.page.booposts.posts = posts;
     this.page.booposts.open_at = where;
     this.open_page('booposts');
   }
@@ -179,6 +175,34 @@ class Session {
       console.log('abnormal access')
     }
   }
+
+  // get cpost() {
+  //   if (this.swiper) {
+  //     return this.posts.list[this.swiper.realIndex]
+  //   }
+  // }
+  //
+  // get cpost_boo() {
+  //   if (this.auth && this.cpost && this.cpost.boo.id==this.auth.boo_selected) {
+  //     return this.auth.boo
+  //
+  //   } else if (this.cpost) {
+  //     return this.cpost.boo
+  //   }
+  // }
+
+  // push_post(post) {
+  //   const where = this.swiper.realIndex + 1;
+  //   this.posts.list.splice(where, 0, post);
+  //   this.swiper.slideTo(where);
+  // }
+
+  // delete_cpost() {
+  //   const where = this.swiper.realIndex;
+  //   this.swiper.slideTo(where - 1);
+  //   this.posts.list.splice(where, 1);
+  //   // this.swiper.removeSlide(where);
+  // }
 
 
   pscore(boo) {
@@ -265,114 +289,112 @@ class ContentLoader {
 
 
 class Baseposts extends ContentLoader {
-  load_idlist() {
-    fetch(this.idlist_url)
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          this.idlist = js.iposts;
-          this.load(this.nloads_init);
-        }
-      });
+  constructor() {
+    super();
+    this.swiper = undefined;
   }
 
-  load_by_id(id) {
-    return fetch(this.post_url(id))
-            .then(x => x.json())
-            .then(js => {
-              this.list.push(js.post);
-            })
+  get cpost() {
+    if (this.swiper) {
+      return this.list[this.swiper.realIndex]
+    }
   }
 
+  freeze() {
+    this.swiper.detachEvents();
+  }
 
-  // get cpost() {
-  //   if (this.swiper) {
-  //     return this.list[this.swiper.realIndex]
-  //   }
-  // }
-  //
-  // freeze() {
-  //   this.swiper.detachEvents();
-  // }
-  //
-  // activate() {
-  //   this.swiper.attachEvents();
-  // }
-  //
-  // add_newpost(post) {
-  //   const where = this.swiper.realIndex + 1;
-  //   this.list.splice(where, 0, post);
-  //   this.swiper.slideTo(where);
-  // }
-  //
-  // delete_cpost() {
-  //   const where = this.swiper.realIndex;
-  //   this.swiper.slideTo(where - 1);
-  //   this.list.splice(where, 1);
-  //   // this.swiper.removeSlide(where);
-  // }
-  //
-  // listout(post) {
-  //   const where = _.findIndex(this.list, ['id', post.id]);
-  //   this.list.splice(where, 1);
-  // }
-  //
-  // listin(post) {
-  //   let where = _.findIndex(this.list, ['id', post.id]);
-  //
-  //   if (where==-1) {
-  //     this.list.push(post);
-  //
-  //   } else {
-  //     this.list.splice(where, 1, post);
-  //   }
-  // }
-  //
-  // open_at(islide) {
-  //   this.swiper.slideTo(islide, 1, false);
-  // }
+  activate() {
+    this.swiper.attachEvents();
+  }
+
+  add_newpost(post) {
+    const where = this.swiper.realIndex + 1;
+    this.list.splice(where, 0, post);
+    this.swiper.slideTo(where);
+  }
+
+  delete_cpost() {
+    const where = this.swiper.realIndex;
+    this.swiper.slideTo(where - 1);
+    this.list.splice(where, 1);
+    // this.swiper.removeSlide(where);
+  }
+
+  listout(post) {
+    const where = _.findIndex(this.list, ['id', post.id]);
+    this.list.splice(where, 1);
+  }
+
+  listin(post) {
+    let where = _.findIndex(this.list, ['id', post.id]);
+
+    if (where==-1) {
+      this.list.push(post);
+
+    } else {
+      this.list.splice(where, 1, post);
+    }
+  }
+
+  open_at(islide) {
+    this.swiper.slideTo(islide, 1, false);
+  }
 }
 
 
 class Posts extends Baseposts {
   constructor() {
     super();
-    this.nloads_init = 5;
-    this.idlist_url = '/posts/iposts';
-    this.post_url = (id) => `/post/${id}`;
     this.load_idlist();
+  }
+
+  load_idlist() {
+    fetch('/posts/ids')
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.idlist = js.iposts;
+          this.load(5);
+        }
+      });
+  }
+
+  load_by_id(id) {
+    return fetch(`/post/${id}`)
+            .then(x => x.json())
+            .then(js => {
+              this.list.push(js.post);
+            })
   }
 }
 
 class Booposts extends Baseposts {
   constructor(boo) {
     super();
-    this.nloads_init = 16;
-    this.idlist_url = `/posts/iposts/${boo.id}`;
-    this.post_url = (id) => `/post/${id}/boo`;
+    this.boo = boo;
     this.load_idlist();
-    // this.load_idlist(boo);
   }
 
-  // load_idlist(boo) {
-  //   fetch(`/posts/iposts/${boo.id}`)
-  //     .then(x => x.json())
-  //     .then(js => {
-  //       if (js.success) {
-  //         this.idlist = js.iposts;
-  //         this.load(16);
-  //       }
-  //     });
-  // }
-  //
-  // load_by_id(id) {
-  //   return fetch(`/post/${id}/boo/`)
-  //           .then(x => x.json())
-  //           .then(js => {
-  //             // js.post.boo = this.boo;
-  //             this.list.push(js.post);
-  //           })
-  // }
+  load_idlist() {
+    fetch(`/boo/${this.boo.id}/iposts/`)
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.idlist = js.iposts;
+          this.load(16);
+        }
+      });
+  }
+
+  load_by_id(id) {
+    return fetch(`/post/${id}/boo/`)
+            .then(x => x.json())
+            .then(js => {
+              js.post.boo = this.boo;
+              this.list.push(js.post);
+            })
+  }
 }
 
 

@@ -344,7 +344,7 @@
   Vue.component('post', {
     template: '#post-template',
     delimiters: ['[[', ']]'],
-    props: ['post', 'posts', 'session', 'type'],
+    props: ['post', 'session', 'type', 'swiper'], //, 'posts', 'is_cpost'
 
     data: function() {
       return {
@@ -397,29 +397,21 @@
       },
 
       post_boo: function() {
-        if (this.post && !this.is_mypost) {
+        if (this.post) {
           return this.post.boo
-        } else {
-          return this.session.auth.boo
         }
       },
 
       post_boo_profile_pix: function() {
-        return this.post_boo.profile.pix
-        // if (this.post && !this.is_mypost) {
-        //   return this.post.boo.profile.pix
-        // } else {
-        //   return this.session.auth.boo.profile.pix
-        // }
+        if (this.post) {
+          return this.post_boo.profile.pix
+        }
       },
 
       post_boo_nick: function() {
-        return this.post_boo.nick
-        // if (this.post && !this.is_mypost) {
-        //   return this.post.boo.nick
-        // } else {
-        //   return this.session.auth.boo.nick
-        // }
+        if (this.post) {
+          return this.post_boo.nick
+        }
       },
 
       post_text: function() {
@@ -460,17 +452,8 @@
         }
       },
 
-      is_cpost: function() {
-        if (this.post && this.posts.cpost) {
-          return (this.post.id == this.posts.cpost.id)
-
-        } else {
-          return false
-        }
-      },
-
       is_mypost: function() {
-        return this.session.auth && this.is_cpost && (this.session.auth.boo.id == this.post.boo.id)
+        return this.session.auth && this.post && (this.session.auth.boo.id == this.post.boo.id)
       },
 
       edit_button_text: function() {
@@ -482,27 +465,27 @@
       },
 
       is_active: function() {
-        return !this.on_edit && this.is_cpost && (this.vote_state != -1)
+        return !this.on_edit && (this.vote_state != -1)
       },
     },
 
     watch: {
       on_edit: function(_new, _old) {
         if (_new) {
-          this.posts.freeze();
+          this.swiper.detachEvents();
 
         } else if (_old) {
-          this.posts.activate();
+          this.swiper.attachEvents();
           this.save_post();
         }
       },
 
       on_delete: function(_new, _old) {
         if (_new) {
-          this.posts.freeze();
+          this.swiper.detachEvents();
 
         } else if (_old) {
-          this.posts.activate();
+          this.swiper.attachEvents();
         }
       }
     },

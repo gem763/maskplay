@@ -97,13 +97,11 @@
 
 <body style='background:lightgray;margin:0;'>
   <div id='window'>
-    <!-- <baseposts v-if='session.posts' :session='session' :posts='session.posts'></baseposts> -->
     <posts :session='session'></posts>
     <pages :session='session'></pages>
     <div class='border'></div>
 
     <modal :pop='session.posts.list.length==0' name='intro'></modal>
-    <!-- <modal :pop='session.on_intro' name='intro'></modal> -->
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

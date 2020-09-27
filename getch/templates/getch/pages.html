@@ -28,11 +28,6 @@
       :session='session'
     ></network> -->
 
-    <comments
-      v-if='session.cpost'
-      :session='session'
-    ></comments>
-
     <boopage
       :session='session'
     ></boopage>
@@ -45,6 +40,11 @@
     <booposts
       :session='session'
     ></booposts>
+
+    <comments
+      v-if='session.page.comments.post'
+      :session='session'
+    ></comments>
 
     <posting
       v-if='session.auth'

@@ -399,19 +399,17 @@
       post_boo: function() {
         if (this.post) {
           return this.post.boo
+        } else {
+          return this.session.auth.boo
         }
       },
 
       post_boo_profile_pix: function() {
-        if (this.post) {
-          return this.post_boo.profile.pix
-        }
+        return this.post_boo.profile.pix
       },
 
       post_boo_nick: function() {
-        if (this.post) {
-          return this.post_boo.nick
-        }
+        return this.post_boo.nick
       },
 
       post_text: function() {

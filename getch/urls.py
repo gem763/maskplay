@@ -15,6 +15,7 @@ urlpatterns = [
     path('posts/iposts/<int:boo_id>/', v.get_ibooposts, name='get_ibooposts'),
     path('post/<int:post_id>/', v.get_post, name='get_post'),
     path('post/<int:post_id>/boo/', v.get_boopost, name='get_boopost'),
+    path('post/<int:post_id>/comments/', v.get_comments, name='get_comments'),
     path('post/<int:post_id>/vote/', v.vote, name='vote'),
     path('post/<int:post_id>/voters/', v.voters, name='voters'),
     path('post/save/', v.post_save, name='post_save'),

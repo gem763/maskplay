@@ -150,9 +150,9 @@
     </div>
 
     <swiper ref='swiper' :options='swiper_options'>
-      <swiper-slide v-for='post in posts_list' :key='post.id'>
+      <swiper-slide v-for='post in postlist' :key='post.id'>
         <post
-          :post='postized(post)'
+          :post='post'
           :session='session'
           :swiper='swiper'
         ></post>
@@ -166,15 +166,15 @@
     </transition>
 
 
-    <div class='comment menublock'>
+    <div class='comment menublock' @click='session.open_comments(cpost)'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
     </div>
 
-    <div class='posting menublock'>
+    <div class='posting menublock' @click='session.open_posting()'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
     </div>
 
-    <div class='my menublock'>
+    <div class='my menublock' @click='session.open_mypage()'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png'>
     </div>
   </div>
@@ -187,7 +187,7 @@
   Vue.component('baseposts', {
     template: '#baseposts-template',
     delimiters: ['[[', ']]'],
-    props: ['posts', 'session', 'open_at'],
+    props: ['postlist', 'session', 'open_at'],
 
     data: function() {
       return {
@@ -199,18 +199,18 @@
     },
 
     computed: {
-      posts_list: function() {
-        if (this.posts) {
-          return  this.posts.list
-
-        } else {
-          return []
-        }
-      },
+      // posts_list: function() {
+      //   if (this.posts) {
+      //     return  this.posts.list
+      //
+      //   } else {
+      //     return []
+      //   }
+      // },
 
       cpost: function() {
-        if (this.swiper && this.posts) {
-          return this.posts.list[this.swiper.realIndex]
+        if (this.swiper && this.postlist) {
+          return this.postlist[this.swiper.realIndex]
         }
       },
 
@@ -254,47 +254,17 @@
       this.swiper = this.$refs.swiper.$swiper;
     },
 
-    // watch: {
-    //   open_at: function(_new, _old) {
-    //     // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
-    //     this.$nextTick(function() {
-    //       this.posts.open_at(_new);
-    //     })
-    //   }
-    // },
+    watch: {
+      open_at: function(_new, _old) {
+        this.swiper.slideTo(_new, 1, false);
+        // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
+        // this.$nextTick(function() {
+        //   this.posts.open_at(_new);
+        // })
+      }
+    },
 
     methods: {
-      postized: function(post) {
-        if (post.boo && this.session.auth && this.session.auth.boo.id==post.boo.id) {
-          post.boo = this.session.auth.boo;
-
-        } else if (!post.boo && this.session.mode.prev.on=='mypage') {
-          post.boo = this.session.auth.boo;
-
-        } else if (!post.boo && this.session.mode.prev.on=='boopage') {
-          post.boo = this.session.page.boopage.boo;
-        }
-
-        return post
-      }
-
-      // open_mypage: function() {
-      //   if (this.type=='booposts') {
-      //     this.session.close_page();
-      //   }
-      //
-      //   this.session.open_mypage();
-      // },
-      //
-      // open_boopage: function() {
-      //   if (this.type=='booposts') {
-      //     this.session.close_page();
-      //
-      //   } else {
-      //     this.session.open_boopage(this.cpost_boo);
-      //   }
-      // },
-      //
       // open_comments: function() {
       //   if (this.type=='booposts') {
       //   } else {

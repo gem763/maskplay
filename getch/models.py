@@ -567,21 +567,21 @@ class BoopostSerializer(serializers.ModelSerializer):
 
 class PostVoteOXSerializer(serializers.ModelSerializer):
     boo = BasebooSerializer()
-    comments = CommentSerializer(source='comment_set', many=True) #----------꼭 댓글까지 다 가져올 필요 있을까
+    # comments = CommentSerializer(source='comment_set', many=True) #----------꼭 댓글까지 다 가져올 필요 있을까
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'comments', 'voters']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'voters']#, 'comments']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
 class PostVoteABSerializer(serializers.ModelSerializer):
     boo = BasebooSerializer()
-    comments = CommentSerializer(source='comment_set', many=True)
+    # comments = CommentSerializer(source='comment_set', many=True)
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'comments', 'voters']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'voters']#, 'comments']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 

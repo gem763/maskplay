@@ -21,6 +21,10 @@
     height: 100%;
   }
 
+  .pixloader img.pix.focused {
+    object-fit: contain;
+  }
+
   .pixloader input[type='file'] {
     display: none;
     visibility: hidden;
@@ -66,7 +70,7 @@
   <div class='pixloader'>
     <input v-if='editable' type="file" accept="image/*" :id="pixloader_id" @change='loadpix' ref='input'>
     <label class='pixloader-label' :for='pixloader_id'>
-      <img class='pix' :src='pix' onerror='this.style.display="none"' ref='pix'>
+      <img class='pix' :class='{ focused:pixfocused }' :src='pix' onerror='this.style.display="none"' ref='pix'>
 
       <transition name='show-pix-clicker'>
         <div class='pix-clicker' v-show='editable'>
@@ -74,6 +78,11 @@
         </div>
       </transition>
     </label>
+
+    <div class='pixfocuser' style='position:absolute;top:0;right:0;width:15%;height:15%;background:none;' @click.stop='pixfocus'>
+      <img v-if='pixfocused' src='/static/materials/icons/times.png' style='position:absolute;top:12%;right:12%;width:42%;height:42%'>
+      <img v-else src='/static/materials/icons/expand.png' style='position:absolute;top:12%;right:12%;width:42%;height:42%'>
+    </div>
   </div>
 </script>
 
@@ -86,7 +95,8 @@
     data: function() {
       return {
         pixloader_id: 0,
-        changed: false
+        changed: false,
+        pixfocused: false
       }
     },
 
@@ -99,6 +109,10 @@
     },
 
     methods: {
+      pixfocus: function() {
+        this.pixfocused = !this.pixfocused;
+      },
+
       loadpix: function() {
         const input = this.$refs.input; //event.target;
         const self = this;

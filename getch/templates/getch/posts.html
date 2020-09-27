@@ -9,7 +9,7 @@
 
 <script type='text/x-template' id='posts-template'>
   <div class='posts vcomp'>
-    <baseposts :session='session' :posts='session.posts'></baseposts>
+    <baseposts :session='session' :postlist='postlist'></baseposts>
   </div>
 </script>
 
@@ -21,6 +21,24 @@
     props: ['session'],
     data: function() {
       return {}
+    },
+
+    computed: {
+      postlist: function() {
+        if (!this.session.posts) {
+          return []
+        }
+
+        if (this.session.auth) {
+          this.session.posts.list.forEach(post => {
+            if (this.session.auth.boo.id==post.boo.id) {
+              post.boo = this.session.auth.boo;
+            }
+          });
+        }
+
+        return this.session.posts.list
+      }
     }
   });
 </script>

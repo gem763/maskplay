@@ -10,7 +10,7 @@
 
 <script type='text/x-template' id='booposts-template'>
   <page class='booposts' :open='session.page.booposts.open' :from='session.page.booposts.from' @close='session.close_page()'>
-    <baseposts :session='session' :posts='posts' :open_at='session.page.booposts.open_at'></baseposts>
+    <baseposts :session='session' :postlist='postlist' :open_at='session.page.booposts.open_at'></baseposts>
   </page>
 </script>
 
@@ -25,8 +25,32 @@
     },
 
     computed: {
-      posts: function() {
-        return this.session.booposts
+      postlist: function() {
+        if (!this.session.booposts) {
+          return []
+        }
+
+        const _postlist = this.session.booposts.list.map(post => {
+          const _post = _.find(this.session.posts.list, ['id', post.id]);
+          if (_post) {
+            return _post;
+          } else {
+            return post
+          }
+        });
+
+        if (this.session.auth && this.session.auth.boo.id==this.session.booposts.boo.id) {
+          _postlist.forEach(post => {
+            post.boo = this.session.auth.boo;
+          });
+
+        } else {
+          _postlist.forEach(post => {
+            post.boo = this.session.booposts.boo;
+          });
+        }
+
+        return _postlist
       }
     }
   });

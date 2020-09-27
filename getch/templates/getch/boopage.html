@@ -15,7 +15,8 @@
     props: ['session'],
     data: function() {
       return {
-        boo_changed: false
+        boo_changed: false,
+        booposts: undefined,
       }
     },
 
@@ -28,6 +29,10 @@
         if (_new && this.boo && this.boo_changed) {
           this.load_boo_moreinfo();
           this.boo_changed = false;
+
+        } else if (_new && this.boo && !this.boo_changed && !this.boo.posts) {
+          // boopage를 열었는데 하필 직전 부캐와 동일한 부캐라서, 객체안에 posts가 없는 경우
+          this.boo.posts = this.booposts;
         }
       }
     },
@@ -47,7 +52,8 @@
     methods: {
       load_boo_moreinfo: function() {
         if (!this.boo.posts) {
-          this.$set(this.boo, 'posts', new Booposts(this.boo));
+          this.booposts = new Booposts(this.boo)
+          this.$set(this.boo, 'posts', this.booposts);
         }
       }
     }

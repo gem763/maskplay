@@ -51,7 +51,7 @@
   }
 
   .modal .content .sub.posting .postype {
-    font-size: 10px;
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
     background: none;
@@ -64,14 +64,15 @@
 
   .modal .content .sub.posting .postype table td {
     border: 5px solid white;
-    height: 25px;
-    width: 25px;
+    height: 40px;
+    width: 40px;
     box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
   }
 
-  .modal .content .sub.posting .postype table td.wide {
+  /* .modal .content .sub.posting .postype table td.wide {
     width: 50px;
-  }
+  } */
 
   .modal .content .actions {
     position: absolute;
@@ -133,9 +134,9 @@
           <div class='postype' @click='$emit("posting", "postvoteox")'>
             <table>
               <tbody>
-                <tr>
+                <!-- <tr>
                   <td class='wide' colspan='2'></td>
-                </tr>
+                </tr> -->
                 <tr>
                   <td>O</td>
                   <td>X</td>
@@ -148,10 +149,12 @@
             <table>
               <tbody>
                 <tr>
-                  <td class='wide'>A</td>
+                  <!-- <td class='wide'>A</td> -->
+                  <td>A</td>
                 </tr>
                 <tr>
-                  <td class='wide'>B</td>
+                  <!-- <td class='wide'>B</td> -->
+                  <td>B</td>
                 </tr>
               </tbody>
             </table>

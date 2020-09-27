@@ -82,6 +82,12 @@ def get_boopost(request, post_id):
     return JsonResponse({'success':True, 'post':_post}, safe=False)
 
 
+def get_comments(request, post_id):
+    _comments = m.Comment.objects.filter(post_id=post_id)
+    _comments = m.CommentSerializer(_comments, many=True).data
+    return JsonResponse({'success':True, 'comments':_comments}, safe=False)
+
+
 def get_ibooposts(request, boo_id):
     _boo = m.Boo.objects.get(pk=boo_id)
     return JsonResponse({'success':True, 'iposts':_boo.iposts}, safe=False)

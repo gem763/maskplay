@@ -210,17 +210,19 @@
     },
 
     watch: {
-      'session.page.comments.open': function(_new, _old) {
-        if (_new) {
-          if (this.post.id!=this.post_id) {
-            this.post_id = this.post.id;
-            this.load_voters();
-          }
+      'session.page.comments.open': {
+        handler: function(_new, _old) {
+          if (_new) {
+            if (this.post.id!=this.post_id) {
+              this.post_id = this.post.id;
+              this.load_voters();
+            }
 
-          if (this.yourpick != -1) {
-            this.focused = this.yourpick;
+            if (this.yourpick != -1) {
+              this.focused = this.yourpick;
+            }
           }
-        }
+        }, immediate: true
       },
 
       yourpick: {

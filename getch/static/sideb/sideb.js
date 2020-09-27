@@ -9,12 +9,11 @@ class Session {
       network:    { open: false, from: 'right' },
       posting:    { open: false, from: 'right' },
       // posting:    { open: false, from: 'right', posts: undefined},
-      comments:    { open: false, from: 'right' },
-      // booposts:    { open: false, from: 'right', posts: undefined, open_at: 0},
-      booposts:    { open: false, from: 'right' },
+      comments:    { open: false, from: 'right', post: undefined },
+      booposts:    { open: false, from: 'right', open_at: 0 },
     };
 
-    this.mode = { on: 'journey', prev: undefined };
+    this.mode = { on: 'journey', order: 0, prev: undefined };
     // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
     this.auth = undefined;
     this.posts = new Posts();
@@ -80,6 +79,12 @@ class Session {
     this.checkout();
   }
 
+  close_pages_all() {
+    while (this.mode.on!='journey') {
+      this.close_page();
+    }
+  }
+
   open_page(pagename) {
     this.page[pagename].open = true;
     this.checkin(pagename);
@@ -91,6 +96,7 @@ class Session {
 
   open_mypage() {
     if (this.auth) {
+      this.close_pages_all();
       this.open_page('mypage');
     } else {
       this.open_loginpage();
@@ -111,7 +117,8 @@ class Session {
     this.open_page('profiler');
   }
 
-  open_comments() {
+  open_comments(post) {
+    this.page.comments.post = post;
     this.open_page('comments');
   }
 
@@ -134,6 +141,9 @@ class Session {
   open_boopage(boo) {
     if (this.auth && this.auth.boo_selected==boo.id) {
       this.open_mypage();
+
+    } else if (this.mode.on=='booposts') {
+      this.close_page();
 
     } else {
       this.page.boopage.boo = boo;
@@ -168,6 +178,7 @@ class Session {
     console.log(`check-in to ${on}`);
     this.mode.prev = {...this.mode};
     this.mode.on = on;
+    this.mode.order = this.mode.prev.order + 1;
   }
 
   checkout() {
@@ -327,10 +338,6 @@ class Baseposts extends ContentLoader {
   //     this.list.splice(where, 1, post);
   //   }
   // }
-  //
-  // open_at(islide) {
-  //   this.swiper.slideTo(islide, 1, false);
-  // }
 }
 
 
@@ -347,6 +354,7 @@ class Posts extends Baseposts {
 class Booposts extends Baseposts {
   constructor(boo) {
     super();
+    this.boo = boo;
     this.nloads_init = 16;
     this.idlist_url = `/posts/iposts/${boo.id}`;
     this.post_url = (id) => `/post/${id}/boo`;

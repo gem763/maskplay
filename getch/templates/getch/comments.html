@@ -61,6 +61,13 @@
     position: absolute;
     top: 0;
   }
+
+  .comments.vcomp .comments-layout > .commentlist.section > .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 </style>
 
 <script type='text/x-template' id='comments-template'>
@@ -68,7 +75,7 @@
     <div class='comments-layout'>
 
       <div class='score section'>
-        <scorekit :session='session' :post='session.cpost'></scorekit>
+        <scorekit :session='session' :post='cpost'></scorekit>
       </div>
 
       <div class='commentlist section'>
@@ -83,6 +90,9 @@
             :comment_focused='the_comment'
           ></comment>
         </transition-group>
+
+        <!-- <scale-loader class='spinner' :loading='true'></scale-loader> -->
+        <scale-loader class='spinner' :loading='!cpost.comments'></scale-loader>
       </div>
 
       <div class='commenting section' v-if='session.auth'>
@@ -117,18 +127,35 @@
     },
 
     computed: {
+      cpost: function() {
+        return this.session.page.comments.post
+      },
+
       comments: function() {
-        return this.session.cpost.comments.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+        if (this.cpost.comments) {
+          return this.cpost.comments.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+        } else {
+          this.load_comments();
+          return []
+        }
       }
     },
 
     methods: {
+      load_comments: function() {
+        fetch(`/post/${this.cpost.id}/comments`)
+          .then(x => x.json())
+          .then(js => {
+            this.$set(this.cpost, 'comments', js.comments);
+          })
+      },
+
       save: function() {
         let when;
 
         const formdata = new FormData();
         formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
-        formdata.append('post_id', this.session.cpost.id);
+        formdata.append('post_id', this.cpost.id);
         formdata.append('text', this.the_comment.text);
 
         if (this.the_comment.id) {
@@ -149,7 +176,7 @@
             created_at: when
           };
 
-          this.session.cpost.comments.push(_comment);
+          this.cpost.comments.push(_comment);
         }
 
         fetch('comment/save/', { method: 'POST', body: formdata })

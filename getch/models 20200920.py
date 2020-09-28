@@ -335,10 +335,29 @@ class Post(BigIdAbstract, ModelWithFlag):
         self.save()
 
 
+    # @property
+    # def up_voters(self):
+    #     _flags = Flager.objects.filter(status=VOTE_UP, object_id=self.id)
+    #     return [f.user for f in _flags]
+    #
+    #
+    # @property
+    # def down_voters(self):
+    #     _flags = Flager.objects.filter(status=VOTE_DOWN, object_id=self.id)
+    #     return [f.user for f in _flags]
+    #
+    # @property
+    # def voters(self):
+    #     _voters = {
+    #         'up': SimplebooSerializer(self.up_voters, many=True).data,
+    #         'down': SimplebooSerializer(self.down_voters, many=True).data
+    #     }
+    #     return json.dumps(_voters)
+
     @property
-    def ivoters(self):
-        _ivoters = {f.user.id:f.status for f in Flager.objects.filter(object_id=self.id)}
-        return _ivoters
+    def voters(self):
+        _voters = {f.user.id:f.status for f in Flager.objects.filter(object_id=self.id)}
+        return _voters
 
 
     @property
@@ -548,19 +567,21 @@ class BoopostSerializer(serializers.ModelSerializer):
 
 class PostVoteOXSerializer(serializers.ModelSerializer):
     boo = BasebooSerializer()
+    # comments = CommentSerializer(source='comment_set', many=True) #----------꼭 댓글까지 다 가져올 필요 있을까
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']#, 'ivoters']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'voters']#, 'comments']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
 class PostVoteABSerializer(serializers.ModelSerializer):
     boo = BasebooSerializer()
+    # comments = CommentSerializer(source='comment_set', many=True)
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']#, 'ivoters']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'voters']#, 'comments']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 

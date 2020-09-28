@@ -1,10 +1,3 @@
-{% include "getch/aber.html" %}
-{% include "getch/oxer.html" %}
-{% include "getch/oxcard.html" %}
-{% include "getch/pixloader.html" %}
-{% include "getch/editext.html" %}
-{% include "getch/modal.html" %}
-
 <style>
   .post {
     background: none;
@@ -490,7 +483,7 @@
 
     methods: {
       toggle_vote: function(act) {
-        if (this.session.auth && this.session.mode.on=='journey' && !this.on_edit) {
+        if (this.session.auth && !this.on_edit && (this.session.mode.on=='journey' || this.session.mode.on=='booposts')) {
           if (this.vote_state==act) {
             this.rescore(act, -1);
             this.session.auth.vote(this.post.id, -1);
@@ -564,13 +557,25 @@
 
             // 아래 순서가 중요하다
             // post_boo에서 지우고 > 이 포스트를 지운다
-            if (this.post_boo.posts) {
-              this.post_boo.posts.listout(this.post);
-            }
+            // if (this.post_boo.posts) {
+            //   this.post_boo.posts.listout(this.post);
+            // }
+            //
+            // this.posts.delete_cpost();
 
-            this.posts.delete_cpost();
+            this.postlist_out(this.session.posts);
+            this.postlist_out(this.post_boo.posts);
           }
         });
+      },
+
+      postlist_out(posts) {
+        if (posts) {
+          const where = _.findIndex(posts.list, ['id', this.post.id]);
+          if (where!=-1) {
+            posts.list.splice(where, 1);
+          }
+        }
       },
 
       formdata_append(key, comp, formdata) {
@@ -622,9 +627,9 @@
                 this.session.close_page();
               }
 
-              if (js.success && this.post_boo.posts) {
-                this.post_boo.posts.listin(js.post);
-              }
+              // if (js.success && this.post_boo.posts) {
+              //   this.post_boo.posts.listin(js.post);
+              // }
 
               this.hide_processing();
             });

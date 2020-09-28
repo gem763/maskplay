@@ -1,0 +1,56 @@
+<script type='text/x-template' id='mypage-template'>
+  <page class='mypage' :open='session.page.mypage.open' :from='session.page.mypage.from' @close='session.close_page()'>
+    <aboutboo :boo='boo' :session='session'></aboutboo>
+
+    <a class='logout' href="{% url 'account_logout' %}" style='position:absolute;bottom:0;right:0;'>
+      <span style='background:black;color:white;'>LOGOUT</span>
+    </a>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('mypage', {
+    template: '#mypage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        boo_changed: true // mypage에서는 boo가 처음부터 존재하기때문에 true에서 시작
+      }
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.auth.boo
+      }
+    },
+
+    watch: {
+      'boo.id': function(_new, _old) {
+        if (_new && this.session.page.mypage.open) {
+          this.load_boo_moreinfo();
+          this.boo_change = false;
+
+        } else {
+          this.boo_changed = true;
+        }
+      },
+
+      'session.page.mypage.open': function(_new, _old) {
+        if (_new && this.boo_changed) {
+          this.load_boo_moreinfo();
+          this.boo_changed = false;
+        }
+      }
+    },
+
+    methods: {
+      load_boo_moreinfo: function() {
+        // if (!this.boo.posts) {
+        //   this.$set(this.boo, 'posts', new Booposts(this.boo));
+        // }
+      }
+    }
+  });
+</script>

@@ -1,8 +1,3 @@
-{% include "getch/struct.html" %}
-<!-- {% include "getch/modal.html" %} -->
-{% include "getch/editext.html" %}
-{% include "getch/minipost.html" %}
-
 <style>
   .aboutboo.vcomp .header-0 > .profilepix {
     position: absolute;
@@ -220,8 +215,9 @@
 
     <template #content>
       <div class='booposts-section'>
-        <transition-group name='show-booposts' tag='div' class='booposts' v-if='boo.posts'>
-          <div class='boopost' v-for='(post, idx) in boo.posts.list' :key='post.id' @click='open_booposts(idx)'>
+        <transition-group name='show-booposts' tag='div' class='booposts'>
+        <!-- <transition-group name='show-booposts' tag='div' class='booposts' v-if='boo.posts'>   -->
+          <div class='boopost' v-for='(post, idx) in postlist' :key='post.id' @click='open_booposts(idx)'>
             <minipost :post='post' :session='session'></minipost>
           </div>
         </transition-group>
@@ -238,7 +234,7 @@
   Vue.component('aboutboo', {
     template: '#aboutboo-template',
     delimiters: ['[[', ']]'],
-    props: ['boo', 'session', 'type'],
+    props: ['boo', 'session'],
     data: function() {
       return {
         on_booloading: false,
@@ -246,6 +242,13 @@
     },
 
     computed: {
+      postlist: function() {
+        if (!this.boo.posts) {
+          this.$set(this.boo, 'posts', new Booposts(this.boo));
+        }
+        return this.boo.posts.list
+      },
+
       profilepix: function() {
         return this.boo.profile.pix
       },
@@ -291,7 +294,7 @@
 
     methods: {
       open_boochooser: function() {
-        if (this.type == 'my') {
+        if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
           this.session.open_boochooser();
         }
       },

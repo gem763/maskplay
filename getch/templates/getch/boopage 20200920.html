@@ -1,0 +1,58 @@
+<script type='text/x-template' id='boopage-template'>
+  <page class='boopage vcomp' :open='session.page.boopage.open' :from='session.page.boopage.from' @close='session.close_page()'>
+    <aboutboo v-if='boo' :boo='boo' :session='session' type='boo'></aboutboo>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('boopage', {
+    template: '#boopage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        boo_changed: false,
+        booposts: undefined,
+      }
+    },
+
+    watch: {
+      boo_id: function(_new, _old) {
+        this.boo_changed = true;
+      },
+
+      // 'session.page.boopage.open': function(_new, _old) {
+      //   if (_new && this.boo && this.boo_changed) {
+      //     this.load_boo_moreinfo();
+      //     this.boo_changed = false;
+      //
+      //   } else if (_new && this.boo && !this.boo_changed && !this.boo.posts) {
+      //     // boopage를 열었는데 하필 직전 부캐와 동일한 부캐라서, 객체안에 posts가 없는 경우
+      //     this.boo.posts = this.booposts;
+      //   }
+      // }
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.page.boopage.boo
+      },
+
+      boo_id: function() {
+        if (this.boo) {
+          return this.boo.id
+        }
+      }
+    },
+
+    methods: {
+      load_boo_moreinfo: function() {
+        // if (!this.boo.posts) {
+        //   this.booposts = new Booposts(this.boo)
+        //   this.$set(this.boo, 'posts', this.booposts);
+        // }
+      }
+    }
+  });
+</script>

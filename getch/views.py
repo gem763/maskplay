@@ -67,30 +67,50 @@ def get_user(request):
 
 def get_iposts(request):
     _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
-    return JsonResponse({'success':True, 'iposts':list(_iposts)}, safe=False)
+    return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
 
 
 def get_post(request, post_id):
     _post = m.Post.objects.get_subclass(pk=post_id)
     _post = m.PostSerializer(_post).data
-    return JsonResponse({'success':True, 'post':_post}, safe=False)
+    return JsonResponse({'success':True, 'content':_post}, safe=False)
+
+
+def get_ibooposts(request, boo_id):
+    _boo = m.Boo.objects.get(pk=boo_id)
+    return JsonResponse({'success':True, 'idlist':_boo.iposts}, safe=False)
 
 
 def get_boopost(request, post_id):
     _post = m.Post.objects.get_subclass(pk=post_id)
     _post = m.BoopostSerializer(_post).data
-    return JsonResponse({'success':True, 'post':_post}, safe=False)
+    return JsonResponse({'success':True, 'content':_post}, safe=False)
 
 
-def get_comments(request, post_id):
-    _comments = m.Comment.objects.filter(post_id=post_id)
-    _comments = m.CommentSerializer(_comments, many=True).data
-    return JsonResponse({'success':True, 'comments':_comments}, safe=False)
+def get_icomments(request, post_id):
+    _icomments = m.Comment.objects.filter(post_id=post_id).values_list('id', flat=True)
+    return JsonResponse({'success':True, 'idlist':list(_icomments)}, safe=False)
 
 
-def get_ibooposts(request, boo_id):
-    _boo = m.Boo.objects.get(pk=boo_id)
-    return JsonResponse({'success':True, 'iposts':_boo.iposts}, safe=False)
+def get_comment(request, comment_id):
+    _comment = m.Comment.objects.get(pk=comment_id)
+    _comment = m.CommentSerializer(_comment).data
+    return JsonResponse({'success':True, 'content':_comment}, safe=False)
+
+
+def get_ivoters(request, post_id, act):
+    _ivoters = m.Flager.objects.filter(object_id=post_id, status=act).values_list('user_id', flat=True)
+    return JsonResponse({'success':True, 'idlist':list(_ivoters)}, safe=False)
+
+def get_voter(request, boo_id):
+    _voter = m.Boo.objects.get(pk=boo_id)
+    _voter = m.BasebooSerializer(_voter).data
+    return JsonResponse({'success':True, 'content':_voter}, safe=False)
+
+# def get_comments(request, post_id):
+#     _comments = m.Comment.objects.filter(post_id=post_id)
+#     _comments = m.CommentSerializer(_comments, many=True).data
+#     return JsonResponse({'success':True, 'comments':_comments}, safe=False)
 
 
 def other_boos(request):

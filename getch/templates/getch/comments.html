@@ -1,4 +1,3 @@
-{% include "getch/page.html" %}
 {% include "getch/comment.html" %}
 {% include "getch/scorekit.html" %}
 
@@ -44,13 +43,15 @@
     background: none;
   }
 
-  .comments.vcomp .comment-listing-enter-active, .comment-listing-leave-active {
+  /* .comments.vcomp .comment-listing-leave-active, */
+  .comments.vcomp .comment-listing-enter-active {
     transition: all 0.5s;
   }
 
-  .comments.vcomp .comment-listing-enter, .comment-listing-leave-to {
+  .comments.vcomp .comment-listing-enter,
+  .comments.vcomp .comment-listing-leave-to {
     opacity: 0;
-    transform: translateX(100px);
+    /* transform: translateX(100px); */
   }
 
   .comments.vcomp .comment-listing-move {
@@ -83,7 +84,7 @@
 
         <transition-group tag='div' class='container' name='comment-listing'>
           <comment
-            v-for='comment in comments'
+            v-for='comment in commentlist'
             :comment='comment'
             :session='session'
             :key='comment.created_at'
@@ -91,8 +92,7 @@
           ></comment>
         </transition-group>
 
-        <!-- <scale-loader class='spinner' :loading='true'></scale-loader> -->
-        <scale-loader class='spinner' :loading='!cpost.comments'></scale-loader>
+        <scale-loader class='spinner' :loading='comments_onloading'></scale-loader>
       </div>
 
       <div class='commenting section' v-if='session.auth'>
@@ -131,25 +131,24 @@
         return this.session.page.comments.post
       },
 
-      comments: function() {
+      commentlist: function() {
+        if (!this.cpost.comments) {
+          this.$set(this.cpost, 'comments', new Comments(this.cpost))
+        }
+
+        return this.cpost.comments.list.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+      },
+
+      comments_onloading: function() {
         if (this.cpost.comments) {
-          return this.cpost.comments.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+          return this.cpost.comments.onloading
         } else {
-          this.load_comments();
-          return []
+          return true
         }
       }
     },
 
     methods: {
-      load_comments: function() {
-        fetch(`/post/${this.cpost.id}/comments`)
-          .then(x => x.json())
-          .then(js => {
-            this.$set(this.cpost, 'comments', js.comments);
-          })
-      },
-
       save: function() {
         let when;
 
@@ -160,7 +159,7 @@
 
         if (this.the_comment.id) {
           formdata.append('id', this.the_comment.id);
-          const comment_changed = _.find(this.comments, ['id', this.the_comment.id]);
+          const comment_changed = _.find(this.cpost.comments.list, ['id', this.the_comment.id]);
           comment_changed.id = undefined;
           comment_changed.text = this.the_comment.text;
           when = comment_changed.created_at;
@@ -176,7 +175,7 @@
             created_at: when
           };
 
-          this.cpost.comments.push(_comment);
+          this.cpost.comments.list.push(_comment);
         }
 
         fetch('comment/save/', { method: 'POST', body: formdata })
@@ -185,7 +184,7 @@
             console.log(js);
 
             if (js.success) {
-              const comment_unsaved = _.find(this.comments, ['created_at', when]);
+              const comment_unsaved = _.find(this.cpost.comments.list, ['created_at', when]);
               comment_unsaved.id = Number(js.comment_id);
 
               this.the_comment.id = undefined;

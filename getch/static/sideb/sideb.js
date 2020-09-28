@@ -146,7 +146,11 @@ class Session {
       this.close_page();
 
     } else {
-      this.page.boopage.boo = boo;
+      if (!this.page.boopage.boo || this.page.boopage.boo.id!=boo.id) {
+        this.page.boopage.boo = boo;
+      }
+
+      this.close_pages_all();
       this.open_page('boopage');
     }
   }
@@ -253,11 +257,13 @@ class ContentLoader {
   }
 
   load(n) {
+    this.onloading = true;
+
     if (this.idlist.length == 0) {
+      this.onloading = false;
       return
     }
 
-    this.onloading = true;
     if (!n) { var n = 1; }
     n = Math.min(n, this.idlist.length);
 
@@ -271,6 +277,25 @@ class ContentLoader {
       console.log('contents loaded');
       this.onloading = false;
     });
+  }
+
+  load_idlist() {
+    fetch(this.idlist_url)
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.idlist = js.idlist;
+          this.load(this.nloads_init);
+        }
+      });
+  }
+
+  load_by_id(id) {
+    return fetch(this.content_url(id))
+            .then(x => x.json())
+            .then(js => {
+              this.list.push(js.content);
+            })
   }
 }
 
@@ -295,21 +320,6 @@ class Baseposts extends ContentLoader {
             })
   }
 
-
-  // get cpost() {
-  //   if (this.swiper) {
-  //     return this.list[this.swiper.realIndex]
-  //   }
-  // }
-  //
-  // freeze() {
-  //   this.swiper.detachEvents();
-  // }
-  //
-  // activate() {
-  //   this.swiper.attachEvents();
-  // }
-  //
   // add_newpost(post) {
   //   const where = this.swiper.realIndex + 1;
   //   this.list.splice(where, 0, post);
@@ -341,46 +351,45 @@ class Baseposts extends ContentLoader {
 }
 
 
-class Posts extends Baseposts {
+class Posts extends ContentLoader {
   constructor() {
     super();
     this.nloads_init = 5;
     this.idlist_url = '/posts/iposts';
-    this.post_url = (id) => `/post/${id}`;
+    this.content_url = (id) => `/post/${id}`;
     this.load_idlist();
   }
 }
 
-class Booposts extends Baseposts {
+class Booposts extends ContentLoader {
   constructor(boo) {
     super();
     this.boo = boo;
     this.nloads_init = 16;
     this.idlist_url = `/posts/iposts/${boo.id}`;
-    this.post_url = (id) => `/post/${id}/boo`;
+    this.content_url = (id) => `/post/${id}/boo`;
     this.load_idlist();
-    // this.load_idlist(boo);
   }
+}
 
-  // load_idlist(boo) {
-  //   fetch(`/posts/iposts/${boo.id}`)
-  //     .then(x => x.json())
-  //     .then(js => {
-  //       if (js.success) {
-  //         this.idlist = js.iposts;
-  //         this.load(16);
-  //       }
-  //     });
-  // }
-  //
-  // load_by_id(id) {
-  //   return fetch(`/post/${id}/boo/`)
-  //           .then(x => x.json())
-  //           .then(js => {
-  //             // js.post.boo = this.boo;
-  //             this.list.push(js.post);
-  //           })
-  // }
+class Comments extends ContentLoader {
+  constructor(post) {
+    super();
+    this.nloads_init = 15;
+    this.idlist_url = `/post/${post.id}/icomments`;
+    this.content_url = (id) => `/comment/${id}`;
+    this.load_idlist();
+  }
+}
+
+class Voters extends ContentLoader {
+  constructor(post, act) {
+    super();
+    this.nloads_init = 10;
+    this.idlist_url = `/post/${post.id}/ivoters/${act}`;
+    this.content_url = (id) => `/boo/${id}/voter`;
+    this.load_idlist();
+  }
 }
 
 

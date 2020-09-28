@@ -169,19 +169,19 @@
       </div>
 
       <div class='voters-section'>
-        <transition-group tag='div' class='voters' :class='{loading:postvoters[0].onloading}' name='voters-list' v-show='focused==0'>
-          <div class='voter' v-for='voter in postvoters[0].list' :key='voter.id' @click='session.open_boopage(voter)'>
-            <img :src='voter.profile.pix'>
+        <transition-group tag='div' class='voters' :class='{loading:onloading}' name='voters-list' v-show='focused==0'>
+          <div class='voter' v-for='(pix, boo_id) in voters[0]' :key='pix' @click='session.open_boopage(boo_id)'>
+            <img :src='pix'>
           </div>
         </transition-group>
 
-        <transition-group tag='div' class='voters' :class='{loading:postvoters[1].onloading}' name='voters-list' v-show='focused==1'>
-          <div class='voter' v-for='voter in postvoters[1].list' :key='voter.id' @click='session.open_boopage(voter)'>
-            <img :src='voter.profile.pix'>
+        <transition-group tag='div' class='voters' :class='{loading:onloading}' name='voters-list' v-show='focused==1'>
+          <div class='voter' v-for='(pix, boo_id) in voters[1]' :key='pix' @click='session.open_boopage(boo_id)'>
+            <img :src='pix'>
           </div>
         </transition-group>
 
-        <scale-loader class='spinner' :loading='postvoters[0].onloading || postvoters[1].onloading'></scale-loader>
+        <scale-loader class='spinner' :loading='onloading'></scale-loader>
       </div>
     </template>
 
@@ -203,6 +203,9 @@
     data: function() {
       return {
         focused: 0, // 디폴트
+        post_id: undefined,
+        voters: { 0:{}, 1:{} },
+        onloading: false
       }
     },
 
@@ -210,6 +213,11 @@
       'session.page.comments.open': {
         handler: function(_new, _old) {
           if (_new) {
+            if (this.post.id!=this.post_id) {
+              this.post_id = this.post.id;
+              this.load_voters();
+            }
+
             if (this.yourpick != -1) {
               this.focused = this.yourpick;
             }
@@ -217,21 +225,30 @@
         }, immediate: true
       },
 
-      yourpick: function(_new, _old) {
-        if (this.boo && this.post.voters) {
-          if (_old==-1) {
-            this.post.voters[_new].list.push(this.boo);
+      yourpick: {
+        handler: function(_new, _old) {
+          if (this.boo) {
+            if (_old==-1) {
+              this.$set(this.voters[_new], this.boo.id, this.boo.profile.pix);
 
-          } else if (_new==-1) {
-            const where = _.findIndex(this.post.voters[_old].list, ['id', this.boo.id]);
-            this.post.voters[_old].list.splice(where, 1);
+            } else if (_new==-1) {
+              this.$delete(this.voters[_old], this.boo.id);
 
-          } else {
-            const where = _.findIndex(this.post.voters[_old].list, ['id', this.boo.id]);
-            this.post.voters[_old].list.splice(where, 1);
-            this.post.voters[_new].list.push(this.boo);
+            } else {
+              this.$delete(this.voters[_old], this.boo.id);
+              this.$set(this.voters[_new], this.boo.id, this.boo.profile.pix);
+            }
+
+
+            if (_new==-1) {
+              this.$delete(this.post.ivoters, this.boo.id);
+
+            } else {
+              this.$set(this.post.ivoters, this.boo.id, _new);
+            }
           }
-        }
+
+        }//, immediate: true
       }
     },
 
@@ -240,17 +257,6 @@
         if (this.session.auth) {
           return this.session.auth.boo
         }
-      },
-
-      postvoters: function() {
-        if (!this.post.voters) {
-          this.$set(this.post, 'voters', {
-            0: new Voters(this.post, 0),
-            1: new Voters(this.post, 1),
-          });
-        }
-
-        return this.post.voters
       },
 
       yourpick: function() {
@@ -279,6 +285,25 @@
     methods: {
       focus_this: function(act) {
         this.focused = act;
+      },
+
+      load_voters: function() {
+        this.onloading = true;
+        this.voters[0] = {};
+        this.voters[1] = {};
+
+        const promises = Object.entries(this.post.ivoters).map(([boo_id, act]) => this.load_voter(boo_id, act));
+        Promise.all(promises).then(results => {
+          this.onloading = false;
+        });
+      },
+
+      load_voter: function(boo_id, act) {
+        return fetch(`/boo/${boo_id}/profile/pix/`)
+                .then(x => x.json())
+                .then(js => {
+                  this.$set(this.voters[act], boo_id, js.pix);
+                })
       }
     }
   });

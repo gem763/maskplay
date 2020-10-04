@@ -7,10 +7,10 @@ class Session {
       profiler:   { open: false, from: 'right', key: undefined },
       boopage:    { open: false, from: 'right', boo: undefined },
       network:    { open: false, from: 'right' },
-      posting:    { open: false, from: 'right' },
-      // posting:    { open: false, from: 'right', posts: undefined},
-      comments:    { open: false, from: 'right', post: undefined },
-      booposts:    { open: false, from: 'right', open_at: 0 },
+      posting:    { open: false, from: 'right', mother: undefined },
+      comments:   { open: false, from: 'right', post: undefined },
+      booposts:   { open: false, from: 'right', open_at: 0 },
+      pixeditor:  { open: false, src: undefined, pixloader: undefined },
     };
 
     this.mode = { on: 'journey', order: 0, prev: undefined };
@@ -128,9 +128,9 @@ class Session {
     this.open_page('booposts');
   }
 
-  open_posting(posts) {
+  open_posting(mother) {
     if (this.auth) {
-      this.page.posting.posts = posts;
+      this.page.posting.mother = mother;
       this.open_page('posting');
     } else {
       this.open_loginpage();
@@ -153,6 +153,12 @@ class Session {
       this.close_pages_all();
       this.open_page('boopage');
     }
+  }
+
+  open_pixeditor(src, pixloader) {
+    this.page.pixeditor.src = src;
+    this.page.pixeditor.pixloader = pixloader;
+    this.open_page('pixeditor');
   }
 
   // open_network() {
@@ -320,22 +326,11 @@ class Baseposts extends ContentLoader {
             })
   }
 
-  // add_newpost(post) {
-  //   const where = this.swiper.realIndex + 1;
-  //   this.list.splice(where, 0, post);
-  //   this.swiper.slideTo(where);
-  // }
-  //
   // delete_cpost() {
   //   const where = this.swiper.realIndex;
   //   this.swiper.slideTo(where - 1);
   //   this.list.splice(where, 1);
   //   // this.swiper.removeSlide(where);
-  // }
-  //
-  // listout(post) {
-  //   const where = _.findIndex(this.list, ['id', post.id]);
-  //   this.list.splice(where, 1);
   // }
   //
   // listin(post) {
@@ -391,6 +386,8 @@ class Voters extends ContentLoader {
     this.load_idlist();
   }
 }
+
+
 
 
 class Auth {
@@ -492,169 +489,5 @@ class Auth {
           self.boo_selected = boo.id;
         }
       })
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-class Session_old {
-  constructor(cuser) {
-    this.mode = {on:'journey', prev:undefined};
-    this.id = Number(cuser.id);
-    this.email = cuser.email;
-    this.boo_selected = Number(cuser.boo_selected);
-    this.boos = this._init_boos(cuser.boos);
-    this.myboos = Object.keys(cuser.boos).map(Number); //this._init_myboos(cuser.boos);
-    this.cpost = {};
-  }
-
-  _init_myboos(boos) {
-    boos = {...boos};
-
-    for (let k in boos) {
-      boos[k].followers_id = new Set(boos[k].followers_id);
-      boos[k].followees_id = new Set(boos[k].followees_id);
-    }
-    return boos
-  }
-
-  _init_boos(boos) {
-    // boos = {...boos, ...authors};
-    // authors = undefined;
-
-    for (let k in boos) {
-      boos[k].followers_id = new Set(boos[k].followers_id);
-      boos[k].followees_id = new Set(boos[k].followees_id);
-    }
-    return boos
-  }
-
-  api_get(url) {
-    fetch(url)
-      .then(x => x.json())
-      .then(js => {
-        console.log(js)
-      });
-  }
-
-  set vote(action) {
-    if (action==-1) {
-      delete this.boo.voting_record[this.cpost.post_id];
-
-    } else {
-      this.boo.voting_record[this.cpost.post_id] = action;
-    }
-
-    this.api_get(`post/${this.cpost.post_id}/vote?action=${action}`);
-  }
-
-  get has_voted() {
-    if (this.cpost.post_id in this.boo.voting_record) {
-      return true
-    } else {
-      return false
-    }
-  }
-
-  checkin(on) {
-    console.log(`check-in to ${on}`);
-    this.mode.prev = {...this.mode};
-    this.mode.on = on;
-  }
-
-  checkout() {
-    try {
-      console.log(`check-out from ${this.mode.on}, back to ${this.mode.prev.on}`)
-      this.mode = this.mode.prev;
-
-    } catch(e) {
-      console.log('abnormal access')
-    }
-  }
-
-  refresh() {
-    set_post();
-    set_mypage();
-    set_boochooser();
-    set_profiler();
-    set_posting();
-  }
-
-
-  set_myprofile(boo) {
-    console.log(`profile changed to [${boo.profile.pix}]`);
-    // this.boo.profile = profile;
-    boo.followers_id = new Set(boo.followers_id);
-    boo.followees_id = new Set(boo.followees_id);
-    // this.boos[this.boo_selected] = {}//{...this.boos[this.boo_selected], ...boo};
-    this.boos[this.boo_selected] = boo;
-    // test11 = boo;
-    this.refresh();
-  }
-
-  set myboo(boo_id) {
-    console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);
-    this.boo_selected = Number(boo_id);
-    // this.refresh();
-    this.api_get(`/boo/${boo_id}/set/`);
-  }
-
-  get boo() {
-    return this.boos[this.boo_selected];
-  }
-
-  get nfollowers() {
-    return this.boo.followers_id.size;
-  }
-
-  get nfollowees() {
-    return this.boo.followees_id.size;
-  }
-
-  get is_following() {
-    // return this.boo.followees_id.includes(Number(boo_id));
-    return this.boo.followees_id.has(this.cpost.author_id);
-  }
-
-  get author() {
-    return this.boos[this.cpost.author_id];
-  }
-
-  get author_nfollowers() {
-    return this.author.followers_id.size;
-  }
-
-  get author_nfollowees() {
-    return this.author.followees_id.size;
-  }
-
-  unfollow() {
-    const boo_id = this.cpost.author_id;
-    this.api_get(`boo/${boo_id}/unfollow`);
-
-    // 내 followees에서 지우기
-    this.boo.followees_id.delete(boo_id);
-
-    // author의 followers에서 나를 지우기
-    this.author.followers_id.delete(this.boo_selected);
-  }
-
-  follow() {
-    const boo_id = this.cpost.author_id;
-    this.api_get(`boo/${boo_id}/follow`);
-
-    // 내 followees에 추가하기
-    this.boo.followees_id.add(boo_id);
-
-    // author의 followers에 나를 추가하기
-    this.author.followers_id.add(this.boo_selected);
   }
 }

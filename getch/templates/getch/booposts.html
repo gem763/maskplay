@@ -7,7 +7,7 @@
 
 <script type='text/x-template' id='booposts-template'>
   <page class='booposts' :open='session.page.booposts.open' :from='session.page.booposts.from' @close='session.close_page()'>
-    <baseposts :session='session' :postlist='postlist' :open_at='session.page.booposts.open_at'></baseposts>
+    <baseposts :session='session' :postlist='postlist' :open_at='session.page.booposts.open_at' :posts='this.session.booposts'></baseposts>
   </page>
 </script>
 

@@ -60,15 +60,23 @@
   .post .description {
     position: absolute;
     top: 20%;
-    left: calc(var(--s-1));
-    right: calc(var(--s-menu) + var(--pix-margin));
+    left: calc(var(--s-1) + var(--s-menu)/2);
+    right: calc(var(--s-menu)/2);
     pointer-events: none;
     text-align: center;
+  }
+
+  .post .description.active {
+    opacity: 0.3;
   }
 
   .post .backbone .pixlabel {
     position: absolute;
     background: none;
+  }
+
+  .post .backbone .pixlabel.active {
+    opacity: 0.3;
   }
 
   .post .backbone tr:first-child .pixlabel {
@@ -199,6 +207,24 @@
     height: 100%;
     object-fit: cover;
   }
+
+  .post > .onsaving {
+    position: absolute;
+    top: calc(var(--s-0)/4);
+    left: calc(var(--s-1) + var(--border-w)/2);
+    transform: translate(-50%,-50%);
+  }
+
+  .post .show-saving-enter-active,
+  .post .show-saving-leave-active {
+    transition: all 0.3s;
+  }
+
+  .post .show-saving-enter,
+  .post .show-saving-leave-to {
+    top: 0;
+    opacity: 0;
+  }
 </style>
 
 
@@ -210,7 +236,7 @@
         <tr>
           <td class='top full' colspan='2'>
             <div class='spacer'>
-              <pixloader ref='post_pix' :pix='post_pix' :editable='on_edit'></pixloader>
+              <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='on_edit'></pixloader>
             </div>
           </td>
           <td class='top side'></td>
@@ -266,9 +292,11 @@
                 :vote_state='vote_state'
                 :score='post_nvotes_up'
                 :is_active='is_active'
+                :session='session'
               ></aber>
 
-              <div class='pixlabel' v-show='!is_active'>
+              <!-- <div class='pixlabel' v-show='!is_active'> -->
+              <div class='pixlabel' :class='{ active: is_active }'>
                 <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A' type='in-post'></editext>
               </div>
             </div>
@@ -288,9 +316,11 @@
                 :vote_state='vote_state'
                 :score='post_nvotes_down'
                 :is_active='is_active'
+                :session='session'
               ></aber>
 
-              <div class='pixlabel' v-show='!is_active'>
+              <!-- <div class='pixlabel' v-show='!is_active'> -->
+              <div class='pixlabel' :class='{ active: is_active }'>
                 <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B' type='in-post'></editext>
               </div>
             </div>
@@ -308,7 +338,8 @@
 
     <div class='score-label' v-show='is_active'>SCORE</div>
 
-    <div class='description' v-show='!is_active'>
+    <!-- <div class='description' v-show='!is_active'> -->
+    <div class='description' :class='{ active: is_active }'>
       <editext ref='post_text' :rawtext='post_text' :header='"@" + post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post'></editext>
     </div>
 
@@ -327,7 +358,10 @@
       <div class='newpost button' v-if='!post' @click='save_post'>SAVE NEWPOST</div>
     </transition>
 
-    <modal :pop='on_process' name='processing'></modal>
+    <transition name='show-saving'>
+      <scale-loader class='onsaving' v-if='on_saving' :loading='true' color='rgb(22,187,204)'></scale-loader>
+    </transition>
+
     <modal :pop='on_delete' name='deleting' @delete='delete_post_really($event)'></modal>
   </div>
 </script>
@@ -337,17 +371,26 @@
   Vue.component('post', {
     template: '#post-template',
     delimiters: ['[[', ']]'],
-    props: ['post', 'session', 'type', 'swiper'], //, 'posts', 'is_cpost'
+    props: ['post', 'session', 'type', 'mother'],
 
     data: function() {
       return {
         on_edit: (this.post ? false : true),
-        on_process: false,
-        on_delete: false
+        on_delete: false,
       }
     },
 
     computed: {
+      on_saving: function() {
+        return this.post && !this.post.id
+      },
+
+      swiper: function() {
+        if (this.mother) {
+          return this.mother.swiper
+        }
+      },
+
       post_type: function() {
         if (this.post) {
           return this.post.type
@@ -522,15 +565,6 @@
         this.on_edit = !this.on_edit;
       },
 
-
-      show_processing: function() {
-        this.on_process = true;
-      },
-
-      hide_processing: function() {
-        this.on_process = false;
-      },
-
       show_deleting: function() {
         this.on_delete = true;
       },
@@ -555,30 +589,34 @@
                 console.log(js);
               });
 
-            // 아래 순서가 중요하다
-            // post_boo에서 지우고 > 이 포스트를 지운다
-            // if (this.post_boo.posts) {
-            //   this.post_boo.posts.listout(this.post);
-            // }
-            //
-            // this.posts.delete_cpost();
-
-            this.postlist_out(this.session.posts);
-            this.postlist_out(this.post_boo.posts);
+            this.postlist_out();
           }
         });
       },
 
-      postlist_out(posts) {
-        if (posts) {
-          const where = _.findIndex(posts.list, ['id', this.post.id]);
-          if (where!=-1) {
-            posts.list.splice(where, 1);
+      postlist_out: function() {
+        if (this.swiper) {
+          let where = this.swiper.realIndex;
+          this.swiper.slideTo(where-1);
+
+          if (this.session.posts) {
+            where = _.findIndex(this.session.posts.list, ['id', this.post.id]);
+            if (where!=-1) {
+              this.session.posts.list.splice(where, 1);
+            }
+          }
+
+          if (this.post_boo.posts) {
+            where = _.findIndex(this.post_boo.posts.list, ['id', this.post.id]);
+            if (where!=-1) {
+              this.post_boo.posts.list.splice(where, 1);
+            }
           }
         }
       },
 
-      formdata_append(key, comp, formdata) {
+
+      formdata_append: function(key, comp, formdata) {
         if (comp) {
           const val = comp.get();
           if (val) {
@@ -588,8 +626,29 @@
         }
       },
 
+      postize_with: function(key, formdata, postobj) {
+        if (formdata.has(key)) {
+          let val = formdata.get(key);
+
+          if (val instanceof Blob) {
+            val = URL.createObjectURL(val);
+          }
+
+          postobj[key] = val;
+        }
+      },
+
+      postize: function(formdata, postobj) {
+        this.postize_with('text', formdata, postobj);
+        this.postize_with('keys', formdata, postobj);
+        this.postize_with('pix', formdata, postobj);
+        this.postize_with('pix_a', formdata, postobj);
+        this.postize_with('pix_b', formdata, postobj);
+        this.postize_with('pixlabel_a', formdata, postobj);
+        this.postize_with('pixlabel_b', formdata, postobj);
+      },
+
       save_post: function() {
-        // text가 바뀌는 경우
         // 참고: console.log("")로 하면 <empty string>이라고 나온다 (이걸로 한참 헤맴)
         const formdata = new FormData();
         formdata.append('n_edited', 0);
@@ -604,17 +663,26 @@
 
 
         if (Number(formdata.get('n_edited')) > 0) {
-          this.show_processing();
-
           formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
           formdata.append('type', this.post_type);
 
           // 포스트를 수정하는 경우
           if (this.post) {
             formdata.append('post_id', this.post.id);
+            this.postize(formdata, this.post);
 
           } else {
-            // this.show_processing();
+            var post_target = {
+              boo: this.post_boo,
+              id: undefined,
+              nvotes_down: 0,
+              nvotes_up: 0,
+              type: this.post_type
+            };
+
+            this.postize(formdata, post_target);
+            this.postlist_in(post_target);
+            this.session.close_page();
           }
 
           fetch('post/save/', { method: 'POST', body: formdata })
@@ -623,16 +691,32 @@
               console.log(js);
 
               if (js.success && js.mode=='created') {
-                this.posts.add_newpost(js.post);
-                this.session.close_page();
+                post_target.id = js.post_id;
               }
-
-              // if (js.success && this.post_boo.posts) {
-              //   this.post_boo.posts.listin(js.post);
-              // }
-
-              this.hide_processing();
             });
+        }
+      },
+
+      postlist_in: function(post) {
+        if (this.swiper) {
+          const where = this.swiper.realIndex + 1;
+
+          if (this.session.mode.prev.on == 'journey' && this.session.posts) {
+            this.session.posts.list.splice(where, 0, post);
+
+            if (this.post_boo.posts) {
+              this.post_boo.posts.list.push(post);
+            }
+
+          } else if (this.session.mode.prev.on == 'booposts' && this.post_boo.posts) {
+            if (this.session.posts) {
+              this.session.posts.list.push(post);
+            }
+
+            this.post_boo.posts.list.splice(where, 0, post);
+          }
+
+          this.swiper.slideTo(where);
         }
       }
     }

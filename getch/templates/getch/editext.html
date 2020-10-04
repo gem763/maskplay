@@ -104,7 +104,19 @@
 
     watch: {
       text: function(_new, _old) {
-        this.changed = true;
+        if (_new != this.rawtext) {
+          this.changed = true;
+
+        } else {
+          this.changed = false;
+        }
+      },
+
+      rawtext: function(_new, _old) {
+        if (!this.freeze) {
+          this.text = (_new ? _new : '');
+          this.reset();  
+        }
       }
     },
 

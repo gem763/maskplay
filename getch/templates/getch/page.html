@@ -27,6 +27,8 @@
     background: rgba(0,0,0,0.5);
   }
 
+  .page .show-content-enter-active,
+  .page .show-content-leave-active,
   .page .show-content-from-right-enter-active,
   .page .show-content-from-right-leave-active,
   .page .show-content-from-left-enter-active,
@@ -36,6 +38,11 @@
   .page .show-dimmer-enter-active,
   .page .show-dimmer-leave-active {
     transition: all .3s;
+  }
+
+  .page .show-content-enter,
+  .page .show-content-leave-to {
+    opacity: 0;
   }
 
   .page .show-content-from-right-enter,
@@ -105,7 +112,12 @@
 
     computed: {
       show_content_type: function() {
-        return 'show-content-from-' + this.from
+        if (this.from) {
+          return 'show-content-from-' + this.from
+
+        } else {
+          return 'show-content'
+        }
       }
     },
 

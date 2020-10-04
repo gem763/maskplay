@@ -1,0 +1,100 @@
+<style>
+  .pixeditor.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pixeditor.vcomp .cropper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+  }
+
+  .pixeditor.vcomp .actions {
+    position: absolute;
+    bottom: 40px;
+    left: 40px;
+    right: 40px;
+    /* height: 100px; */
+    background: none;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+  }
+
+  .pixeditor.vcomp .actions > .action {
+    position: absolute;
+    bottom: 0;
+    width: 50%;
+  }
+
+  .pixeditor.vcomp .actions > .action:first-child {
+    left: 0;
+  }
+
+  .pixeditor.vcomp .actions > .action:last-child {
+    right: 0;
+  }
+</style>
+
+<script type='text/x-template' id='pixeditor-template'>
+  <page class='pixeditor vcomp' :open='session.page.pixeditor.open' @close='close'>
+    <cropper
+      class='cropper'
+      :src='session.page.pixeditor.src'
+      :stencil-props="{
+    		handlers: {},
+    		movable: false,
+    		scalable: false,
+    		aspectRatio: 1,
+    	}"
+      image-restriction="stencil"
+      @change='change'
+      ref='cropper'
+    ></cropper>
+
+    <div class='actions'>
+      <div class='action' @click='close'>CANCEL</div>
+      <div class='action' @click='ok'>OK</div>
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('pixeditor', {
+    template: '#pixeditor-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        canvas: undefined
+      }
+    },
+
+    methods: {
+      change: function({coordinates, canvas}) {
+        // this.pix = canvas.toDataURL();
+        this.canvas = canvas;
+      },
+
+      close: function() {
+        this.session.close_page()
+      },
+
+      ok: function() {
+        this.canvas.toBlob(blob => {
+					this.session.page.pixeditor.pixloader.set(blob);
+          this.session.close_page()
+				}, 'image/png');
+      }
+    }
+  });
+</script>

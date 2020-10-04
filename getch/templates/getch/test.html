@@ -10,139 +10,29 @@
   <!-- favicon.ico 404 Not found error -->
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <style>
-    :root {
-      --ox-panel-border-w: 1px;
-      --vs-fsize: 25px;
-      --ox-fsize: 100px;
-      --color-pos: rgb(241,20,15);
-      --color-neg: rgb(22,187,204);
-
-      --border-w: 0px;
-      --border: var(--border-w) solid black;
-
-      --x1: calc((100vw - var(--border-w))/572);
-      --x2: calc((100vh - var(--border-w))/988);
-      --x: min(var(--x1), var(--x2));
-
-      --s-menu: calc(78 * var(--x));
-      --s-menu-icon: calc(var(--s-menu) * 25/35);
-      --s-0: calc(494 * var(--x));
-      --s-1: calc(var(--s-0)/2);
-      --s-2: calc(var(--s-1)/2);
-      --pix-margin: calc(12 * var(--x));
-
-      --window-w: calc(var(--s-0) + var(--s-menu) + var(--border-w));
-      --window-h: calc(var(--s-0)*2 + var(--border-w));
-
-
-      --border2-w: 50px;
-      --border2: var(--border2-w) solid black;
-
-      --y1: calc((100vw - var(--border2-w))/572);
-      --y2: calc((100vh - var(--border2-w))/988);
-      --y: min(var(--y1), var(--y2));
-
-      --t-0: calc(572 * var(--y));
-      --t-1: calc(352 * var(--y));
-      --t-2: calc(220 * var(--y));
-      --t-3: calc(132 * var(--y));
-
-      --window-w2: calc(var(--t-0) + var(--border2-w));
-      --window-h2: calc(var(--t-0) + var(--t-1) + var(--border2-w));
-    }
-
-    .struct-content {
-      width: var(--window-w2);
-      height: var(--window-h2);
-      background: none;
-      position: relative;
-      border: var(--border2-w) solid black;
-      box-sizing: border-box;
-    }
-
-    .struct-header {
-      border-collapse: collapse;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: var(--window-w2);
-    }
-
-    .struct-header > tbody > tr > td {
-      box-sizing: border-box;
-      border: var(--border2-w) solid red;
-      padding: 0;
-    }
-
-    .struct-header > tbody > tr > td.slot-1 {
-      width: var(--t-2);
-      height: var(--t-2);
-    }
-
-    .struct-header > tbody > tr > td.slot-0 {
-      width: var(--t-1);
-      height: var(--t-1);
-    }
-
-    .struct-header > tbody > tr > td.slot-2 {
-      width: var(--t-3);
-      height: var(--t-3);
-    }
-
-    .struct-header > tbody > tr > td.content {
-      height: var(--t-0);
-    }
   </style>
 </head>
 
 <body style='margin:0;background:lightpink;'>
-
-  <!-- <table id='window' class='struct-header'>
-    <tbody>
-      <tr>
-        <td class='slot-1' colspan='2'></td>
-        <td class='slot-0' rowspan='2'></td>
-      </tr>
-
-      <tr>
-        <td class='slot-2'></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class='struct-content'>
-  </div> -->
-
-  <!-- <img src='/static/materials/icons/SIDEB_ICON_CDP.png' style='width:100px;height:100px;'> -->
+  <img src='/static/materials/imgs/killyou.gif' style='width:100px;height:100px;'>
+  <img src='/static/materials/icons/mask4.png' style='width:100px;height:100px;'>
+  <!-- <img id='test' style='width:200px;height:200px;'> -->
+  <img id='test'>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="/static/hammer/hammer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js"></script>
+  <script src="/static/merge-images/merge-images.js"></script>
 
   <script>
   $(document).ready(function () {
-
-    const hammer = new Hammer(document);
-
-    function getStartX(e) {
-        const delta_x = e.deltaX;
-        const final_x = e.srcEvent.pageX || e.srcEvent.screenX || 0;
-        const canvas_w = document.querySelector('#window').offsetWidth;
-        return (final_x - delta_x) / canvas_w;
-    };
-
-    hammer.on('swiperight swipeleft', function (e) {
-      e.preventDefault();
-      const x = getStartX(e);
-
-      if (e.type=='swiperight' && x <= 0.3) {
-        console.log('swipe right')
-
-      } else if (e.type=='swipeleft' && x >= 0.7) {
-        console.log('swipe left')
-      }
+    mergeImages([
+      {src:'/static/materials/imgs/killyou.gif', width:200, height:200},
+      {src:'/static/materials/icons/mask2.png'}
+    ], {format:'image/png'})
+    .then(b64 => document.querySelector('#test').src = b64);
     });
-  });
   </script>
 
 </body>

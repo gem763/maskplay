@@ -134,7 +134,7 @@
 
 
 <script type='text/x-template' id='baseposts-template'>
-  <div class='baseposts vcomp'>
+  <div class='baseposts vcomp' ref='kkkk'>
     <div class='back'>
       <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
     </div>
@@ -152,7 +152,7 @@
         <post
           :post='post'
           :session='session'
-          :swiper='swiper'
+          :mother='me'
         ></post>
       </swiper-slide>
     </swiper>
@@ -168,7 +168,8 @@
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
     </div>
 
-    <div class='posting menublock' @click='session.open_posting()'>
+    <!-- <div class='posting menublock' @click='session.open_posting(this)'> -->
+    <div class='posting menublock' @click='open_posting()'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
     </div>
 
@@ -185,7 +186,7 @@
   Vue.component('baseposts', {
     template: '#baseposts-template',
     delimiters: ['[[', ']]'],
-    props: ['postlist', 'session', 'open_at'],
+    props: ['postlist', 'session', 'open_at', 'posts'],
 
     data: function() {
       return {
@@ -205,6 +206,10 @@
       //     return []
       //   }
       // },
+
+      me: function() {
+        return this
+      },
 
       cpost: function() {
         if (this.swiper && this.postlist) {
@@ -259,10 +264,23 @@
         // this.$nextTick(function() {
         //   this.posts.open_at(_new);
         // })
+      },
+
+      cpost_id: function(_new, _old) {
+        if (this.postlist.length > 1) {
+          console.log(this.postlist.length, this.swiper.realIndex);
+          if (this.postlist.length-this.swiper.realIndex < 5) {
+            this.posts.load();
+          }
+        }
       }
     },
 
     methods: {
+      open_posting: function() {
+        this.session.open_posting(this);
+      }
+      // test: function() { console.log(this)}
       // open_comments: function() {
       //   if (this.type=='booposts') {
       //   } else {

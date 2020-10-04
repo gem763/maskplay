@@ -61,7 +61,7 @@
 <script type='text/x-template' id='aber-template'>
   <div class='aber' :class='phase'>
     <!-- <div class='container' :class='phase'> -->
-      <pixloader :pix='pix' :editable='editable' ref='pixloader'></pixloader>
+      <pixloader :pix='pix' :editable='editable' :session='session' ref='pixloader'></pixloader>
     <!-- </div> -->
 
     <transition name='show-score'>
@@ -75,7 +75,7 @@
   Vue.component('aber', {
     template: '#aber-template',
     delimiters: ['[[', ']]'],
-    props: [ 'act', 'vote_state', 'score', 'editable', 'is_active', 'pix' ],
+    props: [ 'act', 'vote_state', 'score', 'editable', 'is_active', 'pix', 'session' ],
     data: function() {
       return {}
     },

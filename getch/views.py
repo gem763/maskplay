@@ -48,6 +48,7 @@ def play(request):
     # _posts = m.PostSerializer(_qs, many=True).data
     # ctx = {'posts': json.dumps(_posts), 'characters':characters, 'maskbases':maskbases, 'stats':stats}
     # ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
+    # print(characters)
     ctx = {'characters':characters, 'eyemasks':eyemasks, 'mouthmasks':mouthmasks, 'stats':stats}
     return render(request, 'getch/play.html', ctx)
 
@@ -375,13 +376,12 @@ def post_save(request):
         post.save()
 
         if mode == 'edited':
-            _post = m.PostSerializer(post).data
-            js = {'success':True, 'mode':mode, 'post':_post}
+            js = {'success':True, 'mode':mode}
 
         elif mode == 'created':
-            # _post = json.dumps(m.PostSerializer(post).data)
-            _post = m.PostSerializer(post).data
-            js = {'success':True, 'mode':mode, 'post':_post}
+            # _post = m.PostSerializer(post).data
+            js = {'success':True, 'mode':mode, 'post_id':post.id}
+            # js = {'success':True, 'mode':mode, 'post':_post}
             # post_created = render_to_string('getch/post.html', {'post':post, 'type':post_type})
             # js = {'success':True, 'mode':mode, 'post_id':post.id, 'post_created':post_created}
 

@@ -52,11 +52,11 @@
   }
 
   .profiler.vcomp .struct .header-0 > .canvas > .eyemask.mask {
-    background-color: rgba(173,216,230,0.5);
+    /* background-color: rgba(173,216,230,0.5); */
   }
 
   .profiler.vcomp .struct .header-0 > .canvas > .mouthmask.mask {
-    background-color: rgba(255,182,193,0.5);
+    /* background-color: rgba(255,182,193,0.5); */
   }
 
   .profiler.vcomp .saver {
@@ -227,6 +227,10 @@
       },
 
       save: function() {
+        this.boo.nick = this.$refs.boo_nick.text;
+        this.boo.text = this.$refs.boo_text.text;
+        this.boo.profile.text = this.$refs.boo_profile_text.text;
+
         const formdata = new FormData();
         formdata.append('n_edited', 0);
 
@@ -308,35 +312,35 @@
     },
 
     mounted: function() {
-      this.$watch(
-        function() {
-          return this.$refs.boo_nick.text
-        },
-
-        function(_new, _old) {
-          this.boo.nick = _new;
-        },
-      );
-
-      this.$watch(
-        function() {
-          return this.$refs.boo_text.text
-        },
-
-        function(_new, _old) {
-          this.boo.text = _new;
-        },
-      );
-
-      this.$watch(
-        function() {
-          return this.$refs.boo_profile_text.text
-        },
-
-        function(_new, _old) {
-          this.boo.profile.text = _new;
-        },
-      );
+      // this.$watch(
+      //   function() {
+      //     return this.$refs.boo_nick.text
+      //   },
+      //
+      //   function(_new, _old) {
+      //     this.boo.nick = _new;
+      //   },
+      // );
+      //
+      // this.$watch(
+      //   function() {
+      //     return this.$refs.boo_text.text
+      //   },
+      //
+      //   function(_new, _old) {
+      //     this.boo.text = _new;
+      //   },
+      // );
+      //
+      // this.$watch(
+      //   function() {
+      //     return this.$refs.boo_profile_text.text
+      //   },
+      //
+      //   function(_new, _old) {
+      //     this.boo.profile.text = _new;
+      //   },
+      // );
 
       const self = this;
       $(this.$refs.eyemask).draggable({

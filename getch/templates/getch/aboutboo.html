@@ -118,7 +118,9 @@
     flex-wrap: wrap;
     overflow: hidden;
     /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
-    /* overflow-y: auto; */
+    overflow-y: auto;
+    -ms-overflow-style: none; /* IE 11 */
+    scrollbar-width: none; /* Firefox 64 */
   }
 
   .aboutboo.vcomp .content > .booposts-section > .booposts > .boopost {
@@ -217,7 +219,7 @@
       <div class='booposts-section'>
         <transition-group name='show-booposts' tag='div' class='booposts'>
         <!-- <transition-group name='show-booposts' tag='div' class='booposts' v-if='boo.posts'>   -->
-          <div class='boopost' v-for='(post, idx) in postlist' :key='post.id' @click='open_booposts(idx)'>
+          <div class='boopost' v-for='(post, idx) in postlist' :key='post_key(post)' @click='open_booposts(idx)'>
             <minipost :post='post' :session='session'></minipost>
           </div>
         </transition-group>
@@ -246,7 +248,20 @@
         if (!this.boo.posts) {
           this.$set(this.boo, 'posts', new Booposts(this.boo));
         }
-        return this.boo.posts.list
+
+        if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
+          return this.boo.posts.list.map(post => {
+            const _post = _.find(this.session.posts.list, ['id', post.id]);
+            if (_post) {
+              return _post;
+            } else {
+              return post
+            }
+          });
+
+        } else {
+          return this.boo.posts.list
+        }
       },
 
       profilepix: function() {
@@ -293,6 +308,16 @@
     },
 
     methods: {
+      // newpost를 저장한 경우, post.id가 undefined 일 때가 있어서
+      // post_key를 따로 지정한다
+      post_key: function(post) {
+        if (post.id) {
+          return post.id
+        } else {
+          return new Date().toISOString()
+        }
+      },
+
       open_boochooser: function() {
         if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
           this.session.open_boochooser();

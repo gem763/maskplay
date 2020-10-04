@@ -18,6 +18,7 @@
     top: 0;
     left: 0;
     width: 100%;
+    /* height: auto; */
     height: 100%;
   }
 
@@ -41,6 +42,7 @@
     box-sizing: border-box;
     /* border: 5px dashed silver; */
     opacity: 0.5;
+    /* pointer-events: none; */
   }
 
   .pixloader .pix-clicker img {
@@ -91,12 +93,13 @@
   Vue.component('pixloader', {
     template: '#pixloader-template',
     delimiters: ['[[', ']]'],
-    props: [ 'pix', 'editable' ],
+    props: [ 'pix', 'editable', 'session' ],
     data: function() {
       return {
         pixloader_id: 0,
         changed: false,
-        pixfocused: false
+        pixfocused: false,
+        blob: undefined
       }
     },
 
@@ -121,13 +124,20 @@
           let reader = new FileReader();
 
           reader.onload = function(e) {
-            self.$refs.pix.src = e.target.result;
-            self.$refs.pix.style.display = 'block';
+            self.session.open_pixeditor(e.target.result, self);
+            // self.$refs.pix.src = e.target.result;
+            // self.$refs.pix.style.display = 'block';
           };
 
           reader.readAsDataURL(input.files[0]);
-          this.changed = true;
         }
+      },
+
+      set: function(blob) {
+        this.blob = blob;
+        this.$refs.pix.src = URL.createObjectURL(blob);
+        this.$refs.pix.style.display = 'block';
+        this.changed = true;
       },
 
       get: function() {
@@ -141,7 +151,8 @@
 
           // 사실 input.value=''를 할필요도 없다
           // input이 v-if로 되어 있어, 다시 여는 경우 어짜피 초기화된다
-          return this.$refs.input.files[0];
+          // return this.$refs.input.files[0];
+          return this.blob
         }
       }
     }

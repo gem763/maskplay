@@ -3,7 +3,7 @@ from django.conf.urls import include
 from . import views as v
 
 urlpatterns = [
-    path('', v.test, name='play'),
+    path('', v.play, name='play'),
     path('privacy/', v.privacy, name='privacy'),
     path('policy/', v.policy, name='policy'),
     path('accounts/', include('allauth.urls')),

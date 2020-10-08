@@ -112,8 +112,6 @@
           :mouthmasks='mouthmasks'
           @download='download'
         ></profilekit>
-
-        <img id='imgtest' style='width:300px;height:300px;position:absolute;bottom:0;left:0;'>
       </template>
     </struct>
 
@@ -296,58 +294,54 @@
           });
       },
 
-      // download: function() {
-      //   html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
-      //     .then(function(canvas) {
-      //       if (navigator.msSaveBlob) {
-      //         const blob = canvas.msToBlob();
-      //         return navigator.msSaveBlob(blob, 'mypix.png');
-      //
-      //       } else {
-      //         const el = document.createElement("a");
-      //         el.href = canvas.toDataURL("image/png");
-      //         el.download = 'mypix.png';
-      //         el.click();
-      //       }
-      //     });
-      // },
-
       download: function() {
-        const imgs = [];
-        const size = 300;
-        const options = { format:'image/png', crossOrigin:'Anonymous', width:size, height:size };
+        html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
+          .then(function(canvas) {
+            if (navigator.msSaveBlob) {
+              const blob = canvas.msToBlob();
+              return navigator.msSaveBlob(blob, 'mypix.png');
 
-        if (this.is_imagized) {
-          imgs.push({
-            src: this.boo.profile.image,
-            width: size,
-            height: size
+            } else {
+              const el = document.createElement("a");
+              el.href = canvas.toDataURL("image/png");
+              el.download = 'mypix.png';
+              el.click();
+            }
           });
-        }
-
-        if (this.is_eyemasked) {
-          const eyemask = this.eyemasks[this.boo.profile.eyemask.maskbase];
-          const eyemask_height = this.boo.profile.eyemask.height / this.boo.profile.eyemask.width * size;
-          const eyemask_top = this.boo.profile.eyemask.top / 100 * size;
-          const eyemask_left = this.boo.profile.eyemask.left / 100 * size;
-
-          imgs.push({
-            src: eyemask.pix,
-            width: size,
-            height: eyemask_height,
-            x: eyemask_left,
-            y: eyemask_top
-          });
-        }
-
-        mergeImages(imgs, options)
-          .then(b64 => {
-            document.querySelector('#imgtest').src = b64;
-          });
-      }
+      },
     },
 
     mounted: function() {
+      // this.$watch(
+      //   function() {
+      //     return this.$refs.boo_nick.text
+      //   },
+      //
+      //   function(_new, _old) {
+      //     this.boo.nick = _new;
+      //   },
+      // );
+      //
+      // this.$watch(
+      //   function() {
+      //     return this.$refs.boo_text.text
+      //   },
+      //
+      //   function(_new, _old) {
+      //     this.boo.text = _new;
+      //   },
+      // );
+      //
+      // this.$watch(
+      //   function() {
+      //     return this.$refs.boo_profile_text.text
+      //   },
+      //
+      //   function(_new, _old) {
+      //     this.boo.profile.text = _new;
+      //   },
+      // );
+
       const self = this;
       $(this.$refs.eyemask).draggable({
         axis: 'y',

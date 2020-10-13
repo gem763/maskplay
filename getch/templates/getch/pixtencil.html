@@ -1,0 +1,55 @@
+<style>
+  .pixtencil.vcomp {
+    /* cursor: move; */
+    position: absolute;
+    /* border: dashed 2px white;
+    box-sizing: border-box; */
+  }
+</style>
+
+<script type='text/x-template' id='pixtencil-template'>
+  <div class='pixtencil vcomp' :style='style'>
+    <rectangle-stencil
+      :img='img'
+      :resultCoordinates='resultCoordinates'
+      :stencilCoordinates='stencilCoordinates'
+      :handlers='{}'
+      :movable='false'
+      :scalable='false'>
+    </rectangle-stencil>
+    <!-- <div id='testkkkk' style='position:absolute;top:0;left:0;width:100px;height:100px;background:orange'></div> -->
+  </div>
+</script>
+
+
+<script>
+  Vue.component('pixtencil', {
+    template: '#pixtencil-template',
+    delimiters: ['[[', ']]'],
+    props: ['img', 'resultCoordinates', 'stencilCoordinates'],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+  		style: function() {
+  			const { height, width, left, top } = this.stencilCoordinates;
+  			return {
+  				width: `${width}px`,
+  				height: `${height}px`,
+  				left: `${left}px`,
+  				top: `${top}px`
+  			};
+  		}
+  	},
+
+    methods: {
+  		aspectRatios: function() {
+  			return {
+  				minimum: 1,
+  				maximum: 1
+  			};
+  		}
+  	},
+  });
+</script>

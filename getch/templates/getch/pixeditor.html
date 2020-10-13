@@ -1,3 +1,6 @@
+{% include "getch/pixtencil.html" %}
+
+
 <style>
   .pixeditor.vcomp {
     position: absolute;
@@ -18,7 +21,8 @@
 
   .pixeditor.vcomp .actions {
     position: absolute;
-    bottom: 40px;
+    /* bottom: 40px; */
+    top: 10%;
     left: 40px;
     right: 40px;
     /* height: 100px; */
@@ -42,6 +46,29 @@
   .pixeditor.vcomp .actions > .action:last-child {
     right: 0;
   }
+
+  .pixeditor.vcomp .fitter {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    /* background: orange; */
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pixeditor.vcomp .fitter > img {
+    width: 50%;
+    height: 50%;
+    filter: invert(1);
+  }
+
+  .imgtest {
+    opacity: 0.1;
+  }
 </style>
 
 <script type='text/x-template' id='pixeditor-template'>
@@ -50,19 +77,27 @@
       class='cropper'
       :src='session.page.pixeditor.src'
       :stencil-props="{
-    		handlers: {},
-    		movable: false,
-    		scalable: false,
-    		aspectRatio: 1,
-    	}"
-      image-restriction="stencil"
+        handlers: {},
+        movable: false,
+        scalable: false,
+        aspectRatio: 1,
+      }"
+      :image-restriction='img_restriction'
       @change='change'
       ref='cropper'
     ></cropper>
 
+    <!-- stencil-component='pixtencil' -->
+    <!-- :default-position="defaultPosition" -->
+    <!-- :default-size="defaultSize" -->
+
     <div class='actions'>
       <div class='action' @click='close'>CANCEL</div>
       <div class='action' @click='ok'>OK</div>
+    </div>
+
+    <div class='fitter' @click='imgfit'>
+      <img src='/static/materials/icons/expand.png'>
     </div>
   </page>
 </script>
@@ -75,15 +110,89 @@
     props: ['session'],
     data: function() {
       return {
-        canvas: undefined
+        canvas: undefined,
+        fitmode: false
       }
     },
 
+    computed: {
+      // stencil_size: function() {
+      //   return 50
+      // },
+
+      img_restriction: function() {
+        if (this.fitmode) {
+          return 'area'
+
+        } else {
+          return 'stencil'
+        }
+      }
+    },
+
+    watch: {
+      'session.page.pixeditor.open': function(_new, _old) {
+        if (_new) {
+          var newWidth = this.$el.clientWidth * 0.5;
+          var newHeight = newWidth;
+
+          console.log(newWidth, newHeight);
+
+
+          // this.$refs.cropper.setCoordinates((coordinates, imageSize) => ({
+          //   width: imageSize.width,
+          //   height: imageSize.height
+          // }))
+
+          // this.$refs.cropper.setCoordinates([
+          // 	(coordinates, imageSize) => ({
+          // 		width: newWidth,
+          // 		height: newHeight,
+          // 	}),
+          // 	// There will be coordinates after first transformation
+          // 	(coordinates, imageSize) => ({
+          // 		left: imageSize.width/2 - coordinates.width/2,
+          // 		top: imageSize.height/2 - coordinates.height/2
+          // 	}),
+          // ])
+        }
+      }
+    },
+
+
     methods: {
+      pixelsRestriction: function({ minWidth, minHeight, maxWidth, maxHeight, imageWidth, imageHeight }) {
+  			return {
+  				minWidth: minWidth,
+  				minHeight: minHeight,
+  				maxWidth: maxWidth,
+  				maxHeight: maxHeight,
+  			};
+  		},
+
       change: function({coordinates, canvas}) {
         // this.pix = canvas.toDataURL();
         this.canvas = canvas;
       },
+
+      imgfit: function() {
+        this.fitmode = true;
+        this.resize();
+      },
+
+      // defaultPosition() {
+  		// 	return {
+  		// 		left: 50,
+  		// 		top: 50,
+  		// 	};
+  		// },
+      //
+  		// defaultSize() {
+  		// 	return {
+  		// 		width: 100,
+  		// 		height: 100,
+  		// 	};
+  		// },
 
       close: function() {
         this.session.close_page()

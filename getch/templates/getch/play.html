@@ -11,9 +11,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
-  <link rel="stylesheet" href="{% static 'swiper/swiper.min.css' %}">
+  <link rel="stylesheet" href='/static/swiper/swiper.min.css'>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="{% static 'jquery-ui/jquery-ui.min.css' %}">
+  <link rel="stylesheet" href='/static/jquery-ui/jquery-ui.min.css'>
+  <link rel="stylesheet" href='/static/cropperjs/cropper.min.css'>
 
   <!-- favicon.ico 404 Not found error -->
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
@@ -120,10 +121,11 @@
   <script src="https://momentjs.com/downloads/moment.min.js"></script>
   <!-- <script src="https://unpkg.com/fast-average-color/dist/index.min.js"></script> post 20200915.html에 테스트 구현 -->
   <script src="https://unpkg.com/@saeris/vue-spinners"></script>
-  <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js"></script>
+  <!-- 아.. 요건 너무 쓰기 어려워서 포기 <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js"></script> -->
   <!-- https://norserium.github.io/vue-advanced-cropper/ -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/deep-object-diff@1.1.0/dist/index.js"></script> -->
   <script src="/static/merge-images/merge-images.js"></script>
+  <script src="/static/cropperjs/cropper.min.js"></script>
 
 
   {% include "getch/posts.html" %}

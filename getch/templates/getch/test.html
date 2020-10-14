@@ -9,30 +9,171 @@
 
   <!-- favicon.ico 404 Not found error -->
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <link rel="stylesheet" href='/static/cropperjs/cropper.min.css'>
   <style>
+    .toolbar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: orange;
+      display: flex;
+      justify-content: center;
+    }
+
+    .toolbar > .opt {
+      width: 35px;
+      height: 35px;
+      background: lightblue;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .toolbar > .opt > img {
+      width: 60%;
+      height: 60%;
+    }
   </style>
 </head>
 
 <body style='margin:0;background:lightpink;'>
-  <img src='/static/materials/imgs/killyou.gif' style='width:100px;height:100px;'>
-  <img src='/static/materials/icons/mask4.png' style='width:100px;height:100px;'>
-  <!-- <img id='test' style='width:200px;height:200px;'> -->
-  <img id='test'>
+  <div style='position:absolute;top:0;left:0;width:100%;height:100%;background:black;'>
+    <!-- <img id='testimg' src='/static/materials/imgs/datelook1.jpg' style='display:block;max-width:100%;opacity:0;'> -->
+    <img id='testimg' src='/static/materials/imgs/AB_anorak_B.jpg' style='display:block;max-width:100%;opacity:0;'>
+    <!-- <img id='testimg' src='/static/materials/imgs/popeye-hk0003.jpg' style='display:block;max-width:100%;opacity:0;'> -->
+  </div>
+
+  <div class='toolbar'>
+    <div class='opt' onclick='fit_inside()'>
+      <img src='/static/materials/icons/expand.png'>
+    </div>
+
+    <div class='opt' onclick='zoomin()'>
+      <img src='/static/materials/icons/zoomin.png'>
+    </div>
+
+    <div class='opt' onclick='zoomout()'>
+      <img src='/static/materials/icons/zoomout.png'>
+    </div>
+
+    <div class='opt' onclick='rotate_left()'>
+      <img src='/static/materials/icons/rotate-left.png'>
+    </div>
+
+    <div class='opt' onclick='rotate_right()'>
+      <img src='/static/materials/icons/rotate-right.png'>
+    </div>
+
+    <div class='opt' onclick='flip_horizontal()'>
+      <img src='/static/materials/icons/flip-horizontal.png'>
+    </div>
+
+    <div class='opt' onclick='flip_vertical()'>
+      <img src='/static/materials/icons/flip-vertical.png'>
+    </div>
+
+    <div class='opt' onclick='ok()'>
+      OK
+    </div>
+  </div>
+
+  <img id='cropped' style='position:absolute;bottom:0;left:0;'>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="/static/hammer/hammer.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js"></script>
-  <script src="/static/merge-images/merge-images.js"></script>
-
+  <script src="/static/cropperjs/cropper.min.js"></script>
   <script>
-  $(document).ready(function () {
-    mergeImages([
-      {src:'/static/materials/imgs/killyou.gif', width:100, height:100},
-      {src:'/static/materials/icons/mask2.png'}
-    ], {format:'image/png'})
-    .then(b64 => document.querySelector('#test').src = b64);
+    const image = document.getElementById('testimg');
+    const cropsize = 0.7;
+
+    const cropper = new Cropper(image, {
+      dragMode: 'move',
+      viewMode: 0,
+      aspectRatio: 1,
+      guides: false,
+      highlight: false,
+      background: false,
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+      autoCropArea:  cropsize,
+      minCropBoxWidth: document.body.clientWidth * cropsize,
+
+      ready: function() {
+        fit_inside();
+      }
     });
+
+    function fit_inside() {
+      let top, left, width, height;
+      const cropbox = cropper.getCropBoxData();
+      const canvas = cropper.getCanvasData();
+
+      if (canvas.naturalWidth < canvas.naturalHeight) {
+        top = cropbox.top;
+        height = cropbox.height;
+        width = canvas.naturalWidth / canvas.naturalHeight * height;
+        left = cropbox.left + cropbox.width/2 - width/2;
+
+      } else {
+        left = cropbox.left;
+        width = cropbox.width;
+        height = canvas.naturalHeight / canvas.naturalWidth * width;
+        top = cropbox.top + cropbox.height/2 - height/2;
+      }
+
+      cropper.setCanvasData({
+        top: top,
+        left: left,
+        width: width,
+        height: height
+      });
+    }
+
+    function zoomin() {
+      cropper.zoom(0.1);
+    }
+
+    function zoomout() {
+      cropper.zoom(-0.1);
+    }
+
+    function rotate_left() {
+      cropper.rotate(-10);
+    }
+
+    function rotate_right() {
+      cropper.rotate(10);
+    }
+
+    function flip_horizontal() {
+      cropper.scaleX(-cropper.getData().scaleX || -1)
+    }
+
+    function flip_vertical() {
+      cropper.scaleY(-cropper.getData().scaleY || -1);
+    }
+
+    function ok() {
+      const img = cropper.getImageData();
+      const size = Math.min(img.naturalWidth, img.naturalHeight);
+
+      const canvas = cropper.getCroppedCanvas({
+        width: size,
+        height: size,
+        // minWidth: 256,
+        // minHeight: 256,
+        // maxWidth: 4096,
+        // maxHeight: 4096,
+        // fillColor: 'black',
+        imageSmoothingEnabled: false,
+        imageSmoothingQuality: 'high',
+      });
+
+      canvas.toBlob(blob => {
+        console.log(URL.createObjectURL(blob));
+        document.querySelector('#cropped').src = URL.createObjectURL(blob)
+      })
+    }
   </script>
 
 </body>

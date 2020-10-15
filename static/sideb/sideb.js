@@ -10,7 +10,7 @@ class Session {
       posting:    { open: false, from: 'right', mother: undefined },
       comments:   { open: false, from: 'right', post: undefined },
       booposts:   { open: false, from: 'right', open_at: 0 },
-      pixeditor:  { open: false, src: undefined, pixloader: undefined },
+      pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
     };
 
     this.mode = { on: 'journey', order: 0, prev: undefined };
@@ -155,8 +155,9 @@ class Session {
     }
   }
 
-  open_pixeditor(src, pixloader) {
+  open_pixeditor(src, type, pixloader) {
     this.page.pixeditor.src = src;
+    this.page.pixeditor.type = type;
     this.page.pixeditor.pixloader = pixloader;
     this.open_page('pixeditor');
   }

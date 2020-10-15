@@ -250,7 +250,6 @@ def profile_save(request):
         if _profile_mouthmask:
             boo_data['profile']['mouthmask'] = json.loads(_profile_mouthmask)
 
-
         if _key:
             boo_data['key'] = _key
             boo = m.Boo.objects.create(user=user)
@@ -259,6 +258,7 @@ def profile_save(request):
 
         else:
             ser = m.BooSerializer(user.boo, data=boo_data)
+
 
         if ser.is_valid():
             boo = ser.save()

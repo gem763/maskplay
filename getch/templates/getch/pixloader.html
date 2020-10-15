@@ -124,7 +124,7 @@
           let reader = new FileReader();
 
           reader.onload = function(e) {
-            self.session.open_pixeditor(e.target.result, self);
+            self.session.open_pixeditor(e.target.result, 'post', self);
             // self.$refs.pix.src = e.target.result;
             // self.$refs.pix.style.display = 'block';
           };

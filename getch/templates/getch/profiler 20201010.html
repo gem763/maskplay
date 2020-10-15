@@ -86,12 +86,15 @@
         <div class='canvas' ref='canvas'>
           <div class='subcanvas character' v-show='is_characterized' :style='character_canvas_style'></div>
           <div class='subcanvas image' v-show='is_imagized' :style='image_canvas_style'></div>
+          <div class='subcanvas text' v-show='is_textized'>
+            <editext ref='boo_profile_text' :rawtext='boo.profile.text' :editable='true' placeholder='ㅋㅋ' type='in-profile-texting'></editext>
+          </div>
 
-          <div class='mask eyemask' ref='eyemask' v-show='is_eyemasked' :style='eyemask_style'>
+          <div class='mask eyemask' ref='eyemask' v-show='is_eyemasked && (!is_textized)' :style='eyemask_style'>
             <img class='remover' src='/static/materials/icons/times.png' @click='remove("eyemask")'>
           </div>
 
-          <div class='mask mouthmask' ref='mouthmask' v-show='is_mouthmasked' :style='mouthmask_style'>
+          <div class='mask mouthmask' ref='mouthmask' v-show='is_mouthmasked && (!is_textized)' :style='mouthmask_style'>
             <img class='remover' src='/static/materials/icons/times.png' @click='remove("mouthmask")'>
           </div>
         </div>
@@ -112,12 +115,12 @@
           @download='download'
         ></profilekit>
 
-        <!-- <img id='imgtest' style='width:200px;height:200px;position:absolute;bottom:0;left:0;'> -->
+        <img id='imgtest' style='width:300px;height:300px;position:absolute;bottom:0;left:0;'>
       </template>
     </struct>
 
     <div class='saver' @click='save'>[[ is_making_new ? 'NEW' : 'SAVE' ]]</div>
-    <!-- <modal :pop='on_saving' name='processing'></modal> -->
+    <modal :pop='on_saving' name='processing'></modal>
   </page>
 </script>
 
@@ -133,7 +136,7 @@
         characters: {{ characters|safe }},
         eyemasks: {{ eyemasks|safe }},
         mouthmasks: {{ mouthmasks|safe }},
-        // on_saving: false
+        on_saving: false
       }
     },
 
@@ -145,6 +148,7 @@
           this.$nextTick(function() {
             this.$refs.boo_nick.reset();
             this.$refs.boo_text.reset();
+            this.$refs.boo_profile_text.reset();
           });
         }
       },
@@ -155,6 +159,7 @@
         this.$nextTick(function() {
           this.$refs.boo_nick.reset();
           this.$refs.boo_text.reset();
+          this.$refs.boo_profile_text.reset();
         });
       }
     },
@@ -163,19 +168,12 @@
       current_boo: function() {
         if (this.is_making_new) {
           return {
-            //id: undefined,
-            key: this.session.page.profiler.key,
             nick: this.session.auth.email.split('@')[0],
             text: '',
-            followers_id: [],
-            nfollowers: 0,
-            nposts: 0,
-            voting_record: {},
             profile: {
-              //id: undefined,
-              pix: undefined,
               character: 1,
               image: undefined,
+              text: 'ㅋㅋ',
               type: 'CHARACTER',
               eyemask: { masked:false, maskbase:1, top:20 },
               mouthmask: { masked:false, maskbase:35, top:60 },
@@ -219,19 +217,14 @@
           }
 
         } else if (_to!==_from) {
-          if (_to instanceof Blob) {
-            formdata.append(key, _to, 'myimage.png');
-
-          } else {
-            formdata.append(key, _to);
-          }
-
+          formdata.append(key, _to);
           formdata.set('n_edited', Number(formdata.get('n_edited')) + 1);
         }
       },
 
       pix_changed: function(formdata) {
         return formdata.has('profile_character') ||
+               formdata.has('profile_text') ||
                formdata.has('profile_image_file') ||
                formdata.has('profile_eyemask') ||
                formdata.has('profile_mouthmask')
@@ -240,6 +233,7 @@
       save: function() {
         this.boo.nick = this.$refs.boo_nick.text;
         this.boo.text = this.$refs.boo_text.text;
+        this.boo.profile.text = this.$refs.boo_profile_text.text;
 
         const formdata = new FormData();
         formdata.append('n_edited', 0);
@@ -254,12 +248,16 @@
           this.formdata_append('profile.character', formdata);
         }
 
+        if (this.is_textized) {
+          this.formdata_append('profile.text', formdata);
+        }
+
         if (this.is_imagized) {
           this.formdata_append('profile.image_file', formdata);
         }
 
         if (Number(formdata.get('n_edited')) > 0) {
-          // this.on_saving = true;
+          this.on_saving = true;
           formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
 
           if (this.is_making_new) {
@@ -268,17 +266,14 @@
 
           if (this.pix_changed(formdata)) {
             const self = this;
-
-            this.merge_images(function(b64) {
-              fetch(b64)
-                .then(res => res.blob())
-                .then(blob => {
-                  // console.log(URL.createObjectURL(blob));
+            html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
+              .then(function(canvas) {
+                canvas.toBlob(function(blob) {
+                  // self.boo.profile.pix = URL.createObjectURL(blob);
                   formdata.append('profile_pix', blob, 'mypix.png');
-                  self.boo.profile.pix = b64;
                   self.save_to_db(formdata);
                 });
-            });
+              });
 
           } else {
             this.save_to_db(formdata);
@@ -287,50 +282,46 @@
       },
 
       save_to_db: function(formdata) {
-        this.$set(this.session.auth.boos, this.session.auth.boo_selected, _.cloneDeep(this.boo));
-        this.session.close_page();
+        fetch('boo/profile/save/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            this.on_saving = false;
 
-        // fetch('boo/profile/save/', { method: 'POST', body: formdata })
-        //   .then(res => res.json())
-        //   .then(js => {
-        //     console.log(js)
-        //     // this.on_saving = false;
-        //
-        //     // if (js.success) {
-        //     //   const boo_saved = JSON.parse(js.boo);
-        //     //   console.log(boo_saved);
-        //     //   // Vue.set(this.session.auth.boos, boo_saved.id, boo_saved);
-        //     //   // this.session.auth.boo = boo_saved.id;
-        //     //   // this.session.close_page();
-        //     // }
-        //   });
+            if (js.success) {
+              const boo_saved = JSON.parse(js.boo);
+              console.log(boo_saved);
+              // this.session.auth.boos[boo_saved.id] = boo_saved;
+              Vue.set(this.session.auth.boos, boo_saved.id, boo_saved);
+              this.session.auth.boo = boo_saved.id;
+              this.session.close_page();
+            }
+          });
       },
+
+      // download: function() {
+      //   html2canvas(this.$refs.canvas, { allowTaint: false, useCORS: true, logging: true })
+      //     .then(function(canvas) {
+      //       if (navigator.msSaveBlob) {
+      //         const blob = canvas.msToBlob();
+      //         return navigator.msSaveBlob(blob, 'mypix.png');
+      //
+      //       } else {
+      //         const el = document.createElement("a");
+      //         el.href = canvas.toDataURL("image/png");
+      //         el.download = 'mypix.png';
+      //         el.click();
+      //       }
+      //     });
+      // },
 
       download: function() {
-        this.merge_images(function(b64) {
-          const el = document.createElement("a");
-          el.href = b64;
-          el.download = 'mypix.png';
-          el.click();
-        });
-      },
-
-      merge_images: function(callback) {
         const imgs = [];
-        const size = this.$el.clientWidth * 2;
+        const size = 300;
         const options = { format:'image/png', crossOrigin:'Anonymous', width:size, height:size };
 
         if (this.is_imagized) {
           imgs.push({
             src: this.boo.profile.image,
-            width: size,
-            height: size
-          });
-        }
-
-        if (this.is_characterized) {
-          imgs.push({
-            src: this.characters[this.boo.profile.character].pix,
             width: size,
             height: size
           });
@@ -351,22 +342,10 @@
           });
         }
 
-        if (this.is_mouthmasked) {
-          const mouthmask = this.mouthmasks[this.boo.profile.mouthmask.maskbase];
-          const mouthmask_height = this.boo.profile.mouthmask.height / this.boo.profile.mouthmask.width * size;
-          const mouthmask_top = this.boo.profile.mouthmask.top / 100 * size;
-          const mouthmask_left = this.boo.profile.mouthmask.left / 100 * size;
-
-          imgs.push({
-            src: mouthmask.pix,
-            width: size,
-            height: mouthmask_height,
-            x: mouthmask_left,
-            y: mouthmask_top
+        mergeImages(imgs, options)
+          .then(b64 => {
+            document.querySelector('#imgtest').src = b64;
           });
-        }
-
-        mergeImages(imgs, options).then(b64 => { callback(b64); });
       }
     },
 
@@ -410,6 +389,10 @@
 
       is_imagized: function() {
         return (this.boo.profile.type=="IMAGE")
+      },
+
+      is_textized: function() {
+        return (this.boo.profile.type=="TEXT")
       },
 
       is_eyemasked: function() {

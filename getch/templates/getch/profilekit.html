@@ -111,7 +111,7 @@
       </div>
 
       <div class='item' @click='$emit("download")'>
-        <img class='icon' src='/static/materials/icons/arrow_down.png'>
+        <img class='icon' src='/static/materials/icons/download.png'>
       </div>
     </div>
 
@@ -120,7 +120,7 @@
         <tbody>
           <tr>
             <td class='characters'>
-              <profilekit-characters :characters='characters' :boo='boo'></profilekit-characters>
+              <profilekit-characters :session='session' :characters='characters' :boo='boo'></profilekit-characters>
             </td>
 
             <td class='eyemasks'>

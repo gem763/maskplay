@@ -45,11 +45,11 @@
     width: calc(100% / 3);
   }
 
-  .profilekit-characters.vcomp > .submenu .item {
+  .profilekit-characters.vcomp > .submenu > .item {
     width: 100%;
   }
 
-  .profilekit-characters.vcomp label > .item.imgloading > img {
+  .profilekit-characters.vcomp .item.imgloading > label > img {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -99,15 +99,13 @@
     </div>
 
     <div class='submenu'>
-
-      <label for='subcanvas-image-load'>
-        <div class='item imgloading'>
+      <div class='item imgloading'>
+        <label for='subcanvas-image-load'>
           <img src='/static/materials/icons/pixload.png'>
-        </div>
-      </label>
-
+        </label>
+      </div>
       <div class='item coloring'></div>
-      <div class='item texting'><span>글</span></div>
+      <div class='item texting' @click='textize'><span>글</span></div>
     </div>
   </div>
 </script>
@@ -117,7 +115,7 @@
   Vue.component('profilekit-characters', {
     template: '#profilekit-characters-template',
     delimiters: ['[[', ']]'],
-    props: ['session', 'characters', 'boo'],
+    props: ['characters', 'boo'],
     data: function() {
       return { }
     },
@@ -135,24 +133,17 @@
         if (input.files && input.files[0]) {
           let reader = new FileReader();
 
-          // reader.onload = function(e) {
-          //   self.boo.profile.type = 'IMAGE';
-          //   self.boo.profile.image = e.target.result;
-          //   self.boo.profile.image_file = input.files[0];
-          // };
-
           reader.onload = function(e) {
-            self.session.open_pixeditor(e.target.result, 'profile', self);
+            self.boo.profile.type = 'IMAGE';
+            self.boo.profile.image = e.target.result;
+            self.boo.profile.image_file = input.files[0];
           };
-
           reader.readAsDataURL(input.files[0]);
         }
       },
 
-      set: function(blob) {
-        this.boo.profile.type = 'IMAGE'
-        this.boo.profile.image = URL.createObjectURL(blob);
-        this.boo.profile.image_file = blob;
+      textize: function() {
+        this.boo.profile.type = 'TEXT';
       },
     }
   });

@@ -29,10 +29,6 @@
     justify-content: center;
   }
 
-  .profiler.vcomp .struct .header-0 > .canvas > .subcanvas.text {
-    background: black;
-  }
-
   .profiler.vcomp .struct .header-0 > .canvas > .mask {
     position: absolute;
     background: none;
@@ -163,7 +159,7 @@
       current_boo: function() {
         if (this.is_making_new) {
           return {
-            //id: undefined,
+            id: undefined,
             key: this.session.page.profiler.key,
             nick: this.session.auth.email.split('@')[0],
             text: '',
@@ -287,8 +283,33 @@
       },
 
       save_to_db: function(formdata) {
-        this.$set(this.session.auth.boos, this.session.auth.boo_selected, _.cloneDeep(this.boo));
-        this.session.close_page();
+        if (this.is_making_new) {
+          fetch('boo/profile/save/', { method: 'POST', body: formdata })
+            .then(res => res.json())
+            .then(js => {
+              console.log(js)
+
+              if (js.success) {
+                // this.save_finish(js.boo_id);
+                // 이부분을 좀더 만져야한다!
+                // 새로 부캐를 만들면, 마스크 위치를 새로 설정해야한다!
+                this.boo.id = js.boo_id;
+                this.$set(this.session.auth.boos, js.boo_id, _.cloneDeep(this.boo));
+                this.session.auth.boo = js.boo_id;
+                this.session.close_page();
+              }
+            });
+
+        } else {
+          // this.save_finish();
+          this.$set(this.session.auth.boos, this.session.auth.boo_selected, _.cloneDeep(this.boo));
+          this.session.close_page();
+
+          fetch('boo/profile/save/', { method: 'POST', body: formdata })
+            .then(res => res.json())
+            .then(js => { console.log(js); });
+        }
+
 
         // fetch('boo/profile/save/', { method: 'POST', body: formdata })
         //   .then(res => res.json())
@@ -305,6 +326,19 @@
         //     // }
         //   });
       },
+
+      // save_finish: function(boo_id) {
+      //   if (boo_id) {
+      //     this.$set(this.session.auth.boos, boo_id, _.cloneDeep(this.boo));
+      //     this.session.auth.boo = boo_id;
+      //
+      //   } else {
+      //     this.$set(this.session.auth.boos, this.session.auth.boo_selected, _.cloneDeep(this.boo));
+      //   }
+      //
+      //   this.session.close_page();
+      // },
+
 
       download: function() {
         this.merge_images(function(b64) {

@@ -262,7 +262,8 @@ def profile_save(request):
 
         if ser.is_valid():
             boo = ser.save()
-            return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
+            return JsonResponse({'success':True, 'boo_id':boo.id}, safe=False)
+            # return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
 
         else:
             return JsonResponse({'success':False}, safe=False)

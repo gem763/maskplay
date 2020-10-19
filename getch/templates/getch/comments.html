@@ -43,6 +43,10 @@
     background: none;
   }
 
+  /* .comments.vcomp .comments-layout > .commentlist.section > .container {
+    padding-bottom: 50px;
+  } */
+
   /* .comments.vcomp .comment-listing-leave-active, */
   .comments.vcomp .comment-listing-enter-active {
     transition: all 0.5s;
@@ -58,9 +62,12 @@
     transition: all 0.5s;
   }
 
-  .comments.vcomp .comments-layout > .commentlist.section .scroll-to-top {
-    position: absolute;
-    top: 0;
+  .comments.vcomp .comments-layout > .commentlist.section .scroll-to-here {
+    /* position: absolute; */
+    /* top: 0; */
+    /* bottom: 0; */
+    background: none;
+    height: 50px;
   }
 
   .comments.vcomp .comments-layout > .commentlist.section > .spinner {
@@ -80,8 +87,6 @@
       </div>
 
       <div class='commentlist section'>
-        <div class='scroll-to-top' ref='scroll_to_top'></div>
-
         <transition-group tag='div' class='container' name='comment-listing'>
           <comment
             v-for='comment in commentlist'
@@ -92,6 +97,7 @@
           ></comment>
         </transition-group>
 
+        <div class='scroll-to-here' ref='scroll_to_here'></div>
         <scale-loader class='spinner' :loading='comments_onloading'></scale-loader>
       </div>
 
@@ -136,7 +142,7 @@
           this.$set(this.cpost, 'comments', new Comments(this.cpost))
         }
 
-        return this.cpost.comments.list.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))
+        return this.cpost.comments.list.sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
       },
 
       comments_onloading: function() {
@@ -165,7 +171,6 @@
           when = comment_changed.created_at;
 
         } else {
-          this.$refs.scroll_to_top.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'nearest'});
           when = new Date().toISOString();
 
           const _comment = {
@@ -176,6 +181,7 @@
           };
 
           this.cpost.comments.list.push(_comment);
+          this.$refs.scroll_to_here.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
         }
 
         fetch('comment/save/', { method: 'POST', body: formdata })

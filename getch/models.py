@@ -57,6 +57,12 @@ class User(AbstractEmailUser):
         self.boo_selected = boo_id
         self.save()
 
+    def delete_boo(self):
+        self.boo.delete()
+        boos_id = Boo.objects.filter(user=self).values_list('id', flat=True)
+        self.set_boo(max(boos_id))
+        #print(boos_id, max(boos_id))
+
     def save(self, *args, **kwargs):
         created = not self.pk
         super().save(*args, **kwargs)
@@ -350,6 +356,11 @@ class Post(BigIdAbstract, ModelWithFlag):
         return Flager.objects.filter(status=VOTE_DOWN, object_id=self.id).count()
 
 
+    @property
+    def ncomments(self):
+        return self.comment_set.count()
+
+
 def _postpix_path(instance, fname):
     try:
         user = instance.boo.user.email
@@ -522,14 +533,14 @@ class CommentSerializer(serializers.ModelSerializer):
 class BoopostVoteOXSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']
+        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments']
         read_only_fields = fields
 
 
 class BoopostVoteABSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']
+        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments']
         read_only_fields = fields
 
 
@@ -551,7 +562,7 @@ class PostVoteOXSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down']#, 'ivoters']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments']#, 'ivoters']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -560,7 +571,7 @@ class PostVoteABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down']#, 'ivoters']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments']#, 'ivoters']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 

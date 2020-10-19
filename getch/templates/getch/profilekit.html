@@ -38,6 +38,11 @@
     color: white;
   }
 
+  .profilekit.vcomp > .menu > .item.saver {
+    background: var(--color-neg);
+    color: white;
+  }
+
   .profilekit.vcomp > .menu > .item > img.icon {
     width: 35%;
     height: 35%;
@@ -110,9 +115,13 @@
         <p>SELECT<br>MASK</p>
       </div>
 
-      <div class='item' @click='$emit("download")'>
-        <img class='icon' src='/static/materials/icons/download.png'>
+      <div class='item saver' @click='$emit("save")'>
+        SAVE
       </div>
+
+      <!-- <div class='item' @click='$emit("download")'>
+        <img class='icon' src='/static/materials/icons/download.png'>
+      </div> -->
     </div>
 
     <div class='sections'>
@@ -120,7 +129,7 @@
         <tbody>
           <tr>
             <td class='characters'>
-              <profilekit-characters :session='session' :characters='characters' :boo='boo'></profilekit-characters>
+              <profilekit-characters :session='session' :characters='characters' :boo='boo' @download='$emit("download")'></profilekit-characters>
             </td>
 
             <td class='eyemasks'>
@@ -146,19 +155,9 @@
     props: ['session', 'boo', 'characters', 'eyemasks', 'mouthmasks'],
     data: function() {
       return {
-        section: 'characters',
-        // characters: {{ characters|safe }},
-        // eyemasks: undefined,
-        // mouthmasks: undefined
+        section: 'characters'
       }
     },
-
-    // created: function() {
-    //   let maskbases = {{ maskbases|safe }};
-    //   maskbases = _.groupBy(maskbases, maskbase => maskbase.type);
-    //   this.eyemasks = maskbases.EYE;
-    //   this.mouthmasks = maskbases.MOUTH;
-    // },
 
     methods: {
       sectionize: function(event) {

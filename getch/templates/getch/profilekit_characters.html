@@ -86,6 +86,12 @@
     background-position: center;
     opacity: 0.5;
   } */
+
+  .profilekit-characters.vcomp .submenu > .item.downloading > img.icon {
+    width: 35%;
+    height: 35%;
+    object-fit: contain;
+  }
 </style>
 
 <script type='text/x-template' id='profilekit-characters-template'>
@@ -107,7 +113,10 @@
       </label>
 
       <div class='item coloring'></div>
-      <div class='item texting'><span>글</span></div>
+
+      <div class='item downloading' @click='$emit("download")'>
+        <img class='icon' src='/static/materials/icons/download.png'>
+      </div>
     </div>
   </div>
 </script>

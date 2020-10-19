@@ -116,9 +116,10 @@
 
   .scorekit.vcomp > .voters-section > .voters > .voter {
     position: relative;
-    width: calc(100% / 7);
-    padding-top: calc(100% / 7);
+    width: calc(100% / 8);
+    padding-top: calc(100% / 8);
     background: none;
+    margin-right: 1px;
   }
 
   .scorekit.vcomp > .voters-section > .voters > .voter > img {
@@ -170,13 +171,13 @@
 
       <div class='voters-section'>
         <transition-group tag='div' class='voters' :class='{loading:postvoters[0].onloading}' name='voters-list' v-show='focused==0'>
-          <div class='voter' v-for='voter in postvoters[0].list' :key='voter.id' @click='session.open_boopage(voter)'>
+          <div class='voter' :style='level_style(voter)' v-for='voter in postvoters[0].list' :key='voter.id' @click='session.open_boopage(voter)'>
             <img :src='voter.profile.pix'>
           </div>
         </transition-group>
 
         <transition-group tag='div' class='voters' :class='{loading:postvoters[1].onloading}' name='voters-list' v-show='focused==1'>
-          <div class='voter' v-for='voter in postvoters[1].list' :key='voter.id' @click='session.open_boopage(voter)'>
+          <div class='voter' :style='level_style(voter)' v-for='voter in postvoters[1].list' :key='voter.id' @click='session.open_boopage(voter)'>
             <img :src='voter.profile.pix'>
           </div>
         </transition-group>
@@ -279,7 +280,13 @@
     methods: {
       focus_this: function(act) {
         this.focused = act;
-      }
+      },
+
+      level_style: function(boo) {
+        return {
+          borderBottom: `calc(var(--s-menu) * 0.1) solid ${this.session.levelcolor(boo)}`
+        }
+      },
     }
   });
 </script>

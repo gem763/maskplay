@@ -34,6 +34,7 @@ urlpatterns = [
     path('boo/<int:boo_id>/voter/', v.get_voter, name='get_voter'),
     # path('boo/<int:boo_id>/moreinfo/', v.boo_moreinfo, name='boo_moreinfo'),
     path('boo/profile/save/', v.profile_save, name='profile_save'),
+    path('boo/profile/delete/', v.profile_delete, name='profile_delete'),
     path('boo/new/', v.boo_new, name='boo_new'),
     path('user/', v.get_user, name='get_user'),
     path('user/other_boos/', v.other_boos, name='other_boos'),

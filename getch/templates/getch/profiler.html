@@ -57,7 +57,7 @@
     /* background-color: rgba(255,182,193,0.5); */
   }
 
-  .profiler.vcomp .saver {
+  /* .profiler.vcomp .saver {
     position: absolute;
     bottom: 0;
     right: 30%;
@@ -70,6 +70,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  } */
+
+  .profiler.vcomp .creating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.7);
+  }
+
+  .profiler.vcomp .creating > .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 </style>
 
@@ -106,14 +122,23 @@
           :eyemasks='eyemasks'
           :mouthmasks='mouthmasks'
           @download='download'
+          @save='save'
         ></profilekit>
 
         <!-- <img id='imgtest' style='width:200px;height:200px;position:absolute;bottom:0;left:0;'> -->
       </template>
     </struct>
 
-    <div class='saver' @click='save'>[[ is_making_new ? 'NEW' : 'SAVE' ]]</div>
+    <!-- <div class='saver' @click='save'>[[ is_making_new ? 'NEW' : 'SAVE' ]]</div> -->
     <!-- <modal :pop='on_saving' name='processing'></modal> -->
+
+    <div class='deleter' style='position:absolute;bottom:5px;right:5px;' @click='delboo'>delete</div>
+
+    <div class='creating' v-show='on_creating'>
+      <scale-loader class='spinner' :loading='true'></scale-loader>
+    </div>
+
+    <modal :pop='on_deleting' name='deleting' @delete='delboo_really($event)'></modal>
   </page>
 </script>
 
@@ -129,7 +154,8 @@
         characters: {{ characters|safe }},
         eyemasks: {{ eyemasks|safe }},
         mouthmasks: {{ mouthmasks|safe }},
-        // on_saving: false
+        on_creating: false,
+        on_deleting: false
       }
     },
 
@@ -233,6 +259,37 @@
                formdata.has('profile_mouthmask')
       },
 
+
+      delboo: function() {
+        this.on_deleting = true;
+      },
+
+
+      delboo_really: function(how) {
+        this.on_deleting = false;
+
+        if (how==1) {
+          const boos = this.session.auth.boos;
+          const cboo_id = this.session.auth.boo_selected;
+
+          fetch('/boo/profile/delete/')
+            .then(x => x.json())
+            .then(j => { console.log(j) });
+
+          const _boo_id = Object.keys(boos)
+            .filter(x => x!==String(cboo_id) )
+            .sort((a,b) => Number(a)<Number(b) )[0];
+
+          this.session.close_page();
+
+          setTimeout(()=> {
+            this.session.auth.boo = Number(_boo_id);
+            this.$delete(boos, cboo_id);
+          }, 500);
+        }
+      },
+
+
       save: function() {
         this.boo.nick = this.$refs.boo_nick.text;
         this.boo.text = this.$refs.boo_text.text;
@@ -284,24 +341,23 @@
 
       save_to_db: function(formdata) {
         if (this.is_making_new) {
+          this.on_creating = true;
+
           fetch('boo/profile/save/', { method: 'POST', body: formdata })
             .then(res => res.json())
             .then(js => {
               console.log(js)
 
               if (js.success) {
-                // this.save_finish(js.boo_id);
-                // 이부분을 좀더 만져야한다!
-                // 새로 부캐를 만들면, 마스크 위치를 새로 설정해야한다!
                 this.boo.id = js.boo_id;
                 this.$set(this.session.auth.boos, js.boo_id, _.cloneDeep(this.boo));
                 this.session.auth.boo = js.boo_id;
                 this.session.close_page();
+                this.on_creating = false;
               }
             });
 
         } else {
-          // this.save_finish();
           this.$set(this.session.auth.boos, this.session.auth.boo_selected, _.cloneDeep(this.boo));
           this.session.close_page();
 
@@ -326,18 +382,6 @@
         //     // }
         //   });
       },
-
-      // save_finish: function(boo_id) {
-      //   if (boo_id) {
-      //     this.$set(this.session.auth.boos, boo_id, _.cloneDeep(this.boo));
-      //     this.session.auth.boo = boo_id;
-      //
-      //   } else {
-      //     this.$set(this.session.auth.boos, this.session.auth.boo_selected, _.cloneDeep(this.boo));
-      //   }
-      //
-      //   this.session.close_page();
-      // },
 
 
       download: function() {

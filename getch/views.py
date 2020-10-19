@@ -206,6 +206,15 @@ def voters(request, post_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def profile_delete(request):
+    try:
+        request.user.delete_boo()
+        return JsonResponse({'success':True, 'message':'boo deleted successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while deleting boo'}, safe=False)
+        
+
 def profile_save(request):
     if request.method=='POST':
         print(request.POST, request.FILES)
@@ -262,11 +271,11 @@ def profile_save(request):
 
         if ser.is_valid():
             boo = ser.save()
-            return JsonResponse({'success':True, 'boo_id':boo.id}, safe=False)
+            return JsonResponse({'success':True, 'boo_id':boo.id, 'message':'boo saved successfully'}, safe=False)
             # return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
 
         else:
-            return JsonResponse({'success':False}, safe=False)
+            return JsonResponse({'success':False, 'message':'something wrong while saving boo'}, safe=False)
 
 
 

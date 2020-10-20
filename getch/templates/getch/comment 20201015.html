@@ -13,12 +13,7 @@
     font-size: 11px;
     white-space: pre-line;
     margin-bottom: 5px;
-    /* padding-right: 30px; */
   }
-
-  /* .comment.focused.vcomp {
-    background: whitesmoke;
-  } */
 
   .comment.commenter.vcomp {
     margin-bottom: 0;
@@ -30,7 +25,6 @@
 
   .comment.vcomp > span.text {
     margin-left: 5px;
-    padding-right: 30px;
   }
 
   .comment.vcomp > span.text[contenteditable=true]:focus {
@@ -92,24 +86,18 @@
 <script type='text/x-template' id='comment-template'>
   <div class='comment vcomp' :class='type' @click='comment_focus'>
     <span class='nick'>[[ boo.nick ]]</span>
-    <span v-if='is_commenter' class='text' ref='comment_text' spellcheck='false' placeholder='COMMENT HERE' :contenteditable='true' @input='change_text' @blur='comment_blur'></span><br>
-    <span v-if='!is_commenter' class='text'>[[comment.text]]</span><br>
-    <!-- <span class='text' ref='comment_text' spellcheck='false' placeholder='COMMENT HERE' :contenteditable='is_commenter' @input='change_text'>[[comment.text]]</span><br> -->
+    <span class='text' ref='comment_text' spellcheck='false' placeholder='COMMENT HERE' :contenteditable='is_commenter' @input='change_text'>[[comment.text]]</span><br>
 
     <div class='menu'>
       <span class='date' v-if='!is_commenter'>[[ relative_date ]]</span>
       <span class='status' :class='status' v-if='is_my_comment'>[[ status ]]</span>
-      <span class='action new' :class='{ active: rawtext_changed }' v-if='is_newable' @click='save'>POST</span>
+      <span class='action new' :class='{ active: rawtext_changed }' v-if='is_newable' @click='save'>NEW</span>
       <span class='action change' :class='{ active: rawtext_changed }' v-if='is_changeable' @click='save'>CHANGE</span>
-      <span class='action cancel' v-if='is_cancelable' @click.stop='cancel_comment_focus'>CANCEL</span>
+      <span class='action cancel' v-if='is_cancelable' @click='cancel_comment_focus'>CANCEL</span>
     </div>
 
     <div class='pix'>
       <img class='fit' :src='boo.profile.pix' @click.stop='session.open_boopage(boo)'>
-    </div>
-
-    <div class='clearer' v-show='is_commenter && comment.text.length>0' style='position:absolute;top:0;right:0;width:30px;height:30px;background:none;display:flex;align-items:center;justify-content:center;' @click.stop='clear_text'>
-      <img src='/static/materials/icons/cancel.png' style='width:50%;height:50%;object-fit:contain;'>
     </div>
   </div>
 </script>
@@ -122,21 +110,6 @@
     data: function() {
       return {
         rawtext: ''
-      }
-    },
-
-
-    watch: {
-      'comment_focused.focused': function(_new, _old) {
-        if (this.is_commenter && _new) {
-          this.$refs.comment_text.focus();
-
-          setTimeout(() => {
-            this.placeCaretAtEnd(this.$refs.comment_text);
-          }, 10)
-
-
-        }
       }
     },
 
@@ -200,8 +173,7 @@
       },
 
       is_cancelable: function() {
-        return this.is_changeable
-        // return this.is_commenter
+        return this.is_commenter
       },
 
       is_my_comment: function() {
@@ -217,61 +189,26 @@
 
     methods: {
       comment_focus: function() {
-        if (this.is_commenter) {
-          // this.$refs.comment_text.focus();
-          this.comment_focused.focused = true;
-
-        } else if (this.is_my_comment) {
+        if (this.is_my_comment) {
           this.comment_focused.id = this.comment.id;
           this.comment_focused.text = this.comment.text;
-          this.comment_focused.focused = true;
-        }
-      },
-
-      comment_blur: function() {
-        if (this.is_commenter) {
-          this.comment_focused.focused = false;
         }
       },
 
       cancel_comment_focus: function() {
         this.comment_focused.id = undefined;
         this.comment_focused.text = '';
-        this.comment_focused.focused = false;
       },
 
       change_text: function() {
         this.comment.text = this.$refs.comment_text.innerHTML.replace(/<br>/gi,'\r\n').replace(/&nbsp;/gi,' ').trim();
       },
 
-      clear_text: function() {
-        this.comment.text = '';
-      },
-
       save: function() {
         if (this.rawtext_changed) {
           this.$emit('save');
         }
-      },
-
-      placeCaretAtEnd: function(el) {
-        // el.focus();
-        if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
-            var range = document.createRange();
-            range.selectNodeContents(el);
-            range.collapse(false);
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-
-        } else if (typeof document.body.createTextRange != "undefined") {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(el);
-            textRange.collapse(false);
-            textRange.select();
-        }
-      },
-
+      }
     }
   });
 </script>

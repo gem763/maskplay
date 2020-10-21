@@ -13,51 +13,35 @@
     background: white;
   }
 
-  .comments.vcomp .comments-layout > .area {
-    position: relative;
-  }
-
-  .comments.vcomp .comments-layout > .area:first-child {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    flex-grow: 1;
-  }
-
-  .comments.vcomp .comments-layout > .area:last-child {
-  }
-
-  .comments.vcomp .comments-layout > .area > .section {
+  .comments.vcomp .comments-layout > .section {
     position: relative;
     padding: 10px;
   }
 
-  .comments.vcomp .comments-layout > .area > .score.section {
+  .comments.vcomp .comments-layout > .score.section {
     background: none;
     border-bottom: 1px solid black;
     box-sizing: content-box;
   }
 
-  .comments.vcomp .comments-layout > .area > .commentlist.section {
+  .comments.vcomp .comments-layout > .commentlist.section {
     background: white;
     overflow-y: auto;
-    -ms-overflow-style: none; /* IE 11 */
-    scrollbar-width: none; /* Firefox 64 */
     flex-grow: 1;
   }
 
-  .comments.vcomp .comments-layout > .area > .commenting.section {
+  .comments.vcomp .comments-layout > .commenting.section {
     background: white;
     box-sizing: content-box;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
   }
 
-  .comments.vcomp .comments-layout > .area > .commenting.focused.section {
+  .comments.vcomp .comments-layout > .commenting.focused.section {
     background: whitesmoke;
   }
 
-  .comments.vcomp .comments-layout > .area > .section > .container {
+  .comments.vcomp .comments-layout > .section > .container {
     position: relative;
     background: none;
   }
@@ -75,26 +59,16 @@
     transition: all 0.5s;
   }
 
-  .comments.vcomp .comments-layout > .area > .commentlist.section .scroll-to-here {
+  .comments.vcomp .comments-layout > .commentlist.section .scroll-to-here {
     background: none;
     height: 50px;
   }
 
-  .comments.vcomp .comments-layout > .area > .commentlist.section > .spinner {
+  .comments.vcomp .comments-layout > .commentlist.section > .spinner {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-
-  .comments.vcomp .show-boofiltering-enter-active,
-  .comments.vcomp .show-boofiltering-leave-active {
-    transition: all 0.1s;
-  }
-
-  .comments.vcomp .show-boofiltering-enter,
-  .comments.vcomp .show-boofiltering-leave-to {
-    opacity: 0;
   }
 </style>
 
@@ -121,15 +95,6 @@
           <div class='scroll-to-here' ref='scroll_to_here'></div>
           <scale-loader class='spinner' :loading='comments_onloading'></scale-loader>
         </div>
-
-        <transition name='show-boofiltering'>
-          <div v-if='boofiltering' style='position:absolute;top:0;left:0;right:0;bottom:0;background:white;overflow-y:auto;padding:10px;'>
-            <div v-for='toboo in filtered_boolist' :key='toboo.id' style='position:relative;font-size:11px;display:flex;margin-bottom:5px;' @click='at_boo(toboo.nick)'>
-              <div style='width:var(--s-menu);height:var(--s-menu)'><img :src='toboo.profile.pix' style='width:100%;height:100%;object-fit:cover;'></div>
-              <div style='flex-grow:1;padding-left:5px;'>[[toboo.nick]]</div>
-            </div>
-          </div>
-        </transition>
       </div>
 
       <div class='area'>
@@ -141,7 +106,6 @@
               :session='session'
               :comment_focused='the_comment'
               @save='save'
-              ref='commenter'
             ></comment>
           </div>
         </div>
@@ -162,48 +126,18 @@
         the_comment: {
           text: '',
           id: undefined,
-          focused: false,
-          // cword: '',
-          cword_ifrom: 0,
-          cword_ito: 0,
+          focused: false
         }
       }
     },
 
     watch: {
-      'the_comment.focused': function(_new, _old) { },
-      // 'the_comment.cword': function(_new, _old) { },
+      'the_comment.focused': function(_new, _old) { }
     },
 
     computed: {
       cpost: function() {
         return this.session.page.comments.post
-      },
-
-      cword: function() {
-        return this.the_comment.text.slice(this.the_comment.cword_ifrom, this.the_comment.cword_ito)
-      },
-
-      boofiltering: function() {
-        return this.cword.includes('@')
-        // return this.the_comment.cword.includes('@')
-      },
-
-      filtering_keyword: function() {
-        if (this.boofiltering) {
-          // const strs = this.the_comment.cword.split('@');
-          const strs = this.cword.split('@');
-          return strs[strs.length-1]
-        }
-      },
-
-      filtered_boolist: function() {
-        if (this.cpost.comments && this.boofiltering) {
-          return this.cpost.comments.list.reduce((acc, cur) => {
-            if (!(cur.boo.id in acc) && cur.boo.nick.includes(this.filtering_keyword)) { acc[cur.boo.id] = cur.boo; }
-            return acc
-          }, {})
-        }
       },
 
       commentlist: function() {
@@ -220,21 +154,10 @@
         } else {
           return true
         }
-      },
+      }
     },
 
     methods: {
-      at_boo: function(nick) {
-        let txt_head = this.the_comment.text.slice(0, this.the_comment.cword_ifrom);
-        let txt_tail = this.the_comment.text.slice(this.the_comment.cword_ito);
-        let txt = txt_head + '@' + nick + txt_tail + ' ';
-
-        this.$refs.commenter.$refs.comment_text.innerHTML = txt;
-        this.$refs.commenter.change_text();
-        this.$refs.commenter.placeCaretAtEnd();
-        this.$refs.commenter.capture_cword();
-      },
-
       save: function() {
         let when;
 
@@ -277,8 +200,7 @@
               this.the_comment.text = '';
             }
           });
-      },
-
+      }
     }
   });
 </script>

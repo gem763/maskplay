@@ -371,7 +371,7 @@ class Booposts extends ContentLoader {
 class Comments extends ContentLoader {
   constructor(post) {
     super();
-    this.nloads_init = 15;
+    this.nloads_init = 30;
     this.idlist_url = `/post/${post.id}/icomments`;
     this.content_url = (id) => `/comment/${id}`;
     this.load_idlist();

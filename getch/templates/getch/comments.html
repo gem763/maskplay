@@ -96,6 +96,11 @@
   .comments.vcomp .show-boofiltering-leave-to {
     opacity: 0;
   }
+
+  .comments.vcomp .comments-layout span.whom {
+    background: black;
+    color: white;
+  }
 </style>
 
 <script type='text/x-template' id='comments-template'>
@@ -123,7 +128,7 @@
         </div>
 
         <transition name='show-boofiltering'>
-          <div v-if='boofiltering' style='position:absolute;top:0;left:0;right:0;bottom:0;background:white;overflow-y:auto;padding:10px;'>
+          <div v-if='boofiltering' style='position:absolute;height:30%;left:0;right:0;bottom:0;background:white;overflow-y:auto;padding:10px;box-shadow:0 -10px 50px rgba(0,0,0,0.5)'>
             <div v-for='toboo in filtered_boolist' :key='toboo.id' style='position:relative;font-size:11px;display:flex;margin-bottom:5px;' @click='at_boo(toboo.nick)'>
               <div style='width:var(--s-menu);height:var(--s-menu)'><img :src='toboo.profile.pix' style='width:100%;height:100%;object-fit:cover;'></div>
               <div style='flex-grow:1;padding-left:5px;'>[[toboo.nick]]</div>
@@ -227,7 +232,10 @@
       at_boo: function(nick) {
         let txt_head = this.the_comment.text.slice(0, this.the_comment.cword_ifrom);
         let txt_tail = this.the_comment.text.slice(this.the_comment.cword_ito);
-        let txt = txt_head + '@' + nick + txt_tail + ' ';
+        let txt = txt_head + '@' + nick.split(' ').join('_') + txt_tail + '&nbsp;';
+        // let txt = txt_head + '<span class="whom">@' + nick + '</span>' + txt_tail + '&nbsp;';
+
+        txt = txt.replace(/@[\w|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|.]+/gi, '<span class="whom">$&</span>');
 
         this.$refs.commenter.$refs.comment_text.innerHTML = txt;
         this.$refs.commenter.change_text();

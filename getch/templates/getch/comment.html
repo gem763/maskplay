@@ -93,7 +93,8 @@
   <div class='comment vcomp' :class='type' @click='comment_focus'>
     <span class='nick'>[[ boo.nick ]]</span>
 
-    <span v-if='!is_commenter' class='text'>[[comment.text]]</span><br>
+    <span v-if='!is_commenter' class='text'><span v-html='comment_text_fixed'></span></span><br>
+    <!-- <span v-if='!is_commenter' class='text'>[[comment.text]]</span><br> -->
     <span
       v-if='is_commenter'
       class='text' ref='comment_text' spellcheck='false'
@@ -102,8 +103,8 @@
       @blur='comment_blur'
       @click.stop='capture_cword'
       @keyup.stop='capture_cword'
+      @keydown.enter.prevent
     ></span><br>
-    <!-- <span class='text' ref='comment_text' spellcheck='false' placeholder='COMMENT HERE' :contenteditable='is_commenter' @input='change_text'>[[comment.text]]</span><br> -->
 
     <div class='menu'>
       <span class='date' v-if='!is_commenter'>[[ relative_date ]]</span>
@@ -111,6 +112,7 @@
       <span class='action new' :class='{ active: rawtext_changed }' v-if='is_newable' @click='save'>POST</span>
       <span class='action change' :class='{ active: rawtext_changed }' v-if='is_changeable' @click='save'>CHANGE</span>
       <span class='action cancel' v-if='is_cancelable' @click.stop='cancel_comment_focus'>CANCEL</span>
+      <span class='action mention' :class='{ active: is_commenter }' v-if='is_commenter' @click='mention'>@</span>
     </div>
 
     <div class='pix'>
@@ -162,7 +164,7 @@
 
         function(_new, _old) {
           if (this.is_commenter && (_new.id!=_old.id || _new.text=='')) {
-            this.$refs.comment_text.innerHTML = this.comment.text;
+            this.$refs.comment_text.innerHTML = this.comment.text.replace(/@[\w|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|.]+/gi, '<span class="whom">$&</span>');
             this.rawtext = this.comment.text;
           }
         }, // { immediate: true } // mount 되자마자 바로 실행할지(맞나?)
@@ -170,6 +172,10 @@
     },
 
     computed: {
+      comment_text_fixed: function() {
+        return this.comment.text.replace(/@[\w|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|.]+/gi, '<span class="whom">$&</span>')
+      },
+
       boo: function() {
         if (this.comment.boo) {
           return this.comment.boo
@@ -224,23 +230,27 @@
         }
       },
 
-      word_on_caret: function() {
-        if (this.is_commenter) {
-          return this.getCaretCharacterOffsetWithin(this.$refs.comment_text)
-        }
-      },
     },
 
     methods: {
+      mention: function() {
+        this.$refs.comment_text.innerHTML = this.$refs.comment_text.innerHTML + '@';
+        this.change_text();
+        this.placeCaretAtEnd();
+        this.capture_cword();
+      },
+
       capture_cword: function() {
         if (this.is_commenter) {
-          let icaret = this.getCaretCharacterOffsetWithin(this.$refs.comment_text);
-          let ito_blank = this.comment_focused.text.indexOf(' ', icaret);
-          let ito_at = this.comment_focused.text.indexOf('@', icaret);
+          const _text = this.comment_focused.text;//.replace(/<boo>|<\/boo>/gi, '');
+
+          let icaret = this.getCaretCharacterOffsetWithin(this.$refs.comment_text); //console.log(_text, icaret);
+          let ito_blank = _text.indexOf(' ', icaret); //this.comment_focused.text.indexOf(' ', icaret);
+          let ito_at = _text.indexOf('@', icaret); //this.comment_focused.text.indexOf('@', icaret);
           let ito;
 
           if (ito_blank==-1 && ito_at==-1) {
-            ito = this.comment_focused.text.length;
+            ito = _text.length; //this.comment_focused.text.length;
 
           } else if (ito_blank==-1 || ito_at==-1) {
             ito = Math.max(ito_blank, ito_at);
@@ -251,8 +261,8 @@
 
           // ifrom>ito 인 경우를 방지하기 위해
           icaret = icaret==0 ? 0 : icaret - 1;
-          let ifrom_blank = this.comment_focused.text.lastIndexOf(' ', icaret);
-          let ifrom_at = this.comment_focused.text.lastIndexOf('@', icaret);
+          let ifrom_blank = _text.lastIndexOf(' ', icaret); //this.comment_focused.text.lastIndexOf(' ', icaret);
+          let ifrom_at = _text.lastIndexOf('@', icaret); //this.comment_focused.text.lastIndexOf('@', icaret);
           let ifrom;
 
           if (ifrom_blank==-1 && ifrom_at==-1) {
@@ -295,7 +305,7 @@
       },
 
       change_text: function() {
-        this.comment.text = this.$refs.comment_text.innerHTML.replace(/<br>/gi,'\r\n').replace(/&nbsp;/gi,' ').trimStart();
+        this.comment.text = this.$refs.comment_text.innerHTML.replace(/<br>/gi,'\r\n').replace(/<span class="whom">/gi, '').replace(/<\/span>/gi, '').replace(/&nbsp;/gi,' ').trimStart();
         // this.comment.word_on_caret = this.getCaretCharacterOffsetWithin(this.$refs.comment_text);
       },
 

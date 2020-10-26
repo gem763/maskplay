@@ -17,6 +17,23 @@
     z-index: 0;
   }
 
+  .baseposts.vcomp > .back {
+    position: absolute;
+    top: calc(352 * var(--x));
+    left: 0;
+    width: 100%;
+    height: calc(572 * var(--x));
+    /* background: rgba(255,242,204,0.25); */
+    background: rgba(0,0,0,0.1);
+  }
+
+  .baseposts.vcomp > .back > img.logo {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--s-menu) + var(--pix-margin));
+  }
 
   .baseposts.vcomp > .menublock {
     position: absolute;
@@ -36,17 +53,17 @@
 
 
   .baseposts.vcomp > .menublock.my {
-    bottom: 10%;
+    bottom: calc(64 * var(--x));
     right: 0;
   }
 
   .baseposts.vcomp > .menublock.posting {
-    bottom: calc(10% + var(--s-menu));;
+    bottom: calc(64 * var(--x) + var(--s-menu));;
     right: 0;
   }
 
   .baseposts.vcomp > .menublock.comment {
-    bottom: calc(10% + 2 * var(--s-menu));;
+    bottom: calc(64 * var(--x) + 2 * var(--s-menu));;
     right: 0;
   }
 
@@ -75,11 +92,60 @@
   .baseposts.vcomp .show-author-profile-leave-to {
     opacity: 0;
   }
+
+
+  .baseposts.vcomp > .post-score {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: calc(var(--s-menu) + var(--pix-margin));
+    height: calc(var(--x) * 64);
+  }
+
+  .baseposts.vcomp > .post-score > img.barcode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - var(--pix-margin) * 2);
+  }
+
+  .baseposts.vcomp > .post-score > .score {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--pix-margin) * 2);
+    background: none;
+    text-align: right;
+    font-size: calc(var(--pix-margin) * 1.3);
+  }
+
+
+  .baseposts.vcomp > .post-score > .score > img {
+    float: right;
+    width: calc(var(--pix-margin) * 2);
+    height: calc(var(--pix-margin) * 2);
+    object-fit: contain;
+    margin-left: 3px;
+  }
 </style>
 
 
 <script type='text/x-template' id='baseposts-template'>
-  <div class='baseposts vcomp'>
+  <div class='baseposts vcomp' ref='kkkk'>
+    <div class='back'>
+      <img class='logo' src='/static/materials/imgs/sideb_logo.jpg'>
+    </div>
+
+    <div class='post-score'>
+      <img class='barcode' src='/static/materials/icons/barcode_0.png'>
+      <div class='score'>
+        264
+        <img src='/static/materials/icons/fire.png'>
+      </div>
+    </div>
+
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in postlist' :key='post.id'>
         <post
@@ -131,6 +197,15 @@
     },
 
     computed: {
+      // posts_list: function() {
+      //   if (this.posts) {
+      //     return  this.posts.list
+      //
+      //   } else {
+      //     return []
+      //   }
+      // },
+
       me: function() {
         return this
       },
@@ -210,6 +285,17 @@
       open_posting: function() {
         this.session.open_posting(this);
       }
+      // test: function() { console.log(this)}
+      // open_comments: function() {
+      //   if (this.type=='booposts') {
+      //   } else {
+      //     this.session.open_comments();
+      //   }
+      // },
+      //
+      // open_posting: function() {
+      //   this.session.open_posting(this.posts)
+      // }
     }
   });
 </script>

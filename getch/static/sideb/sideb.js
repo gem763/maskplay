@@ -14,7 +14,6 @@ class Session {
     };
 
     this.mode = { on: 'journey', order: 0, prev: undefined };
-    // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
     this.auth = undefined;
     this.posts = new Posts();
     this.booposts = undefined;
@@ -129,6 +128,7 @@ class Session {
   }
 
   open_posting(mother) {
+    console.log(111111111)
     if (this.auth) {
       this.page.posting.mother = mother;
       this.open_page('posting');

@@ -11,7 +11,6 @@
 
   .post .backbone {
     border-collapse: collapse;
-    width: 100%;
   }
 
   .post .backbone > tbody > tr > td {
@@ -19,24 +18,48 @@
     padding: 0;
     box-sizing: border-box;
     text-align: center;
-    width: 100%;
   }
 
+  .post .backbone > tbody > tr > td.full {
+    width: var(--s-0);
+  }
+
+  .post .backbone > tbody > tr > td.half {
+    width: var(--s-1);
+  }
+
+  .post .backbone > tbody > tr > td.side {
+    width: var(--s-menu);
+    border-top: none;
+    border-bottom: none;
+  }
 
   .post .backbone > tbody > tr > td.top {
-    height: 50vh;
+    height: var(--s-0);
   }
 
   .post .backbone > tbody > tr > td.bottom {
     border-bottom: none;
-    height: 50vh;
+    height: var(--s-0);
+  }
+
+  .post .backbone > tbody > tr > td > .spacer {
+    position: absolute;
+    top: var(--pix-margin);
+    left: var(--pix-margin);
+    width: calc(100% - var(--pix-margin)*2);
+    height: calc(100% - var(--pix-margin)*2);
+  }
+
+  .post .backbone > tbody > tr:last-child > td > .spacer {
+    top: 0;
   }
 
   .post .description {
     position: absolute;
     top: 20%;
-    left: 60%;
-    right: 10%;
+    left: calc(var(--s-1) + var(--s-menu)/2);
+    right: calc(var(--s-menu)/2);
     pointer-events: none;
     text-align: center;
   }
@@ -55,13 +78,13 @@
   }
 
   .post .backbone tr:first-child .pixlabel {
-    bottom: 5%;
+    bottom: var(--pix-margin);
     left: 0;
     right: 50%;
   }
 
   .post .backbone tr:last-child .pixlabel {
-    top: 5%;
+    top: var(--pix-margin);
     left: 50%;
     right: 0;
   }
@@ -76,15 +99,15 @@
   }
 
   .post.postvoteox span.vs {
-    bottom: 25vh;
-    left: 50%;
-    transform: translate(-50%, 50%);
+    bottom: calc(var(--s-1) + var(--pix-margin));
+    left: var(--s-1);
+    transform: translate(-50%,50%);
   }
 
   .post.postvoteab span.vs {
-    top: 50vh;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: calc(var(--s-0) - var(--pix-margin)/2);
+    left: var(--s-1);
+    transform: translate(-50%,-50%);
   }
 
   .post .score-label {
@@ -92,17 +115,17 @@
     position: absolute;
     transform: translate(-50%,-50%);
     font-family: 'Montserrat', sans-serif;
-    font-size: 15px;
+    font-size: calc(var(--pix-margin) * 2);
   }
 
   .post.postvoteox .score-label {
-    top: 75vh;
-    left: 50%;
+    top: calc(var(--s-0) + var(--s-1) - var(--pix-margin));
+    left: var(--s-1);
   }
 
   .post.postvoteab .score-label {
-    top: 50vh;
-    left: 20%;
+    top: calc(var(--s-0) - var(--pix-margin)/2);
+    left: calc(var(--s-2));
   }
 
   .post .modify.button,
@@ -110,7 +133,7 @@
     position: absolute;
     bottom: 30px;
     left: 30px;
-    width: calc(100% - 60px);
+    width: calc(var(--s-0) - 60px);
     height: 35px;
     color: white;
     display: flex;
@@ -184,8 +207,8 @@
 
   .post > .onsaving {
     position: absolute;
-    top: 10%;
-    left: 50%;
+    top: calc(var(--s-0)/4);
+    left: var(--s-1);
     transform: translate(-50%,-50%);
   }
 
@@ -208,39 +231,46 @@
     <table v-if='is_postvoteox' class='backbone'>
       <tbody>
         <tr>
-          <td class='top'>
-            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='on_edit'></pixloader>
+          <td class='top full' colspan='2'>
+            <div class='spacer'>
+              <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='on_edit'></pixloader>
+            </div>
           </td>
+          <td class='top side'></td>
         </tr>
 
         <tr>
-          <td class='bottom'>
-            <oxcard ref='post_keys' :rawkeys='oxkeys' :editable='on_edit'>
-              <template #O='sprops'>
-                <oxer
-                  @click.native='toggle_vote(0)'
-                  :keyvalue='sprops.keyvalue'
-                  :editable='on_edit'
-                  :act='0'
-                  :vote_state='vote_state'
-                  :score='post_nvotes_up'
-                  :is_active='is_active'
-                ></oxer>
-              </template>
+          <td class='bottom full' colspan='2'>
+            <div class='spacer'>
+              <oxcard ref='post_keys' :rawkeys='oxkeys' :editable='on_edit'>
+                <template #O='sprops'>
+                  <oxer
+                    @click.native='toggle_vote(0)'
+                    :keyvalue='sprops.keyvalue'
+                    :editable='on_edit'
+                    :act='0'
+                    :vote_state='vote_state'
+                    :score='post_nvotes_up'
+                    :is_active='is_active'
+                  ></oxer>
+                </template>
 
-              <template #X='sprops'>
-                <oxer
-                  @click.native='toggle_vote(1)'
-                  :keyvalue='sprops.keyvalue'
-                  :editable='on_edit'
-                  :act='1'
-                  :vote_state='vote_state'
-                  :score='post_nvotes_down'
-                  :is_active='is_active'
-                ></oxer>
-              </template>
-            </oxcard>
+                <template #X='sprops'>
+                  <oxer
+                    @click.native='toggle_vote(1)'
+                    :keyvalue='sprops.keyvalue'
+                    :editable='on_edit'
+                    :act='1'
+                    :vote_state='vote_state'
+                    :score='post_nvotes_down'
+                    :is_active='is_active'
+                  ></oxer>
+                </template>
+              </oxcard>
+            </div>
           </td>
+
+          <td class='bottom side'></td>
         </tr>
       </tbody>
     </table>
@@ -248,43 +278,51 @@
     <table v-if='is_postvoteab' class='backbone'>
       <tbody>
         <tr>
-          <td class='top'>
-            <aber
-              @click.native='toggle_vote(0)'
-              ref='post_pix_a'
-              :pix='post_pix_a'
-              :editable='on_edit'
-              :act='0'
-              :vote_state='vote_state'
-              :score='post_nvotes_up'
-              :is_active='is_active'
-              :session='session'
-            ></aber>
+          <td class='top full'>
+            <div class='spacer'>
+              <aber
+                @click.native='toggle_vote(0)'
+                ref='post_pix_a'
+                :pix='post_pix_a'
+                :editable='on_edit'
+                :act='0'
+                :vote_state='vote_state'
+                :score='post_nvotes_up'
+                :is_active='is_active'
+                :session='session'
+              ></aber>
 
-            <div class='pixlabel' :class='{ active: is_active }'>
-              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A' type='in-post'></editext>
+              <!-- <div class='pixlabel' v-show='!is_active'> -->
+              <div class='pixlabel' :class='{ active: is_active }'>
+                <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A' type='in-post'></editext>
+              </div>
             </div>
           </td>
+          <td class='top side'></td>
         </tr>
 
         <tr>
-          <td class='bottom'>
-            <aber
-              @click.native='toggle_vote(1)'
-              ref='post_pix_b'
-              :pix='post_pix_b'
-              :editable='on_edit'
-              :act='1'
-              :vote_state='vote_state'
-              :score='post_nvotes_down'
-              :is_active='is_active'
-              :session='session'
-            ></aber>
+          <td class='bottom full'>
+            <div class='spacer'>
+              <aber
+                @click.native='toggle_vote(1)'
+                ref='post_pix_b'
+                :pix='post_pix_b'
+                :editable='on_edit'
+                :act='1'
+                :vote_state='vote_state'
+                :score='post_nvotes_down'
+                :is_active='is_active'
+                :session='session'
+              ></aber>
 
-            <div class='pixlabel' :class='{ active: is_active }'>
-              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B' type='in-post'></editext>
+              <!-- <div class='pixlabel' v-show='!is_active'> -->
+              <div class='pixlabel' :class='{ active: is_active }'>
+                <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B' type='in-post'></editext>
+              </div>
             </div>
           </td>
+          <td class='bottom side'></td>
         </tr>
       </tbody>
     </table>
@@ -297,6 +335,7 @@
 
     <div class='score-label' v-show='is_active'>SCORE</div>
 
+    <!-- <div class='description' v-show='!is_active'> -->
     <div class='description' :class='{ active: is_active }'>
       <editext ref='post_text' :rawtext='post_text' :header='"@" + post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post'></editext>
     </div>

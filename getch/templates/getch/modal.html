@@ -124,12 +124,27 @@
     color: black;
   }
 
+  .modal .content .sub.intro > .logos {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--vw-unit) * 2.6);
+  }
+
   .modal .content .sub.intro img {
+    width: 40%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* .modal .content .sub.intro img {
     width: calc(30 * var(--vw-unit));
     height: calc(30 * var(--vw-unit));
     object-fit: contain;
     animation: blink normal 2s infinite ease-in-out;
-  }
+  } */
 
   @keyframes blink {
     0%   { opacity:1; }
@@ -187,10 +202,25 @@
         </div>
 
         <div class='sub intro' v-if='is_intro'>
+          <div class='logos'>
+            <img src='/static/materials/icons/moiber-logo.png'>
+            <bar-loader :loading='true' :width='loader_width' :height='2' color="#D0021B"></bar-loader>
+            <img src='/static/materials/icons/moiber-logo.png' style='transform: rotate(180deg) scaleX(-1);opacity:0.2;'>
+            <div style='position:absolute;background:none;bottom:105%;left:50%;transform:translateX(-50%);'>
+              나, 뭐입어? -스타일 컨설팅 플랫폼
+            </div>
+          </div>
+
+          <div style='position:absolute;bottom:30px;left:0;width:100%;font-size:calc(var(--vw-unit) * 2.5)'>
+            &#169; 2020 MOIBER CO. LTD. All Right Reserved.
+          </div>
+        </div>
+
+        <!-- <div class='sub intro' v-if='is_intro'>
           <div>
             <img src='/static/materials/imgs/sideb_logo.jpg'>
           </div>
-        </div>
+        </div> -->
 
         <div class='sub deleting' v-if='is_deleting'>
           진짜 삭제?
@@ -233,6 +263,10 @@
 
       is_intro: function() {
         return this.name == 'intro'
+      },
+
+      loader_width: function() {
+        return document.querySelector('#window').clientWidth
       }
     }
   });

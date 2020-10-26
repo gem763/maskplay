@@ -14,7 +14,6 @@ class Session {
     };
 
     this.mode = { on: 'journey', order: 0, prev: undefined };
-    // this.cnetwork = { boo: undefined, followers: undefined, followees: undefined };
     this.auth = undefined;
     this.posts = new Posts();
     this.booposts = undefined;

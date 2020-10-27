@@ -21,9 +21,6 @@
 
   <style>
     :root {
-      --vw-unit: 1vw;
-      --vh-unit: 1vh;
-
       --color-pos: rgb(241,20,15);
       --color-neg: rgb(22,187,204);
       --s-menu: 50px;
@@ -113,6 +110,7 @@
   {% include "getch/aber.html" %}
   {% include "getch/oxer.html" %}
   {% include "getch/oxcard.html" %}
+  {% include "getch/scorebutton.html" %}
 
 
 
@@ -140,10 +138,10 @@
     $(document).ready(function(){
       // 모바일키보드 등으로 viewport 사이즈가 변하므로,
       // 애초에 처음 로딩할때 vw와 wh의 단위를 고정한다
-      const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-      const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-      document.documentElement.style.setProperty('--vw-unit', w/100 + 'px');
-      document.documentElement.style.setProperty('--vh-unit', h/100 + 'px');
+      // const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      // const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      // document.documentElement.style.setProperty('--vw-unit', w/100 + 'px');
+      // document.documentElement.style.setProperty('--vh-unit', h/100 + 'px');
 
       var csrftoken = Cookies.get('csrftoken');
       $.ajaxSetup({

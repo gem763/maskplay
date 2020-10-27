@@ -30,7 +30,8 @@
 
   .baseposts.vcomp > .menublock.author {
     top: 0;
-    right: 0;
+    /* right: 0; */
+    left: 0;
     background: white;
   }
 
@@ -90,24 +91,37 @@
       </swiper-slide>
     </swiper>
 
-    <transition name='show-author-profile' mode=in-out>
+    <!-- <transition name='show-author-profile' mode=in-out>
       <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo)'>
         <img class='fit' :src='cpost_boo_profile'>
       </div>
-    </transition>
+    </transition> -->
+
+    <scorebutton
+      :session='session'
+      :boo='cpost_boo'
+      v-if='cpost_boo'
+      style='position:absolute;top:6vw;left:6vw;width:10vw;height:10vw'
+      @click.native='session.open_boopage(cpost_boo)'
+    ></scorebutton>
 
 
-    <div class='comment menublock' @click='session.open_comments(cpost)'>
+    <div style='position:absolute;top:12vw;right:16vw;width:8vw;height:8vw;background:black;border-radius:50%;display:flex;align-items:center;justify-content:center;' @click='session.open_comments(cpost)'>
+      <!-- <img src='/static/materials/icons/SIDEB_ICON_COMMENT.png' style='width:100%;height:100%;object-fit:contain;'> -->
+      <span v-if='cpost_ncomments!=0' style='color:white;font-size:12px;'>[[cpost_ncomments]]</span>
+    </div>
+
+    <!-- <div class='comment menublock' @click='session.open_comments(cpost)'>
       <img class='icon' src='/static/materials/icons/SIDEB_ICON_COMMENT.png'>
       <div v-if='cpost_ncomments!=0' style='position:absolute;top:0;left:50%;background:red;color:white;font-size:12px;transform:translate(-50%,-50%);padding-left:4px;padding-right:4px;'>[[cpost_ncomments]]</div>
+    </div> -->
+
+    <div style='position:absolute;bottom:0;left:50%;width:10vw;height:10vw;transform:translateX(-50%)' @click='open_posting()'>
+      <img src='/static/materials/icons/SIDEB_ICON_RECORD.png' style='width:100%;height:100%;object-fit:cover;'>
     </div>
 
-    <div class='posting menublock' @click='open_posting()'>
-      <img class='icon' src='/static/materials/icons/SIDEB_ICON_RECORD.png'>
-    </div>
-
-    <div class='my menublock' @click='session.open_mypage()'>
-      <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png'>
+    <div style='position:absolute;bottom:0;right:0;width:10vw;height:10vw;' @click='session.open_mypage()'>
+      <img class='icon' src='/static/materials/icons/SIDEB_ICON_USER.png' style='width:100%;height:100%;object-fit:cover;'>
     </div>
   </div>
 </script>

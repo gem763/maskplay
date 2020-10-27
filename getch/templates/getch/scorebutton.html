@@ -1,0 +1,69 @@
+<style>
+  .scorebutton.vcomp { }
+
+  .scorebutton.vcomp > img.profilepix {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  .scorebutton.vcomp > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+</style>
+
+<script type='text/x-template' id='scorebutton-template'>
+  <div class='scorebutton vcomp'>
+    <img class='profilepix' v-if='boo' :src='boo.profile.pix' :style='profilepix_style'>
+    <canvas ref='canvas'></canvas>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('scorebutton', {
+    template: '#scorebutton-template',
+    delimiters: ['[[', ']]'],
+    props: ['session', 'boo'],
+    data: function() {
+      return {
+        wborder: 3
+      }
+    },
+
+    computed: {
+      profilepix_style: function() {
+        return {
+          border: `${this.wborder}px solid whitesmoke`
+        }
+      }
+    },
+
+    mounted: function() {
+      const canvas = this.$refs.canvas;
+      canvas.width = this.$el.clientWidth;
+      canvas.height = this.$el.clientWidth;
+      // canvas.height = canvas.width;
+
+      if (canvas.getContext) {
+        const ctx = canvas.getContext('2d');
+
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = this.wborder;
+
+        const x = canvas.width / 2;
+        const y = canvas.height / 2;
+        const radius = x - this.wborder / 2;
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, (Math.PI/180)*270, (Math.PI/180)*this.session.pscore(this.boo), false);
+        ctx.stroke();
+      }
+    }
+  });
+</script>

@@ -130,7 +130,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--vw-unit) * 2.6);
+    font-size: min(2.6vw, 2.6vh);
   }
 
   .modal .content .sub.intro img {
@@ -204,14 +204,14 @@
         <div class='sub intro' v-if='is_intro'>
           <div class='logos'>
             <img src='/static/materials/icons/moiber-logo.png'>
-            <bar-loader :loading='true' :width='loader_width' :height='2' color="#D0021B"></bar-loader>
+            <bar-loader :loading='true' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
             <img src='/static/materials/icons/moiber-logo.png' style='transform: rotate(180deg) scaleX(-1);opacity:0.2;'>
             <div style='position:absolute;background:none;bottom:105%;left:50%;transform:translateX(-50%);'>
               나, 뭐입어? -스타일 컨설팅 플랫폼
             </div>
           </div>
 
-          <div style='position:absolute;bottom:30px;left:0;width:100%;font-size:calc(var(--vw-unit) * 2.5)'>
+          <div style='position:absolute;bottom:30px;left:0;width:100%;font-size:min(2.5vw, 2.5vh)'>
             &#169; 2020 MOIBER CO. LTD. All Right Reserved.
           </div>
         </div>

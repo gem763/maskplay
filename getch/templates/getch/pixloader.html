@@ -19,6 +19,10 @@
 
   .pixloader img.pix.focused {
     object-fit: contain;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
   }
 
   .pixloader input[type='file'] {
@@ -93,7 +97,7 @@
       return {
         pixloader_id: 0,
         changed: false,
-        pixfocused: false,
+        pixfocused: true,
         blob: undefined
       }
     },

@@ -124,7 +124,7 @@
       <img src='/static/materials/icons/SIDEB_ICON_USER.png' style='width:100%;height:100%;object-fit:cover;'>
     </div>
 
-    <div style='position:absolute;top:0;right:0;width:10vw;height:10vw;background:rgba(255,255,255,0.3);' @click='toggle_fullscreen'>
+    <div style='position:absolute;top:0;right:0;width:10vw;height:10vw;background:rgba(255,255,255,0.3);' @click='toggle_fullscreen' ref='fullscreen_toggler'>
       <img src='/static/materials/icons/hamburger.png' style='width:100%;height:100%;object-fit:cover;'>
     </div>
   </div>
@@ -146,12 +146,6 @@
         swiper_options: {
           direction: 'vertical',
         },
-      }
-    },
-
-    watch: {
-      is_fullscreen: function(_new, _old) {
-        console.log(_new);
       }
     },
 
@@ -210,6 +204,7 @@
 
     mounted: function() {
       this.swiper = this.$refs.swiper.$swiper;
+      // this.$refs.fullscreen_toggler.click();
     },
 
     watch: {
@@ -234,7 +229,6 @@
     methods: {
       toggle_fullscreen: function() {
 
-        // console.log(this.is_fullscreen);
         if (this.is_fullscreen) {
           this.closeFullscreen();
         } else {
@@ -242,6 +236,16 @@
         }
 
         this.is_fullscreen = !this.is_fullscreen;
+
+        // setTimeout(function(){
+      	// 	// Hide the address bar!
+      	// 	window.scrollTo(0, 1);
+      	// }, 0);
+
+        // if (screenfull.isEnabled) {
+        // 	screenfull.toggle(document.documentElement);
+        // }
+        console.log('testkkkk');
       },
 
       open_posting: function() {

@@ -4,6 +4,7 @@ from . import views as v
 
 urlpatterns = [
     path('', v.play, name='play'),
+    path('test/', v.test, name='test'),
     path('privacy/', v.privacy, name='privacy'),
     path('policy/', v.policy, name='policy'),
     path('accounts/', include('allauth.urls')),

@@ -32,7 +32,7 @@
     props: ['session', 'boo'],
     data: function() {
       return {
-        wborder: 3
+        wborder: 1
       }
     },
 
@@ -45,6 +45,7 @@
     },
 
     mounted: function() {
+      // console.log(this.$el)
       const canvas = this.$refs.canvas;
       canvas.width = this.$el.clientWidth;
       canvas.height = this.$el.clientWidth;

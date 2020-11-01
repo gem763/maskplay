@@ -12,6 +12,7 @@
   .post .backbone {
     border-collapse: collapse;
     width: 100%;
+    height: 100%;
   }
 
   .post .backbone > tbody > tr > td {
@@ -290,9 +291,17 @@
     </table>
 
 
-    <div class='author-profile' v-if='!post'>
+    <!-- <div class='author-profile' v-if='!post'>
       <img :src='post_boo_profile_pix'>
-    </div>
+    </div> -->
+
+    <scorebutton
+      :session='session'
+      :boo='post_boo'
+      v-if='post_boo'
+      style='position:absolute;top:calc(var(--width-unit)*3);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*10);height:calc(var(--width-unit)*10)'
+      @click.native='session.open_boopage(post_boo)'
+    ></scorebutton>
 
 
     <div class='score-label' v-show='is_active'>SCORE</div>

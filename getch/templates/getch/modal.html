@@ -133,11 +133,17 @@
     font-size: min(2.6vw, 2.6vh);
   }
 
-  .modal .content .sub.intro img {
+  .modal .content .sub.intro img.logo {
     width: 40%;
     height: auto;
     object-fit: contain;
   }
+
+  /* .modal .content .sub.intro img.slogun {
+    width: 40%;
+    height: auto;
+    object-fit: contain;
+  } */
 
   /* .modal .content .sub.intro img {
     width: calc(30 * var(--vw-unit));
@@ -203,17 +209,21 @@
 
         <div class='sub intro' v-if='is_intro'>
           <div class='logos'>
-            <img src='/static/materials/icons/moiber-logo.png'>
+            <img class='slogun-top' src='/static/materials/logos/moiber_landing_slogun0.png' style='position:absolute;bottom:105%;left:30%;width:15%;height:auto;'>
+            <img class='logo' src='/static/materials/logos/moiber-logo.png'>
             <bar-loader :loading='true' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
-            <img src='/static/materials/icons/moiber-logo.png' style='transform: rotate(180deg) scaleX(-1);opacity:0.2;'>
-            <div style='position:absolute;background:none;bottom:105%;left:50%;transform:translateX(-50%);'>
+            <img class='logo' src='/static/materials/logos/moiber-logo.png' style='transform: rotate(180deg) scaleX(-1);opacity:0.2;'>
+            <!-- <div style='position:absolute;background:none;bottom:105%;left:50%;transform:translateX(-50%);'>
               나, 뭐입어? -스타일 컨설팅 플랫폼
-            </div>
+            </div> -->
+            <img class='slogun-bottom' src='/static/materials/logos/moiber_landing_slogun.png' style='position:absolute;top:105%;left:30%;width:40%;height:auto;'>
           </div>
 
-          <div style='position:absolute;bottom:30px;left:0;width:100%;font-size:min(2.5vw, 2.5vh)'>
+          <!-- <div style='position:absolute;bottom:30px;left:0;width:100%;font-size:min(2.5vw, 2.5vh)'>
             &#169; 2020 MOIBER CO. LTD. All Right Reserved.
-          </div>
+          </div> -->
+
+          <img class='copyright' src='/static/materials/logos/moiber_landing_copyright.png' style='position:absolute;bottom:30px;left:25%;width:50%;height:auto;'>
         </div>
 
         <!-- <div class='sub intro' v-if='is_intro'>

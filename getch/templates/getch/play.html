@@ -25,6 +25,9 @@
       --color-neg: rgb(22,187,204);
       --s-menu: 50px;
 
+      --width: min(100vw, calc(100vh * 9 / 16));
+      --width-unit: calc(var(--width) / 100);
+
       --t-0: 100vw;
       --t-1: calc(var(--t-0) * 352 / 572);
       --t-2: calc(var(--t-0) * 220 / 572);
@@ -46,13 +49,16 @@
     }
 
     #window {
-      width: 100%;
+      /* width: 100%; */
+      width: var(--width);
       height: 100%;
       background: white;
       position: relative;
+      margin: auto;
+      box-shadow: 0 0 10px 1px rgba(0,0,0,0.5);
     }
 
-    #window .border {
+    /* #window .border {
       position: absolute;
       top: 0;
       left: 0;
@@ -61,7 +67,7 @@
       height: 100%;
       box-sizing: border-box;
       pointer-events: none;
-    }
+    } */
   </style>
 </head>
 
@@ -70,7 +76,7 @@
   <div id='window'>
     <posts :session='session'></posts>
     <pages :session='session'></pages>
-    <div class='border'></div>
+    <!-- <div class='border'></div> -->
 
     <!-- <modal :pop='true' name='intro'></modal> -->
     <modal :pop='session.posts.list.length==0' name='intro'></modal>

@@ -14,12 +14,13 @@
     top: 0;
     left: 0;
     width: 100%;
+    height: 100%;
   }
 </style>
 
 <script type='text/x-template' id='scorebutton-template'>
   <div class='scorebutton vcomp'>
-    <img class='profilepix' v-if='boo' :src='boo.profile.pix' :style='profilepix_style'>
+    <img class='profilepix' v-if='boo' :src='boo.profile.pix' :style='profilepix_style' @load='init_canvas'>
     <canvas ref='canvas'></canvas>
   </div>
 </script>
@@ -44,27 +45,31 @@
       }
     },
 
-    mounted: function() {
-      // console.log(this.$el)
-      const canvas = this.$refs.canvas;
-      canvas.width = this.$el.clientWidth;
-      canvas.height = this.$el.clientWidth;
-      // canvas.height = canvas.width;
+    methods: {
+      init_canvas: function() {
+        const canvas = this.$refs.canvas;
+        canvas.width = this.$el.clientWidth;
+        canvas.height = this.$el.clientWidth;
+        // canvas.height = canvas.width;
 
-      if (canvas.getContext) {
-        const ctx = canvas.getContext('2d');
+        if (canvas.getContext) {
+          const ctx = canvas.getContext('2d');
 
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = this.wborder;
+          ctx.strokeStyle = 'red';
+          ctx.lineWidth = this.wborder;
 
-        const x = canvas.width / 2;
-        const y = canvas.height / 2;
-        const radius = x - this.wborder / 2;
+          const x = canvas.width / 2;
+          const y = canvas.height / 2;
+          const radius = x - this.wborder / 2;
+          console.log(canvas.width, canvas.height);
 
-        ctx.beginPath();
-        ctx.arc(x, y, radius, (Math.PI/180)*270, (Math.PI/180)*this.session.pscore(this.boo), false);
-        ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(x, y, radius, (Math.PI/180)*270, (Math.PI/180)*this.session.pscore(this.boo), false);
+          ctx.stroke();
+        }
       }
-    }
+    },
+
+    mounted: function() {  }
   });
 </script>

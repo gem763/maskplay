@@ -89,7 +89,7 @@
     </transition>
 
     <transition :name='show_content_type'>
-      <div class='content' v-show='open'>
+      <div class='content' v-if='open'>
         <slot></slot>
 
         <div class='close' @click='$emit("close")'>

@@ -23,16 +23,16 @@
     pointer-events: none;
     position: absolute;
     font-family: 'Montserrat', sans-serif;
-    left: 20%;
+    left: 50%;
   }
 
   .aber .score.act-0 {
-    bottom: 20vw;
+    bottom: calc(25vh - var(--width-unit)*6);
     transform: translate(-50%,50%);
   }
 
   .aber .score.act-1 {
-    top: 20vw;
+    top: calc(25vh - var(--width-unit)*6);
     transform: translate(-50%,-50%);
   }
 
@@ -51,7 +51,7 @@
 <script type='text/x-template' id='aber-template'>
   <div class='aber' :class='phase'>
     <!-- <div class='container' :class='phase'> -->
-      <pixloader :pix='pix' :editable='editable' :session='session' ref='pixloader'></pixloader>
+      <pixloader :pix='pix' :editable='editable' :session='session' ref='pixloader' :where='act==0 ? "top" : "bottom"'></pixloader>
     <!-- </div> -->
 
     <transition name='show-score'>

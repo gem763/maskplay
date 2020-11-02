@@ -128,7 +128,6 @@ class Session {
   }
 
   open_posting(mother) {
-    console.log(111111111)
     if (this.auth) {
       this.page.posting.mother = mother;
       this.open_page('posting');

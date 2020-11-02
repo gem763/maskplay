@@ -1,6 +1,6 @@
 <style>
   .editext.vcomp {
-    font-size: 12px;
+    font-size: calc(var(--width-unit)*3.3);
     white-space: pre-line;
     /* pre-line으로 해야 span 앞에 여백이 없어진다.. 왜? */
   }
@@ -29,7 +29,7 @@
   .editext.in-post.vcomp > span.header {
     color: black;
     font-weight: bold;
-    line-height: 8vw;
+    line-height: calc(var(--width-unit)*6);
   }
 
   .editext.in-post.vcomp > span.text[contenteditable=true]:focus {
@@ -71,7 +71,7 @@
       <span class='header'>[[ header ]]</span><br>
     </template>
 
-    <span class='text' v-if='freeze'>[[ rawtext ]]</span>
+    <span class='text' v-if='freeze'>[[ rawtext_display ]]</span>
     <span class='text' v-else v-show='text || editable' :contenteditable='editable' spellcheck='false' :placeholder='placeholder' @input='change_text'></span>
   </div>
 </script>
@@ -84,7 +84,8 @@
     data: function() {
       return {
         text: (this.rawtext ? this.rawtext : ''),
-        changed: false
+        changed: false,
+        rawtext_display: (this.rawtext && this.rawtext.length>15) ? this.rawtext.slice(0,15)+'...' : this.rawtext
       }
     },
 

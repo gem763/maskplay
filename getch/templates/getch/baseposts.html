@@ -77,6 +77,71 @@
   .baseposts.vcomp .show-author-profile-leave-to {
     opacity: 0;
   }
+
+  .baseposts.vcomp > .hamburger {
+    position: absolute;
+    top: calc(var(--width-unit) * 3);
+    right: calc(var(--width-unit) * 6);
+    width: calc(var(--width-unit) * 6);
+    height: calc(var(--width-unit) * 6);
+  }
+
+  .baseposts.vcomp > .menu-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: calc(var(--width-unit) * 12);
+    background: rgba(255,255,255,0.6);
+  }
+
+  .baseposts.vcomp > .menu-bottom > .discover {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--width-unit) * 6);
+    height: calc(var(--width-unit) * 6);
+    width: calc(var(--width-unit) * 6);
+    transform: translate(0,-50%);
+    opacity: 1;
+  }
+
+  .baseposts.vcomp > .menu-bottom > ._oi {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--width-unit) * 29.5);
+    height: calc(var(--width-unit) * 6);
+    width: auto;
+    transform: translate(-50%,-50%);
+    opacity: 0.1;
+  }
+
+  .baseposts.vcomp > .menu-bottom > .mypage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: calc(var(--width-unit) * 6);
+    width: calc(var(--width-unit) * 6);
+    transform: translate(-50%,-50%);
+  }
+
+  .baseposts.vcomp > .menu-bottom > ._e {
+    position: absolute;
+    top: 50%;
+    right: calc(var(--width-unit) * 29.5);
+    height: calc(var(--width-unit) * 6);
+    width: auto;
+    transform: translate(50%,-50%);
+    opacity: 0.1;
+  }
+
+  .baseposts.vcomp > .menu-bottom > .posting {
+    position: absolute;
+    top: 50%;
+    right: calc(var(--width-unit) * 6);
+    height: calc(var(--width-unit) * 6);
+    width: calc(var(--width-unit) * 6);
+    transform: translate(0,-50%);
+  }
 </style>
 
 
@@ -92,37 +157,44 @@
       </swiper-slide>
     </swiper>
 
-    <!-- <transition name='show-author-profile' mode=in-out>
-      <div class='author menublock' :style='level_style' :key='cpost_boo_id' @click='session.open_boopage(cpost_boo)'>
-        <img class='fit' :src='cpost_boo_profile'>
-      </div>
-    </transition> -->
-
-    <!-- <scorebutton
-      :session='session'
-      :boo='cpost_boo'
-      v-if='cpost_boo'
-      style='position:absolute;top:calc(var(--width-unit)*3);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*10);height:calc(var(--width-unit)*10)'
-      @click.native='session.open_boopage(cpost_boo)'
-    ></scorebutton> -->
-
-
     <!-- <div style='position:absolute;top:12vw;right:16vw;width:8vw;height:8vw;background:black;border-radius:50%;display:flex;align-items:center;justify-content:center;' @click='session.open_comments(cpost)'>
       <img src='/static/materials/icons/SIDEB_ICON_COMMENT.png' style='width:100%;height:100%;object-fit:contain;'>
       <span v-if='cpost_ncomments!=0' style='color:white;font-size:12px;'>[[cpost_ncomments]]</span>
     </div> -->
 
-    <div style='position:absolute;bottom:0;left:50%;width:10vw;height:10vw;transform:translateX(-50%)' @click='open_posting()'>
+    <div class='hamburger'>
+      <img src='/static/materials/icons/button_e.png' style='width:100%;height:100%;object-fit:contain;'>
+    </div>
+
+    <!-- <div style='position:absolute;bottom:0;left:50%;width:10vw;height:10vw;transform:translateX(-50%)' @click='open_posting()'>
       <img src='/static/materials/icons/SIDEB_ICON_RECORD.png' style='width:100%;height:100%;object-fit:cover;'>
     </div>
 
     <div style='position:absolute;bottom:0;right:0;width:10vw;height:10vw;' @click='session.open_mypage()'>
       <img src='/static/materials/icons/SIDEB_ICON_USER.png' style='width:100%;height:100%;object-fit:cover;'>
-    </div>
-
-    <!-- <div style='position:absolute;top:0;right:0;width:10vw;height:10vw;background:rgba(255,255,255,0.3);'>
-      <img src='/static/materials/icons/hamburger.png' style='width:100%;height:100%;object-fit:cover;'>
     </div> -->
+
+    <div class='menu-bottom'>
+      <div class='discover'>
+        <img src='/static/materials/icons/button_m.png' style='width:100%;height:100%;object-fit:contain;'>
+      </div>
+
+      <div class='_oi'>
+        <img src='/static/materials/icons/button_oi.png' style='width:100%;height:100%;object-fit:contain;'>
+      </div>
+
+      <div class='mypage' @click='session.open_mypage()'>
+        <img src='/static/materials/icons/button_b_profile.png' style='width:100%;height:100%;object-fit:contain;'>
+      </div>
+
+      <div class='_e'>
+        <img src='/static/materials/icons/button_e.png' style='width:100%;height:100%;object-fit:contain;'>
+      </div>
+
+      <div class='posting' @click='open_posting()'>
+        <img src='/static/materials/icons/button_r.png' style='width:100%;height:100%;object-fit:contain;'>
+      </div>
+    </div>
   </div>
 </script>
 
@@ -162,11 +234,11 @@
         }
       },
 
-      cpost_ncomments: function() {
-        if (this.cpost) {
-          return this.cpost.ncomments
-        }
-      },
+      // cpost_ncomments: function() {
+      //   if (this.cpost) {
+      //     return this.cpost.ncomments
+      //   }
+      // },
 
       cpost_boo: function() {
         if (this.session.auth && this.cpost && this.cpost.boo.id==this.session.auth.boo_selected) {
@@ -222,43 +294,9 @@
     },
 
     methods: {
-      // toggle_fullscreen: function() {
-      //
-      //   if (this.is_fullscreen) {
-      //     this.closeFullscreen();
-      //   } else {
-      //     this.openFullscreen();
-      //   }
-      //
-      //   this.is_fullscreen = !this.is_fullscreen;
-      // },
-
       open_posting: function() {
         this.session.open_posting(this);
-      },
-
-      // openFullscreen: function() {
-      //   var elem = document.documentElement;
-      //
-      //   if (elem.requestFullscreen) {
-      //     elem.requestFullscreen();
-      //   } else if (elem.webkitRequestFullscreen) { /* Safari */
-      //     elem.webkitRequestFullscreen();
-      //   } else if (elem.msRequestFullscreen) { /* IE11 */
-      //     elem.msRequestFullscreen();
-      //   }
-      // },
-      //
-      // /* Close fullscreen */
-      // closeFullscreen: function() {
-      //   if (document.exitFullscreen) {
-      //     document.exitFullscreen();
-      //   } else if (document.webkitExitFullscreen) { /* Safari */
-      //     document.webkitExitFullscreen();
-      //   } else if (document.msExitFullscreen) { /* IE11 */
-      //     document.msExitFullscreen();
-      //   }
-      // }
+      }
     }
   });
 </script>

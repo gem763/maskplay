@@ -24,31 +24,55 @@
   }
 
 
-  .post .backbone > tbody > tr > td.top {
+  /* .post .backbone > tbody > tr > td.top {
     height: 50vh;
+  } */
+
+  .post.postvoteab .backbone > tbody > tr > td.top {
+    height: 50%;
+    border-bottom: 1px solid red;
   }
 
-  .post .backbone > tbody > tr > td.bottom {
+  .post.postvoteab .backbone > tbody > tr > td.bottom {
+    height: 50%;
+  }
+
+  .post.postvoteox .backbone > tbody > tr > td.top {
+    height: 65%;
+  }
+
+  .post.postvoteox .backbone > tbody > tr > td.bottom {
+    height: 35%;
+  }
+
+  /* .post .backbone > tbody > tr > td.bottom {
     border-bottom: none;
     height: 50vh;
-  }
+  } */
 
   .post .description {
     position: absolute;
-    top: 4vw;
-    left: 20vw;
-    right: 28vw;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--width-unit)*12);
     pointer-events: none;
     text-align: left;
+    background: rgba(255,255,255,0.6);
+    padding-left: calc(var(--width-unit)*18);
   }
 
-  .post .description.active {
-    /* opacity: 0.3; */
-  }
+  /* .post .description.active {
+    opacity: 0.3;
+  } */
 
   .post .backbone .pixlabel {
     position: absolute;
-    background: none;
+    background: rgba(255,255,255,0.6);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    border-radius: 10px;
   }
 
   .post .backbone .pixlabel.active {
@@ -56,15 +80,11 @@
   }
 
   .post .backbone tr:first-child .pixlabel {
-    bottom: 5%;
-    left: 0;
-    right: 50%;
+    bottom: calc(var(--width-unit) * 5);
   }
 
   .post .backbone tr:last-child .pixlabel {
-    top: 5%;
-    left: 50%;
-    right: 0;
+    top: calc(var(--width-unit) * 5);
   }
 
   .post span.vs {
@@ -210,7 +230,7 @@
       <tbody>
         <tr>
           <td class='top'>
-            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='on_edit'></pixloader>
+            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='on_edit' where='top'></pixloader>
           </td>
         </tr>
 
@@ -241,6 +261,8 @@
                 ></oxer>
               </template>
             </oxcard>
+
+            <div style='position:absolute;top:0;left:0;width:50%;height:calc(var(--width-unit)*32);background:none;border-right:1px solid red;transform:translateY(48%);pointer-events: none;'></div>
           </td>
         </tr>
       </tbody>
@@ -262,7 +284,8 @@
               :session='session'
             ></aber>
 
-            <div class='pixlabel' :class='{ active: is_active }'>
+            <!-- <div class='pixlabel' :class='{ active: is_active }'> -->
+            <div class='pixlabel'>
               <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A' type='in-post'></editext>
             </div>
           </td>
@@ -282,7 +305,8 @@
               :session='session'
             ></aber>
 
-            <div class='pixlabel' :class='{ active: is_active }'>
+            <!-- <div class='pixlabel' :class='{ active: is_active }'> -->
+            <div class='pixlabel'>
               <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B' type='in-post'></editext>
             </div>
           </td>
@@ -291,27 +315,32 @@
     </table>
 
 
-    <!-- <div class='author-profile' v-if='!post'>
-      <img :src='post_boo_profile_pix'>
-    </div> -->
+    <div class='description'>
+      <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' freeze='true' type='in-post'></editext>
+      <!-- <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post'></editext> -->
+    </div>
 
     <scorebutton
       :session='session'
       :boo='post_boo'
       v-if='post_boo'
-      style='position:absolute;top:calc(var(--width-unit)*3);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*10);height:calc(var(--width-unit)*10)'
+      style='position:absolute;top:calc(var(--width-unit)*2);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8)'
       @click.native='session.open_boopage(post_boo)'
     ></scorebutton>
 
-
-    <div class='score-label' v-show='is_active'>SCORE</div>
-
-    <div style='position:absolute;top:12vw;left:0;width:100%;height:8vw;background:rgba(255,255,255,0.6);'>
+    <div style='position:absolute;top:calc(var(--width-unit)*2);right:calc(var(--width-unit)*14);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;border-radius:50%;box-sizing:border-box;border:1px solid whitesmoke;display:flex;align-items:center;justify-content:center;' @click='session.open_comments(post)'>
+      <img src='/static/materials/icons/like.png' style='width:80%;height:80%;object-fit:contain;'>
     </div>
 
-    <div class='description' :class='{ active: is_active }'>
-      <editext ref='post_text' :rawtext='post_text' :header='"@" + post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post'></editext>
+    <div style='position:absolute;top:calc(var(--width-unit)*2);right:calc(var(--width-unit)*22);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;' @click='session.open_comments(post)'>
+      <img src='/static/materials/icons/button_reply.png' style='width:100%;height:100%;object-fit:contain;'>
+      <span v-if='post_ncomments!=0' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments]]</span>
     </div>
+
+    <!-- <div class='score-label' v-show='is_active'>SCORE</div> -->
+
+    <!-- <div style='position:absolute;top:12vw;left:0;width:100%;height:8vw;background:rgba(255,255,255,0.6);'>
+    </div> -->
 
     <!-- <span class='vs' v-show='!is_active'>VS</span> -->
 
@@ -439,6 +468,12 @@
           return this.post.nvotes_down
         } else {
           return 0
+        }
+      },
+
+      post_ncomments: function() {
+        if (this.post) {
+          return this.post.ncomments
         }
       },
 

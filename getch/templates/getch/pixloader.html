@@ -13,16 +13,22 @@
     top: 0;
     left: 0;
     width: 100%;
-    /* height: auto; */
     height: 100%;
   }
 
   .pixloader img.pix.focused {
     object-fit: contain;
-    top: 5%;
-    left: 5%;
-    width: 90%;
-    height: 90%;
+    left: calc(var(--width-unit) * 6);
+    width: calc(var(--width-unit) * 88);
+    height: calc(100% - var(--width-unit)*20);
+  }
+
+  .pixloader.top img.pix.focused {
+    top: calc(var(--width-unit) * 16);
+  }
+
+  .pixloader.bottom img.pix.focused {
+    top: calc(var(--width-unit) * 4);
   }
 
   .pixloader input[type='file'] {
@@ -68,7 +74,7 @@
 
 
 <script type='text/x-template' id='pixloader-template'>
-  <div class='pixloader'>
+  <div class='pixloader' :class='where'>
     <input v-if='editable' type="file" accept="image/*" :id="pixloader_id" @change='loadpix' ref='input'>
     <label class='pixloader-label' :for='pixloader_id'>
       <img class='pix' :class='{ focused:pixfocused }' :src='pix' onerror='this.style.display="none"' ref='pix'>
@@ -80,10 +86,10 @@
       </transition>
     </label>
 
-    <div class='pixfocuser' style='position:absolute;bottom:0;left:0;width:15vw;height:15vw;background:none;' @click.stop='pixfocus'>
+    <!-- <div class='pixfocuser' style='position:absolute;bottom:0;left:0;width:15vw;height:15vw;background:none;' @click.stop='pixfocus'>
       <img v-if='pixfocused' src='/static/materials/icons/times.png' style='position:absolute;bottom:12%;left:12%;width:42%;height:42%'>
       <img v-else src='/static/materials/icons/expand.png' style='position:absolute;bottom:12%;left:12%;width:42%;height:42%'>
-    </div>
+    </div> -->
   </div>
 </script>
 
@@ -92,7 +98,7 @@
   Vue.component('pixloader', {
     template: '#pixloader-template',
     delimiters: ['[[', ']]'],
-    props: [ 'pix', 'editable', 'session' ],
+    props: [ 'pix', 'editable', 'session', 'where' ],
     data: function() {
       return {
         pixloader_id: 0,

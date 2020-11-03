@@ -11,9 +11,20 @@
 
   .oxcard > table > tbody > tr > td {
     width: 50%;
+    /* border: 1px solid black; */
     box-sizing: border-box;
     position: relative;
     height: 100%;
+  }
+
+  .oxcard .oxkeys-changer {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    width: var(--s-menu);
+    height: var(--s-menu);
+    object-fit: contain;
+    transform: translate(-50%,-50%)
   }
 </style>
 
@@ -28,6 +39,8 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- <img class='oxkeys-changer' v-show='editable' src='/static/materials/icons/change.png'> -->
   </div>
 </script>
 

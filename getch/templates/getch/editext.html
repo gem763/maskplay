@@ -1,5 +1,6 @@
 <style>
   .editext.vcomp {
+    background: none;
     font-size: calc(var(--width-unit)*3.3);
     white-space: pre-line;
     /* pre-line으로 해야 span 앞에 여백이 없어진다.. 왜? */
@@ -47,7 +48,6 @@
     font-weight: bold;
   }
 
-
   .editext.in-boo-texting.vcomp {
     font-size: 16px;
     line-height: 1.2;
@@ -80,18 +80,23 @@
   Vue.component('editext', {
     template: '#editext-template',
     delimiters: ['[[', ']]'],
-    props: ['rawtext', 'header', 'editable', 'placeholder', 'type', 'freeze'],
+    props: ['rawtext', 'header', 'editable', 'placeholder', 'type', 'freeze', 'squeeze'],
     data: function() {
       return {
         text: (this.rawtext ? this.rawtext : ''),
-        changed: false,
-        rawtext_display: (this.rawtext && this.rawtext.length>15) ? this.rawtext.slice(0,15)+'...' : this.rawtext
+        changed: false
       }
     },
 
     mounted: function() {
       if (!this.freeze) {
         this.$el.querySelector('span.text').innerHTML = this.text;
+      }
+    },
+
+    computed: {
+      rawtext_display: function() {
+        return (this.squeeze && this.rawtext && this.rawtext.length>15) ? this.rawtext.slice(0,15)+'...' : this.rawtext
       }
     },
 

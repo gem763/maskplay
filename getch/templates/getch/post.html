@@ -24,13 +24,9 @@
   }
 
 
-  /* .post .backbone > tbody > tr > td.top {
-    height: 50vh;
-  } */
-
   .post.postvoteab .backbone > tbody > tr > td.top {
     height: 50%;
-    border-bottom: 1px solid red;
+    border-bottom: 1px solid var(--color-dark);
   }
 
   .post.postvoteab .backbone > tbody > tr > td.bottom {
@@ -38,28 +34,27 @@
   }
 
   .post.postvoteox .backbone > tbody > tr > td.top {
-    height: 65%;
+    height: calc(100% - var(--w-52));
   }
 
   .post.postvoteox .backbone > tbody > tr > td.bottom {
-    height: 35%;
+    height: var(--w-52);
   }
-
-  /* .post .backbone > tbody > tr > td.bottom {
-    border-bottom: none;
-    height: 50vh;
-  } */
 
   .post .description {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: calc(var(--width-unit)*12);
-    pointer-events: none;
+    min-height: var(--w-12);
+    /* pointer-events: none; */
     text-align: left;
     background: rgba(255,255,255,0.6);
-    padding-left: calc(var(--width-unit)*18);
+    /* background: orange; */
+    padding-left: var(--w-18);
+    padding-top: var(--w-2);
+    padding-bottom: var(--w-2);
+    padding-right: var(--w-32);
   }
 
   /* .post .description.active {
@@ -220,6 +215,14 @@
     top: 0;
     opacity: 0;
   }
+
+  .post span.tag {
+    font-size: 10px;
+    background: var(--color-dark);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+  }
 </style>
 
 
@@ -262,7 +265,7 @@
               </template>
             </oxcard>
 
-            <div style='position:absolute;top:0;left:0;width:50%;height:calc(var(--width-unit)*32);background:none;border-right:1px solid red;transform:translateY(48%);pointer-events: none;'></div>
+            <div style='position:absolute;top:calc(var(--width-unit)*4);left:0;width:50%;height:calc(var(--width-unit)*32);background:none;border-right:1px solid #302E2F;pointer-events: none;'></div>
           </td>
         </tr>
       </tbody>
@@ -315,24 +318,30 @@
     </table>
 
 
-    <div class='description'>
-      <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' freeze='true' type='in-post'></editext>
-      <!-- <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post'></editext> -->
+    <div class='description' @click='toggle_squeeze'>
+      <!-- <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' freeze='true' type='in-post'></editext> -->
+      <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post' :freeze='!on_edit' :squeeze='squeezed'></editext>
+
+      <div v-show='!squeezed' style='margin-top: 10px;margin-bottom:5px;'>
+        <span class='tag'>어좁</span>
+        <span class='tag'>학다리</span>
+        <span class='tag'>올챙이</span>
+      </div>
     </div>
 
     <scorebutton
       :session='session'
       :boo='post_boo'
       v-if='post_boo'
-      style='position:absolute;top:calc(var(--width-unit)*2);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8)'
+      style='position:absolute;top:calc(var(--width-unit)*4);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8)'
       @click.native='session.open_boopage(post_boo)'
     ></scorebutton>
 
-    <div style='position:absolute;top:calc(var(--width-unit)*2);right:calc(var(--width-unit)*14);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;border-radius:50%;box-sizing:border-box;border:1px solid whitesmoke;display:flex;align-items:center;justify-content:center;' @click='session.open_comments(post)'>
+    <div style='position:absolute;top:calc(var(--width-unit)*4);right:calc(var(--width-unit)*14);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;border-radius:50%;box-sizing:border-box;border:1px solid black;display:flex;align-items:center;justify-content:center;' @click='session.open_comments(post)'>
       <img src='/static/materials/icons/like.png' style='width:80%;height:80%;object-fit:contain;'>
     </div>
 
-    <div style='position:absolute;top:calc(var(--width-unit)*2);right:calc(var(--width-unit)*22);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;' @click='session.open_comments(post)'>
+    <div style='position:absolute;top:calc(var(--width-unit)*4);right:calc(var(--width-unit)*22);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;' @click='session.open_comments(post)'>
       <img src='/static/materials/icons/button_reply.png' style='width:100%;height:100%;object-fit:contain;'>
       <span v-if='post_ncomments!=0' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments]]</span>
     </div>
@@ -376,6 +385,7 @@
       return {
         on_edit: (this.post ? false : true),
         on_delete: false,
+        squeezed: true,
       }
     },
 
@@ -530,6 +540,10 @@
     },
 
     methods: {
+      toggle_squeeze: function() {
+        this.squeezed = !this.squeezed;
+      },
+
       toggle_vote: function(act) {
         if (this.session.auth && !this.on_edit && (this.session.mode.on=='journey' || this.session.mode.on=='booposts')) {
           if (this.vote_state==act) {

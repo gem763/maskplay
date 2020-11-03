@@ -18,17 +18,17 @@
 
   .pixloader img.pix.focused {
     object-fit: contain;
-    left: calc(var(--width-unit) * 6);
-    width: calc(var(--width-unit) * 88);
-    height: calc(100% - var(--width-unit)*20);
+    left: var(--w-6);
+    width: var(--w-88);
+    height: calc(100% - var(--w-20));
   }
 
   .pixloader.top img.pix.focused {
-    top: calc(var(--width-unit) * 16);
+    top: var(--w-16);
   }
 
   .pixloader.bottom img.pix.focused {
-    top: calc(var(--width-unit) * 4);
+    top: var(--w-4);
   }
 
   .pixloader input[type='file'] {

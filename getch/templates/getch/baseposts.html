@@ -19,7 +19,7 @@
   }
 
 
-  .baseposts.vcomp > .menublock {
+  /* .baseposts.vcomp > .menublock {
     position: absolute;
     width: var(--s-menu);
     height: var(--s-menu);
@@ -31,7 +31,6 @@
 
   .baseposts.vcomp > .menublock.author {
     top: 0;
-    /* right: 0; */
     left: 0;
     background: white;
   }
@@ -62,7 +61,7 @@
     object-fit: contain;
     width: 80%;
     height: 80%;
-  }
+  } */
 
 
   .baseposts.vcomp .show-author-profile-enter-active {
@@ -80,7 +79,7 @@
 
   .baseposts.vcomp > .hamburger {
     position: absolute;
-    top: calc(var(--width-unit) * 3);
+    top: calc(var(--width-unit) * 5);
     right: calc(var(--width-unit) * 6);
     width: calc(var(--width-unit) * 6);
     height: calc(var(--width-unit) * 6);
@@ -92,55 +91,82 @@
     left: 0;
     width: 100%;
     height: calc(var(--width-unit) * 12);
+    /* background: lightblue; */
     background: rgba(255,255,255,0.6);
   }
 
   .baseposts.vcomp > .menu-bottom > .discover {
     position: absolute;
     top: 50%;
-    left: calc(var(--width-unit) * 6);
-    height: calc(var(--width-unit) * 6);
-    width: calc(var(--width-unit) * 6);
+    left: calc(var(--width-unit) * 3);
+    height: calc(var(--width-unit) * 12);
+    width: calc(var(--width-unit) * 12);
     transform: translate(0,-50%);
-    opacity: 1;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .baseposts.vcomp > .menu-bottom > ._oi {
     position: absolute;
     top: 50%;
     left: calc(var(--width-unit) * 29.5);
-    height: calc(var(--width-unit) * 6);
-    width: auto;
+    height: calc(var(--width-unit) * 12);
+    width: calc(var(--width-unit) * 12);
     transform: translate(-50%,-50%);
     opacity: 0.1;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .baseposts.vcomp > .menu-bottom > .mypage {
     position: absolute;
     top: 50%;
     left: 50%;
-    height: calc(var(--width-unit) * 6);
-    width: calc(var(--width-unit) * 6);
+    height: calc(var(--width-unit) * 12);
+    width: calc(var(--width-unit) * 12);
     transform: translate(-50%,-50%);
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .baseposts.vcomp > .menu-bottom > ._e {
     position: absolute;
     top: 50%;
     right: calc(var(--width-unit) * 29.5);
-    height: calc(var(--width-unit) * 6);
-    width: auto;
+    height: calc(var(--width-unit) * 12);
+    width: calc(var(--width-unit) * 12);
     transform: translate(50%,-50%);
     opacity: 0.1;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .baseposts.vcomp > .menu-bottom > .posting {
     position: absolute;
     top: 50%;
-    right: calc(var(--width-unit) * 6);
-    height: calc(var(--width-unit) * 6);
-    width: calc(var(--width-unit) * 6);
+    right: calc(var(--width-unit) * 3);
+    height: calc(var(--width-unit) * 12);
+    width: calc(var(--width-unit) * 12);
     transform: translate(0,-50%);
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .baseposts.vcomp > .menu-bottom img {
+    /* width: calc(var(--width-unit) * 6); */
+    width: auto;
+    height: calc(var(--width-unit) * 6);
+    object-fit: contain;
   }
 </style>
 
@@ -176,23 +202,23 @@
 
     <div class='menu-bottom'>
       <div class='discover'>
-        <img src='/static/materials/icons/button_m.png' style='width:100%;height:100%;object-fit:contain;'>
+        <img src='/static/materials/icons/button_m.png'>
       </div>
 
       <div class='_oi'>
-        <img src='/static/materials/icons/button_oi.png' style='width:100%;height:100%;object-fit:contain;'>
+        <img src='/static/materials/icons/button_oi.png'>
       </div>
 
       <div class='mypage' @click='session.open_mypage()'>
-        <img src='/static/materials/icons/button_b_profile.png' style='width:100%;height:100%;object-fit:contain;'>
+        <img src='/static/materials/icons/button_b_profile.png'>
       </div>
 
       <div class='_e'>
-        <img src='/static/materials/icons/button_e.png' style='width:100%;height:100%;object-fit:contain;'>
+        <img src='/static/materials/icons/button_e.png'>
       </div>
 
       <div class='posting' @click='open_posting()'>
-        <img src='/static/materials/icons/button_r.png' style='width:100%;height:100%;object-fit:contain;'>
+        <img src='/static/materials/icons/button_r.png'>
       </div>
     </div>
   </div>

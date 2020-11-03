@@ -19,10 +19,6 @@
     justify-content: center; */
   }
 
-  .oxer.vcomp > .oxkey.devoted {
-    opacity: 0.2;
-  }
-
   .oxer.vcomp > .oxkey > img {
     position: absolute;
     left: 50%;
@@ -33,14 +29,51 @@
     transform: translateX(-50%);
   }
 
-  .oxer.vcomp > .oxkey > .score {
+  .oxer.vcomp > table {
+    border-collapse: collapse;
     position: absolute;
-    top: var(--w-20);
-    left: 50%;
-    transform: translate(-50%,-50%);
-    font-size: var(--w-20);
-    -webkit-text-stroke: 2px white;
-    color: var(--color-dark);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .oxer.vcomp > table td {
+    border: 0;
+    box-sizing: border-box;
+    position: relative;
+    height: 50%;
+    overflow: hidden;
+  }
+
+  .oxer.vcomp > table td.top { }
+
+  .oxer.vcomp > table td .score {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+
+  .oxer.vcomp .oxkey.devoted,
+  .oxer.vcomp > table td .score.devoted {
+    color: lightgray
+  }
+
+  .oxer.vcomp .show-score-enter-active,
+  .oxer.vcomp .show-score-leave-active {
+    transition: all 0.2s;
+  }
+
+  .oxer.vcomp .show-score-enter,
+  .oxer.vcomp .show-score-leave-to {
+    top: 100% !important;
   }
 </style>
 
@@ -49,8 +82,24 @@
 
     <div class='oxkey' :class='phase'>
       <img :src='ox_src'>
-      <div class='score' v-if='is_active'>[[ score ]]</div>
+      <div v-if='is_active' style='position:absolute;top:var(--w-20);left:50%;transform:translate(-50%,-50%);font-size:var(--w-20);-webkit-text-stroke:2px white;color:var(--color-dark)'>[[ score ]]</div>
     </div>
+
+
+    <!-- <table>
+      <tbody>
+        <tr>
+          <td class='top'></td>
+        </tr>
+        <tr>
+          <td class='bottom'>
+            <transition name='show-score'>
+              <div class='score' :class='phase' v-if='is_active'>[[ score ]]</div>
+            </transition>
+          </td>
+        </tr>
+      </tbody>
+    </table> -->
 
   </div>
 </script>

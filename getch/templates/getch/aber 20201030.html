@@ -8,39 +8,31 @@
     background: white;
   }
 
-  .aber * {
-    font-family: 'Montserrat', sans-serif;
-  }
-
   .aber .pixloader {
     transition: all 0.2s;
   }
 
+  /* .aber .container.devoted .pixloader { */
   .aber.devoted .pixloader {
     opacity: 0.5;
     filter: grayscale(0.5);
   }
 
-  .aber.devoted .score {
-    opacity: 0.5;
-  }
-
   .aber .score {
+    font-size: 40px;
     pointer-events: none;
     position: absolute;
+    font-family: 'Montserrat', sans-serif;
     left: 50%;
-    font-size: var(--w-20);
-    -webkit-text-stroke: 2px white;
-    color: var(--color-dark);
   }
 
   .aber .score.act-0 {
-    bottom: calc(50% - var(--w-6));
+    bottom: calc(25vh - var(--width-unit)*6);
     transform: translate(-50%,50%);
   }
 
   .aber .score.act-1 {
-    top: calc(50% - var(--w-6));
+    top: calc(25vh - var(--width-unit)*6);
     transform: translate(-50%,-50%);
   }
 
@@ -51,14 +43,16 @@
 
   .aber .show-score-enter,
   .aber .show-score-leave-to {
-    /* left: 0; */
+    left: 0;
     opacity: 0;
   }
 </style>
 
 <script type='text/x-template' id='aber-template'>
   <div class='aber' :class='phase'>
-    <pixloader :pix='pix' :editable='editable' :session='session' ref='pixloader' :where='act==0 ? "top" : "bottom"'></pixloader>
+    <!-- <div class='container' :class='phase'> -->
+      <pixloader :pix='pix' :editable='editable' :session='session' ref='pixloader' :where='act==0 ? "top" : "bottom"'></pixloader>
+    <!-- </div> -->
 
     <transition name='show-score'>
       <div class='score' :class='act_class' v-if='is_active'>[[ score ]]</div>

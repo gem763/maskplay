@@ -223,49 +223,6 @@
     padding: 5px;
     border-radius: 5px;
   }
-
-
-  .post > .modifier {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: var(--w-12);
-    background: none;
-    font-size: 12px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .post > .modifier > .item {
-    background: none;
-    padding-left: var(--w-6);
-    padding-right: var(--w-6);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .post > .modifier > .cancel.item {
-    color: gray;
-  }
-
-  .post > .modifier > .done.item {
-    color: var(--color-neg);
-  }
-
-  .baseposts.vcomp .show-modifier-enter-active,
-  .baseposts.vcomp .show-modifier-leave-active {
-    transition: all 0.1s;
-  }
-
-  .baseposts.vcomp .show-modifier-enter,
-  .baseposts.vcomp .show-modifier-leave-to {
-    opacity: 0;
-  }
 </style>
 
 
@@ -389,22 +346,21 @@
       <span v-if='post_ncomments!=0' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments]]</span>
     </div>
 
+    <!-- <div class='score-label' v-show='is_active'>SCORE</div> -->
 
-    <!-- <transition name='show-modify'>
+    <!-- <div style='position:absolute;top:12vw;left:0;width:100%;height:8vw;background:rgba(255,255,255,0.6);'>
+    </div> -->
+
+    <!-- <span class='vs' v-show='!is_active'>VS</span> -->
+
+    <transition name='show-modify'>
       <div class='modify button' v-if='is_mypost'>
         <div class='edit-post' :class='{ onedit: on_edit }' @click='toggle_edit'>[[ edit_button_text ]]</div>
         <div class='delete-post' @click='delete_post'>
           <img src='/static/materials/icons/delete.png'>
         </div>
       </div>
-    </transition> -->
-
-    <!-- <transition name='show-modifier'> -->
-      <div class='modifier' v-if='on_edit'>
-        <div class='item cancel' @click='modify_cancel'>취소</div>
-        <div class='item done' @click='modify_done'>완료</div>
-      </div>
-    <!-- </transition> -->
+    </transition>
 
     <transition name='show-newpost'>
       <div class='newpost button' v-if='!post' @click='save_post'>SAVE NEWPOST</div>
@@ -427,17 +383,13 @@
 
     data: function() {
       return {
-        // on_edit: (this.post ? false : true),
+        on_edit: (this.post ? false : true),
         on_delete: false,
         squeezed: true,
       }
     },
 
     computed: {
-      on_edit: function() {
-        return this.post.on_edit
-      },
-
       on_saving: function() {
         return this.post && !this.post.id
       },
@@ -573,9 +525,8 @@
 
         } else if (_old) {
           this.swiper.attachEvents();
+          this.save_post();
         }
-
-        this.$emit('on_modify', _new);
       },
 
       on_delete: function(_new, _old) {
@@ -589,28 +540,6 @@
     },
 
     methods: {
-      modify_cancel: function() {
-        this.$set(this.post, 'on_edit', false);
-
-        this.$refs.post_text.reset();
-
-        if (this.is_postvoteox) {
-          // this.$refs.post_keys.reset();
-          this.$refs.post_pix.reset();
-
-        } else if (this.is_postvoteab) {
-          this.$refs.post_pix_a.reset();
-          this.$refs.post_pix_b.reset();
-          this.$refs.post_pixlabel_a.reset();
-          this.$refs.post_pixlabel_b.reset();  
-        }
-      },
-
-      modify_done: function() {
-        this.$set(this.post, 'on_edit', false);
-        this.save_post();
-      },
-
       toggle_squeeze: function() {
         this.squeezed = !this.squeezed;
       },

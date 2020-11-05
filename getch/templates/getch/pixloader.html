@@ -145,6 +145,11 @@
         this.changed = true;
       },
 
+      reset: function() {
+        this.$refs.pix.src = this.pix;
+        this.changed = false;
+      },
+
       get: function() {
         // input.value='' 을 하면 input.files도 비워진다
         // 그 반대는 안된다

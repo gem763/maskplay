@@ -95,6 +95,10 @@
     methods: {
       get: function() {
         return this.$refs.pixloader.get()
+      },
+
+      reset: function() {
+        this.$refs.pixloader.reset();
       }
     }
   });

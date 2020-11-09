@@ -1,234 +1,105 @@
 <style>
-  .aboutboo.vcomp .header-0 > .profilepix {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: var(--t-3);
-    height: var(--t-3);
-  }
-
-  .aboutboo.vcomp .header-0 > .profilepix > img.fit {
-    object-fit: cover;
+  .aboutboo.vcomp {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: white;
-  }
-
-  .aboutboo.vcomp .header-0 > .profilepix > img.barcode {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 80%;
-    height: auto;
-    transform: translate(-50%, 50%)
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard {
-    position: absolute;
-    left: 5px;
-    top: 5px;
-    bottom: 50%;
-    width: 50%;
-    background: none;
-    line-height: 1;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score {
-    position: absolute;
-    height: 50%;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score.pscore {
-    top: 0;
-    left: 0;
-    width: 100%;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score.nfollowers {
-    top: 50%;
-    left: 0;
-    width: 50%;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score.npostings {
-    top: 50%;
-    left: 50%;
-    width: 50%;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score .score-name {
-    font-size: 8px;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score .score-value {
-    font-size: 20px;
-    font-weight: bold;
-  }
-
-  .aboutboo.vcomp .header-0 > .scorecard > .score.pscore .score-value {
-    font-size: 30px;
-  }
-
-  .aboutboo.vcomp .header-1 {
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .aboutboo.vcomp .header-1 > .follow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    /* background: var(--color-pos); */
-    /* color: white; */
-    color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .aboutboo.vcomp .header-1 > .follow.onfollow {
-    background: lightgray;
-    color: black
-  }
-
-
-  .aboutboo.vcomp .content > .booposts-section {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .aboutboo.vcomp .content > .booposts-section > .booposts {
-    position: relative;
-    /* minipost의 좌우여백을 동일하게 맞출수 없어서, booposts 자체의 너비를 여백만큼 줄였다
-    minipost.html에 가보면, 오른쪽 border=0 으로 한것을 알 수 있다. */
-    width: calc(100% - 1px);
-    height: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    overflow: hidden;
-    /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
     overflow-y: auto;
-    -ms-overflow-style: none; /* IE 11 */
-    scrollbar-width: none; /* Firefox 64 */
   }
 
-  .aboutboo.vcomp .content > .booposts-section > .booposts > .boopost {
-    position: relative;
-    width: 25%;
-    height: calc(var(--t-0) / 2);
+  .aboutboo.vcomp > .top-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: var(--w-16);
+    background: lightpink;
   }
 
-  .aboutboo.vcomp .show-boo-enter-active {
-    transition: all 0.3s;
-  }
-
-  .aboutboo.vcomp .show-boo-enter,
-  .aboutboo.vcomp .show-boo-leave-to {
-    filter: blur(10px);
-  }
-
-  /* .aboutboo.vcomp .show-booposts-leave-active, */
-  .aboutboo.vcomp .show-booposts-enter-active {
-    transition: all 1s;
-  }
-
-  .aboutboo.vcomp .show-booposts-enter,
-  .aboutboo.vcomp .show-booposts-leave-to {
-    opacity: 0;
-    /* transform: translateY(30px); */
-  }
-
-
-  .aboutboo.vcomp .spinner {
+  .aboutboo.vcomp > .top-header > .btn {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: var(--w-5);
+    height: var(--w-6);
+    width: var(--w-6);
+  }
+
+  .aboutboo.vcomp > .top-header > .btn.hamburger {
+    right: var(--w-6);
+  }
+
+  .aboutboo.vcomp > .top-header > .btn.goto-prev {
+    left: var(--w-6);
+  }
+
+  .aboutboo.vcomp > .top-header > .btn > img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .aboutboo.vcomp > .top-header > .btn.goto-prev > img {
+    transform: rotate(180deg);
+  }
+
+  .aboutboo.vcomp > .profile-section {
+    background: lightblue;
+    /* height: var(--w-33); */
+    padding-top: var(--w-16);
+    /* margin-top: 100px; */
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .profile-section > .profile {
+    width: var(--w-33);
+    height: var(--w-33);
+    background: none;
+  }
+
+  .aboutboo.vcomp > .profile-section > .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+  }
+
+  .aboutboo.vcomp > .profile-section.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
   }
 </style>
 
 
 <script type='text/x-template' id='aboutboo-template'>
-
-  <struct class='aboutboo vcomp'>
-    <template #header-0>
-
-      <transition name='show-boo'>
-        <div class='profilepix' :style='level_style' v-if='!on_booloading'>
-          <img class='fit' :src='profilepix' @click='open_boochooser'>
-        </div>
-      </transition>
-
-      <transition name='show-boo'>
-        <div class='scorecard' @click='session.open_network()' v-if='!on_booloading'>
-          <div class='score pscore'>
-            <div>
-              <span class='score-name'>POWER SCORE</span><br>
-              <span class='score-value'>[[ pscore ]]</span>
-            </div>
-          </div>
-
-          <div class='score nfollowers'>
-            <div>
-              <span class='score-value'>[[ nfollowers ]]</span><br>
-              <span class='score-name'>FOLLOWERS</span>
-            </div>
-          </div>
-
-          <div class='score npostings'>
-            <div>
-              <span class='score-value'>[[ nposts ]]</span><br>
-              <span class='score-name'>POSTINGS</span>
-            </div>
-          </div>
-        </div>
-      </transition>
-
-      <scale-loader class='spinner' :loading='on_booloading'></scale-loader>
-    </template>
-
-
-    <template #header-1>
-      <transition name='show-boo'>
-        <editext :rawtext='text' :header='nick' type='in-boo' freeze='true' v-if='!on_booloading'></editext>
-      </transition>
-
-      <!-- <div v-if='type=="author" && session.auth' class='follow' :class='{ onfollow:is_following }' @click='toggle_follow'>
-        [[ follow_button_message ]]
+  <div class='aboutboo vcomp' @scroll='scroll'>
+    <div class='top-header'>
+      <div class='btn hamburger'>
+        <img src='/static/materials/icons/button_e.png'>
       </div>
-      <div v-else></div> -->
-      <scale-loader class='spinner' :loading='on_booloading'></scale-loader>
-    </template>
 
-
-    <template #header-2></template>
-
-
-    <template #content>
-      <div class='booposts-section'>
-        <transition-group name='show-booposts' tag='div' class='booposts'>
-        <!-- <transition-group name='show-booposts' tag='div' class='booposts' v-if='boo.posts'>   -->
-          <div class='boopost' v-for='(post, idx) in postlist' :key='post_key(post)' @click='open_booposts(idx)'>
-            <minipost :post='post' :session='session'></minipost>
-          </div>
-        </transition-group>
-
-        <scale-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading'></scale-loader>
+      <div class='btn goto-prev'>
+        <img src='/static/materials/icons/right-chevron.png'>
       </div>
-    </template>
-  </struct>
+    </div>
 
+    <div class='profile-section' ref='profile_section'>
+      <div class='profile'>
+        <img :src='profilepix'>
+      </div>
+    </div>
+
+    <div class='content-section'>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </div>
+  </div>
 </script>
 
 
@@ -241,6 +112,31 @@
       return {
         on_booloading: false,
       }
+    },
+
+    mounted: function() {
+      // var wrap = $(".aboutboo.vcomp");
+      //
+      // wrap.on("scroll", function(e) {
+      //   if (this.scrollTop > 200) {
+      //     wrap.addClass("sticky");
+      //   } else {
+      //     wrap.removeClass("sticky");
+      //   }
+      // });
+      // window.onscroll = function() {myFunction()};
+      //
+      // var header = this.$refs.profile_section;
+      // var sticky = header.offsetTop;
+      //
+      // function myFunction() {
+      //   console.log(11111);
+      //   if (window.pageYOffset > sticky) {
+      //     header.classList.add("sticky");
+      //   } else {
+      //     header.classList.remove("sticky");
+      //   }
+      // }
     },
 
     computed: {
@@ -299,12 +195,6 @@
       //     return 'FOLLOW'
       //   }
       // },
-
-      level_style: function() {
-        return {
-          borderBottom: `calc(var(--t-3) * 0.3) solid ${this.session.levelcolor(this.boo)}`
-        }
-      },
     },
 
     methods: {
@@ -336,6 +226,17 @@
         } else {
           this.session.auth.follow(this.boo.id);
           this.boo.nfollowers += 1;
+        }
+      },
+
+      scroll: function() {
+        console.log(this.$el.scrollTop);
+        // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sticky_header
+
+        if (this.$el.scrollTop > 0) {
+          this.$refs.profile_section.classList.add("sticky");
+        } else {
+          this.$refs.profile_section.classList.add("sticky");
         }
       }
     }

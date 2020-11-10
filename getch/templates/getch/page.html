@@ -66,18 +66,21 @@
   }
 
   .page > .content > .close {
+    background: none;
     position: absolute;
-    bottom: 10px;
-    left: 10px;
-    width: 20px;
-    height: 20px;
-    background: black;
+    top: var(--w-2);
+    left: var(--w-1);
+    width: var(--w-12);
+    height: var(--w-12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .page > .content > .close img {
-    width: 20px;
-    height: 20px;
-    filter: invert(100%);
+    width: var(--w-6);
+    height: var(--w-6);
+    transform: rotate(180deg);
   }
 </style>
 
@@ -93,7 +96,7 @@
         <slot></slot>
 
         <div class='close' @click='$emit("close")'>
-          <img src='/static/materials/icons/times.png'>
+          <img src='/static/materials/icons/right-chevron.png'>
         </div>
       </div>
     </transition>

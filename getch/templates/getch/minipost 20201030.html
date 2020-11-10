@@ -17,7 +17,7 @@
   .minipost.vcomp > .postbody > tbody > tr > td {
     position: relative;
     height: 50%;
-    border: 3px solid white;
+    border: 1px solid white;
     border-right: 0;
   }
 
@@ -31,31 +31,28 @@
   }
 
   .minipost.vcomp > .postbody > tbody > tr > td > .oxcard {
-    background: none;
     border-collapse: collapse;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 35%;
+    /* height: 100%; */
+    height: calc(var(--t-0) / 4);
   }
 
   .minipost.vcomp > .postbody > tbody > tr > td > .oxcard td {
     position: relative;
     width: 50%;
-    height: 100%;
+    height: 50%;
+    border: 1px solid black;
     text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: calc(var(--t-0) / 12);
   }
 
-  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard td:first-child {
-    border-right: 1px solid black;
-  }
-
-  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard td > img {
-    width: 100%;
+  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard:last-child td {
     height: 100%;
-    object-fit: contain;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
   }
 </style>
 
@@ -75,10 +72,15 @@
           <td>
             <table class='oxcard'>
               <tbody>
-                <tr>
-                  <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
-                  <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
-                </tr>
+                <tr><td></td><td></td></tr>
+                <tr><td></td><td></td></tr>
+              </tbody>
+            </table>
+
+            <table class='oxcard'>
+              <tbody>
+                <tr v-if='post.keys=="OX"'><td>O</td><td>X</td></tr>
+                <tr v-if='post.keys=="SM"'><td>살</td><td>말</td></tr>
               </tbody>
             </table>
           </td>
@@ -92,9 +94,15 @@
   Vue.component('minipost', {
     template: '#minipost-template',
     delimiters: ['[[', ']]'],
-    props: [ 'post' ],
+    props: [ 'post', 'session' ],
     data: function() {
       return {}
+    },
+
+    methods: {
+      open_booposts: function() {
+        alert('open booposts page')
+      }
     }
   });
 </script>

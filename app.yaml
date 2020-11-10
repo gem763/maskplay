@@ -14,5 +14,11 @@ handlers:
 # required when static routes are defined, but can be omitted (along with
 # the entire handlers section) when there are no static files defined.
 - url: /.*
+  secure: always
+  redirect_http_response_code: 301
   script: auto
+
+  # http를 https로 포워딩하기
+  # https://stackoverflow.com/questions/33878825/how-to-permanently-redirect-http-and-www-urls-to-https
+
 # [END django_app]

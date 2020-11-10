@@ -14,91 +14,193 @@
     top: 0;
     width: 100%;
     height: var(--w-16);
-    background: lightpink;
-  }
-
-  .aboutboo.vcomp > .top-header > .btn {
-    position: absolute;
-    top: var(--w-5);
-    height: var(--w-6);
-    width: var(--w-6);
-  }
-
-  .aboutboo.vcomp > .top-header > .btn.hamburger {
-    right: var(--w-6);
-  }
-
-  .aboutboo.vcomp > .top-header > .btn.goto-prev {
-    left: var(--w-6);
-  }
-
-  .aboutboo.vcomp > .top-header > .btn > img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .aboutboo.vcomp > .top-header > .btn.goto-prev > img {
-    transform: rotate(180deg);
-  }
-
-  .aboutboo.vcomp > .profile-section {
-    background: lightblue;
-    /* height: var(--w-33); */
-    padding-top: var(--w-16);
-    /* margin-top: 100px; */
+    background: none;
+    transition: all 0.5s;
     display: flex;
-    /* align-items: center; */
+    align-items: center;
     justify-content: center;
   }
 
-  .aboutboo.vcomp > .profile-section > .profile {
-    width: var(--w-33);
-    height: var(--w-33);
-    background: none;
+  .aboutboo.vcomp.sticky > .top-header {
+    background: white;
   }
 
-  .aboutboo.vcomp > .profile-section > .profile > img {
+  .aboutboo.vcomp > .top-header > .profile {
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .aboutboo.vcomp.sticky > .top-header > .profile {
+    opacity: 1;
+  }
+
+  .aboutboo.vcomp > .top-header > .profile > img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
   }
 
-  .aboutboo.vcomp > .profile-section.sticky {
-    position: fixed;
-    top: 0;
+
+  .aboutboo.vcomp > .top-header > .hamburger {
+    background: none;
+    position: absolute;
+    top: var(--w-2);
+    height: var(--w-12);
+    width: var(--w-12);
+    right: var(--w-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .aboutboo.vcomp > .top-header > .hamburger > img {
+    height: var(--w-6);
+    width: var(--w-6);
+  }
+
+  .aboutboo.vcomp > .profiles {
+    background: none;
+    margin-top: var(--w-16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile {
+    width: var(--w-33);
+    height: var(--w-33);
+    background: none;
+    transition: all 0.5s;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > img {
     width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+
+  .aboutboo.vcomp > .profiles > .nick {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .aboutboo.vcomp > .profiles > .text {
+    font-size: 12px;
+  }
+
+  .aboutboo.vcomp > .profiles > .tags {
+    margin-top: 10px;
+    /* margin-bottom: 5px; */
+  }
+
+  .aboutboo.vcomp > .profiles > .tags > .tag {
+    font-size: 11px;
+    background: var(--color-dark);
+    color: white;
+    padding: 5px;
+    border-radius: 20px;
+  }
+
+  .aboutboo.vcomp.sticky > .profiles > .profile {
+    opacity: 0;
+  }
+
+  .aboutboo.vcomp > .contents {
+    margin-top: 50px;
+    background: none;
+    position: relative;
+  }
+
+  .aboutboo.vcomp > .contents > .booposts-section {
+    position: relative;
+    width: 100%;
+    /* height: 100%; */
+  }
+
+  .aboutboo.vcomp > .contents > .booposts-section > .booposts {
+    position: relative;
+    /* minipost의 좌우여백을 동일하게 맞출수 없어서, booposts 자체의 너비를 여백만큼 줄였다
+    minipost.html에 가보면, 오른쪽 border=0 으로 한것을 알 수 있다. */
+    /* width: calc(100% - 1px); */
+    width: calc(100% - 3px);
+    /* height: 100%; */
+    display: flex;
+    flex-wrap: wrap;
+    /* overflow: hidden; */
+    /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
+    /* overflow-y: auto; */
+    /* -ms-overflow-style: none; /* IE 11 */
+    /* scrollbar-width: none; /* Firefox 64 */
+  }
+
+  .aboutboo.vcomp > .contents > .booposts-section > .booposts > .boopost {
+    position: relative;
+    width: 25%;
+    height: var(--w-50);
+  }
+
+  .aboutboo.vcomp > .spinner {
+    position: absolute;
+    bottom: var(--w-33);
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 </style>
 
 
 <script type='text/x-template' id='aboutboo-template'>
   <div class='aboutboo vcomp' @scroll='scroll'>
-    <div class='top-header'>
-      <div class='btn hamburger'>
-        <img src='/static/materials/icons/button_e.png'>
+
+
+    <div class='profiles' ref='profiles'>
+      <div class='profile' @click='open_boochooser'>
+        <img :src='profilepix'>
       </div>
 
-      <div class='btn goto-prev'>
-        <img src='/static/materials/icons/right-chevron.png'>
+      <div class='nick'>[[ nick ]]</div>
+      <div class='text'>[[ text ]]</div>
+
+      <div class='tags'>
+        <span class='tag'>어좁</span>
+        <span class='tag'>학다리</span>
+        <span class='tag'>올챙이</span>
       </div>
     </div>
 
-    <div class='profile-section' ref='profile_section'>
-      <div class='profile'>
+
+    <div class='contents'>
+      <div class='booposts-section'>
+        <transition-group name='show-booposts' tag='div' class='booposts'>
+          <div class='boopost' v-for='(post, idx) in postlist' :key='post_key(post)' @click='open_booposts(idx)'>
+            <minipost :post='post'></minipost>
+          </div>
+        </transition-group>
+      </div>
+    </div>
+
+    <div class='top-header'>
+      <div class='hamburger' @click='pop_boomenu'>
+        <img src='/static/materials/icons/button_e.png'>
+      </div>
+
+      <div class='profile' @click='open_boochooser'>
         <img :src='profilepix'>
       </div>
     </div>
 
-    <div class='content-section'>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </div>
+    <scale-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading'></scale-loader>
   </div>
 </script>
 
@@ -112,31 +214,6 @@
       return {
         on_booloading: false,
       }
-    },
-
-    mounted: function() {
-      // var wrap = $(".aboutboo.vcomp");
-      //
-      // wrap.on("scroll", function(e) {
-      //   if (this.scrollTop > 200) {
-      //     wrap.addClass("sticky");
-      //   } else {
-      //     wrap.removeClass("sticky");
-      //   }
-      // });
-      // window.onscroll = function() {myFunction()};
-      //
-      // var header = this.$refs.profile_section;
-      // var sticky = header.offsetTop;
-      //
-      // function myFunction() {
-      //   console.log(11111);
-      //   if (window.pageYOffset > sticky) {
-      //     header.classList.add("sticky");
-      //   } else {
-      //     header.classList.remove("sticky");
-      //   }
-      // }
     },
 
     computed: {
@@ -230,14 +307,22 @@
       },
 
       scroll: function() {
-        console.log(this.$el.scrollTop);
+        // console.log(this.$el.scrollTop);
         // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sticky_header
 
-        if (this.$el.scrollTop > 0) {
-          this.$refs.profile_section.classList.add("sticky");
+        const sticky = this.$refs.profiles.offsetTop;
+        const scrollTop = this.$el.scrollTop;
+
+        if (scrollTop > sticky) {
+          this.$el.classList.add("sticky");
+
         } else {
-          this.$refs.profile_section.classList.add("sticky");
+          this.$el.classList.remove("sticky");
         }
+      },
+
+      pop_boomenu: function() {
+        alert('boopage-menu popup')
       }
     }
   });

@@ -20,8 +20,9 @@
 
 <script type='text/x-template' id='scorebutton-template'>
   <div class='scorebutton vcomp'>
-    <img class='profilepix' v-if='boo' :src='boo.profile.pix' :style='profilepix_style' @load='init_canvas'>
-    <canvas ref='canvas'></canvas>
+    <img class='profilepix' v-if='boo' :src='boo.profile.pix' :style='profilepix_style'>
+    <!-- <img class='profilepix' v-if='boo' :src='boo.profile.pix' :style='profilepix_style' @load='init_canvas'> -->
+    <!-- <canvas ref='canvas'></canvas> -->
   </div>
 </script>
 
@@ -50,7 +51,6 @@
         const canvas = this.$refs.canvas;
         canvas.width = this.$el.clientWidth;
         canvas.height = this.$el.clientWidth;
-        // canvas.height = canvas.width;
 
         if (canvas.getContext) {
           const ctx = canvas.getContext('2d');

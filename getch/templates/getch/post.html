@@ -218,11 +218,11 @@
   }
 
   .post span.tag {
-    font-size: 10px;
+    font-size: 11px;
     background: var(--color-dark);
     color: white;
     padding: 5px;
-    border-radius: 5px;
+    border-radius: 20px;
   }
 
 
@@ -377,7 +377,7 @@
       :session='session'
       :boo='post_boo'
       v-if='post_boo'
-      style='position:absolute;top:calc(var(--width-unit)*4);left:calc(var(--width-unit)*6);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8)'
+      style='position:absolute;top:calc(var(--width-unit)*4);left:calc(var(--width-unit)*4);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8)'
       @click.native='session.open_boopage(post_boo)'
     ></scorebutton>
 
@@ -387,7 +387,8 @@
 
     <div style='position:absolute;top:calc(var(--width-unit)*4);right:calc(var(--width-unit)*22);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;' @click='session.open_comments(post)'>
       <img src='/static/materials/icons/button_reply.png' style='width:100%;height:100%;object-fit:contain;'>
-      <span v-if='post_ncomments!=0' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments]]</span>
+      <span style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments==0 ? "-" : post_ncomments]]</span>
+      <!-- <span v-if='post_ncomments!=0' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments]]</span> -->
     </div>
 
 
@@ -436,7 +437,13 @@
 
     computed: {
       on_edit: function() {
-        return this.post.on_edit
+        if (this.post) {
+          return this.post.on_edit
+
+        } else {
+          return true
+        }
+
       },
 
       on_saving: function() {

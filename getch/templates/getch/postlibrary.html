@@ -1,0 +1,84 @@
+<style>
+  .postlibrary.vcomp {
+    position: relative;
+    background: none;
+
+    /* minipost의 좌우여백을 동일하게 맞출수 없어서, booposts 자체의 너비를 여백만큼 줄였다
+    minipost.html에 가보면, 오른쪽 border=0 으로 한것을 알 수 있다. */
+    /* width: calc(100% - 1px); */
+    width: calc(100% - 3px);
+    /* height: 100%; */
+    display: flex;
+    flex-wrap: wrap;
+    /* overflow: hidden; */
+    /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
+    /* overflow-y: auto; */
+    /* -ms-overflow-style: none; /* IE 11 */
+    /* scrollbar-width: none; /* Firefox 64 */
+  }
+
+  .postlibrary.vcomp.onloading {
+    opacity: 0.5;
+  }
+
+  .postlibrary.vcomp > .post {
+    position: relative;
+    width: 25%;
+    height: var(--w-50);
+  }
+
+  .postlibrary.vcomp .show-posts-enter-active {
+    transition: all 1s;
+  }
+
+  .postlibrary.vcomp .show-posts-enter,
+  .postlibrary.vcomp .show-posts-leave-to {
+    opacity: 0;
+  }
+</style>
+
+<script type='text/x-template' id='postlibrary-template'>
+  <transition-group name='show-posts' tag='div' class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
+    <!-- <div class='post' v-for='(post, idx) in postlist' :key='post_key(post)' @click='open_booposts(idx, post)'> -->
+    <div class='post' v-for='(post, idx) in postlist' :key='post_key(post)' @click='$emit("open_posts", idx)'>
+      <minipost :post='post'></minipost>
+    </div>
+  </transition-group>
+</script>
+
+
+<script>
+  Vue.component('postlibrary', {
+    template: '#postlibrary-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'postlist', 'onloading' ],
+    data: function() {
+      return { }
+    },
+
+    methods: {
+      // newpost를 저장한 경우, post.id가 undefined 일 때가 있어서
+      // post_key를 따로 지정한다
+      post_key: function(post) {
+        if (post.id) {
+          return post.id
+        } else {
+          return new Date().toISOString()
+        }
+      },
+
+      // open_booposts: function(where, post) {
+      //   let posts;
+      //
+      //   if (this.boo) {
+      //     posts = this.boo.posts;
+      //
+      //   } else {
+      //     posts = post.boo.posts;
+      //   }
+      //
+      //   this.session.open_booposts(posts, where);
+      // },
+    }
+  });
+</script>

@@ -7,6 +7,8 @@
     height: 100%;
     background: white;
     overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
   }
 
   .aboutboo.vcomp > .top-header {
@@ -14,16 +16,16 @@
     top: 0;
     width: 100%;
     height: var(--w-16);
-    background: none;
+    background: white;
     transition: all 0.5s;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .aboutboo.vcomp.sticky > .top-header {
+  /* .aboutboo.vcomp.sticky > .top-header {
     background: white;
-  }
+  } */
 
   .aboutboo.vcomp > .top-header > .profile {
     width: var(--w-8);
@@ -123,34 +125,6 @@
     position: relative;
   }
 
-  .aboutboo.vcomp > .contents > .booposts-section {
-    position: relative;
-    width: 100%;
-    /* height: 100%; */
-  }
-
-  .aboutboo.vcomp > .contents > .booposts-section > .booposts {
-    position: relative;
-    /* minipost의 좌우여백을 동일하게 맞출수 없어서, booposts 자체의 너비를 여백만큼 줄였다
-    minipost.html에 가보면, 오른쪽 border=0 으로 한것을 알 수 있다. */
-    /* width: calc(100% - 1px); */
-    width: calc(100% - 3px);
-    /* height: 100%; */
-    display: flex;
-    flex-wrap: wrap;
-    /* overflow: hidden; */
-    /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
-    /* overflow-y: auto; */
-    /* -ms-overflow-style: none; /* IE 11 */
-    /* scrollbar-width: none; /* Firefox 64 */
-  }
-
-  .aboutboo.vcomp > .contents > .booposts-section > .booposts > .boopost {
-    position: relative;
-    width: 25%;
-    height: var(--w-50);
-  }
-
   .aboutboo.vcomp > .spinner {
     position: absolute;
     bottom: var(--w-33);
@@ -181,13 +155,10 @@
 
 
     <div class='contents'>
-      <div class='booposts-section'>
-        <transition-group name='show-booposts' tag='div' class='booposts'>
-          <div class='boopost' v-for='(post, idx) in postlist' :key='post_key(post)' @click='open_booposts(idx)'>
-            <minipost :post='post'></minipost>
-          </div>
-        </transition-group>
-      </div>
+      <postlibrary
+        :postlist='postlist'
+        @open_posts='open_posts($event)'
+      ></postlibrary>
     </div>
 
     <div class='top-header'>
@@ -275,24 +246,14 @@
     },
 
     methods: {
-      // newpost를 저장한 경우, post.id가 undefined 일 때가 있어서
-      // post_key를 따로 지정한다
-      post_key: function(post) {
-        if (post.id) {
-          return post.id
-        } else {
-          return new Date().toISOString()
-        }
+      open_posts: function(idx) {
+        this.session.open_booposts(this.boo.posts, idx);
       },
 
       open_boochooser: function() {
         if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
           this.session.open_boochooser();
         }
-      },
-
-      open_booposts: function(where) {
-        this.session.open_booposts(this.boo.posts, where);
       },
 
       toggle_follow: function() {

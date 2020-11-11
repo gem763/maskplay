@@ -3,6 +3,7 @@ class Session {
     this.page = {
       mypage:     { open: false, from: 'right' },
       loginpage:  { open: false, from: 'right' },
+      navigator:  { open: false, from: 'left' },
       boochooser: { open: false, from: 'left' },
       profiler:   { open: false, from: 'right', key: undefined },
       boopage:    { open: false, from: 'right', boo: undefined },
@@ -19,7 +20,7 @@ class Session {
     this.booposts = undefined;
 
     this.stats = undefined;
-    this.hammer = this.get_hammer();
+    // this.hammer = this.get_hammer();
 
     this.fetch_user();
   }
@@ -159,6 +160,10 @@ class Session {
     this.page.pixeditor.type = type;
     this.page.pixeditor.pixloader = pixloader;
     this.open_page('pixeditor');
+  }
+
+  open_navigator() {
+    this.open_page('navigator');
   }
 
   // open_network() {
@@ -349,7 +354,7 @@ class Baseposts extends ContentLoader {
 class Posts extends ContentLoader {
   constructor() {
     super();
-    this.nloads_init = 5;
+    this.nloads_init = 12;
     this.idlist_url = '/posts/iposts';
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();

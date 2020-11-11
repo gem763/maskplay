@@ -197,7 +197,7 @@
 
 
     <div class='menu-bottom' v-show='!modifying'>
-      <div class='discover'>
+      <div class='discover' @click='session.open_navigator()'>
         <img src='/static/materials/icons/button_m.png'>
       </div>
 
@@ -296,11 +296,16 @@
 
     mounted: function() {
       this.swiper = this.$refs.swiper.$swiper;
+      this.swiper.slideTo(this.open_at, 1, false);
     },
 
     watch: {
       open_at: function(_new, _old) {
-        this.swiper.slideTo(_new, 1, false);
+        // console.log(_new);
+        if (this.swiper) {
+          this.swiper.slideTo(_new, 1, false);  
+        }
+
         // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
         // this.$nextTick(function() {
         //   this.posts.open_at(_new);

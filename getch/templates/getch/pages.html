@@ -7,6 +7,7 @@
 {% include "getch/posting.html" %}
 {% include "getch/comments.html" %}
 {% include "getch/booposts.html" %}
+{% include "getch/navigator.html" %}
 {% include "getch/pixeditor.html" %}
 
 
@@ -29,6 +30,10 @@
       v-if='session.cnetwork.boo'
       :session='session'
     ></network> -->
+
+    <navigator
+      :session='session'
+    ></navigator>
 
     <boopage
       :session='session'

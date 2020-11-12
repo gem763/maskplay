@@ -425,7 +425,7 @@
   Vue.component('post', {
     template: '#post-template',
     delimiters: ['[[', ']]'],
-    props: ['post', 'session', 'type', 'mother'],
+    props: ['post', 'session', 'type'], //'mother'],
 
     data: function() {
       return {
@@ -451,9 +451,10 @@
       },
 
       swiper: function() {
-        if (this.mother) {
-          return this.mother.swiper
-        }
+        return this.session.page.posts.swiper
+        // if (this.mother) {
+        //   return this.mother.swiper
+        // }
       },
 
       post_type: function() {
@@ -624,7 +625,7 @@
       },
 
       toggle_vote: function(act) {
-        if (this.session.auth && !this.on_edit && (this.session.mode.on=='journey' || this.session.mode.on=='booposts')) {
+        if (this.session.auth && !this.on_edit && (this.session.mode.on=='posts' || this.session.mode.on=='booposts')) {
           if (this.vote_state==act) {
             this.rescore(act, -1);
             this.session.auth.vote(this.post.id, -1);
@@ -697,10 +698,14 @@
           let where = this.swiper.realIndex;
           this.swiper.slideTo(where-1);
 
-          if (this.session.posts) {
-            where = _.findIndex(this.session.posts.list, ['id', this.post.id]);
+          // if (this.session.posts) {
+          if (this.session.page.posts.contents) {
+            where = _.findIndex(this.session.page.posts.contents.list, ['id', this.post.id]);
+            // where = _.findIndex(this.session.posts.list, ['id', this.post.id]);
+
             if (where!=-1) {
-              this.session.posts.list.splice(where, 1);
+              this.session.page.posts.contents.list.splice(where, 1);
+              // this.session.posts.list.splice(where, 1);
             }
           }
 
@@ -799,16 +804,20 @@
         if (this.swiper) {
           const where = this.swiper.realIndex + 1;
 
-          if (this.session.mode.prev.on == 'journey' && this.session.posts) {
-            this.session.posts.list.splice(where, 0, post);
+          // if (this.session.mode.prev.on == 'journey' && this.session.posts) {
+          if (this.session.mode.prev.on == 'posts' && this.session.page.posts.contents) {
+            this.session.page.posts.contents.list.splice(where, 0, post);
+            // this.session.posts.list.splice(where, 0, post);
 
             if (this.post_boo.posts) {
               this.post_boo.posts.list.push(post);
             }
 
           } else if (this.session.mode.prev.on == 'booposts' && this.post_boo.posts) {
-            if (this.session.posts) {
-              this.session.posts.list.push(post);
+            // if (this.session.posts) {
+            if (this.session.page.posts.contents) {
+              this.session.page.posts.contents.list.push(post);
+              // this.session.posts.list.push(post);
             }
 
             this.post_boo.posts.list.splice(where, 0, post);

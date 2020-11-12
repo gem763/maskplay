@@ -33,6 +33,7 @@
     background: none;
     opacity: 0;
     transition: all 0.5s;
+    position: relative;
   }
 
   .aboutboo.vcomp.sticky > .top-header > .profile {
@@ -81,6 +82,7 @@
     height: var(--w-33);
     background: none;
     transition: all 0.5s;
+    position: relative;
   }
 
   .aboutboo.vcomp > .profiles > .profile > img {
@@ -90,6 +92,24 @@
     border-radius: 50%;
     border: 1px solid whitesmoke;
     box-sizing: border-box;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .editboo {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + var(--w-6));
+    width: var(--w-12);
+    height: var(--w-12);
+    transform: translateY(-50%);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .editboo > img {
+    width: var(--w-6);
+    height: var(--w-6);
   }
 
   .aboutboo.vcomp > .profiles > .nick {
@@ -141,6 +161,9 @@
     <div class='profiles' ref='profiles'>
       <div class='profile' @click='open_boochooser'>
         <img :src='profilepix'>
+        <div class='editboo' @click='session.open_profiler()'>
+          <img src='/static/materials/icons/edit.png'>
+        </div>
       </div>
 
       <div class='nick'>[[ nick ]]</div>
@@ -149,7 +172,7 @@
       <div class='tags'>
         <span class='tag'>어좁</span>
         <span class='tag'>학다리</span>
-        <span class='tag'>올챙이</span>
+        <span class='tag'>올챙이배</span>
       </div>
     </div>
 
@@ -195,7 +218,9 @@
 
         if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
           return this.boo.posts.list.map(post => {
-            const _post = _.find(this.session.posts.list, ['id', post.id]);
+            const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
+            // const _post = _.find(this.session.posts.list, ['id', post.id]);
+
             if (_post) {
               return _post;
             } else {
@@ -247,13 +272,21 @@
 
     methods: {
       open_posts: function(idx) {
-        this.session.open_booposts(this.boo.posts, idx);
+        this.session.booposts = this.boo.posts;
+
+        // this.$nextTick(() => {
+        //   this.session.page.booposts.swiper.slideTo(idx, 1, false);
+        //   this.session.open_booposts();
+        // })
+
+        this.session.page.booposts.swiper.slideTo(idx, 1, false);
+        this.session.open_booposts();
       },
 
       open_boochooser: function() {
-        if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
-          this.session.open_boochooser();
-        }
+        // if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
+        //   this.session.open_boochooser();
+        // }
       },
 
       toggle_follow: function() {

@@ -20,23 +20,23 @@
     justify-content: center;
   }
 
-  .navigator.vcomp > .top-header > .profile {
+  /* .navigator.vcomp > .top-header > .profile {
     width: var(--w-8);
     height: var(--w-8);
     background: none;
     opacity: 1;
     transition: all 0.5s;
-  }
+  } */
 
 
-  .navigator.vcomp > .top-header > .profile > img {
+  /* .navigator.vcomp > .top-header > .profile > img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     border-radius: 50%;
     border: 1px solid whitesmoke;
     box-sizing: border-box;
-  }
+  } */
 
 
   .navigator.vcomp > .top-header > .hamburger {
@@ -60,11 +60,13 @@
   .navigator.vcomp > .searcher {
     background: none;
     margin-top: var(--w-16);
-    height: 30%;
+    /* height: 30%; */
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    font-size: 12px;
+    padding: 10px;
   }
 
   .navigator.vcomp > .spinner {
@@ -74,31 +76,29 @@
     transform: translate(-50%, -50%);
   }
 
-  .navigator.vcomp > .searcher > .searchbar {
+  /* .navigator.vcomp > .searcher > .searchbar {
     position: relative;
     box-sizing: border-box;
     width: var(--w-90);
     height: var(--w-12);
     font-size: 15px;
     font-weight: bold;
-    /* text-align: center; */
     background: whitesmoke;
     padding: 5px;
-    /* padding-left: 15%; */
     border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+  } */
 
-  .navigator.vcomp > .searcher > .searchbar > img {
+  /* .navigator.vcomp > .searcher > .searchbar > img {
     position: absolute;
     top: 50%;
     left: 5%;
     width: var(--w-6);
     height: var(--w-6);
     transform: translateY(-50%);
-  }
+  } */
 
   .navigator.vcomp > .top-header > .searchbar {
     position: absolute;
@@ -117,7 +117,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
+    /* opacity: 0; */
     transition: all 0.5s;
   }
 
@@ -130,29 +130,28 @@
     transform: translateY(-50%);
   }
 
-  .navigator.vcomp.sticky > .top-header > .profile {
+  /* .navigator.vcomp.sticky > .top-header > .profile {
     opacity: 0;
   }
 
   .navigator.vcomp.sticky > .top-header > .searchbar {
     opacity: 1;
-  }
+  } */
 </style>
 
 <script type='text/x-template' id='navigator-template'>
   <page :open='session.page.navigator.open' :from='session.page.navigator.from' @close='session.close_page()'>
     <div class='navigator vcomp' @scroll='scroll' ref='navigator'>
       <div class='searcher'>
-        <!-- <div class='searchbar' placeholder='검색' ref='searchbar'> -->
-        <div class='searchbar' ref='searchbar'>
+        <!-- <div class='searchbar' ref='searchbar'>
           <img src='/static/materials/icons/search.png'>
-        </div>
+        </div> -->
+        인기 | 최신 | 맞춤
       </div>
 
       <div class='contents'>
         <postlibrary
           :postlist='postlist'
-          :onloading='session.posts.onloading'
           @open_posts='backto_posts($event)'
         ></postlibrary>
       </div>
@@ -162,9 +161,9 @@
           <img src='/static/materials/icons/button_e.png'>
         </div>
 
-        <div class='profile'>
+        <!-- <div class='profile'>
           <img :src='profilepix'>
-        </div>
+        </div> -->
 
         <!-- <div class='searchbar' placeholder='검색'> -->
         <div class='searchbar'>
@@ -172,7 +171,7 @@
         </div>
       </div>
 
-      <scale-loader class='spinner' :loading='session.posts.onloading'></scale-loader>
+      <!-- <scale-loader class='spinner' :loading='session.posts.onloading'></scale-loader> -->
     </div>
   </page>
 </script>
@@ -189,7 +188,8 @@
 
     computed: {
       postlist: function() {
-        return this.session.posts.list
+        return this.session.page.posts.contents.list
+        // return this.session.posts.list
       },
 
       profilepix: function() {
@@ -201,32 +201,35 @@
 
     methods: {
       backto_posts: function(idx) {
-        this.session.posts_open_at = idx;
+        // this.session.posts_open_at = idx;
+        this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_page();
-        // console.log(idx);
-        // this.session.open_booposts(this.boo.posts, idx);
       },
 
       scroll: function() {
         const h0 = this.$el.clientHeight;
         const h1 = this.$refs.navigator.scrollHeight;
         const scrollTop = this.$refs.navigator.scrollTop;
-        const nload = 8 + (this.session.posts.list.length % 4);
+        const nload = 12 + (this.session.page.posts.contents.list.length % 4);
+        // const nload = 12 + (this.session.posts.list.length % 4);
 
         const gap = h1 - scrollTop - h0;
-
-        if (gap == 100) {
-          this.session.posts.load(nload);
+        // console.log(gap);
+        // if (gap == 100) {
+        // if ((gap < h0/2) && (!this.session.posts.onloading)) {
+        if ((gap < h0/2) && (!this.session.page.posts.contents.onloading)) {
+          this.session.page.posts.contents.load(nload);
+          // this.session.posts.load(nload);
         }
 
-        const sticky = this.$refs.searchbar.offsetTop;
-
-        if (scrollTop > sticky) {
-          this.$refs.navigator.classList.add("sticky");
-
-        } else {
-          this.$refs.navigator.classList.remove("sticky");
-        }
+        // const sticky = this.$refs.searchbar.offsetTop;
+        //
+        // if (scrollTop > sticky) {
+        //   this.$refs.navigator.classList.add("sticky");
+        //
+        // } else {
+        //   this.$refs.navigator.classList.remove("sticky");
+        // }
       },
 
       pop_navigator_menu: function() {

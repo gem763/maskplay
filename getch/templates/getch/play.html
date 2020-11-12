@@ -51,8 +51,9 @@
       --w-52: calc(var(--width-unit) * 52);
       --w-60: calc(var(--width-unit) * 60);
       --w-70: calc(var(--width-unit) * 70);
-      --w-90: calc(var(--width-unit) * 90);
+      --w-80: calc(var(--width-unit) * 80);
       --w-88: calc(var(--width-unit) * 88);
+      --w-90: calc(var(--width-unit) * 90);
 
       --t-0: 100vw;
       --t-1: calc(var(--t-0) * 352 / 572);
@@ -83,17 +84,6 @@
       margin: auto;
       box-shadow: 0 0 10px 1px rgba(0,0,0,0.5);
     }
-
-    /* #window .border {
-      position: absolute;
-      top: 0;
-      left: 0;
-      background: none;
-      width: 100%;
-      height: 100%;
-      box-sizing: border-box;
-      pointer-events: none;
-    } */
   </style>
 </head>
 
@@ -102,10 +92,10 @@
   <div id='window'>
     <posts :session='session'></posts>
     <pages :session='session'></pages>
-    <!-- <div class='border'></div> -->
+    <controller :session='session'></controller>
 
     <!-- <modal :pop='true' name='intro'></modal> -->
-    <modal :pop='session.posts.list.length==0' name='intro'></modal>
+    <modal :pop='session.page.posts.contents.list.length==0' name='intro'></modal>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -145,6 +135,7 @@
   {% include "getch/oxer.html" %}
   {% include "getch/oxcard.html" %}
   {% include "getch/scorebutton.html" %}
+  {% include "getch/controller.html" %}
 
 
 

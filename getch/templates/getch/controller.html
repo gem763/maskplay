@@ -1,0 +1,110 @@
+<style>
+  .controller.vcomp {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: calc(var(--width-unit) * 12);
+    /* background: rgba(255,255,255,0.6); */
+    background: white;
+    transition: all 0.2s;
+  }
+
+  .controller.vcomp.semi-trans {
+    background: rgba(255,255,255,0.6);
+  }
+
+  .controller.vcomp.hidden {
+    opacity: 0;
+  }
+
+  .controller.vcomp > .btn {
+    position: absolute;
+    top: 50%;
+    height: calc(var(--width-unit) * 12);
+    width: calc(var(--width-unit) * 12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .controller.vcomp > ._m {
+    left: calc(var(--width-unit) * 3);
+    transform: translate(0,-50%);
+  }
+
+  .controller.vcomp > ._oi {
+    left: calc(var(--width-unit) * 29.5);
+    transform: translate(-50%,-50%);
+    opacity: 0.1;
+  }
+
+  .controller.vcomp > ._b {
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .controller.vcomp > ._e {
+    right: calc(var(--width-unit) * 29.5);
+    transform: translate(50%,-50%);
+    opacity: 0.1;
+  }
+
+  .controller.vcomp > ._r {
+    right: calc(var(--width-unit) * 3);
+    transform: translate(0,-50%);
+  }
+
+  .controller.vcomp > .btn > img {
+    width: auto;
+    height: calc(var(--width-unit) * 6);
+    object-fit: contain;
+  }
+</style>
+
+<script type='text/x-template' id='controller-template'>
+  <div class='controller vcomp' :class='controller_class'>
+    <div class='_m btn' @click='session.open_navigator()'>
+      <img src='/static/materials/icons/button_m.png'>
+    </div>
+
+    <div class='_oi btn'>
+      <img src='/static/materials/icons/button_oi.png'>
+    </div>
+
+    <div class='_b btn' @click='session.open_mypage()'>
+      <img src='/static/materials/icons/button_b_profile.png'>
+    </div>
+
+    <div class='_e btn'>
+      <img src='/static/materials/icons/button_e.png'>
+    </div>
+
+    <div class='_r btn' @click='session.open_posting()'>
+      <img src='/static/materials/icons/button_r.png'>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('controller', {
+    template: '#controller-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      controller_class: function() {
+        if (this.session.mode.on=='posts' || this.session.mode.on=='booposts') {
+          return 'semi-trans'
+
+        } else if (this.session.mode.on=='posting') {
+          return 'hidden'
+        }
+      }
+    }
+  });
+</script>

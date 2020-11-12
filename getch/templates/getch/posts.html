@@ -7,7 +7,9 @@
 
 <script type='text/x-template' id='posts-template'>
   <div class='posts vcomp'>
-    <baseposts :session='session' :postlist='postlist' :posts='session.posts' :open_at='session.posts_open_at'></baseposts>
+    <baseposts :session='session' :postlist='postlist' :posts='session.page.posts.contents' ref='baseposts'></baseposts>
+    <!-- <baseposts :session='session' :postlist='postlist' :posts='session.page.posts.contents' :open_at='session.posts_open_at' ref='baseposts'></baseposts> -->
+    <!-- <baseposts :session='session' :postlist='postlist' :posts='session.posts' :open_at='session.posts_open_at'></baseposts> -->
   </div>
 </script>
 
@@ -21,21 +23,28 @@
       return {}
     },
 
+    mounted: function() {
+      this.session.page.posts.swiper = this.$refs.baseposts.swiper;
+    },
+
     computed: {
       postlist: function() {
-        if (!this.session.posts) {
+        // if (!this.session.posts) {
+        if (!this.session.page.posts.contents) {
           return []
         }
 
         if (this.session.auth) {
-          this.session.posts.list.forEach(post => {
+          // this.session.posts.list.forEach(post => {
+          this.session.page.posts.contents.list.forEach(post => {
             if (this.session.auth.boo.id==post.boo.id) {
               post.boo = this.session.auth.boo;
             }
           });
         }
 
-        return this.session.posts.list
+        // return this.session.posts.list
+        return this.session.page.posts.contents.list
       }
     }
   });

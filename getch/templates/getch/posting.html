@@ -7,11 +7,13 @@
     ></modal>
 
     <page :open='postvoteab' :from='session.page.posting.from' @close='session.close_page()'>
-      <post type='postvoteab' :session='session' :mother='session.page.posting.mother'></post>
+      <post type='postvoteab' :session='session'></post>
+      <!-- <post type='postvoteab' :session='session' :mother='session.page.posting.mother'></post> -->
     </page>
 
     <page :open='postvoteox' :from='session.page.posting.from' @close='session.close_page()'>
-      <post type='postvoteox' :session='session' :mother='session.page.posting.mother'></post>
+      <post type='postvoteox' :session='session'></post>
+      <!-- <post type='postvoteox' :session='session' :mother='session.page.posting.mother'></post> -->
     </page>
   </div>
 </script>

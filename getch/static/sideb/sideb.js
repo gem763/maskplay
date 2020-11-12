@@ -1,22 +1,23 @@
 class Session {
   constructor() {
     this.page = {
-      mypage:     { open: false, from: 'right' },
+      posts:      { contents: new Posts(), swiper: undefined },
+      mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'right' },
       navigator:  { open: false, from: 'left' },
       boochooser: { open: false, from: 'left' },
       profiler:   { open: false, from: 'right', key: undefined },
-      boopage:    { open: false, from: 'right', boo: undefined },
+      boopage:    { open: false, from: 'left', boo: undefined },
       network:    { open: false, from: 'right' },
       posting:    { open: false, from: 'right', mother: undefined },
       comments:   { open: false, from: 'right', post: undefined },
-      booposts:   { open: false, from: 'right', open_at: 0 },
+      booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
     };
 
-    this.mode = { on: 'journey', order: 0, prev: undefined };
+    this.mode = { on: 'posts', order: 0, prev: undefined };
     this.auth = undefined;
-    this.posts = new Posts();
+    // this.posts = new Posts();
     this.posts_open_at = 0;
     this.booposts = undefined;
 
@@ -39,41 +40,41 @@ class Session {
   }
 
 
-  get_hammer() {
-    const self = this;
-    const hammer = new Hammer(document);
-
-    function getStartX(e) {
-      const delta_x = e.deltaX;
-      const final_x = e.srcEvent.pageX || e.srcEvent.screenX || 0;
-      const canvas_w = document.querySelector('#window').offsetWidth;
-      return (final_x - delta_x) / canvas_w;
-    }
-
-    hammer.on('swiperight swipeleft', function (e) {
-      e.preventDefault();
-      const x = getStartX(e);
-
-      if (self.mode.on == 'journey') {
-        if (e.type=='swiperight') {
-          self.open_boochooser();
-
-        } else if (e.type=='swipeleft') {
-          self.open_boopage(self.cpost.boo);
-        }
-
-      } else {
-        if (e.type=='swiperight' && self.page[self.mode.on].from=='right') {
-          self.close_page();
-
-        } else if (e.type=='swipeleft' && self.page[self.mode.on].from=='left') {
-          self.close_page();
-        }
-      }
-    });
-
-    return hammer
-  }
+  // get_hammer() {
+  //   const self = this;
+  //   const hammer = new Hammer(document);
+  //
+  //   function getStartX(e) {
+  //     const delta_x = e.deltaX;
+  //     const final_x = e.srcEvent.pageX || e.srcEvent.screenX || 0;
+  //     const canvas_w = document.querySelector('#window').offsetWidth;
+  //     return (final_x - delta_x) / canvas_w;
+  //   }
+  //
+  //   hammer.on('swiperight swipeleft', function (e) {
+  //     e.preventDefault();
+  //     const x = getStartX(e);
+  //
+  //     if (self.mode.on == 'journey') {
+  //       if (e.type=='swiperight') {
+  //         self.open_boochooser();
+  //
+  //       } else if (e.type=='swipeleft') {
+  //         self.open_boopage(self.cpost.boo);
+  //       }
+  //
+  //     } else {
+  //       if (e.type=='swiperight' && self.page[self.mode.on].from=='right') {
+  //         self.close_page();
+  //
+  //       } else if (e.type=='swipeleft' && self.page[self.mode.on].from=='left') {
+  //         self.close_page();
+  //       }
+  //     }
+  //   });
+  //
+  //   return hammer
+  // }
 
   close_page() {
     this.page[this.mode.on].open = false;
@@ -81,7 +82,7 @@ class Session {
   }
 
   close_pages_all() {
-    while (this.mode.on!='journey') {
+    while (this.mode.on!='posts') {
       this.close_page();
     }
   }
@@ -123,20 +124,32 @@ class Session {
     this.open_page('comments');
   }
 
-  open_booposts(posts, where) {
-    this.booposts = posts;
-    this.page.booposts.open_at = where;
+  // open_booposts(posts, where) {
+  open_booposts() {
+    // this.booposts = posts;
+    // this.page.booposts.open_at = where;
+    // this.page.booposts.swiper.slideTo(where, 1, false);
     this.open_page('booposts');
   }
 
-  open_posting(mother) {
+  open_posting() {
     if (this.auth) {
-      this.page.posting.mother = mother;
+      // this.page.posting.mother = mother;
+      this.close_pages_all();
       this.open_page('posting');
     } else {
       this.open_loginpage();
     }
   }
+
+  // open_posting(mother) {
+  //   if (this.auth) {
+  //     this.page.posting.mother = mother;
+  //     this.open_page('posting');
+  //   } else {
+  //     this.open_loginpage();
+  //   }
+  // }
 
 
   open_boopage(boo) {
@@ -356,7 +369,7 @@ class Baseposts extends ContentLoader {
 class Posts extends ContentLoader {
   constructor() {
     super();
-    this.nloads_init = 12;
+    this.nloads_init = 20;
     this.idlist_url = '/posts/iposts';
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();

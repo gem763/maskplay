@@ -122,17 +122,22 @@
     font-size: 12px;
   }
 
-  .aboutboo.vcomp > .profiles > .tags {
+  .aboutboo.vcomp > .profiles > .styletags {
     margin-top: 10px;
-    /* margin-bottom: 5px; */
+    width: var(--w-80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap
   }
 
-  .aboutboo.vcomp > .profiles > .tags > .tag {
+  .aboutboo.vcomp > .profiles > .styletags > .tag {
     font-size: 11px;
     background: var(--color-dark);
     color: white;
     padding: 5px;
     border-radius: 20px;
+    margin: 2px;
   }
 
   .aboutboo.vcomp.sticky > .profiles > .profile {
@@ -161,7 +166,7 @@
     <div class='profiles' ref='profiles'>
       <div class='profile' @click='open_boochooser'>
         <img :src='profilepix'>
-        <div class='editboo' @click='session.open_profiler()'>
+        <div class='editboo' @click='session.open_profiler()' v-if='is_myboo'>
           <img src='/static/materials/icons/edit.png'>
         </div>
       </div>
@@ -169,10 +174,8 @@
       <div class='nick'>[[ nick ]]</div>
       <div class='text'>[[ text ]]</div>
 
-      <div class='tags'>
-        <span class='tag'>어좁</span>
-        <span class='tag'>학다리</span>
-        <span class='tag'>올챙이배</span>
+      <div class='styletags'>
+        <span class='tag' v-for='t in boo.styletags'>[[ session.styletags[t] ]]</span>
       </div>
     </div>
 
@@ -203,10 +206,18 @@
   Vue.component('aboutboo', {
     template: '#aboutboo-template',
     delimiters: ['[[', ']]'],
-    props: ['boo', 'session'],
+    props: ['boo', 'session', 'open'],
     data: function() {
       return {
         on_booloading: false,
+      }
+    },
+
+    watch: {
+      open: function(_new, _old) {
+        if (_new) {
+          this.$refs.profiles.scrollIntoView({behavior: 'auto', block: 'end', inline: 'nearest'});
+        }
       }
     },
 
@@ -256,6 +267,10 @@
       nick: function() {
         return this.boo.nick
       },
+
+      is_myboo: function() {
+        return (this.session.auth && this.session.auth.boo.id==this.boo.id)
+      }
 
       // is_following: function() {
       //   return this.type=='author' && this.session.auth.is_following(this.boo.id)

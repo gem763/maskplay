@@ -52,9 +52,9 @@
     text-align: left;
     background: rgba(255,255,255,0.6);
     /* background: orange; */
-    padding-left: var(--w-18);
-    padding-top: var(--w-2);
-    padding-bottom: var(--w-2);
+    padding-left: var(--w-16);
+    padding-top: var(--w-4);
+    padding-bottom: var(--w-4);
     padding-right: var(--w-32);
   }
 
@@ -217,12 +217,23 @@
     opacity: 0;
   }
 
+
+  .post > .description > .styletags {
+    margin-top: 10px;
+    margin-bottom:5px;
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    flex-wrap: wrap
+  }
+
   .post span.tag {
     font-size: 11px;
     background: var(--color-dark);
     color: white;
     padding: 5px;
     border-radius: 20px;
+    margin: 2px;
   }
 
 
@@ -366,10 +377,12 @@
       <!-- <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' freeze='true' type='in-post'></editext> -->
       <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post' :freeze='!on_edit' :squeeze='squeezed'></editext>
 
-      <div v-show='!squeezed' style='margin-top: 10px;margin-bottom:5px;'>
-        <span class='tag'>어좁</span>
+      <div class='styletags' v-show='!squeezed'>
+        <!-- <span class='tag'>어좁</span>
         <span class='tag'>학다리</span>
-        <span class='tag'>올챙이</span>
+        <span class='tag'>올챙이</span> -->
+
+        <span class='tag' v-for='t in post_boo_styletags'>[[ session.styletags[t] ]]</span>
       </div>
     </div>
 
@@ -512,6 +525,10 @@
 
       post_boo_nick: function() {
         return this.post_boo.nick
+      },
+
+      post_boo_styletags: function() {
+        return this.post_boo.styletags
       },
 
       post_text: function() {

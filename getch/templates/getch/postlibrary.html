@@ -28,23 +28,33 @@
     height: var(--w-50);
   }
 
-  .postlibrary.vcomp .show-posts-enter-active {
-    transition: all 1s;
+  /* .show-posts-enter-active,
+  .show-posts-leave-active {
+    transition: all 3s;
   }
 
-  .postlibrary.vcomp .show-posts-enter,
-  .postlibrary.vcomp .show-posts-leave-to {
+  .show-posts-enter,
+  .show-posts-leave-to {
     opacity: 0;
   }
+
+  .show-posts-move {
+    transition: all 3s;
+  } */
 </style>
 
 <script type='text/x-template' id='postlibrary-template'>
-  <transition-group name='show-posts' tag='div' class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
-    <!-- <div class='post' v-for='(post, idx) in postlist' :key='post_key(post)' @click='open_booposts(idx, post)'> -->
+  <div class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
     <div class='post' v-for='(post, idx) in postlist' :key='post_key(post)' @click='$emit("open_posts", idx)'>
       <minipost :post='post'></minipost>
     </div>
-  </transition-group>
+  </div>
+
+  <!-- <transition-group name='show-posts' tag='div' class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
+    <div class='post' v-for='(post, idx) in postlist' :key='post_key(post)' @click='$emit("open_posts", idx)'>
+      <minipost :post='post'></minipost>
+    </div>
+  </transition-group> -->
 </script>
 
 

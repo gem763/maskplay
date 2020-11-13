@@ -77,7 +77,7 @@
 
 <script type='text/x-template' id='profiler-template'>
   <page :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
-    <div class='profiler vcomp'>
+    <div class='profiler vcomp' v-if='boo'>
 
       <div class='profiles' ref='profiles'>
         <div class='profile'>
@@ -88,7 +88,7 @@
         <div class='text'>[[ text ]]</div>
 
         <div class='tags'>
-          <span class='tag' v-for='t in tags_univ' :class='tag_class(t)' @click='toggle_tag(t)'>[[t]]</span>
+          <span class='tag' v-for='(val, key) in session.styletags' :class='tag_class(Number(key))' @click='toggle_tag(Number(key))'>[[val]]</span>
         </div>
       </div>
 
@@ -103,18 +103,12 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return {
-        my_tags: ['어좁','학다리','올챙이배']
-      }
+      return { }
     },
 
-    // watch: {
-    //   my_tags: function(_new, _old) {}
-    // },
-
     methods: {
-      tag_class: function(t) {
-        if (this.my_tags.includes(t)) {
+      tag_class: function(key) {
+        if (this.mytags.includes(key)) {
           return 'selected'
 
         } else {
@@ -122,19 +116,26 @@
         }
       },
 
-      toggle_tag: function(t) {
-        if (this.my_tags.includes(t)) {
-          const idx = this.my_tags.indexOf(t);
+      toggle_tag: function(key) {
+        if (this.mytags.includes(key)) {
+          const idx = this.mytags.indexOf(key);
 
           if (idx !== -1) {
-            this.my_tags.splice(idx, 1);
+            this.styletags_fetch(`/styletags/untag/${key}`);
+            this.mytags.splice(idx, 1);
           }
 
         } else {
-          this.my_tags.push(t);
+          this.styletags_fetch(`/styletags/tag/${key}`);
+          this.mytags.push(key);
         }
+      },
+
+      styletags_fetch: function(url) {
+        fetch(url).then(x => x.json()).then(console.log);
       }
     },
+
 
     computed: {
       boo: function() {
@@ -153,14 +154,9 @@
         return this.boo.nick
       },
 
-      tags_univ: function() {
-        const _tags = '키작남 키작녀 키큰녀 어깡 어좁 모래시계형 일자형 역삼각형 삼각형 원형 통통코디 뚱뚱코디 헬창 마루치 대두 휜다리 학다리 하비 상비 웰시코기 허벅돼 올챙이배 알부자 숏다리 각진얼굴 역삼각형얼 긴얼굴';
-        return _tags.split(' ')
-      },
-
-      // my_tags: function() {
-      //   return ['어좁','학다리','올챙이배']
-      // }
+      mytags: function() {
+        return this.boo.styletags
+      }
     }
   });
 </script>

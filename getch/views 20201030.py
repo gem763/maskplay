@@ -27,8 +27,6 @@ eyemasks = {mb.id:{'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBas
 mouthmasks = {mb.id:{'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.filter(type='MOUTH')}
 # maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
-styletags = {t.id:t.tag for t in m.Styletag.objects.all()}
-
 stats = {
     'total_nboos': m.Boo.objects.count(),
     'total_nposts': m.Post.objects.count(),
@@ -51,9 +49,7 @@ def play(request):
     # ctx = {'posts': json.dumps(_posts), 'characters':characters, 'maskbases':maskbases, 'stats':stats}
     # ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
     # print(characters)
-    # ctx = {'characters':characters, 'eyemasks':eyemasks, 'mouthmasks':mouthmasks, 'stats':stats}
-    ctx = {'stats':stats, 'styletags':styletags}
-    # print(styletags)
+    ctx = {'characters':characters, 'eyemasks':eyemasks, 'mouthmasks':mouthmasks, 'stats':stats}
     return render(request, 'getch/play.html', ctx)
 
 
@@ -120,26 +116,6 @@ def get_voter(request, boo_id):
 
 def other_boos(request):
     return JsonResponse({'success':True, 'other_boos':request.user.other_boos}, safe=False)
-
-
-def styletags_tag(request, tag_id):
-    try:
-        _tag = m.Styletag.objects.get(pk=tag_id)
-        request.user.boo.styletags.add(_tag)
-        return JsonResponse({'success':True, 'message':'styletag tagged successfully'}, safe=False)
-
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while tagging styletag'}, safe=False)
-
-
-def styletags_untag(request, tag_id):
-    try:
-        _tag = m.Styletag.objects.get(pk=tag_id)
-        request.user.boo.styletags.remove(_tag)
-        return JsonResponse({'success':True, 'message':'styletag untagged successfully'}, safe=False)
-
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while untagging styletag'}, safe=False)
 
 
 def vote(request, post_id):

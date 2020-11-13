@@ -20,23 +20,21 @@
     justify-content: center;
   }
 
-  /* .navigator.vcomp > .top-header > .profile {
-    width: var(--w-8);
-    height: var(--w-8);
-    background: none;
-    opacity: 1;
-    transition: all 0.5s;
-  } */
-
-
-  /* .navigator.vcomp > .top-header > .profile > img {
-    width: 100%;
+  .navigator.vcomp > .top-header > .logo {
     height: 100%;
-    object-fit: contain;
-    border-radius: 50%;
-    border: 1px solid whitesmoke;
-    box-sizing: border-box;
-  } */
+    background: none;
+    opacity: 0;
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .navigator.vcomp > .top-header > .logo > img {
+    height: var(--w-6);
+    width: auto;
+  }
 
 
   .navigator.vcomp > .top-header > .hamburger {
@@ -76,30 +74,6 @@
     transform: translate(-50%, -50%);
   }
 
-  /* .navigator.vcomp > .searcher > .searchbar {
-    position: relative;
-    box-sizing: border-box;
-    width: var(--w-90);
-    height: var(--w-12);
-    font-size: 15px;
-    font-weight: bold;
-    background: whitesmoke;
-    padding: 5px;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  } */
-
-  /* .navigator.vcomp > .searcher > .searchbar > img {
-    position: absolute;
-    top: 50%;
-    left: 5%;
-    width: var(--w-6);
-    height: var(--w-6);
-    transform: translateY(-50%);
-  } */
-
   .navigator.vcomp > .top-header > .searchbar {
     position: absolute;
     box-sizing: border-box;
@@ -112,12 +86,11 @@
     font-weight: bold;
     background: whitesmoke;
     padding: 5px;
-    /* padding-left: 15%; */
     border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* opacity: 0; */
+    opacity: 1;
     transition: all 0.5s;
   }
 
@@ -130,22 +103,19 @@
     transform: translateY(-50%);
   }
 
-  /* .navigator.vcomp.sticky > .top-header > .profile {
-    opacity: 0;
+  .navigator.vcomp.sticky > .top-header > .logo {
+    opacity: 1;
   }
 
   .navigator.vcomp.sticky > .top-header > .searchbar {
-    opacity: 1;
-  } */
+    opacity: 0;
+  }
 </style>
 
 <script type='text/x-template' id='navigator-template'>
   <page :open='session.page.navigator.open' :from='session.page.navigator.from' @close='session.close_page()'>
     <div class='navigator vcomp' @scroll='scroll' ref='navigator'>
-      <div class='searcher'>
-        <!-- <div class='searchbar' ref='searchbar'>
-          <img src='/static/materials/icons/search.png'>
-        </div> -->
+      <div class='searcher' ref='searcher'>
         인기 | 최신 | 맞춤
       </div>
 
@@ -156,22 +126,20 @@
         ></postlibrary>
       </div>
 
-      <div class='top-header'>
+      <div class='top-header' @click='upmost'>
         <div class='hamburger' @click='pop_navigator_menu'>
           <img src='/static/materials/icons/button_e.png'>
         </div>
 
-        <!-- <div class='profile'>
-          <img :src='profilepix'>
-        </div> -->
-
-        <!-- <div class='searchbar' placeholder='검색'> -->
         <div class='searchbar'>
           <img src='/static/materials/icons/search.png'>
         </div>
+
+        <div class='logo'>
+          <img src='/static/materials/logos/moiber-logo.png'>
+        </div>
       </div>
 
-      <!-- <scale-loader class='spinner' :loading='session.posts.onloading'></scale-loader> -->
     </div>
   </page>
 </script>
@@ -189,7 +157,6 @@
     computed: {
       postlist: function() {
         return this.session.page.posts.contents.list
-        // return this.session.posts.list
       },
 
       profilepix: function() {
@@ -201,7 +168,6 @@
 
     methods: {
       backto_posts: function(idx) {
-        // this.session.posts_open_at = idx;
         this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_page();
       },
@@ -210,30 +176,30 @@
         const h0 = this.$el.clientHeight;
         const h1 = this.$refs.navigator.scrollHeight;
         const scrollTop = this.$refs.navigator.scrollTop;
-        const nload = 12 + (this.session.page.posts.contents.list.length % 4);
-        // const nload = 12 + (this.session.posts.list.length % 4);
+        const nload = 16 + (this.session.page.posts.contents.list.length % 4);
 
         const gap = h1 - scrollTop - h0;
-        // console.log(gap);
-        // if (gap == 100) {
-        // if ((gap < h0/2) && (!this.session.posts.onloading)) {
         if ((gap < h0/2) && (!this.session.page.posts.contents.onloading)) {
           this.session.page.posts.contents.load(nload);
-          // this.session.posts.load(nload);
         }
 
-        // const sticky = this.$refs.searchbar.offsetTop;
-        //
-        // if (scrollTop > sticky) {
-        //   this.$refs.navigator.classList.add("sticky");
-        //
-        // } else {
-        //   this.$refs.navigator.classList.remove("sticky");
-        // }
+        const sticky = this.$refs.searcher.offsetTop + this.$refs.searcher.clientHeight;
+
+        if (scrollTop > sticky) {
+          this.$refs.navigator.classList.add("sticky");
+
+        } else {
+          this.$refs.navigator.classList.remove("sticky");
+        }
       },
 
       pop_navigator_menu: function() {
         alert('navigator menu');
+      },
+
+      upmost: function() {
+        // console.log(1111)
+        this.$refs.searcher.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
       }
     }
   });

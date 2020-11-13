@@ -32,6 +32,13 @@ class Flager(FlagBase):
     user = models.ForeignKey('Boo', related_name='%(class)s_users', verbose_name='Boo', on_delete=models.CASCADE)
 
 
+class Styletag(BigIdAbstract):
+    tag = models.CharField(max_length=20, null=False, blank=False)
+
+    def __str__(self):
+        return self.tag
+
+
 class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
 
@@ -120,6 +127,7 @@ def _characterpix_path(instance, fname):
     fmt = 'character/{category}/{fname}'
     return fmt.format(fname=fname, category=instance.category)
 
+
 class Character(BigIdAbstract):
     category = models.CharField(max_length=50, null=False, blank=False, default='base')
     pix = models.ImageField(upload_to=_characterpix_path, max_length=500, null=False, blank=False)
@@ -185,6 +193,8 @@ class Boo(BigIdAbstract, ModelWithFlag):
     profile = models.OneToOneField(Profile, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
     key = models.IntegerField(default=0)
+
+    styletags = models.ManyToManyField(Styletag, blank=True)
 
     nposts = models.IntegerField(default=0)
     nfollowers = models.IntegerField(default=0)
@@ -282,6 +292,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
     #     return Post.objects.filter(boo=self).count()
 
 
+
 class Post(BigIdAbstract, ModelWithFlag):
     boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
     text = models.TextField(max_length=500, blank=True, null=True)
@@ -358,7 +369,7 @@ class Post(BigIdAbstract, ModelWithFlag):
 
     @property
     def ncomments(self):
-        return self.comment_set.count()
+        return self.comment_set.filter(boo__isnull=False).count()
 
 
 def _postpix_path(instance, fname):
@@ -457,18 +468,28 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
+# class StyletagSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Styletag
+#         fields = ['id', 'tag']
+
+
 # https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
 class BasebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
+    styletags = serializers.SerializerMethodField()
+    # styletags = StyletagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'styletags']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
 
+    def get_styletags(self, obj):
+        return list(obj.styletags.values_list('id', flat=True))
 
 
 # class BasebooSerializer(serializers.ModelSerializer):
@@ -486,11 +507,15 @@ class BasebooSerializer(serializers.ModelSerializer):
 
 class BooSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
+    styletags = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts']#, 'iposts']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts', 'styletags']#, 'iposts']
         read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'nposts']
+
+    def get_styletags(self, obj):
+        return list(obj.styletags.values_list('id', flat=True))
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)

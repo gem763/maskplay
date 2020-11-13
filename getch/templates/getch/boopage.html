@@ -1,6 +1,6 @@
 <script type='text/x-template' id='boopage-template'>
   <page class='boopage vcomp' :open='session.page.boopage.open' :from='session.page.boopage.from' @close='session.close_page()'>
-    <aboutboo v-if='boo' :boo='boo' :session='session' type='boo'></aboutboo>
+    <aboutboo v-if='boo' :boo='boo' :session='session' type='boo' :open='session.page.boopage.open'></aboutboo>
   </page>
 </script>
 

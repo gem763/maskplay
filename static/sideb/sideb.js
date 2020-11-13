@@ -22,6 +22,7 @@ class Session {
     this.booposts = undefined;
 
     this.stats = undefined;
+    this.styletags = undefined;
     // this.hammer = this.get_hammer();
 
     this.fetch_user();
@@ -369,7 +370,7 @@ class Baseposts extends ContentLoader {
 class Posts extends ContentLoader {
   constructor() {
     super();
-    this.nloads_init = 20;
+    this.nloads_init = 24;
     this.idlist_url = '/posts/iposts';
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();

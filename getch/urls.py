@@ -40,4 +40,6 @@ urlpatterns = [
     path('user/', v.get_user, name='get_user'),
     path('user/other_boos/', v.other_boos, name='other_boos'),
 
+    path('styletags/tag/<int:tag_id>', v.styletags_tag, name='styletags_tag'),
+    path('styletags/untag/<int:tag_id>', v.styletags_untag, name='styletags_untag'),
 ]

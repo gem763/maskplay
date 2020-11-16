@@ -68,10 +68,8 @@
   }
 
   .navigator.vcomp > .spinner {
-    position: absolute;
-    bottom: var(--w-33);
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: fixed;
+    bottom: var(--w-12);
   }
 
   .navigator.vcomp > .top-header > .searchbar {
@@ -140,6 +138,7 @@
         </div>
       </div>
 
+      <bar-loader class='spinner' :loading='session.page.posts.contents.onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
     </div>
   </page>
 </script>
@@ -164,6 +163,10 @@
           return this.session.auth.boo.profile.pix
         }
       },
+
+      loader_width: function() {
+        return document.querySelector('#window').clientWidth
+      }
     },
 
     methods: {

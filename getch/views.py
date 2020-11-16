@@ -28,6 +28,7 @@ mouthmasks = {mb.id:{'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskB
 # maskbases = {mb.id:{'type':mb.type, 'category':mb.category, 'pix':mb.pix.url} for mb in m.MaskBase.objects.all()}
 
 styletags = {t.id:t.tag for t in m.Styletag.objects.all()}
+fashiontems = {t.id:t.item for t in m.Fashiontem.objects.all()}
 
 stats = {
     'total_nboos': m.Boo.objects.count(),
@@ -52,7 +53,7 @@ def play(request):
     # ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
     # print(characters)
     # ctx = {'characters':characters, 'eyemasks':eyemasks, 'mouthmasks':mouthmasks, 'stats':stats}
-    ctx = {'stats':stats, 'styletags':styletags}
+    ctx = {'stats':stats, 'styletags':styletags, 'fashiontems':fashiontems}
     # print(styletags)
     return render(request, 'getch/play.html', ctx)
 
@@ -140,6 +141,26 @@ def styletags_untag(request, tag_id):
 
     except:
         return JsonResponse({'success':False, 'message':'something wrong while untagging styletag'}, safe=False)
+
+
+def fashiontems_tag(request, item_id):
+    try:
+        _item = m.Fashiontem.objects.get(pk=item_id)
+        request.user.boo.fashiontems.add(_item)
+        return JsonResponse({'success':True, 'message':'fashiontems tagged successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while tagging fashiontem'}, safe=False)
+
+
+def fashiontems_untag(request, item_id):
+    try:
+        _item = m.Fashiontem.objects.get(pk=item_id)
+        request.user.boo.fashiontems.remove(_item)
+        return JsonResponse({'success':True, 'message':'fashiontem untagged successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while untagging fashiontem'}, safe=False)
 
 
 def vote(request, post_id):

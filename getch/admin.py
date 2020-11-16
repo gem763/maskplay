@@ -109,3 +109,8 @@ class BooAdmin(admin.ModelAdmin):
 @admin.register(m.Styletag)
 class StyletagAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(m.Fashiontem)
+class FashiontemAdmin(admin.ModelAdmin):
+    pass

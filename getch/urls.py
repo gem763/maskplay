@@ -42,4 +42,7 @@ urlpatterns = [
 
     path('styletags/tag/<int:tag_id>', v.styletags_tag, name='styletags_tag'),
     path('styletags/untag/<int:tag_id>', v.styletags_untag, name='styletags_untag'),
+
+    path('fashiontems/tag/<int:item_id>', v.fashiontems_tag, name='fashiontems_tag'),
+    path('fashiontems/untag/<int:item_id>', v.fashiontems_untag, name='fashiontems_untag'),
 ]

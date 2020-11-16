@@ -39,6 +39,13 @@ class Styletag(BigIdAbstract):
         return self.tag
 
 
+class Fashiontem(BigIdAbstract):
+    item = models.CharField(max_length=20, null=False, blank=False)
+
+    def __str__(self):
+        return self.item
+
+
 class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
 
@@ -195,6 +202,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
     key = models.IntegerField(default=0)
 
     styletags = models.ManyToManyField(Styletag, blank=True)
+    fashiontems = models.ManyToManyField(Fashiontem, blank=True)
 
     nposts = models.IntegerField(default=0)
     nfollowers = models.IntegerField(default=0)
@@ -478,11 +486,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 class BasebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
     styletags = serializers.SerializerMethodField()
+    fashiontems = serializers.SerializerMethodField()
     # styletags = StyletagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'styletags']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'styletags', 'fashiontems']
         read_only_fields = fields
 
     def get_profile(self, obj):
@@ -491,6 +500,8 @@ class BasebooSerializer(serializers.ModelSerializer):
     def get_styletags(self, obj):
         return list(obj.styletags.values_list('id', flat=True))
 
+    def get_fashiontems(self, obj):
+        return list(obj.fashiontems.values_list('id', flat=True))
 
 # class BasebooSerializer(serializers.ModelSerializer):
 #     profile = serializers.SerializerMethodField()
@@ -508,14 +519,18 @@ class BasebooSerializer(serializers.ModelSerializer):
 class BooSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
     styletags = serializers.SerializerMethodField()
+    fashiontems = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts', 'styletags']#, 'iposts']
+        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts', 'styletags', 'fashiontems']
         read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'nposts']
 
     def get_styletags(self, obj):
         return list(obj.styletags.values_list('id', flat=True))
+
+    def get_fashiontems(self, obj):
+        return list(obj.fashiontems.values_list('id', flat=True))
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)

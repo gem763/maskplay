@@ -40,9 +40,11 @@ urlpatterns = [
     path('user/', v.get_user, name='get_user'),
     path('user/other_boos/', v.other_boos, name='other_boos'),
 
-    path('styletags/tag/<int:tag_id>', v.styletags_tag, name='styletags_tag'),
-    path('styletags/untag/<int:tag_id>', v.styletags_untag, name='styletags_untag'),
+    # path('styletags/tag/<int:tag_id>', v.styletags_tag, name='styletags_tag'),
+    # path('styletags/untag/<int:tag_id>', v.styletags_untag, name='styletags_untag'),
+    #
+    # path('fashiontems/tag/<int:item_id>', v.fashiontems_tag, name='fashiontems_tag'),
+    # path('fashiontems/untag/<int:item_id>', v.fashiontems_untag, name='fashiontems_untag'),
 
-    path('fashiontems/tag/<int:item_id>', v.fashiontems_tag, name='fashiontems_tag'),
-    path('fashiontems/untag/<int:item_id>', v.fashiontems_untag, name='fashiontems_untag'),
+    path('boo/update/', v.boo_update, name='boo_update')
 ]

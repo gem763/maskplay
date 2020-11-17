@@ -43,9 +43,11 @@
           }
         });
 
-        if (this.session.auth && this.session.auth.boo.id==this.session.booposts.boo.id) {
+        // if (this.session.auth && this.session.auth.boo.id==this.session.booposts.boo.id) {
+        if (this.session.auth && this.session.booposts.boo.id in this.session.auth.boos) {
           _postlist.forEach(post => {
-            post.boo = this.session.auth.boo;
+            post.boo = this.session.auth.boos[this.session.booposts.boo.id];
+            // post.boo = this.session.auth.boo;
           });
 
         } else {

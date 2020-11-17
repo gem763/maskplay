@@ -1,0 +1,162 @@
+<style>
+  .profiler.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
+  }
+
+  .profiler.vcomp > .profiles {
+    background: none;
+    margin-top: var(--w-16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .profiler.vcomp > .profiles > .profile {
+    width: var(--w-33);
+    height: var(--w-33);
+    background: none;
+    transition: all 0.5s;
+    position: relative;
+  }
+
+  .profiler.vcomp > .profiles > .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+
+  .profiler.vcomp > .profiles > .nick {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  .profiler.vcomp > .profiles > .text {
+    font-size: 12px;
+  }
+
+  .profiler.vcomp > .profiles > .tags {
+    margin-top: 10px;
+    width: var(--w-80);
+    /* background: orange; */
+    /* margin-bottom: 5px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap
+  }
+
+  .profiler.vcomp > .profiles > .tags > .tag {
+    font-size: 11px;
+    /* background: var(--color-dark); */
+    background: none;
+    color: var(--color-dark);
+    padding: 5px;
+    border-radius: 20px;
+    margin: 2px;
+  }
+
+  .profiler.vcomp > .profiles > .tags > .tag.selected {
+    background: var(--color-dark);
+    color: white;
+  }
+</style>
+
+
+<script type='text/x-template' id='profiler-template'>
+  <page :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
+    <div class='profiler vcomp' v-if='boo'>
+
+      <div class='profiles' ref='profiles'>
+        <div class='profile'>
+          <img :src='profilepix'>
+        </div>
+
+        <div class='nick'>[[ nick ]]</div>
+        <div class='text'>[[ text ]]</div>
+
+        <div class='tags'>
+          <span class='tag' v-for='(val, key) in session.styletags' :class='tag_class(Number(key))' @click='toggle_tag(Number(key))'>[[val]]</span>
+        </div>
+      </div>
+
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('profiler', {
+    template: '#profiler-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    methods: {
+      tag_class: function(key) {
+        if (this.mytags.includes(key)) {
+          return 'selected'
+
+        } else {
+          return ''
+        }
+      },
+
+      toggle_tag: function(key) {
+        if (this.mytags.includes(key)) {
+          const idx = this.mytags.indexOf(key);
+
+          if (idx !== -1) {
+            this.styletags_fetch(`/styletags/untag/${key}`);
+            this.mytags.splice(idx, 1);
+          }
+
+        } else {
+          this.styletags_fetch(`/styletags/tag/${key}`);
+          this.mytags.push(key);
+        }
+      },
+
+      styletags_fetch: function(url) {
+        fetch(url).then(x => x.json()).then(console.log);
+      }
+    },
+
+
+    computed: {
+      boo: function() {
+        return this.session.auth.boo
+      },
+
+      profilepix: function() {
+        return this.boo.profile.pix
+      },
+
+      text: function() {
+        return this.boo.text
+      },
+
+      nick: function() {
+        return this.boo.nick
+      },
+
+      mytags: function() {
+        return this.boo.styletags
+      }
+    }
+  });
+</script>

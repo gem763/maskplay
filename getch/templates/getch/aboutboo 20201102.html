@@ -23,6 +23,10 @@
     justify-content: center;
   }
 
+  /* .aboutboo.vcomp.sticky > .top-header {
+    background: white;
+  } */
+
   .aboutboo.vcomp > .top-header > .profile {
     width: var(--w-8);
     height: var(--w-8);
@@ -30,6 +34,10 @@
     opacity: 0;
     transition: all 0.5s;
     position: relative;
+  }
+
+  .aboutboo.vcomp.sticky > .top-header > .profile {
+    opacity: 1;
   }
 
   .aboutboo.vcomp > .top-header > .profile > img {
@@ -88,21 +96,27 @@
     box-sizing: border-box;
   }
 
-
-  .aboutboo.vcomp > .profiles > .profile > .editboo {
-    position: absolute;
-    top: 50%;
-    right: calc(100% + var(--w-6));
-    width: var(--w-12);
-    height: var(--w-12);
-    transform: translateY(-50%);
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .aboutboo.vcomp > .profiles.editing > .profile > img.profilepix {
+    opacity: 0.5;
   }
 
-  .aboutboo.vcomp > .profiles > .profile > .follow {
+  .aboutboo.vcomp > .profiles > .profile > img.icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    transform: translate(-50%, -50%);
+    filter: invert(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .aboutboo.vcomp > .profiles.editing > .profile > img.icon {
+    opacity: 1;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .editboo {
     position: absolute;
     top: 50%;
     left: calc(100% + var(--w-6));
@@ -120,37 +134,10 @@
     height: var(--w-6);
   }
 
-  .aboutboo.vcomp > .profiles > .profile > .follow > img {
-    width: var(--w-8);
-    height: var(--w-8);
-  }
-
-  .aboutboo.vcomp > .profiles > .profile > .follow > span.nfollowers {
-    background: none;
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 12px;
-  }
-
-  .aboutboo.vcomp > .profiles > .changeboo {
-    width: var(--w-12);
-    height: var(--w-12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .aboutboo.vcomp > .profiles > .changeboo > img {
-    width: var(--w-6);
-    height: var(--w-6);
-  }
-
   .aboutboo.vcomp > .profiles > .nick {
     font-size: 13px;
     font-weight: bold;
-    /* margin-top: 10px; */
+    margin-top: 10px;
   }
 
   .aboutboo.vcomp > .profiles > .text {
@@ -185,10 +172,6 @@
     color: white;
   }
 
-  .aboutboo.vcomp.sticky > .top-header > .profile {
-    opacity: 1;
-  }
-
   .aboutboo.vcomp.sticky > .profiles > .profile {
     opacity: 0;
   }
@@ -202,6 +185,8 @@
   .aboutboo.vcomp > .spinner {
     position: fixed;
     bottom: var(--w-12);
+    /* left: 50%; */
+    /* transform: translate(-50%, -50%); */
   }
 
   .aboutboo.vcomp > .profiles > .boochooser {
@@ -212,9 +197,17 @@
     flex-wrap: wrap;
     width: 100%;
     /* width: var(--w-80); */
-    /* background: rgba(0,0,0,0.5); */
+    /* height: 0; */
+    background: rgba(0,0,0,0.5);
     transition: all 0.5s;
     overflow: hidden;
+    /* margin-top: 10px;
+    margin-bottom: 10px; */
+  }
+
+  .aboutboo.vcomp > .profiles.editing > .boochooser {
+    /* height: auto; */
+    background: white;
   }
 
   .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate {
@@ -240,24 +233,15 @@
   <div class='aboutboo vcomp' @scroll='scroll'>
 
 
-    <div class='profiles' ref='profiles'>
+    <div class='profiles' :class='edit_class' ref='profiles'>
       <div class='profile'>
-        <img class='profilepix' :src='profilepix'>
+        <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
+        <img class='profilepix' :src='profilepix' @click='load_pixeditor'>
+        <img class='icon' src='/static/materials/icons/edit.png'>
 
-        <div class='editboo' @click='session.open_profiler()' v-if='is_myboo'>
+        <div class='editboo' @click='toggle_edit' v-if='is_myboo'>
           <img src='/static/materials/icons/edit.png'>
         </div>
-
-        <div class='follow' @click='toggle_follow'>
-          <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following'>
-          <img class='follow-off' src='/static/materials/icons/like.png' v-else>
-          <span class='nfollowers'>[[ nfollowers ]]</span>
-        </div>
-      </div>
-
-      <div class='changeboo' @click='toggle_changeboo' v-if='is_myboo'>
-        <img src='/static/materials/icons/changeboo.png' v-if='!on_changeboo' @click='on_changeboo==true'>
-        <img src='/static/materials/icons/times.png' v-if='on_changeboo' @click='on_changeboo==false'>
       </div>
 
       <div class='nick'>[[ nick ]]</div>
@@ -273,11 +257,19 @@
         </div>
       </div>
 
-      <div class='styletags'>
+      <div class='styletags' v-if='on_edit'>
+        <span class='tag' v-for='(val, key) in session.styletags' :class='tag_class(Number(key))' @click='toggle_tag(Number(key))'>[[val]]</span>
+      </div>
+
+      <div class='styletags' v-else>
         <span class='tag selected' v-for='t in mytags'>[[ session.styletags[t] ]]</span>
       </div>
 
-      <div class='fashiontems'>
+      <div class='fashiontems' v-if='on_edit'>
+        <span class='item' v-for='(val, key) in session.fashiontems' :class='item_class(Number(key))' @click='toggle_item(Number(key))'>[[val]]</span>
+      </div>
+
+      <div class='fashiontems' v-else>
         <span class='item selected' v-for='t in myitems'>[[ session.fashiontems[t] ]]</span>
       </div>
 
@@ -301,7 +293,8 @@
       </div>
     </div>
 
-    <bar-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading || !boo.id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+    <!-- <scale-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading'></scale-loader> -->
+    <bar-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
   </div>
 </script>
 
@@ -313,7 +306,8 @@
     props: ['boo', 'session', 'open'],
     data: function() {
       return {
-        on_changeboo: false,
+        on_booloading: false,
+        on_edit: false,
       }
     },
 
@@ -359,14 +353,6 @@
         return this.boo.nick
       },
 
-      nfollowers: function() {
-        return this.boo.nfollowers
-      },
-
-      is_following: function() {
-        return !this.is_myboo && this.session.auth.is_following(this.boo.id)
-      },
-
       is_myboo: function() {
         return (this.session.auth && this.session.auth.boo.id==this.boo.id)
       },
@@ -379,6 +365,15 @@
         return this.boo.fashiontems
       },
 
+      edit_class: function() {
+        if (this.on_edit) {
+          return 'editing'
+
+        } else {
+          return ''
+        }
+      },
+
       myboos: function() {
         if (this.is_myboo) {
           return this.session.auth.boos
@@ -389,7 +384,7 @@
         if (this.is_myboo) {
           let size;
 
-          if (this.on_changeboo) {
+          if (this.on_edit) {
             const n = Object.keys(this.myboos).length + 1;
             size = `calc(var(--w-80) / ${n})`;
 
@@ -411,8 +406,36 @@
         this.session.auth.boo = boo.id;
       },
 
-      toggle_changeboo: function() {
-        this.on_changeboo = !this.on_changeboo;
+      load_pixeditor: function() {
+        if (this.on_edit) {
+          this.$refs.pixinput.click();
+        }
+      },
+
+      imagize: function(event) {
+        const input = event.target;
+        const self = this;
+
+        if (input.files && input.files[0]) {
+          let reader = new FileReader();
+          reader.onload = function(e) {
+            self.session.open_pixeditor(e.target.result, 'profile', self);
+          };
+
+          reader.readAsDataURL(input.files[0]);
+        }
+      },
+
+      set: function(blob) {
+        // this.boo.profile.type = 'IMAGE'
+        // this.boo.profile.image = URL.createObjectURL(blob);
+        // this.boo.profile.image_file = blob;
+        this.boo.profile.pix = URL.createObjectURL(blob);
+      },
+
+
+      toggle_edit: function() {
+        this.on_edit = !this.on_edit;
       },
 
       open_posts: function(idx) {
@@ -422,10 +445,6 @@
       },
 
       toggle_follow: function() {
-        if (this.is_myboo) {
-          return
-        }
-
         if (this.is_following) {
           this.session.auth.unfollow(this.boo.id);
           this.boo.nfollowers -= 1;
@@ -449,6 +468,58 @@
         } else {
           this.$el.classList.remove("sticky");
         }
+      },
+
+      tag_class: function(key) {
+        if (this.mytags.includes(key)) {
+          return 'selected'
+
+        } else {
+          return ''
+        }
+      },
+
+      item_class: function(key) {
+        if (this.myitems.includes(key)) {
+          return 'selected'
+
+        } else {
+          return ''
+        }
+      },
+
+      toggle_tag: function(key) {
+        if (this.mytags.includes(key)) {
+          const idx = this.mytags.indexOf(key);
+
+          if (idx !== -1) {
+            this._fetch(`/styletags/untag/${key}`);
+            this.mytags.splice(idx, 1);
+          }
+
+        } else {
+          this._fetch(`/styletags/tag/${key}`);
+          this.mytags.push(key);
+        }
+      },
+
+      toggle_item: function(key) {
+        if (this.myitems.includes(key)) {
+          const idx = this.myitems.indexOf(key);
+
+          if (idx !== -1) {
+            this._fetch(`/fashiontems/untag/${key}`);
+            this.myitems.splice(idx, 1);
+          }
+
+        } else {
+          this._fetch(`/fashiontems/tag/${key}`);
+          this.myitems.push(key);
+        }
+      },
+
+      _fetch: function(url) {
+        fetch(url).then(x => x.json()).then(console.log);
       },
 
       pop_boomenu: function() {

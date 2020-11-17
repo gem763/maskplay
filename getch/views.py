@@ -123,44 +123,78 @@ def other_boos(request):
     return JsonResponse({'success':True, 'other_boos':request.user.other_boos}, safe=False)
 
 
-def styletags_tag(request, tag_id):
-    try:
-        _tag = m.Styletag.objects.get(pk=tag_id)
-        request.user.boo.styletags.add(_tag)
-        return JsonResponse({'success':True, 'message':'styletag tagged successfully'}, safe=False)
+# def styletags_tag(request, tag_id):
+#     try:
+#         _tag = m.Styletag.objects.get(pk=tag_id)
+#         request.user.boo.styletags.add(_tag)
+#         return JsonResponse({'success':True, 'message':'styletag tagged successfully'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False, 'message':'something wrong while tagging styletag'}, safe=False)
+#
+#
+# def styletags_untag(request, tag_id):
+#     try:
+#         _tag = m.Styletag.objects.get(pk=tag_id)
+#         request.user.boo.styletags.remove(_tag)
+#         return JsonResponse({'success':True, 'message':'styletag untagged successfully'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False, 'message':'something wrong while untagging styletag'}, safe=False)
+#
+#
+# def fashiontems_tag(request, item_id):
+#     try:
+#         _item = m.Fashiontem.objects.get(pk=item_id)
+#         request.user.boo.fashiontems.add(_item)
+#         return JsonResponse({'success':True, 'message':'fashiontems tagged successfully'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False, 'message':'something wrong while tagging fashiontem'}, safe=False)
+#
+#
+# def fashiontems_untag(request, item_id):
+#     try:
+#         _item = m.Fashiontem.objects.get(pk=item_id)
+#         request.user.boo.fashiontems.remove(_item)
+#         return JsonResponse({'success':True, 'message':'fashiontem untagged successfully'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False, 'message':'something wrong while untagging fashiontem'}, safe=False)
 
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while tagging styletag'}, safe=False)
 
+def boo_update(request):
+    if request.method=='POST':
+        print(request.POST, request.FILES)
 
-def styletags_untag(request, tag_id):
-    try:
-        _tag = m.Styletag.objects.get(pk=tag_id)
-        request.user.boo.styletags.remove(_tag)
-        return JsonResponse({'success':True, 'message':'styletag untagged successfully'}, safe=False)
+        _styletags_to_add = request.POST.get('styletags_to_add', None)
+        _styletags_to_remove = request.POST.get('styletags_to_remove', None)
+        _fashiontems_to_add = request.POST.get('fashiontems_to_add', None)
+        _fashiontems_to_remove = request.POST.get('fashiontems_to_remove', None)
+        _profilepix = request.FILES.get('profilepix', None)
 
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while untagging styletag'}, safe=False)
+        try:
+            if _styletags_to_add:
+                request.user.boo.styletags.add(*json.loads(_styletags_to_add))
 
+            if _styletags_to_remove:
+                request.user.boo.styletags.remove(*json.loads(_styletags_to_remove))
 
-def fashiontems_tag(request, item_id):
-    try:
-        _item = m.Fashiontem.objects.get(pk=item_id)
-        request.user.boo.fashiontems.add(_item)
-        return JsonResponse({'success':True, 'message':'fashiontems tagged successfully'}, safe=False)
+            if _fashiontems_to_add:
+                request.user.boo.fashiontems.add(*json.loads(_fashiontems_to_add))
 
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while tagging fashiontem'}, safe=False)
+            if _fashiontems_to_remove:
+                request.user.boo.fashiontems.remove(*json.loads(_fashiontems_to_remove))
 
+            if _profilepix:
+                profile = request.user.boo.profile
+                profile.pix = _profilepix
+                profile.save()
 
-def fashiontems_untag(request, item_id):
-    try:
-        _item = m.Fashiontem.objects.get(pk=item_id)
-        request.user.boo.fashiontems.remove(_item)
-        return JsonResponse({'success':True, 'message':'fashiontem untagged successfully'}, safe=False)
+            return JsonResponse({'success':True, 'message':'boo updated successfully'}, safe=False)
 
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while untagging fashiontem'}, safe=False)
+        except:
+            return JsonResponse({'success':False, 'message':'something wrong while boo updating'}, safe=False)
 
 
 def vote(request, post_id):

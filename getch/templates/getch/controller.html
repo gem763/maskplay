@@ -16,6 +16,7 @@
 
   .controller.vcomp.hidden {
     opacity: 0;
+    pointer-events: none;
   }
 
   .controller.vcomp > .btn {
@@ -98,12 +99,18 @@
 
     computed: {
       controller_class: function() {
-        if (this.session.mode.on=='posts' || this.session.mode.on=='booposts') {
+        if (this.on('posts') || this.on('booposts')) {
           return 'semi-trans'
 
-        } else if (this.session.mode.on=='posting') {
+        } else if (this.on('posting') || this.on('profiler') || this.on('pixeditor')) {
           return 'hidden'
         }
+      }
+    },
+
+    methods: {
+      on: function(where) {
+        return this.session.mode.on == where
       }
     }
   });

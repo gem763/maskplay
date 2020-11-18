@@ -268,7 +268,7 @@
           <img :src='b.profile.pix'>
         </div>
 
-        <div class='boo-candidate' :style='boo_candidate_style'>
+        <div class='boo-candidate' :style='boo_candidate_style' @click='session.open_profiler("new")'>
           <img src='/static/materials/icons/plus.png'>
         </div>
       </div>

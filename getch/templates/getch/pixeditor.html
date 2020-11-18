@@ -84,7 +84,8 @@
 </style>
 
 <script type='text/x-template' id='pixeditor-template'>
-  <page class='pixeditor vcomp' :open='session.page.pixeditor.open' @close='close'>
+  <!-- <page class='pixeditor vcomp' :open='session.page.pixeditor.open' @close='close'> -->
+  <page class='pixeditor vcomp' :open='session.page.pixeditor.open' :hide_close='true'>
     <div class='cropper'>
       <div class='container'>
         <img class='image' :src='session.page.pixeditor.src' ref='image' @load='init_cropper'>

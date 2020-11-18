@@ -9,6 +9,7 @@
 {% include "getch/booposts.html" %}
 {% include "getch/navigator.html" %}
 {% include "getch/pixeditor.html" %}
+{% include "getch/texteditor.html" %}
 
 
 <style>
@@ -71,6 +72,10 @@
     <pixeditor
       :session='session'
     ></pixeditor>
+
+    <texteditor
+      :session='session'
+    ></texteditor>
 
     <loginpage
       v-if='!session.auth'

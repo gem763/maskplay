@@ -6,13 +6,14 @@ class Session {
       loginpage:  { open: false, from: 'right' },
       navigator:  { open: false, from: 'left' },
       boochooser: { open: false, from: 'left' },
-      profiler:   { open: false, from: 'right', key: undefined },
+      profiler:   { open: false, from: 'right', type: undefined },
       boopage:    { open: false, from: 'left', boo: undefined },
       network:    { open: false, from: 'right' },
       posting:    { open: false, from: 'right', mother: undefined },
       comments:   { open: false, from: 'right', post: undefined },
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
+      texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
     };
 
     this.mode = { on: 'posts', order: 0, prev: undefined };
@@ -110,15 +111,22 @@ class Session {
     this.open_page('boochooser');
   }
 
-  open_profiler() {
-    this.page.profiler.key = undefined;
+  open_profiler(type) {
+    // this.page.profiler.key = undefined;
+    if (type) {
+      this.page.profiler.type = type;
+
+    } else {
+      this.page.profiler.type = undefined;
+    }
+
     this.open_page('profiler');
   }
 
-  open_newprofiler(bookey) {
-    this.page.profiler.key = bookey;
-    this.open_page('profiler');
-  }
+  // open_newprofiler(bookey) {
+  //   this.page.profiler.key = bookey;
+  //   this.open_page('profiler');
+  // }
 
   open_comments(post) {
     this.page.comments.post = post;
@@ -175,6 +183,13 @@ class Session {
     this.page.pixeditor.type = type;
     this.page.pixeditor.pixloader = pixloader;
     this.open_page('pixeditor');
+  }
+
+  open_texteditor(basetext, placeholder, setter) {
+    this.page.texteditor.basetext = basetext;
+    this.page.texteditor.placeholder = placeholder;
+    this.page.texteditor.setter = setter;
+    this.open_page('texteditor');
   }
 
   open_navigator() {

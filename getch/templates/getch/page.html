@@ -93,10 +93,10 @@
 
     <transition :name='show_content_type'>
       <!-- <div class='content' v-if='open'> -->
-      <div class='content' v-show='open'>  
+      <div class='content' v-show='open'>
         <slot></slot>
 
-        <div class='close' @click='$emit("close")'>
+        <div class='close' @click='$emit("close")' v-show='!hide_close'>
           <img src='/static/materials/icons/right-chevron.png'>
         </div>
       </div>
@@ -109,7 +109,7 @@
   Vue.component('page', {
     template: '#page-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'from'],
+    props: ['open', 'from', 'hide_close'],
     data: function() {
       return { }
     },

@@ -171,6 +171,7 @@ def boo_update(request):
         _styletags_to_remove = request.POST.get('styletags_to_remove', None)
         _fashiontems_to_add = request.POST.get('fashiontems_to_add', None)
         _fashiontems_to_remove = request.POST.get('fashiontems_to_remove', None)
+        _boo_text = request.POST.get('boo_text', None)
         _profilepix = request.FILES.get('profilepix', None)
 
         try:
@@ -185,6 +186,11 @@ def boo_update(request):
 
             if _fashiontems_to_remove:
                 request.user.boo.fashiontems.remove(*json.loads(_fashiontems_to_remove))
+
+            if _boo_text:
+                boo = request.user.boo
+                boo.text = _boo_text
+                boo.save()
 
             if _profilepix:
                 profile = request.user.boo.profile

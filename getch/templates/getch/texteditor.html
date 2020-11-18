@@ -1,0 +1,114 @@
+<style>
+  .texteditor.vcomp {
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .texteditor.vcomp > input {
+    border: none;
+    text-align: center;
+    font-size: 25px;
+  }
+
+  .texteditor.vcomp > input:focus {
+    outline: none;
+  }
+
+  .texteditor.vcomp > .actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--w-12);
+    background: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .texteditor.vcomp > .actions > .action {
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .texteditor.vcomp > .actions > .cancel.action {
+    color: gray;
+  }
+
+  .texteditor.vcomp > .actions > .done.action {
+    color: var(--color-neg);
+  }
+</style>
+
+<script type='text/x-template' id='texteditor-template'>
+  <page :open='session.page.texteditor.open' :hide_close='true'>
+    <div class='texteditor vcomp'>
+      <input v-model.trim='texted' :placeholder='placeholder' ref='input'>
+
+      <div class='actions'>
+        <div class='action cancel' @click='session.close_page()'>취소</div>
+        <div class='action done' @click='action_done'>완료</div>
+      </div>
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('texteditor', {
+    template: '#texteditor-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        texted: ''
+      }
+    },
+
+    watch: {
+      'session.page.texteditor.open': function(_new, _old) {
+        if (_new) {
+          this.texted = this.session.page.texteditor.basetext;
+
+          if (this.$refs) {
+            this.fix_window_width();
+            this.$nextTick(() => this.$refs.input.focus());
+          }
+        }
+      }
+    },
+
+    computed: {
+      placeholder: function() {
+        return this.session.page.texteditor.placeholder
+      }
+    },
+
+    methods: {
+      fix_window_width: function() {
+        const w = document.querySelector('#window').clientWidth;
+        document.documentElement.style.setProperty('--width', w + 'px');
+      },
+
+      release_window_width: function() {
+        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+      },
+
+      action_done: function() {
+        this.session.page.texteditor.setter(this.texted);
+        this.session.close_page();
+      }
+    }
+  });
+</script>

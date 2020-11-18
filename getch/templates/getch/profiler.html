@@ -60,6 +60,12 @@
     font-size: 12px;
   }
 
+  .profiler.vcomp > .profiles > .text > span > img {
+    width: 11px;
+    height: 11px;
+    margin-left: 5px;
+  }
+
   .profiler.vcomp > .profiles > .styletags,
   .profiler.vcomp > .profiles > .fashiontems {
     margin-top: 10px;
@@ -134,7 +140,10 @@
         </div>
 
         <div class='nick'>[[ nick ]]</div>
-        <div class='text'>[[ text ]]</div>
+        <div class='text' @click='edit_boo_text'>
+          <span>[[ text ]]</span>
+          <span><img src='/static/materials/icons/edit.png'></span>
+        </div>
 
         <div class='styletags'>
           <span class='tag' v-for='(val, key) in styletags' :class='select_class(key, mytags)' @click='toggle_select(key, mytags)'>[[val]]</span>
@@ -170,12 +179,28 @@
     watch: {
       'session.page.profiler.open': function(_new, _old) {
         if (_new) {
-          this.boo = _.cloneDeep(this.session.auth.boo)
+          if (this.session.page.profiler.type == 'new') {
+            console.log(1234);
+            this.boo = _.cloneDeep(this.session.auth.boo);
+
+          } else {
+            this.boo = _.cloneDeep(this.session.auth.boo);
+          }
         }
       }
     },
 
     methods: {
+      edit_boo_text: function() {
+        this.session.open_texteditor(this.boo.text, '부캐이름을 입력하세요', txt_done => {
+          this.boo.text = txt_done;
+        });
+      },
+
+      edit_text: function() {
+        document.documentElement.style.setProperty('--width', '500px');
+      },
+
       tags_to_update: function(what) {
         return {
           add: _.difference(this.boo[what], this.session.auth.boo[what]),
@@ -211,6 +236,11 @@
 
         if (this.boo.profile.pix != this.session.auth.boo.profile.pix) {
           formdata.append('profilepix', this.boo.profile.pixblob);
+          n_updates += 1;
+        }
+
+        if (this.boo.text != this.session.auth.boo.text) {
+          formdata.append('boo_text', this.boo.text);
           n_updates += 1;
         }
 

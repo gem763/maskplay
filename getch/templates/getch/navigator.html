@@ -11,7 +11,7 @@
   .navigator.vcomp > .top-header {
     position: fixed;
     top: 0;
-    width: 100%;
+    width: var(--width);
     height: var(--w-16);
     background: white;
     transition: all 0.5s;
@@ -58,12 +58,9 @@
   .navigator.vcomp > .searcher {
     background: none;
     margin-top: var(--w-16);
-    /* height: 30%; */
     display: flex;
     align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-size: 12px;
+    justify-content: flex-start;
     padding: 10px;
   }
 
@@ -108,20 +105,78 @@
   .navigator.vcomp.sticky > .top-header > .searchbar {
     opacity: 0;
   }
+
+  .navigator.vcomp > .searcher > .sorter {
+    font-size: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 10px;
+    border-radius: 50px;
+  }
+
+  .navigator.vcomp > .searcher > .sorter.active {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .navigator.vcomp > .contents {
+    position: relative;
+    width: 100%;
+    background: none;
+    overflow: hidden;
+  }
+
+  .navigator.vcomp > .contents > .sections {
+    position: relative;
+    width: 200%;
+    margin-left: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: row;
+    transition: margin-left 0.5s;
+  }
+
+  .navigator.vcomp > .contents > .sections.history {
+    margin-left: 0;
+  }
+
+  .navigator.vcomp > .contents > .sections.hot {
+    margin-left: -100%;
+  }
+
+  .navigator.vcomp > .contents > .sections > .section {
+    position: relative;
+    width: 50%;
+    background: none;
+  }
 </style>
 
 <script type='text/x-template' id='navigator-template'>
   <page :open='session.page.navigator.open' :from='session.page.navigator.from' @close='session.close_page()'>
     <div class='navigator vcomp' @scroll='scroll' ref='navigator'>
       <div class='searcher' ref='searcher'>
-        인기 | 최신 | 맞춤
+        <span class='sorter' :class='active_sorter=="history" ? "active" : ""' @click='sort_history'>최신</span>
+        <span class='sorter' :class='active_sorter=="hot" ? "active" : ""' @click='sort_hot'>인기</span>
+        <!-- <span @click='sort_custom'>맞춤</span> -->
       </div>
 
       <div class='contents'>
-        <postlibrary
-          :postlist='postlist'
-          @open_posts='backto_posts($event)'
-        ></postlibrary>
+        <div class='sections' :class='active_sorter'>
+          <div class='section' ref='section_history'>
+            <postlibrary
+              :postlist='postlist_history'
+              @open_posts='backto_posts($event)'
+            ></postlibrary>
+          </div>
+
+          <div class='section' ref='section_hot'>
+            <postlibrary
+              :postlist='postlist_hot'
+              @open_posts='backto_posts($event)'
+            ></postlibrary>
+          </div>
+        </div>
       </div>
 
       <div class='top-header' @click='upmost'>
@@ -150,18 +205,27 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return { }
+      return {
+        active_sorter: 'history'
+      }
     },
 
     computed: {
-      postlist: function() {
-        return this.session.page.posts.contents.list
+      the_posts: function() {
+        return this.session.page.posts.univ[this.active_sorter]
       },
 
-      profilepix: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo.profile.pix
-        }
+      the_postlist: function() {
+        return this.the_posts.list
+      },
+
+      postlist_history: function() {
+        // return this.session.page.posts.contents.list
+        return this.session.page.posts.univ.history.list
+      },
+
+      postlist_hot: function() {
+        return this.session.page.posts.univ.hot.list
       },
 
       loader_width: function() {
@@ -171,6 +235,7 @@
 
     methods: {
       backto_posts: function(idx) {
+        this.session.page.posts.contents = this.the_posts;
         this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_page();
       },
@@ -179,12 +244,16 @@
         const h0 = this.$el.clientHeight;
         const h1 = this.$refs.navigator.scrollHeight;
         const scrollTop = this.$refs.navigator.scrollTop;
-        const nload = 16 + (this.session.page.posts.contents.list.length % 4);
+        const nload = 16; // + (this.session.page.posts.contents.list.length % 4);
 
         const gap = h1 - scrollTop - h0;
-        if ((gap < h0/2) && (!this.session.page.posts.contents.onloading)) {
-          this.session.page.posts.contents.load(nload);
+        if ((gap < h0/2) && (!this.the_posts.onloading)) {
+          this.the_posts.load(nload);
         }
+
+        // if ((gap < h0/2) && (!this.session.page.posts.contents.onloading)) {
+        //   this.session.page.posts.contents.load(nload);
+        // }
 
         const sticky = this.$refs.searcher.offsetTop + this.$refs.searcher.clientHeight;
 
@@ -201,9 +270,24 @@
       },
 
       upmost: function() {
-        // console.log(1111)
         this.$refs.searcher.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
-      }
+      },
+
+      sort_history: function() {
+        this.active_sorter = 'history';
+        // this.session.page.posts.contents = this.session.page.posts.univ.history;
+        console.log(this.$refs.section_history.clientHeight);
+      },
+
+      sort_hot: function() {
+        this.active_sorter = 'hot';
+        // this.session.page.posts.contents = this.session.page.posts.univ.hot;
+        console.log(this.$refs.section_hot.clientHeight);
+      },
+
+      sort_custom: function() {
+        alert('맞춤순');
+      },
     }
   });
 </script>

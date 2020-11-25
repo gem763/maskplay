@@ -27,15 +27,23 @@
     background: none;
     transition: all 0.5s;
     position: relative;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .profiler.vcomp > .profiles > .profile.new {
+    background: var(--color-dark);
   }
 
   .profiler.vcomp > .profiles > .profile > img.profilepix {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border-radius: 50%;
+    /* border-radius: 50%;
     border: 1px solid whitesmoke;
-    box-sizing: border-box;
+    box-sizing: border-box; */
     opacity: 0.5;
   }
 
@@ -51,25 +59,36 @@
   }
 
   .profiler.vcomp > .profiles > .nick {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: bold;
     margin-top: 10px;
   }
 
   .profiler.vcomp > .profiles > .text {
-    font-size: 12px;
+    font-size: 13px;
   }
 
+  .profiler.vcomp > .profiles > .nick > span > img,
   .profiler.vcomp > .profiles > .text > span > img {
     width: 11px;
     height: 11px;
     margin-left: 5px;
   }
 
+  .profiler.vcomp > .profiles > .nick > span.tmp,
+  .profiler.vcomp > .profiles > .text > span.tmp {
+    color: lightgray;
+  }
+
+  .profiler.vcomp > .spinner {
+    position: fixed;
+    bottom: var(--w-12);
+  }
+
   .profiler.vcomp > .profiles > .styletags,
   .profiler.vcomp > .profiles > .fashiontems {
     margin-top: 10px;
-    width: var(--w-80);
+    width: var(--w-90);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,10 +97,12 @@
 
   .profiler.vcomp > .profiles > .styletags > .tag,
   .profiler.vcomp > .profiles > .fashiontems > .item {
-    font-size: 11px;
+    font-size: 16px;
     padding: 5px;
     border-radius: 20px;
     margin: 2px;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
 
   .profiler.vcomp > .profiles > .styletags > .tag.selected {
@@ -90,15 +111,15 @@
   }
 
   .profiler.vcomp > .profiles > .fashiontems > .item.selected {
-    background: DarkSlateGray;
+    background: #292A4D;
     color: white;
   }
 
   .profiler.vcomp > .actions {
     position: fixed;
     bottom: 0;
-    left: 0;
-    width: 100%;
+    /* left: 0; */
+    width: var(--width);
     height: var(--w-12);
     background: white;
     font-size: 12px;
@@ -125,6 +146,11 @@
   .profiler.vcomp > .actions > .done.action {
     color: var(--color-neg);
   }
+
+  .profiler.vcomp > .profiles > p.tags-guide {
+    color: #808080;
+    font-size: 11px;
+  }
 </style>
 
 
@@ -133,15 +159,21 @@
     <div class='profiler vcomp' v-if='boo'>
 
       <div class='profiles' ref='profiles'>
-        <div class='profile'>
+        <div class='profile' :class='profilepix ? "" : "new"' @click='load_pixeditor'>
           <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
-          <img class='profilepix' :src='profilepix' @click='load_pixeditor'>
+          <img class='profilepix' :src='profilepix' v-if='profilepix'>
           <img class='icon' src='/static/materials/icons/edit.png'>
         </div>
 
-        <div class='nick'>[[ nick ]]</div>
+        <div class='nick' @click='edit_boo_nick'>
+          <span v-if='nick'>[[ nick ]]</span>
+          <span class='tmp' v-else>부캐이름</span>
+          <span><img src='/static/materials/icons/edit.png'></span>
+        </div>
+
         <div class='text' @click='edit_boo_text'>
-          <span>[[ text ]]</span>
+          <span v-if='text'>[[ text ]]</span>
+          <span class='tmp' v-else>부캐설명</span>
           <span><img src='/static/materials/icons/edit.png'></span>
         </div>
 
@@ -149,9 +181,17 @@
           <span class='tag' v-for='(val, key) in styletags' :class='select_class(key, mytags)' @click='toggle_select(key, mytags)'>[[val]]</span>
         </div>
 
+        <p class='tags-guide'>
+          체형취향 정보가 솔직할 수록 패션 조언이 정확해 집니다.
+        </p>
+
         <div class='fashiontems'>
           <span class='item' v-for='(val, key) in fashiontems' :class='select_class(key, myitems)' @click='toggle_select(key, myitems)'>[[val]]</span>
         </div>
+
+        <p class='tags-guide'>
+          관심 아이템을 선택하면 관련 콘텐츠를 더 많이 노출해 줍니다.
+        </p>
       </div>
 
 
@@ -160,6 +200,7 @@
         <div class='action done' @click='action_done'>완료</div>
       </div>
 
+      <bar-loader class='spinner' :loading='on_creating' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
     </div>
   </page>
 </script>
@@ -173,6 +214,7 @@
     data: function() {
       return {
         boo: undefined,
+        on_creating: false
       }
     },
 
@@ -182,6 +224,14 @@
           if (this.session.page.profiler.type == 'new') {
             console.log(1234);
             this.boo = _.cloneDeep(this.session.auth.boo);
+            this.boo.id = undefined;//new Date().getTime();
+            this.boo.nick = '';
+            this.boo.text = '';
+            this.boo.profile.pix = undefined;
+            this.boo.followees_id = [];
+            this.boo.nfollowers = 0;
+            this.boo.nposts = 0;
+            this.boo.voting_record = {};
 
           } else {
             this.boo = _.cloneDeep(this.session.auth.boo);
@@ -192,27 +242,77 @@
 
     methods: {
       edit_boo_text: function() {
-        this.session.open_texteditor(this.boo.text, '부캐이름을 입력하세요', txt_done => {
+        this.session.open_texteditor(this.boo.text, '소개', txt_done => {
           this.boo.text = txt_done;
         });
       },
 
-      edit_text: function() {
-        document.documentElement.style.setProperty('--width', '500px');
+      edit_boo_nick: function() {
+        this.session.open_texteditor(this.boo.nick, '부캐이름', txt_done => {
+          this.boo.nick = txt_done;
+        });
       },
 
       tags_to_update: function(what) {
-        return {
-          add: _.difference(this.boo[what], this.session.auth.boo[what]),
-          remove: _.difference(this.session.auth.boo[what], this.boo[what])
+        if (this.making_new) {
+          return {
+            add: this.boo[what],
+            remove: []
+          }
+
+        } else {
+          return {
+            add: _.difference(this.boo[what], this.session.auth.boo[what]),
+            remove: _.difference(this.session.auth.boo[what], this.boo[what])
+          }
         }
       },
 
       action_done: function() {
+        if (this.boo.nick == '') {
+          alert('부캐이름은 반드시 입력해주세요');
+          return;
+        }
+
+        if (!this.boo.profile.pix) {
+          alert('프로필사진은 반드시 입력해주세요');
+          return;
+        }
+
         const formdata = new FormData();
         const styletags_to_update = this.tags_to_update('styletags');
         const fashiontems_to_update = this.tags_to_update('fashiontems');
         let n_updates = 0;
+
+        if ((this.making_new && this.boo.nick!='') || (!this.making_new && this.boo.nick!=this.session.auth.boo.nick)) {
+          formdata.append('boo_nick', this.boo.nick);
+          n_updates += 1;
+        }
+
+        // if (this.boo.nick != this.session.auth.boo.nick) {
+        //   formdata.append('boo_nick', this.boo.nick);
+        //   n_updates += 1;
+        // }
+
+        if ((this.making_new && this.boo.text!='') || (!this.making_new && this.boo.text!=this.session.auth.boo.text)) {
+          formdata.append('boo_text', this.boo.text);
+          n_updates += 1;
+        }
+
+        // if (this.boo.text != this.session.auth.boo.text) {
+        //   formdata.append('boo_text', this.boo.text);
+        //   n_updates += 1;
+        // }
+
+        if ((this.making_new && this.boo.profile.pix) || (!this.making_new && this.boo.profile.pix!=this.session.auth.boo.profile.pix)) {
+          formdata.append('profilepix', this.boo.profile.pixblob);
+          n_updates += 1;
+        }
+
+        // if (this.boo.profile.pix != this.session.auth.boo.profile.pix) {
+        //   formdata.append('profilepix', this.boo.profile.pixblob);
+        //   n_updates += 1;
+        // }
 
         if (styletags_to_update.add.length) {
           formdata.append('styletags_to_add', JSON.stringify(styletags_to_update.add));
@@ -234,31 +334,50 @@
           n_updates += 1;
         }
 
-        if (this.boo.profile.pix != this.session.auth.boo.profile.pix) {
-          formdata.append('profilepix', this.boo.profile.pixblob);
-          n_updates += 1;
-        }
-
-        if (this.boo.text != this.session.auth.boo.text) {
-          formdata.append('boo_text', this.boo.text);
-          n_updates += 1;
-        }
 
         if (n_updates) {
           formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
-          const boo_id = this.boo.id;
-          this.boo.id = undefined;
 
-          fetch('boo/update/', { method: 'POST', body: formdata })
-            .then(res => res.json())
-            .then(js => {
-              console.log(js);
-              this.boo.id = boo_id;
-            });
+          if (this.making_new) {
+            this.boo_create(formdata);
 
-          this.session.auth.boos[boo_id] = this.boo;
+          } else {
+            this.boo_update(formdata);
+          }
         }
+      },
 
+      boo_create: function(formdata) {
+        // const boo_id = this.boo.id;
+        // this.boo.id = undefined;
+
+        this.on_creating = true;
+
+        fetch('boo/create/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+            this.on_creating = false;
+            this.boo.id = js.boo_id;
+            this.$set(this.boo, 'posts', new Booposts(this.boo));
+            this.session.auth.boos[this.boo.id] = this.boo;
+            this.session.auth.boo = this.boo.id;
+            this.session.close_page();
+          });
+      },
+
+      boo_update: function(formdata) {
+        const boo_id = this.boo.id;
+        this.boo.id = undefined;
+
+        fetch('boo/update/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+            this.boo.id = boo_id;
+          });
+
+        this.session.auth.boos[boo_id] = this.boo;
         this.session.close_page();
       },
 
@@ -349,6 +468,14 @@
 
       fashiontems: function() {
         return this.session.fashiontems
+      },
+
+      making_new: function() {
+        return this.session.page.profiler.type == 'new'
+      },
+
+      loader_width: function() {
+        return document.querySelector('#window').clientWidth
       }
     }
   });

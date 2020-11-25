@@ -1,9 +1,11 @@
 class Session {
   constructor() {
     this.page = {
-      posts:      { contents: new Posts(), swiper: undefined },
+      // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
+      posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined }, swiper: undefined },
+      // posts:      { contents: this.posts_univ.history, swiper: undefined },
       mypage:     { open: false, from: 'left' },
-      loginpage:  { open: false, from: 'right' },
+      loginpage:  { open: false, from: 'bottom' },
       navigator:  { open: false, from: 'left' },
       boochooser: { open: false, from: 'left' },
       profiler:   { open: false, from: 'right', type: undefined },
@@ -14,18 +16,23 @@ class Session {
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
       texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
+      bridge:     { open: false, from: 'bottom', type: undefined },
     };
 
     this.mode = { on: 'posts', order: 0, prev: undefined };
     this.auth = undefined;
     // this.posts = new Posts();
+    // this.posts_univ = { history: new Posts(), hot: undefined, custom: undefined };
     this.posts_open_at = 0;
     this.booposts = undefined;
 
+    this.anonyboo = undefined;
     this.stats = undefined;
     this.styletags = undefined;
     // this.hammer = this.get_hammer();
 
+    this.page.posts.contents = this.page.posts.univ.history;
+    // this.ready = this.page.posts.univ.history.list.length > 0
     this.fetch_user();
   }
 
@@ -99,12 +106,20 @@ class Session {
   }
 
   open_mypage() {
+    this.close_pages_all();
+
     if (this.auth) {
-      this.close_pages_all();
       this.open_page('mypage');
+
     } else {
-      this.open_loginpage();
+      this.open_bridge('login_guide_for_mypage')
+      // this.open_loginpage();
     }
+  }
+
+  open_bridge(type) {
+    this.page.bridge.type = type;
+    this.open_page('bridge');
   }
 
   open_boochooser() {
@@ -142,12 +157,15 @@ class Session {
   }
 
   open_posting() {
+    this.close_pages_all();
+
     if (this.auth) {
       // this.page.posting.mother = mother;
-      this.close_pages_all();
       this.open_page('posting');
+
     } else {
-      this.open_loginpage();
+      this.open_bridge('login_guide_for_posting');
+      // this.open_loginpage();
     }
   }
 
@@ -167,6 +185,9 @@ class Session {
 
     } else if (this.mode.on=='booposts') {
       this.close_page();
+
+    } else if (this.anonyboo.id==boo.id) {
+      alert('삭제된 사용자입니다');
 
     } else {
       if (!this.page.boopage.boo || this.page.boopage.boo.id!=boo.id) {
@@ -383,10 +404,10 @@ class Baseposts extends ContentLoader {
 
 
 class Posts extends ContentLoader {
-  constructor() {
+  constructor(type) {
     super();
     this.nloads_init = 24;
-    this.idlist_url = '/posts/iposts';
+    this.idlist_url = `/posts/iposts/${type}`;
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();
   }
@@ -397,7 +418,8 @@ class Booposts extends ContentLoader {
     super();
     this.boo = boo;
     this.nloads_init = 16;
-    this.idlist_url = `/posts/iposts/${boo.id}`;
+    this.idlist_url = `/boo/${boo.id}/iposts`;
+    // this.idlist_url = `/posts/iposts/${boo.id}`;
     this.content_url = (id) => `/post/${id}/boo`;
     this.load_idlist();
   }

@@ -1,0 +1,241 @@
+<style>
+  .bridge.vcomp {
+    width: 100%;
+    height: 100%;
+    background: white;
+    font-size: 12px;
+  }
+
+  .bridge.vcomp > .divider {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    border-top: 1px solid var(--color-dark);
+    border-bottom: none;
+  }
+
+  .bridge.vcomp > .section {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge.vcomp > .section.top {
+    top: 0;
+    background: none;
+  }
+
+  .bridge.vcomp > .section.bottom {
+    bottom: 0;
+    background: none;
+  }
+
+  .bridge.vcomp > .section.top > .title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .bridge.vcomp > .section.top > .sub {
+    text-align: center;
+    /* font-size: 12pt; */
+    position: absolute;
+    bottom: var(--w-20);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+  }
+
+  .bridge.vcomp > .section.bottom > .sub {
+    text-align: center;
+    /* font-size: 12pt; */
+    position: absolute;
+    top: var(--w-20);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .bridge.vcomp > .section.bottom > .sub > .action {
+    width: 35%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  .bridge.vcomp > .section.bottom > .sub > .action.login {
+    background: #0095F6;
+    color: white;
+    margin-top: var(--w-4);
+  }
+
+  .bridge.vcomp > .section.bottom > .sub > .action.cancel {
+    background: white;
+    margin-top: 10px;
+    border: 1px solid var(--color-dark);
+  }
+
+  .bridge.vcomp > .ab {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--w-12);
+    height: var(--w-12);
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge.vcomp > .ab.a {
+    background: none;
+    bottom: calc(50% - 1px);
+  }
+
+  .bridge.vcomp > .ab.b {
+    background: none;
+    top: 50%;
+  }
+
+  .bridge.vcomp > .ab > img {
+    width: 70%;
+    height: 70%;
+  }
+
+  .bridge.vcomp > .ab > img.question {
+    position: absolute;
+    top: 15%;
+    left: 115%;
+  }
+
+  .bridge.vcomp > .updown {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--w-12);
+    height: var(--w-12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge.vcomp > .updown.up {
+    background: none;
+    bottom: calc(50% - 1px);
+  }
+
+  .bridge.vcomp > .updown.down {
+    background: none;
+    top: 50%;
+  }
+
+  .bridge.vcomp > .updown > img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .bridge.vcomp > .updown.down > img {
+    transform: rotate(180deg);
+  }
+</style>
+
+
+<script type='text/x-template' id='bridge-template'>
+  <page :open='session.page.bridge.open' :from='session.page.bridge.from' @close='session.close_page()'>
+    <div class='bridge vcomp'>
+
+      <template v-if='is_login_guide_for_posting'>
+        <div class='section top'>
+          <div class='title'>아무 패션 고민-수다 글을<br>새로 포스팅 하세요.</div>
+          <div class='sub'>위 아니면 아래?<br>둘 중에 뭐 살지 - 뭐 입을지 고민될 때.</div>
+        </div>
+
+        <div class='section bottom'>
+          <div class='sub'>
+            <span>지금 로그인하여 솔직한 패션 컨설팅을 받아보세요.</span>
+            <div class='action login' @click='action_login'>로그인하기</div>
+            <div class='action cancel' @click='action_cancel'>취소</div>
+          </div>
+        </div>
+
+        <div class='ab a'>
+          <img src='/static/materials/icons/moiber_letter_a.png'>
+        </div>
+
+        <div class='ab b'>
+          <img src='/static/materials/icons/moiber_letter_b.png'>
+          <img class='question' src='/static/materials/icons/button_r.png'>
+        </div>
+
+        <hr class='divider'>
+      </template>
+
+      <template v-else-if='is_login_guide_for_mypage'>
+        <div class='section top'>
+          <div class='title'>부캐를 만들고<br>진솔한 패션 조언을 얻어보세요.</div>
+          <div class='sub'>화보 속 완벽한 패션<br>내 체형에도 어울릴까 고민이라면?</div>
+        </div>
+
+        <div class='section bottom'>
+          <div class='sub'>
+            <span>지금 로그인하여 나만의 부캐로 패션 수다에 참여하세요.</span>
+            <div class='action login' @click='action_login'>로그인하기</div>
+            <div class='action cancel' @click='action_cancel'>취소</div>
+          </div>
+        </div>
+
+        <div class='updown up'>
+          <img src='/static/materials/icons/button_profile_circle.png'>
+        </div>
+
+        <div class='updown down'>
+          <img src='/static/materials/icons/button_profile_circle.png'>
+        </div>
+
+        <hr class='divider'>
+      </template>
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('bridge', {
+    template: '#bridge-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      is_login_guide_for_posting: function() {
+        return this.session.page.bridge.type == 'login_guide_for_posting'
+      },
+
+      is_login_guide_for_mypage: function() {
+        return this.session.page.bridge.type == 'login_guide_for_mypage'
+      }
+    },
+
+    methods: {
+      action_login: function() {
+        this.session.close_page();
+        this.session.open_loginpage();
+      },
+
+      action_cancel: function() {
+        this.session.close_page();
+      }
+    }
+  });
+</script>

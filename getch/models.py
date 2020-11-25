@@ -19,6 +19,7 @@ VOTE_UP = 0
 VOTE_DOWN = 1
 FOLLOW = 10
 
+BOO_DELETED = 97
 
 
 class BigIdAbstract(models.Model):
@@ -302,7 +303,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
 
 
 class Post(BigIdAbstract, ModelWithFlag):
-    boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_DEFAULT, default=BOO_DELETED)
     text = models.TextField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     objects = InheritanceManager()
@@ -378,6 +379,10 @@ class Post(BigIdAbstract, ModelWithFlag):
     @property
     def ncomments(self):
         return self.comment_set.filter(boo__isnull=False).count()
+
+    @property
+    def popularity(self):
+        return self.nvotes_up + self.nvotes_down + self.ncomments
 
 
 def _postpix_path(instance, fname):

@@ -1,0 +1,98 @@
+<style>
+  .login-bt {
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    box-sizing: border-box;
+    border: 1px solid black;
+    color: white;
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .facebook.login-bt {
+    top: 20px;
+    background: rgb(46,117,182);
+    margin-bottom: 20px;
+  }
+
+  .google.login-bt {
+    top: 70px;
+    background: black;
+  }
+</style>
+
+
+{% load socialaccount %}
+<script type='text/x-template' id='loginpage-template'>
+  <page class='loginpage' :open='session.page.loginpage.open' :from='session.page.loginpage.from' @close='session.close_page()'>
+
+    <div style='position:absolute;top:0;left:0;width:100%;height:50%;display: flex;align-items: center;justify-content: center;'>
+      <img src='/static/materials/imgs/sideb_logo.jpg' style='height:40%;width:40%;object-fit:contain;'>
+    </div>
+
+    <div style='position:absolute;bottom:0;left:0;width:100%;height:50%;background:white;'>
+      <div class='facebook login-bt' @click='login_with_facebook' style="cursor:pointer;text-align:center;">
+        LOGIN WITH FACEBOOK
+      </div>
+
+      <div class='google login-bt' @click='login_with_google' style="cursor:pointer;text-align:center;">
+        LOGIN WITH GOOGLE
+      </div>
+
+      <!-- <a href="{% provider_login_url 'facebook' method='oauth2' %}" style='text-decoration: none'>
+        <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
+      </a>
+
+      <a href="{% provider_login_url 'google' method='oauth2' %}" style='text-decoration: none'>
+        <div class='google login-bt'>LOGIN WITH GOOGLE</div>
+      </a> -->
+    </div>
+
+    <!-- <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:30px;'>
+      <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
+        <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
+      </div>
+
+      <a href="{% provider_login_url 'facebook' method='oauth2' %}">
+        <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
+      </a>
+
+      <a href="{% provider_login_url 'google' method='oauth2' %}">
+        <div class='google login-bt'>LOGIN WITH GOOGLE</div>
+      </a>
+
+      <div style='font-size:8px;text-align:left;padding:10px;'>
+        <p>
+          BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
+        </p>
+      </div>
+    </div> -->
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('loginpage', {
+    template: '#loginpage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        facebook_login_url: "{% provider_login_url 'facebook' method='oauth2' %}",
+        google_login_url: "{% provider_login_url 'google' method='oauth2' %}"
+      }
+    },
+
+    methods: {
+      login_with_facebook: function() {
+        window.location.assign(this.facebook_login_url);
+      },
+
+      login_with_google: function() {
+        window.location.assign(this.google_login_url);
+      }
+    }
+  });
+</script>

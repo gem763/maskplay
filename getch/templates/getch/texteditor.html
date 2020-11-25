@@ -12,6 +12,7 @@
     border: none;
     text-align: center;
     font-size: 25px;
+    width: 100%;
   }
 
   .texteditor.vcomp > input:focus {
@@ -21,8 +22,8 @@
   .texteditor.vcomp > .actions {
     position: fixed;
     bottom: 0;
-    left: 0;
-    width: 100%;
+    /* left: 0; */
+    width: var(--width);
     height: var(--w-12);
     background: white;
     font-size: 12px;

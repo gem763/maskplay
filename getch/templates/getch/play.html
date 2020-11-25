@@ -96,6 +96,7 @@
 
     <!-- <modal :pop='true' name='intro'></modal> -->
     <modal :pop='session.page.posts.contents.list.length==0' name='intro'></modal>
+    <!-- <modal :pop='!session.ready' name='intro'></modal> -->
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -178,6 +179,7 @@
       });
     });
 
+    sideb.session.anonyboo = {{anonyboo|safe}};
     sideb.session.stats = {{stats|safe}};
     sideb.session.styletags = {{styletags|safe}};
     sideb.session.fashiontems = {{fashiontems|safe}};

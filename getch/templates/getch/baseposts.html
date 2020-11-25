@@ -111,28 +111,6 @@
       </transition>
     </div>
 
-
-    <div class='menu-bottom' v-show='!modifying'>
-      <!-- <div class='discover' @click='session.open_navigator()'>
-        <img src='/static/materials/icons/button_m.png'>
-      </div>
-
-      <div class='_oi'>
-        <img src='/static/materials/icons/button_oi.png'>
-      </div>
-
-      <div class='mypage' @click='session.open_mypage()'>
-        <img src='/static/materials/icons/button_b_profile.png'>
-      </div>
-
-      <div class='_e'>
-        <img src='/static/materials/icons/button_e.png'>
-      </div>
-
-      <div class='posting' @click='open_posting()'>
-        <img src='/static/materials/icons/button_r.png'>
-      </div> -->
-    </div>
   </div>
 
 </script>
@@ -153,6 +131,9 @@
         swiper: undefined,
         swiper_options: {
           direction: 'vertical',
+          mousewheel: {
+            releaseOnEdges: true,
+          },
         },
       }
     },

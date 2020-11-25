@@ -1,74 +1,170 @@
 <style>
-  .login-bt {
-    position: absolute;
-    left: 10%;
-    right: 10%;
-    box-sizing: border-box;
-    border: 1px solid black;
-    color: white;
+  .loginpage.vcomp {
+    width: 100%;
+    height: 100%;
+    background: white;
     font-size: 12px;
-    padding: 8px;
   }
 
-  .facebook.login-bt {
-    top: 20px;
-    background: rgb(46,117,182);
-    margin-bottom: 20px;
+  .loginpage.vcomp > .divider {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    border-top: 1px solid var(--color-dark);
+    border-bottom: none;
   }
 
-  .google.login-bt {
-    top: 70px;
+  .loginpage.vcomp > .section {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .loginpage.vcomp > .section.top {
+    top: 0;
+    background: none;
+  }
+
+  .loginpage.vcomp > .section.top > .title {
+    text-align: center;
+    /* font-size: 12pt; */
+  }
+
+  .loginpage.vcomp > .section.top > .sub {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .loginpage.vcomp > .section.top > .login-alert {
+    position: absolute;
+    bottom: var(--w-4);
+    left: 0;
+    width: 100%;
+    background: none;
+    text-align: center;
+    font-size: 10px;
+    color: #CCCCCC;
+  }
+
+  .loginpage.vcomp > .section.top > .sub > .action {
+    width: 35%;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    color: white;
+    /* font-size: 12pt; */
+  }
+
+  .loginpage.vcomp > .section.top > .sub > .action.login-facebook {
+    background: #0095F6;
+    margin-bottom: 10px;
+  }
+
+  .loginpage.vcomp > .section.top > .sub > .action.login-google {
     background: black;
+    margin-bottom: var(--w-12);
+  }
+
+  .loginpage.vcomp > .section.bottom {
+    bottom: 0;
+    background: none;
+  }
+
+  .loginpage.vcomp > .section.bottom > .sub {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .loginpage.vcomp > .section.bottom > .sub > .action {
+    width: 35%;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    /* font-size: 12pt; */
+  }
+
+  .loginpage.vcomp > .section.bottom > .sub > .action.register {
+    background: white;
+    margin-top: var(--w-12);
+    border: 1px solid var(--color-dark);
+    opacity: 0;
+  }
+
+  .loginpage.vcomp > .section.bottom > .sub > .logo {
+    margin-top: var(--w-8);
+    width: 45%;
+    height: auto;
+  }
+
+  .loginpage.vcomp > .section.bottom > .tail {
+    position: absolute;
+    bottom: calc(var(--w-12) + 10px);
+    width: 100%;
+    left: 0;
+    background: none;
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+  }
+
+  .loginpage.vcomp > .section.bottom > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
   }
 </style>
 
 
 {% load socialaccount %}
 <script type='text/x-template' id='loginpage-template'>
-  <page class='loginpage' :open='session.page.loginpage.open' :from='session.page.loginpage.from' @close='session.close_page()'>
+  <page :open='session.page.loginpage.open' :from='session.page.loginpage.from' @close='session.close_page()'>
+    <div class='loginpage vcomp'>
+      <div class='section top'>
+        <div class='title'>가입하고 솔직한 패션 조언을 얻으세요.</div>
+        <div class='sub'>
+          <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 로그인</div>
+          <div class='action login-google' @click='action_login_google'>구글로 로그인</div>
+        </div>
+        <span class='login-alert'>약관에 동의하고 로그인합니다.</span>
+      </div>
 
-    <div style='position:absolute;top:0;left:0;width:100%;height:50%;display: flex;align-items: center;justify-content: center;'>
-      <img src='/static/materials/imgs/sideb_logo.jpg' style='height:40%;width:40%;object-fit:contain;'>
+      <div class='section bottom'>
+        <div class='sub'>
+          <div class='action register' @click='action_register'>가입하기</div>
+          <img class='logo' src='/static/materials/logos/moiber-logo.png'>
+        </div>
+
+        <div class='tail'>
+          <span class='item' @click='corporate'>소개</span>
+          <!-- <span class='item' @click='recruit'>채용</span> -->
+          <span class='item' @click='help'>도움말</span>
+          <span class='item' @click='policy'>약관</span>
+          <span class='item' @click='privacy'>개인정보보호</span>
+          <span class='item' @click='contact'>컨텍트</span>
+        </div>
+      </div>
+
+      <hr class='divider'>
     </div>
-
-    <div style='position:absolute;bottom:0;left:0;width:100%;height:50%;background:white;'>
-      <div class='facebook login-bt' @click='login_with_facebook' style="cursor:pointer;text-align:center;">
-        LOGIN WITH FACEBOOK
-      </div>
-
-      <div class='google login-bt' @click='login_with_google' style="cursor:pointer;text-align:center;">
-        LOGIN WITH GOOGLE
-      </div>
-
-      <!-- <a href="{% provider_login_url 'facebook' method='oauth2' %}" style='text-decoration: none'>
-        <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
-      </a>
-
-      <a href="{% provider_login_url 'google' method='oauth2' %}" style='text-decoration: none'>
-        <div class='google login-bt'>LOGIN WITH GOOGLE</div>
-      </a> -->
-    </div>
-
-    <!-- <div style='position:absolute;background:lightyellow;width:100%;left:0;bottom:0;padding:30px;'>
-      <div style='background:none;width:100%;margin-bottom:5px;text-align:right;'>
-        <i class="fa fa-barcode" style='font-size:50px;transform:scale(1,0.5);transform-origin:right bottom;margin-right:2px;'></i>
-      </div>
-
-      <a href="{% provider_login_url 'facebook' method='oauth2' %}">
-        <div class='fb login-bt'>LOGIN WITH FACEBOOK</div>
-      </a>
-
-      <a href="{% provider_login_url 'google' method='oauth2' %}">
-        <div class='google login-bt'>LOGIN WITH GOOGLE</div>
-      </a>
-
-      <div style='font-size:8px;text-align:left;padding:10px;'>
-        <p>
-          BY CONTINUING, YOU AGREE TO GETCH'S <strong>TERMS OF SERVICE</strong> AND <strong>PRIVACY POLICY</strong>
-        </p>
-      </div>
-    </div> -->
-
   </page>
 </script>
 
@@ -77,7 +173,7 @@
   Vue.component('loginpage', {
     template: '#loginpage-template',
     delimiters: ['[[', ']]'],
-    props: ['session'],
+    props: [ 'session' ],
     data: function() {
       return {
         facebook_login_url: "{% provider_login_url 'facebook' method='oauth2' %}",
@@ -86,12 +182,40 @@
     },
 
     methods: {
-      login_with_facebook: function() {
+      action_login_facebook: function() {
         window.location.assign(this.facebook_login_url);
       },
 
-      login_with_google: function() {
+      action_login_google: function() {
         window.location.assign(this.google_login_url);
+      },
+
+      action_register: function() {
+        // alert('가입하기');
+      },
+
+      corporate: function() {
+        alert('모이버 소개');
+      },
+
+      recruit: function() {
+        alert('채용');
+      },
+
+      help: function() {
+        alert('도움말');
+      },
+
+      policy: function() {
+        window.open('/policy');
+      },
+
+      privacy: function() {
+        window.open('/privacy');
+      },
+
+      contact: function() {
+        window.open('mailto:contact@moiber.com')
       }
     }
   });

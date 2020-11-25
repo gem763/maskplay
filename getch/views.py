@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.apps import apps
 from django.conf import settings
 from django.core import serializers
+from django.db.models import F
 from django.template.loader import render_to_string
 import getch.models as m
 # import getch.serializers as ser
@@ -36,6 +37,9 @@ stats = {
     'total_nfollowers': m.Flager.objects.filter(status=m.FOLLOW).count(),
 }
 
+anonyboo = m.Boo.objects.get(pk=m.BOO_DELETED)
+
+
 def test(request):
     return render(request, 'getch/test.html')
 
@@ -53,7 +57,7 @@ def play(request):
     # ctx = {'characters':characters, 'maskbases':maskbases, 'stats':stats}
     # print(characters)
     # ctx = {'characters':characters, 'eyemasks':eyemasks, 'mouthmasks':mouthmasks, 'stats':stats}
-    ctx = {'stats':stats, 'styletags':styletags, 'fashiontems':fashiontems}
+    ctx = {'stats':stats, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized}
     # print(styletags)
     return render(request, 'getch/play.html', ctx)
 
@@ -71,8 +75,18 @@ def get_user(request):
 #     _posts = m.PostSerializer(_qs, many=True).data
 #     return JsonResponse({'success':True, 'posts':_posts}, safe=False)
 
-def get_iposts(request):
-    _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
+# def get_iposts(request):
+#     _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
+#     return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
+
+
+def get_iposts(request, type):
+    if type == 'history':
+        _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
+
+    elif type == 'hot':
+        _iposts = m.Post.objects.annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
+
     return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
 
 
@@ -172,6 +186,7 @@ def boo_update(request):
         _fashiontems_to_add = request.POST.get('fashiontems_to_add', None)
         _fashiontems_to_remove = request.POST.get('fashiontems_to_remove', None)
         _boo_text = request.POST.get('boo_text', None)
+        _boo_nick = request.POST.get('boo_nick', None)
         _profilepix = request.FILES.get('profilepix', None)
 
         try:
@@ -192,6 +207,11 @@ def boo_update(request):
                 boo.text = _boo_text
                 boo.save()
 
+            if _boo_nick:
+                boo = request.user.boo
+                boo.nick = _boo_nick
+                boo.save()
+
             if _profilepix:
                 profile = request.user.boo.profile
                 profile.pix = _profilepix
@@ -201,6 +221,54 @@ def boo_update(request):
 
         except:
             return JsonResponse({'success':False, 'message':'something wrong while boo updating'}, safe=False)
+
+
+def boo_create(request):
+    if request.method=='POST':
+        print(request.POST, request.FILES)
+
+        _styletags_to_add = request.POST.get('styletags_to_add', None)
+        _styletags_to_remove = request.POST.get('styletags_to_remove', None)
+        _fashiontems_to_add = request.POST.get('fashiontems_to_add', None)
+        _fashiontems_to_remove = request.POST.get('fashiontems_to_remove', None)
+        _boo_text = request.POST.get('boo_text', None)
+        _boo_nick = request.POST.get('boo_nick', None)
+        _profilepix = request.FILES.get('profilepix', None)
+
+        boo = m.Boo.objects.create(user=request.user)
+
+        try:
+            if _styletags_to_add:
+                boo.styletags.add(*json.loads(_styletags_to_add))
+
+            if _styletags_to_remove:
+                boo.styletags.remove(*json.loads(_styletags_to_remove))
+
+            if _fashiontems_to_add:
+                boo.fashiontems.add(*json.loads(_fashiontems_to_add))
+
+            if _fashiontems_to_remove:
+                boo.fashiontems.remove(*json.loads(_fashiontems_to_remove))
+
+            if _boo_text:
+                boo.text = _boo_text
+                boo.save()
+
+            if _boo_nick:
+                boo.nick = _boo_nick
+                boo.save()
+
+            if _profilepix:
+                profile = boo.profile
+                profile.pix = _profilepix
+                profile.save()
+
+
+            request.user.set_boo(boo.id) # 새로 생성한 부캐를 선택하는 것이 디폴트
+            return JsonResponse({'success':True, 'boo_id':boo.id, 'message':'boo created successfully'}, safe=False)
+
+        except:
+            return JsonResponse({'success':False, 'message':'something wrong while boo creating'}, safe=False)
 
 
 def vote(request, post_id):

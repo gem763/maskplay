@@ -14,7 +14,7 @@
   .aboutboo.vcomp > .top-header {
     position: fixed;
     top: 0;
-    width: 100%;
+    width: var(--width);
     height: var(--w-16);
     background: white;
     transition: all 0.5s;
@@ -58,6 +58,42 @@
   .aboutboo.vcomp > .top-header > .hamburger > img {
     height: var(--w-6);
     width: var(--w-6);
+  }
+
+  .aboutboo.vcomp > .top-header > .hamburger > .submenu {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    background: rgba(255,255,255,0.9);
+    width: var(--w-24);
+    /* border: 1px solid black; */
+    border-radius: var(--w-3);
+    overflow: hidden;
+    font-size: 12px;
+  }
+
+  .aboutboo.vcomp > .top-header > .hamburger > .submenu > .item {
+    background: none;
+    height: var(--w-8);
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .top-header > .hamburger > .submenu > .item:last-child {
+    border-bottom: none;
+    color: red;
+  }
+
+  .aboutboo.vcomp .show-more-enter-active,
+  .aboutboo.vcomp .show-more-leave-active {
+    transition: all 0.1s;
+  }
+
+  .aboutboo.vcomp .show-more-enter,
+  .aboutboo.vcomp .show-more-leave-to {
+    opacity: 0;
   }
 
   .aboutboo.vcomp > .profiles {
@@ -169,9 +205,9 @@
 
   .aboutboo.vcomp > .profiles > .styletags > .tag,
   .aboutboo.vcomp > .profiles > .fashiontems > .item {
-    font-size: 11px;
+    font-size: 16px;
     padding: 5px;
-    border-radius: 20px;
+    border-radius: 30px;
     margin: 2px;
   }
 
@@ -181,7 +217,7 @@
   }
 
   .aboutboo.vcomp > .profiles > .fashiontems > .item.selected {
-    background: DarkSlateGray;
+    background: #292A4D;
     color: white;
   }
 
@@ -225,6 +261,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.5s;
+    position: relative;
   }
 
   .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > img {
@@ -232,6 +269,22 @@
     height: 80%;
     border-radius: 50%;
     object-fit: cover;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > img.add {
+    width: 33%;
+    height: 33%;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > .circle {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    border: 1px solid var(--color-dark);
+    box-sizing: border-box;
   }
 </style>
 
@@ -242,7 +295,7 @@
 
     <div class='profiles' ref='profiles'>
       <div class='profile'>
-        <img class='profilepix' :src='profilepix'>
+        <img class='profilepix' :src='profilepix' @click='toggle_changeboo'>
 
         <div class='editboo' @click='session.open_profiler()' v-if='is_myboo'>
           <img src='/static/materials/icons/edit.png'>
@@ -255,23 +308,25 @@
         </div>
       </div>
 
-      <div class='changeboo' @click='toggle_changeboo' v-if='is_myboo'>
-        <img src='/static/materials/icons/changeboo.png' v-if='!on_changeboo' @click='on_changeboo==true'>
-        <img src='/static/materials/icons/times.png' v-if='on_changeboo' @click='on_changeboo==false'>
-      </div>
+      <!-- <div class='changeboo' @click='toggle_changeboo' v-if='is_myboo'>
+        <img src='/static/materials/icons/changeboo.png' v-if='!on_changeboo'>
+        <img src='/static/materials/icons/times.png' v-if='on_changeboo'>
+      </div> -->
 
       <div class='nick'>[[ nick ]]</div>
-      <div class='text'>[[ text ]]</div>
 
       <div class='boochooser' v-if='is_myboo'>
         <div class='boo-candidate' :style='boo_candidate_style' v-for='b in myboos' @click='choose_this_boo(b)'>
           <img :src='b.profile.pix'>
         </div>
 
-        <div class='boo-candidate' :style='boo_candidate_style' @click='session.open_profiler("new")'>
-          <img src='/static/materials/icons/plus.png'>
+        <div class='boo-candidate' :style='boo_candidate_style' v-if='!myboos_maxed' @click='session.open_profiler("new")'>
+          <img class='add' src='/static/materials/icons/plus.png'>
+          <div class='circle'></div>
         </div>
       </div>
+
+      <div class='text'>[[ text ]]</div>
 
       <div class='styletags'>
         <span class='tag selected' v-for='t in mytags'>[[ session.styletags[t] ]]</span>
@@ -292,8 +347,15 @@
     </div>
 
     <div class='top-header'>
-      <div class='hamburger' @click='pop_boomenu'>
+      <div class='hamburger' @click='toggle_more'>
         <img src='/static/materials/icons/button_e.png'>
+
+        <transition name='show-more'>
+          <div class='submenu' v-if='more'>
+            <div class='item' v-if='is_myboo' @click='delboo'>부캐삭제</div>
+            <div class='item' v-if='is_myboo' @click='logout'>로그아웃</div>
+          </div>
+        </transition>
       </div>
 
       <div class='profile'>
@@ -302,6 +364,8 @@
     </div>
 
     <bar-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading || !boo.id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+    <modal :pop='on_deleting' name='deleting' @delete='delboo_really($event)'></modal>
+    <modal :pop='on_logout' name='logout' @logout='logout_really($event)'></modal>
   </div>
 </script>
 
@@ -314,6 +378,10 @@
     data: function() {
       return {
         on_changeboo: false,
+        n_boos_max: 4,
+        more: false,
+        on_deleting: false,
+        on_logout: false
       }
     },
 
@@ -364,7 +432,10 @@
       },
 
       is_following: function() {
-        return !this.is_myboo && this.session.auth.is_following(this.boo.id)
+        if (this.is_myboo) {
+          return this.session.auth.is_following(this.boo.id)
+        }
+        // return !this.is_myboo && this.session.auth.is_following(this.boo.id)
       },
 
       is_myboo: function() {
@@ -385,13 +456,19 @@
         }
       },
 
+      myboos_maxed: function() {
+        if (this.is_myboo) {
+          return Object.keys(this.session.auth.boos).length >= this.n_boos_max
+        }
+      },
+
       boo_candidate_style: function() {
         if (this.is_myboo) {
           let size;
 
           if (this.on_changeboo) {
-            const n = Object.keys(this.myboos).length + 1;
-            size = `calc(var(--w-80) / ${n})`;
+            // const n = Object.keys(this.myboos).length + (this.myboos_maxed ? 0 : 1);
+            size = `calc(var(--w-80) / ${this.n_boos_max})`;
 
           } else {
             size = '0px';
@@ -407,6 +484,42 @@
     },
 
     methods: {
+      delboo: function() {
+        this.on_deleting = true;
+      },
+
+      logout: function() {
+        this.on_logout = true;
+      },
+
+      logout_really: function() {
+        this.on_logout = false;
+
+        if (how=1) {
+          window.location.assign('/accounts/logout/');
+        }
+      },
+
+      delboo_really: function(how) {
+        this.on_deleting = false;
+
+        if (how==1) {
+          const boos = this.session.auth.boos;
+          const cboo_id = this.session.auth.boo_selected;
+
+          fetch('/boo/profile/delete/')
+            .then(x => x.json())
+            .then(j => { console.log(j) });
+
+          const _boo_id = Object.keys(boos)
+            .filter(x => x !== String(cboo_id) )
+            .sort((a,b) => Number(b) - Number(a) )[0];
+
+          this.session.auth.boo = Number(_boo_id);
+          this.$delete(boos, cboo_id);
+        }
+      },
+
       choose_this_boo: function(boo) {
         this.session.auth.boo = boo.id;
       },
@@ -453,6 +566,10 @@
 
       pop_boomenu: function() {
         alert('boopage-menu popup')
+      },
+
+      toggle_more: function() {
+        this.more = !this.more;
       },
     }
   });

@@ -114,7 +114,8 @@
 
   .modal .content .sub.intro,
   .modal .content .sub.processing,
-  .modal .content .sub.deleting {
+  .modal .content .sub.deleting,
+  .modal .content .sub.logout {
     font-size: 30px;
     font-weight: bold;
   }
@@ -138,19 +139,6 @@
     height: auto;
     object-fit: contain;
   }
-
-  /* .modal .content .sub.intro img.slogun {
-    width: 40%;
-    height: auto;
-    object-fit: contain;
-  } */
-
-  /* .modal .content .sub.intro img {
-    width: calc(30 * var(--vw-unit));
-    height: calc(30 * var(--vw-unit));
-    object-fit: contain;
-    animation: blink normal 2s infinite ease-in-out;
-  } */
 
   @keyframes blink {
     0%   { opacity:1; }
@@ -211,7 +199,8 @@
           <div class='logos'>
             <img class='slogun-top' src='/static/materials/logos/moiber_landing_slogun0.png' style='position:absolute;bottom:105%;left:30%;width:15%;height:auto;'>
             <img class='logo' src='/static/materials/logos/moiber-logo.png'>
-            <bar-loader :loading='true' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+            <bar-loader :loading='true' :width='loader_width' :height='1' color="#302E2F"></bar-loader>
+            <!-- <bar-loader :loading='true' :width='loader_width' :height='1' color="#D0021B"></bar-loader> -->
             <img class='logo' src='/static/materials/logos/moiber-logo.png' style='transform: rotate(180deg) scaleX(-1);opacity:0.2;'>
             <!-- <div style='position:absolute;background:none;bottom:105%;left:50%;transform:translateX(-50%);'>
               나, 뭐입어? -스타일 컨설팅 플랫폼
@@ -246,6 +235,20 @@
           </div>
         </div>
 
+        <div class='sub logout' v-if='is_logout'>
+          로그아웃 하실 건가요?
+
+          <div class='actions'>
+            <div class='action' @click='$emit("logout", 0)'>
+              <img src='/static/materials/icons/times.png'>
+            </div>
+
+            <div class='action' @click='$emit("logout", 1)'>
+              <img src='/static/materials/icons/o.png'>
+            </div>
+          </div>
+        </div>
+
       </div>
     </transition>
   </div>
@@ -273,6 +276,10 @@
 
       is_intro: function() {
         return this.name == 'intro'
+      },
+
+      is_logout: function() {
+        return this.name == 'logout'
       },
 
       loader_width: function() {

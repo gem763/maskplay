@@ -1,0 +1,186 @@
+<style>
+  .searcher.vcomp {
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
+  }
+
+  .searcher.vcomp > .top-header {
+    position: fixed;
+    top: 0;
+    width: var(--width);
+    height: var(--w-16);
+    background: white;
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .searcher.vcomp > .top-header > .search-button {
+    background: none;
+    position: absolute;
+    top: var(--w-2);
+    height: var(--w-12);
+    width: var(--w-12);
+    right: var(--w-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .searcher.vcomp > .top-header > .search-button > img {
+    height: var(--w-6);
+    width: var(--w-6);
+  }
+
+  .searcher.vcomp > .top-header > .searchbar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--w-70);
+    height: var(--w-10);
+    transform: translate(-50%,-50%);
+    font-size: 16px;
+    font-weight: bold;
+    background: whitesmoke;
+    /* padding: 5px; */
+    border-radius: 50px;
+    text-align: center;
+    border: none;
+  }
+
+  .searcher.vcomp > .top-header > .searchbar:focus {
+    outline: none;
+  }
+
+  .searcher.vcomp > .top-header > .searchbar::placeholder {
+    font-weight: normal;
+  }
+
+  .searcher.vcomp > .contents {
+    position: relative;
+    width: 100%;
+    margin-top: var(--w-16);
+  }
+
+  .searcher.vcomp > .spinner {
+    position: fixed;
+    bottom: var(--w-12);
+  }
+</style>
+
+<script type='text/x-template' id='searcher-template'>
+  <page :open='session.page.searcher.open' :from='session.page.searcher.from' @close='session.close_page()'>
+    <div class='searcher vcomp'>
+
+      <div class='contents'>
+        <postlibrary
+          :postlist='postlist'
+          @open_posts='backto_posts($event)'
+        ></postlibrary>
+      </div>
+
+      <div class='top-header'>
+        <div class='search-button' @click='run_search'>
+          <img src='/static/materials/icons/search.png'>
+        </div>
+
+        <input class='searchbar' v-model.trim='keywords' @keyup.enter='run_search' placeholder='검색어를 입력하세요' ref='input'>
+      </div>
+
+      <bar-loader class='spinner' :loading='on_searching' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('searcher', {
+    template: '#searcher-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        keywords: ''
+      }
+    },
+
+    watch: {
+      'session.page.searcher.open': function(_new, _old) {
+        if (_new) {
+          if (this.$refs) {
+            this.fix_window_width();
+            this.$nextTick(() => this.$refs.input.focus());
+          }
+
+        } else {
+          if (this.$refs) {
+            this.release_window_width();
+          }
+        }
+      }
+    },
+
+    computed: {
+      searchposts: function() {
+        return this.session.page.posts.univ.search
+      },
+
+      postlist: function() {
+        if (this.searchposts) {
+          return this.searchposts.list
+
+        } else {
+          return []
+        }
+      },
+
+      on_searching: function() {
+        if (this.searchposts) {
+          return this.searchposts.onloading
+
+        } else {
+          return false
+        }
+      },
+
+      loader_width: function() {
+        return document.querySelector('#window').clientWidth
+      }
+    },
+
+    methods: {
+      run_search: function() {
+        if (this.$refs) {
+          this.$refs.input.blur();
+        }
+
+        this.session.page.posts.univ.search = new SearchPosts(this.keywords);
+      },
+
+      backto_posts: function(idx) {
+        this.session.page.posts.contents = this.session.page.posts.univ.history;
+
+        const selected = this.postlist[idx];
+        const where = this.session.page.posts.swiper.realIndex + 1;
+        this.session.page.posts.contents.list.splice(where, 0, selected);
+        this.session.page.posts.swiper.slideTo(where, 1, false);
+        this.session.close_pages_all();
+      },
+
+      fix_window_width: function() {
+        const w = document.querySelector('#window').clientWidth;
+        document.documentElement.style.setProperty('--width', w + 'px');
+      },
+
+      release_window_width: function() {
+        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+      }
+    }
+  });
+</script>

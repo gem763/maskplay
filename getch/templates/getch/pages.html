@@ -11,6 +11,7 @@
 {% include "getch/pixeditor.html" %}
 {% include "getch/texteditor.html" %}
 {% include "getch/bridge.html" %}
+{% include "getch/searcher.html" %}
 
 
 <style>
@@ -36,6 +37,10 @@
     <navigator
       :session='session'
     ></navigator>
+
+    <searcher
+      :session='session'
+    ></searcher>
 
     <boopage
       :session='session'

@@ -2,7 +2,7 @@ class Session {
   constructor() {
     this.page = {
       // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
-      posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined }, swiper: undefined },
+      posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
       // posts:      { contents: this.posts_univ.history, swiper: undefined },
       mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'bottom' },
@@ -17,6 +17,7 @@ class Session {
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
       texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
       bridge:     { open: false, from: 'bottom', type: undefined },
+      searcher:   { open: false, from: 'right' },
     };
 
     this.mode = { on: 'posts', order: 0, prev: undefined };
@@ -218,6 +219,10 @@ class Session {
     this.open_page('navigator');
   }
 
+  open_searcher() {
+    this.open_page('searcher');
+  }
+
   // open_network() {
   //   if (this.mode.on=='mypage') {
   //     this.cnetwork.boo = this.auth.boo;
@@ -412,6 +417,18 @@ class Posts extends ContentLoader {
     this.load_idlist();
   }
 }
+
+
+class SearchPosts extends ContentLoader {
+  constructor(keywords) {
+    super();
+    this.nloads_init = 20;
+    this.idlist_url = `/search/${keywords}`;
+    this.content_url = (id) => `/post/${id}`;
+    this.load_idlist();
+  }
+}
+
 
 class Booposts extends ContentLoader {
   constructor(boo) {

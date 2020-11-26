@@ -1,7 +1,9 @@
 class Session {
   constructor() {
     this.page = {
-      posts:      { contents: new Posts(), swiper: undefined },
+      // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
+      posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
+      // posts:      { contents: this.posts_univ.history, swiper: undefined },
       mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'bottom' },
       navigator:  { open: false, from: 'left' },
@@ -15,11 +17,13 @@ class Session {
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
       texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
       bridge:     { open: false, from: 'bottom', type: undefined },
+      searcher:   { open: false, from: 'right' },
     };
 
     this.mode = { on: 'posts', order: 0, prev: undefined };
     this.auth = undefined;
     // this.posts = new Posts();
+    // this.posts_univ = { history: new Posts(), hot: undefined, custom: undefined };
     this.posts_open_at = 0;
     this.booposts = undefined;
 
@@ -28,6 +32,8 @@ class Session {
     this.styletags = undefined;
     // this.hammer = this.get_hammer();
 
+    this.page.posts.contents = this.page.posts.univ.history;
+    // this.ready = this.page.posts.univ.history.list.length > 0
     this.fetch_user();
   }
 
@@ -153,7 +159,7 @@ class Session {
 
   open_posting() {
     this.close_pages_all();
-    
+
     if (this.auth) {
       // this.page.posting.mother = mother;
       this.open_page('posting');
@@ -211,6 +217,10 @@ class Session {
   open_navigator() {
     this.close_pages_all();
     this.open_page('navigator');
+  }
+
+  open_searcher() {
+    this.open_page('searcher');
   }
 
   // open_network() {
@@ -399,21 +409,34 @@ class Baseposts extends ContentLoader {
 
 
 class Posts extends ContentLoader {
-  constructor() {
+  constructor(type) {
     super();
     this.nloads_init = 24;
-    this.idlist_url = '/posts/iposts';
+    this.idlist_url = `/posts/iposts/${type}`;
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();
   }
 }
+
+
+class SearchPosts extends ContentLoader {
+  constructor(keywords) {
+    super();
+    this.nloads_init = 20;
+    this.idlist_url = `/search/${keywords}`;
+    this.content_url = (id) => `/post/${id}`;
+    this.load_idlist();
+  }
+}
+
 
 class Booposts extends ContentLoader {
   constructor(boo) {
     super();
     this.boo = boo;
     this.nloads_init = 16;
-    this.idlist_url = `/posts/iposts/${boo.id}`;
+    this.idlist_url = `/boo/${boo.id}/iposts`;
+    // this.idlist_url = `/posts/iposts/${boo.id}`;
     this.content_url = (id) => `/post/${id}/boo`;
     this.load_idlist();
   }

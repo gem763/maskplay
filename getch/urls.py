@@ -48,5 +48,7 @@ urlpatterns = [
     # path('fashiontems/untag/<int:item_id>', v.fashiontems_untag, name='fashiontems_untag'),
 
     path('boo/update/', v.boo_update, name='boo_update'),
-    path('boo/create/', v.boo_create, name='boo_create')
+    path('boo/create/', v.boo_create, name='boo_create'),
+
+    path('search/<str:keywords>/', v.search, name='search'),
 ]

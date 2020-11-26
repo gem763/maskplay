@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core import serializers
 from django.db.models import F
 from django.template.loader import render_to_string
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 import getch.models as m
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
@@ -560,3 +561,19 @@ def boo_new(request):
     boo = m.Boo.objects.create(user=request.user)
     request.user.set_boo(boo.id) # 새로 생성한 부캐를 선택하는 것이 디폴트
     return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
+
+
+def search(request, keywords):
+    n = 20
+    # q = request.GET.get('q', None)
+
+    try:
+        vector = SearchVector('text', 'boo__nick', 'boo__text')
+        query = SearchQuery(keywords)
+        _searched = m.Post.objects.annotate(rank=SearchRank(vector, query)).order_by('-rank')[:n]
+        print(_searched)
+        _searched = _searched.values_list('id', flat=True)
+        return JsonResponse({'success':True, 'idlist':list(_searched), 'message':'searched successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while searching'}, safe=False)

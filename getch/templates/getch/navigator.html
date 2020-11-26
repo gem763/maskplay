@@ -28,6 +28,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
   }
 
 
@@ -55,7 +56,7 @@
     width: var(--w-6);
   }
 
-  .navigator.vcomp > .searcher {
+  .navigator.vcomp > .sorters {
     background: none;
     margin-top: var(--w-16);
     display: flex;
@@ -87,6 +88,7 @@
     justify-content: center;
     opacity: 1;
     transition: all 0.5s;
+    pointer-events: auto;
   }
 
   .navigator.vcomp > .top-header > .searchbar > img {
@@ -100,13 +102,15 @@
 
   .navigator.vcomp.sticky > .top-header > .logo {
     opacity: 1;
+
   }
 
   .navigator.vcomp.sticky > .top-header > .searchbar {
+    pointer-events: none;
     opacity: 0;
   }
 
-  .navigator.vcomp > .searcher > .sorter {
+  .navigator.vcomp > .sorters > .sorter {
     font-size: 15px;
     margin-left: 5px;
     margin-right: 5px;
@@ -114,7 +118,7 @@
     border-radius: 50px;
   }
 
-  .navigator.vcomp > .searcher > .sorter.active {
+  .navigator.vcomp > .sorters > .sorter.active {
     background: var(--color-dark);
     color: white;
   }
@@ -137,6 +141,13 @@
     transition: margin-left 0.5s;
   }
 
+  .navigator.vcomp > .search-result {
+    position: relative;
+    width: 100%;
+    background: lightblue;
+    margin-top: var(--w-16);
+  }
+
   .navigator.vcomp > .contents > .sections.history {
     margin-left: 0;
   }
@@ -155,7 +166,7 @@
 <script type='text/x-template' id='navigator-template'>
   <page :open='session.page.navigator.open' :from='session.page.navigator.from' @close='session.close_page()'>
     <div class='navigator vcomp' @scroll='scroll' ref='navigator'>
-      <div class='searcher' ref='searcher'>
+      <div class='sorters' ref='sorters'>
         <span class='sorter' :class='active_sorter=="history" ? "active" : ""' @click='sort_history'>최신</span>
         <span class='sorter' :class='active_sorter=="hot" ? "active" : ""' @click='sort_hot'>인기</span>
         <!-- <span @click='sort_custom'>맞춤</span> -->
@@ -163,14 +174,14 @@
 
       <div class='contents'>
         <div class='sections' :class='active_sorter'>
-          <div class='section' ref='section_history'>
+          <div class='section' :style='{ height: history_section_height }' ref='section_history'>
             <postlibrary
               :postlist='postlist_history'
               @open_posts='backto_posts($event)'
             ></postlibrary>
           </div>
 
-          <div class='section' ref='section_hot'>
+          <div class='section' :style='{ height: hot_section_height }' ref='section_hot'>
             <postlibrary
               :postlist='postlist_hot'
               @open_posts='backto_posts($event)'
@@ -184,16 +195,16 @@
           <img src='/static/materials/icons/button_e.png'>
         </div>
 
-        <div class='searchbar'>
-          <img src='/static/materials/icons/search.png'>
-        </div>
-
         <div class='logo'>
           <img src='/static/materials/logos/moiber-logo.png'>
         </div>
+
+        <div class='searchbar' @click='session.open_searcher()'>
+          <img src='/static/materials/icons/search.png'>
+        </div>
       </div>
 
-      <bar-loader class='spinner' :loading='session.page.posts.contents.onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+      <bar-loader class='spinner' :loading='the_posts.onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
     </div>
   </page>
 </script>
@@ -206,7 +217,9 @@
     props: ['session'],
     data: function() {
       return {
-        active_sorter: 'history'
+        active_sorter: 'history',
+        history_section_height: 'auto',
+        hot_section_height: 'auto',
       }
     },
 
@@ -220,7 +233,6 @@
       },
 
       postlist_history: function() {
-        // return this.session.page.posts.contents.list
         return this.session.page.posts.univ.history.list
       },
 
@@ -251,11 +263,7 @@
           this.the_posts.load(nload);
         }
 
-        // if ((gap < h0/2) && (!this.session.page.posts.contents.onloading)) {
-        //   this.session.page.posts.contents.load(nload);
-        // }
-
-        const sticky = this.$refs.searcher.offsetTop + this.$refs.searcher.clientHeight;
+        const sticky = this.$refs.sorters.offsetTop + this.$refs.sorters.clientHeight;
 
         if (scrollTop > sticky) {
           this.$refs.navigator.classList.add("sticky");
@@ -270,19 +278,29 @@
       },
 
       upmost: function() {
-        this.$refs.searcher.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        this.$refs.sorters.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
       },
 
       sort_history: function() {
         this.active_sorter = 'history';
-        // this.session.page.posts.contents = this.session.page.posts.univ.history;
-        console.log(this.$refs.section_history.clientHeight);
+        // console.log(this.$refs.section_history.clientHeight);
+
+        // sections 엘리먼트가 relative로 되어있기 때문에,
+        // history와 hot 섹션 중 높이가 큰 쪽으로 sections 의 높이가 결정된다.
+        // 이러면 history-hot 무엇을 선택하든 스크롤 높이가 일정하다.
+        // history-hot 선택에 따라 sections의 높이가 다르게 하기 위해 다음을 설정한다
+        const baseh = this.$refs.section_history.clientHeight;
+        this.history_section_height = 'auto';
+        this.hot_section_height = Math.min(this.$refs.section_hot.clientHeight, baseh) + 'px';
       },
 
       sort_hot: function() {
         this.active_sorter = 'hot';
-        // this.session.page.posts.contents = this.session.page.posts.univ.hot;
-        console.log(this.$refs.section_hot.clientHeight);
+        // console.log(this.$refs.section_hot.clientHeight);
+
+        const baseh = this.$refs.section_hot.clientHeight;
+        this.hot_section_height = 'auto';
+        this.history_section_height = Math.min(this.$refs.section_history.clientHeight, baseh) + 'px';
       },
 
       sort_custom: function() {

@@ -59,7 +59,7 @@
     filter: invert(1);
   }
 
-  .pixeditor.vcomp .cropper > .actions {
+  /* .pixeditor.vcomp .cropper > .actions {
     position: absolute;
     top: 0;
     left: 0;
@@ -80,6 +80,38 @@
 
   .pixeditor.vcomp .cropper > .actions > .action.ok {
     float: right;
+  } */
+
+  .pixeditor.vcomp .actions {
+    position: fixed;
+    bottom: 0;
+    /* left: 0; */
+    width: var(--width);
+    height: var(--w-12);
+    /* background: white; */
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pixeditor.vcomp .actions > .action {
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pixeditor.vcomp .actions > .cancel.action {
+    color: gray;
+  }
+
+  .pixeditor.vcomp .actions > .done.action {
+    color: var(--color-neg);
   }
 </style>
 
@@ -102,8 +134,8 @@
       </div>
 
       <div class='actions'>
-        <span class='action cancel' @click='close'>CANCEL</span>
-        <span class='action ok' @click='ok'>OK</span>
+        <span class='action cancel' @click='close'>취소</span>
+        <span class='action done' @click='ok'>완료</span>
       </div>
     </div>
   </page>

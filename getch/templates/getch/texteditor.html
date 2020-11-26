@@ -86,6 +86,11 @@
             this.fix_window_width();
             this.$nextTick(() => this.$refs.input.focus());
           }
+
+        } else {
+          if (this.$refs) {
+            this.release_window_width();
+          }
         }
       }
     },

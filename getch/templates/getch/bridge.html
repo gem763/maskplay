@@ -2,7 +2,7 @@
   .bridge.vcomp {
     width: 100%;
     height: 100%;
-    background: white;
+    background: none;
     font-size: 12px;
   }
 
@@ -24,16 +24,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background: white;
   }
 
   .bridge.vcomp > .section.top {
     top: 0;
-    background: none;
   }
 
   .bridge.vcomp > .section.bottom {
     bottom: 0;
-    background: none;
+  }
+
+  .bridge.vcomp.posting_guide > .section.bottom {
+    background: rgba(255,255,255,0.9);;
   }
 
   .bridge.vcomp > .section.top > .title {
@@ -146,12 +149,38 @@
   .bridge.vcomp > .updown.down > img {
     transform: rotate(180deg);
   }
+
+  .bridge.vcomp > .section.bottom > .postypes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .bridge.vcomp > .section.bottom > .postypes > .postype:first-child {
+    margin-right: var(--w-6);
+  }
+
+  .bridge.vcomp > .section.bottom > .postypes > .postype:last-child {
+    margin-left: var(--w-6);
+  }
+
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table {
+    border-collapse: collapse;
+  }
+
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table td {
+    border: 1px solid var(--color-dark);
+    height: var(--w-12);
+    width: var(--w-12);
+    box-sizing: border-box;
+  }
 </style>
 
 
 <script type='text/x-template' id='bridge-template'>
-  <page :open='session.page.bridge.open' :from='session.page.bridge.from' @close='session.close_page()'>
-    <div class='bridge vcomp'>
+  <page :open='session.page.bridge.open' :from='session.page.bridge.from' @close='session.close_page()' :hide_close='hide_close' :hide_dimmer='hide_dimmer'>
+    <div class='bridge vcomp' :class='bridge_type'>
 
       <template v-if='is_login_guide_for_posting'>
         <div class='section top'>
@@ -203,6 +232,33 @@
 
         <hr class='divider'>
       </template>
+
+      <template v-else-if='is_posting_guide'>
+        <div class='section bottom'>
+
+          <div class='postypes'>
+            <div class='postype' @click=''>
+              <table>
+                <tbody>
+                  <tr><td>1</td><td>2</td></tr>
+                  <tr><td>3</td><td>4</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class='postype' @click=''>
+              <table>
+                <tbody>
+                  <tr><td>1</td><td>2</td></tr>
+                  <tr><td>3</td><td>4</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </template>
+
     </div>
   </page>
 </script>
@@ -218,12 +274,28 @@
     },
 
     computed: {
+      bridge_type: function() {
+        return this.session.page.bridge.type
+      },
+
       is_login_guide_for_posting: function() {
-        return this.session.page.bridge.type == 'login_guide_for_posting'
+        return this.bridge_type == 'login_guide_for_posting'
       },
 
       is_login_guide_for_mypage: function() {
-        return this.session.page.bridge.type == 'login_guide_for_mypage'
+        return this.bridge_type == 'login_guide_for_mypage'
+      },
+
+      is_posting_guide: function() {
+        return this.bridge_type == 'posting_guide'
+      },
+
+      hide_close: function() {
+        return this.is_posting_guide
+      },
+
+      hide_dimmer: function() {
+        return this.is_posting_guide
       }
     },
 

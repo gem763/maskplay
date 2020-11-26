@@ -157,16 +157,16 @@ class Session {
     this.open_page('booposts');
   }
 
-  open_posting() {
+  // open_posting() {
+  open_posting_guide() {
     this.close_pages_all();
 
     if (this.auth) {
-      // this.page.posting.mother = mother;
-      this.open_page('posting');
+      this.open_bridge('posting_guide');
+      // this.open_page('posting');
 
     } else {
       this.open_bridge('login_guide_for_posting');
-      // this.open_loginpage();
     }
   }
 

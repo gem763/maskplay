@@ -14,7 +14,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: white;
+    background: none;
     pointer-events: auto;
   }
 
@@ -88,7 +88,7 @@
 <script type='text/x-template' id='page-template'>
   <div class='page'>
     <transition name='show-dimmer'>
-      <div class='dimmer' v-show='open'></div>
+      <div class='dimmer' v-show='open && !hide_dimmer'></div>
     </transition>
 
     <transition :name='show_content_type'>
@@ -109,7 +109,7 @@
   Vue.component('page', {
     template: '#page-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'from', 'hide_close'],
+    props: ['open', 'from', 'hide_close', 'hide_dimmer'],
     data: function() {
       return { }
     },

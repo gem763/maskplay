@@ -43,7 +43,7 @@
     bottom: 0%;
     right: 0%;
     background: none;
-    border: 1px dashed black;
+    /* border: 1px dashed black; */
     box-sizing: border-box;
     /* border: 5px dashed silver; */
     opacity: 0.5;
@@ -54,8 +54,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 40px;
-    height: 40px;
+    width: var(--w-8);
+    height: var(--w-8);
     object-fit: contain;
     transform: translate(-50%,-50%);
     opacity: 0.5;
@@ -81,7 +81,7 @@
 
       <transition name='show-pix-clicker'>
         <div class='pix-clicker' v-show='editable'>
-          <!-- <img src='/static/materials/icons/pix.png'> -->
+          <img src='/static/materials/icons/edit.png'>
         </div>
       </transition>
     </label>

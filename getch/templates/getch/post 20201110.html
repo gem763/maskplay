@@ -41,30 +41,26 @@
     height: var(--w-52);
   }
 
-  .post.postvoteox .backbone > tbody > tr > td.bottom > .v-divider {
-    position: absolute;
-    top: var(--w-4);
-    left: 0;
-    width: 50%;
-    height: var(--w-32);
-    background: none;
-    border-right: 1px solid #302E2F;
-    pointer-events: none;
-  }
-
   .post .description {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
+    /* min-height: var(--w-12); */
     min-height: var(--w-8);
+    /* pointer-events: none; */
     text-align: left;
     background: rgba(255,255,255,0.6);
+    /* background: orange; */
     padding-left: var(--w-16);
     padding-top: var(--w-4);
     padding-bottom: var(--w-4);
     padding-right: var(--w-32);
   }
+
+  /* .post .description.active {
+    opacity: 0.3;
+  } */
 
   .post .backbone .pixlabel {
     position: absolute;
@@ -80,11 +76,11 @@
   }
 
   .post .backbone tr:first-child .pixlabel {
-    bottom: var(--w-5);
+    bottom: calc(var(--width-unit) * 5);
   }
 
   .post .backbone tr:last-child .pixlabel {
-    top: var(--w-5);
+    top: calc(var(--width-unit) * 5);
   }
 
   .post span.vs {
@@ -126,6 +122,7 @@
     left: 20%;
   }
 
+  .post .modify.button,
   .post .newpost.button {
     position: absolute;
     bottom: 30px;
@@ -137,7 +134,69 @@
     align-items: center;
     justify-content: center;
     font-size: 12px;
+  }
+
+  .post .modify.button div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .post .modify.button div.edit-post {
     background: black;
+    flex-grow: 1
+  }
+
+  .post .modify.button div.edit-post.onedit {
+    background: orange;
+  }
+
+  .post .modify.button div.delete-post {
+    background: var(--color-pos);
+    width: 35px;
+    margin-left: 5px;
+  }
+
+
+  .post .modify.button div.delete-post img {
+    width:20px;
+    height: 20px;
+    object-fit: contain;
+    filter: invert(100%);
+  }
+
+  .post .newpost.button {
+    background: black;
+  }
+
+  .post .show-modify-enter-active,
+  .post .show-modify-leave-active,
+  .post .show-newpost-enter-active,
+  .post .show-newpost-leave-active {
+    transition: bottom 0.1s;
+  }
+
+  .post .show-modify-enter,
+  .post .show-modify-leave-to,
+  .post .show-newpost-enter,
+  .post .show-newpost-leave-to {
+    bottom: -40px !important;
+  }
+
+  .author-profile {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--s-menu);
+    height: var(--s-menu);
+    background: none;
+  }
+
+  .author-profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .post > .onsaving {
@@ -147,11 +206,24 @@
     transform: translate(-50%,-50%);
   }
 
+  .post .show-saving-enter-active,
+  .post .show-saving-leave-active {
+    transition: all 0.3s;
+  }
+
+  .post .show-saving-enter,
+  .post .show-saving-leave-to {
+    top: 0;
+    opacity: 0;
+  }
+
+
   .post > .description > .styletags {
     margin-top: 10px;
     margin-bottom:5px;
     display: flex;
     align-items: center;
+    /* justify-content: center; */
     flex-wrap: wrap
   }
 
@@ -206,59 +278,6 @@
   .baseposts.vcomp .show-modifier-leave-to {
     opacity: 0;
   }
-
-  .post > .scorebutton {
-    position: absolute;
-    top: var(--w-4);
-    left: var(--w-4);
-    width: var(--w-8);
-    height: var(--w-8)
-  }
-
-  .post > .like {
-    position: absolute;
-    top: var(--w-4);
-    right: var(--w-14);
-    width: var(--w-8);
-    height: var(--w-8);
-    background: none;
-    border-radius: 50%;
-    box-sizing: border-box;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .post > .like > img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-  }
-
-  .post > .reply {
-    position: absolute;
-    top: var(--w-4);
-    right: var(--w-22);
-    width: var(--w-8);
-    height: var(--w-8);
-    background: none;
-  }
-
-  .post > .reply > img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .post > .reply > span {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    color: white;
-    font-size: var(--w-3);
-  }
 </style>
 
 
@@ -269,18 +288,18 @@
       <tbody>
         <tr>
           <td class='top'>
-            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='editable' where='top'></pixloader>
+            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='on_edit' where='top'></pixloader>
           </td>
         </tr>
 
         <tr>
           <td class='bottom'>
-            <oxcard ref='post_keys' :rawkeys='oxkeys' :editable='editable'>
+            <oxcard ref='post_keys' :rawkeys='oxkeys' :editable='on_edit'>
               <template #O='sprops'>
                 <oxer
                   @click.native='toggle_vote(0)'
                   :keyvalue='sprops.keyvalue'
-                  :editable='editable'
+                  :editable='on_edit'
                   :act='0'
                   :vote_state='vote_state'
                   :score='post_nvotes_up'
@@ -292,7 +311,7 @@
                 <oxer
                   @click.native='toggle_vote(1)'
                   :keyvalue='sprops.keyvalue'
-                  :editable='editable'
+                  :editable='on_edit'
                   :act='1'
                   :vote_state='vote_state'
                   :score='post_nvotes_down'
@@ -301,7 +320,7 @@
               </template>
             </oxcard>
 
-            <div class='v-divider'></div>
+            <div style='position:absolute;top:calc(var(--width-unit)*4);left:0;width:50%;height:calc(var(--width-unit)*32);background:none;border-right:1px solid #302E2F;pointer-events: none;'></div>
           </td>
         </tr>
       </tbody>
@@ -315,7 +334,7 @@
               @click.native='toggle_vote(0)'
               ref='post_pix_a'
               :pix='post_pix_a'
-              :editable='editable'
+              :editable='on_edit'
               :act='0'
               :vote_state='vote_state'
               :score='post_nvotes_up'
@@ -323,8 +342,9 @@
               :session='session'
             ></aber>
 
+            <!-- <div class='pixlabel' :class='{ active: is_active }'> -->
             <div class='pixlabel'>
-              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='LABELING A' type='in-post'></editext>
+              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='on_edit' placeholder='LABELING A' type='in-post'></editext>
             </div>
           </td>
         </tr>
@@ -335,7 +355,7 @@
               @click.native='toggle_vote(1)'
               ref='post_pix_b'
               :pix='post_pix_b'
-              :editable='editable'
+              :editable='on_edit'
               :act='1'
               :vote_state='vote_state'
               :score='post_nvotes_down'
@@ -343,8 +363,9 @@
               :session='session'
             ></aber>
 
+            <!-- <div class='pixlabel' :class='{ active: is_active }'> -->
             <div class='pixlabel'>
-              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='LABELING B' type='in-post'></editext>
+              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='on_edit' placeholder='LABELING B' type='in-post'></editext>
             </div>
           </td>
         </tr>
@@ -353,9 +374,14 @@
 
 
     <div class='description' @click='toggle_squeeze'>
-      <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='editable' placeholder='COMMENT HERE' type='in-post' :freeze='!editable' :squeeze='squeezed'></editext>
+      <!-- <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' freeze='true' type='in-post'></editext> -->
+      <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='on_edit' placeholder='COMMENT HERE' type='in-post' :freeze='!on_edit' :squeeze='squeezed'></editext>
 
       <div class='styletags' v-show='!squeezed'>
+        <!-- <span class='tag'>어좁</span>
+        <span class='tag'>학다리</span>
+        <span class='tag'>올챙이</span> -->
+
         <span class='tag' v-for='t in post_boo_styletags'>[[ session.styletags[t] ]]</span>
       </div>
     </div>
@@ -364,19 +390,44 @@
       :session='session'
       :boo='post_boo'
       v-if='post_boo'
+      style='position:absolute;top:calc(var(--width-unit)*4);left:calc(var(--width-unit)*4);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8)'
       @click.native='session.open_boopage(post_boo)'
     ></scorebutton>
 
-    <template v-if='!editable'>
-      <div class='like' @click='session.open_comments(post)'>
-        <img src='/static/materials/icons/like.png'>
-      </div>
+    <div style='position:absolute;top:calc(var(--width-unit)*4);right:calc(var(--width-unit)*14);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;border-radius:50%;box-sizing:border-box;border:1px solid black;display:flex;align-items:center;justify-content:center;' @click='session.open_comments(post)'>
+      <img src='/static/materials/icons/like.png' style='width:80%;height:80%;object-fit:contain;'>
+    </div>
 
-      <div class='reply' @click='session.open_comments(post)'>
-        <img src='/static/materials/icons/button_reply.png'>
-        <span>[[post_ncomments==0 ? "-" : post_ncomments]]</span>
+    <div style='position:absolute;top:calc(var(--width-unit)*4);right:calc(var(--width-unit)*22);width:calc(var(--width-unit)*8);height:calc(var(--width-unit)*8);background:none;' @click='session.open_comments(post)'>
+      <img src='/static/materials/icons/button_reply.png' style='width:100%;height:100%;object-fit:contain;'>
+      <span style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments==0 ? "-" : post_ncomments]]</span>
+      <!-- <span v-if='post_ncomments!=0' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:calc(var(--width-unit)*3.5);'>[[post_ncomments]]</span> -->
+    </div>
+
+
+    <!-- <transition name='show-modify'>
+      <div class='modify button' v-if='is_mypost'>
+        <div class='edit-post' :class='{ onedit: on_edit }' @click='toggle_edit'>[[ edit_button_text ]]</div>
+        <div class='delete-post' @click='delete_post'>
+          <img src='/static/materials/icons/delete.png'>
+        </div>
       </div>
-    </template>
+    </transition> -->
+
+    <!-- <transition name='show-modifier'> -->
+      <div class='modifier' v-if='on_edit'>
+        <div class='item cancel' @click='modify_cancel'>취소</div>
+        <div class='item done' @click='modify_done'>완료</div>
+      </div>
+    <!-- </transition> -->
+
+    <transition name='show-newpost'>
+      <div class='newpost button' v-if='!post' @click='save_post'>SAVE NEWPOST</div>
+    </transition>
+
+    <transition name='show-saving'>
+      <scale-loader class='onsaving' v-if='on_saving' :loading='true' color='rgb(22,187,204)'></scale-loader>
+    </transition>
 
     <modal :pop='on_delete' name='deleting' @delete='delete_post_really($event)'></modal>
   </div>
@@ -387,18 +438,36 @@
   Vue.component('post', {
     template: '#post-template',
     delimiters: ['[[', ']]'],
-    props: ['post', 'session', 'type', 'editable'],
+    props: ['post', 'session', 'type'], //'mother'],
 
     data: function() {
       return {
+        // on_edit: (this.post ? false : true),
         on_delete: false,
         squeezed: true,
       }
     },
 
     computed: {
+      on_edit: function() {
+        if (this.post) {
+          return this.post.on_edit
+
+        } else {
+          return true
+        }
+
+      },
+
+      on_saving: function() {
+        return this.post && !this.post.id
+      },
+
       swiper: function() {
         return this.session.page.posts.swiper
+        // if (this.mother) {
+        //   return this.mother.swiper
+        // }
       },
 
       post_type: function() {
@@ -506,12 +575,35 @@
         }
       },
 
+      is_mypost: function() {
+        return this.session.auth && this.post && (this.session.auth.boo.id == this.post.boo.id)
+      },
+
+      edit_button_text: function() {
+        if (this.on_edit) {
+          return 'ON EDITING'
+        } else {
+          return 'EDIT'
+        }
+      },
+
       is_active: function() {
-        return !this.editable && (this.vote_state != -1)
+        return !this.on_edit && (this.vote_state != -1)
       },
     },
 
     watch: {
+      on_edit: function(_new, _old) {
+        if (_new) {
+          this.swiper.detachEvents();
+
+        } else if (_old) {
+          this.swiper.attachEvents();
+        }
+
+        this.$emit('on_modify', _new);
+      },
+
       on_delete: function(_new, _old) {
         if (_new) {
           this.swiper.detachEvents();
@@ -523,12 +615,34 @@
     },
 
     methods: {
+      modify_cancel: function() {
+        this.$set(this.post, 'on_edit', false);
+
+        this.$refs.post_text.reset();
+
+        if (this.is_postvoteox) {
+          // this.$refs.post_keys.reset();
+          this.$refs.post_pix.reset();
+
+        } else if (this.is_postvoteab) {
+          this.$refs.post_pix_a.reset();
+          this.$refs.post_pix_b.reset();
+          this.$refs.post_pixlabel_a.reset();
+          this.$refs.post_pixlabel_b.reset();
+        }
+      },
+
+      modify_done: function() {
+        this.$set(this.post, 'on_edit', false);
+        this.save_post();
+      },
+
       toggle_squeeze: function() {
         this.squeezed = !this.squeezed;
       },
 
       toggle_vote: function(act) {
-        if (this.session.auth && !this.editable && (this.session.mode.on=='posts' || this.session.mode.on=='booposts')) {
+        if (this.session.auth && !this.on_edit && (this.session.mode.on=='posts' || this.session.mode.on=='booposts')) {
           if (this.vote_state==act) {
             this.rescore(act, -1);
             this.session.auth.vote(this.post.id, -1);
@@ -561,6 +675,10 @@
           this.post.nvotes_up += 1;
           this.post.nvotes_down -= 1;
         }
+      },
+
+      toggle_edit: function() {
+        this.on_edit = !this.on_edit;
       },
 
       show_deleting: function() {
@@ -597,11 +715,14 @@
           let where = this.swiper.realIndex;
           this.swiper.slideTo(where-1);
 
+          // if (this.session.posts) {
           if (this.session.page.posts.contents) {
             where = _.findIndex(this.session.page.posts.contents.list, ['id', this.post.id]);
+            // where = _.findIndex(this.session.posts.list, ['id', this.post.id]);
 
             if (where!=-1) {
               this.session.page.posts.contents.list.splice(where, 1);
+              // this.session.posts.list.splice(where, 1);
             }
           }
 
@@ -614,6 +735,115 @@
         }
       },
 
+
+      formdata_append: function(key, comp, formdata) {
+        if (comp) {
+          const val = comp.get();
+          if (val) {
+            formdata.append(key, val);
+            formdata.set('n_edited', Number(formdata.get('n_edited')) + 1);
+          }
+        }
+      },
+
+      postize_with: function(key, formdata, postobj) {
+        if (formdata.has(key)) {
+          let val = formdata.get(key);
+
+          if (val instanceof Blob) {
+            val = URL.createObjectURL(val);
+          }
+
+          postobj[key] = val;
+        }
+      },
+
+      postize: function(formdata, postobj) {
+        this.postize_with('text', formdata, postobj);
+        this.postize_with('keys', formdata, postobj);
+        this.postize_with('pix', formdata, postobj);
+        this.postize_with('pix_a', formdata, postobj);
+        this.postize_with('pix_b', formdata, postobj);
+        this.postize_with('pixlabel_a', formdata, postobj);
+        this.postize_with('pixlabel_b', formdata, postobj);
+      },
+
+      save_post: function() {
+        // 참고: console.log("")로 하면 <empty string>이라고 나온다 (이걸로 한참 헤맴)
+        const formdata = new FormData();
+        formdata.append('n_edited', 0);
+
+        this.formdata_append('text', this.$refs.post_text, formdata);
+        this.formdata_append('keys', this.$refs.post_keys, formdata);
+        this.formdata_append('pix', this.$refs.post_pix, formdata);
+        this.formdata_append('pix_a', this.$refs.post_pix_a, formdata);
+        this.formdata_append('pix_b', this.$refs.post_pix_b, formdata);
+        this.formdata_append('pixlabel_a', this.$refs.post_pixlabel_a, formdata);
+        this.formdata_append('pixlabel_b', this.$refs.post_pixlabel_b, formdata);
+
+
+        if (Number(formdata.get('n_edited')) > 0) {
+          formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+          formdata.append('type', this.post_type);
+
+          // 포스트를 수정하는 경우
+          if (this.post) {
+            formdata.append('post_id', this.post.id);
+            this.postize(formdata, this.post);
+
+          } else {
+            var post_target = {
+              boo: this.post_boo,
+              id: undefined,
+              nvotes_down: 0,
+              nvotes_up: 0,
+              type: this.post_type
+            };
+
+            this.postize(formdata, post_target);
+            this.postlist_in(post_target);
+            this.session.close_page();
+          }
+
+          fetch('post/save/', { method: 'POST', body: formdata })
+            .then(res => res.json())
+            .then(js => {
+              console.log(js);
+
+              if (js.success && js.mode=='created') {
+                post_target.id = js.post_id;
+              }
+            });
+        }
+      },
+
+      postlist_in: function(post) {
+        if (this.swiper) {
+          const where = this.swiper.realIndex + 1;
+
+          // if (this.session.mode.prev.on == 'journey' && this.session.posts) {
+          if (this.session.mode.prev.on == 'posts' && this.session.page.posts.contents) {
+            this.session.page.posts.contents.list.splice(where, 0, post);
+            // this.session.posts.list.splice(where, 0, post);
+
+            if (this.post_boo.posts) {
+              this.post_boo.posts.list.push(post);
+            }
+
+          } else if (this.session.mode.prev.on == 'booposts' && this.post_boo.posts) {
+            // if (this.session.posts) {
+            if (this.session.page.posts.contents) {
+              this.session.page.posts.contents.list.push(post);
+              // this.session.posts.list.push(post);
+            }
+
+            this.post_boo.posts.list.splice(where, 0, post);
+          }
+
+          this.swiper.slideTo(where);
+        }
+      }
     }
+
   });
 </script>

@@ -401,6 +401,9 @@
 
         if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
           return this.boo.posts.list.map(post => {
+            if (!post.id)
+              return post
+
             const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
 
             if (_post) {

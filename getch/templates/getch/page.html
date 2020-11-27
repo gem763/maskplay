@@ -33,6 +33,8 @@
   .page .show-content-from-right-leave-active,
   .page .show-content-from-left-enter-active,
   .page .show-content-from-left-leave-active,
+  .page .show-content-from-top-enter-active,
+  .page .show-content-from-top-leave-active,
   .page .show-content-from-bottom-enter-active,
   .page .show-content-from-bottom-leave-active,
   .page .show-dimmer-enter-active,
@@ -57,7 +59,12 @@
 
   .page .show-content-from-bottom-enter,
   .page .show-content-from-bottom-leave-to {
-    top: 100% !important;
+    top: 100%;
+  }
+
+  .page .show-content-from-top-enter,
+  .page .show-content-from-top-leave-to {
+    top: -100%;
   }
 
   .page .show-dimmer-enter,

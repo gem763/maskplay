@@ -1,19 +1,55 @@
+<style>
+  .posting.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .posting.vcomp > .actions {
+    position: fixed;
+    bottom: 0;
+    /* left: 0; */
+    width: var(--width);
+    height: var(--w-12);
+    background: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .posting.vcomp > .actions > .action {
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .posting.vcomp > .actions > .cancel.action {
+    color: gray;
+  }
+
+  .posting.vcomp > .actions > .done.action {
+    color: var(--color-neg);
+  }
+</style>
+
 <script type='text/x-template' id='posting-template'>
-  <div class='posting'>
-    <modal
-      :pop='session.page.posting.open'
-      name='posting-type-selector'
-      @posting='posting($event)'
-    ></modal>
+  <page :open='session.page.posting.open' :from='session.page.posting.from' @close='session.close_page()' hide_close='true'>
+    <div class='posting vcomp'>
+      <!-- 아래에서 v-if는, 열때마다 <post>를 새로 생성하기 위해서다. 그래야야 그 안에 있는 img 등등이 리프레시됨... -->
+      <post :post='the_post' :type='the_post_type' :session='session' editable='true' ref='post' v-if='session.page.posting.open'></post>
 
-    <page :open='postvoteab' :from='session.page.posting.from' @close='session.close_page()'>
-      <post type='postvoteab' :session='session'></post>
-    </page>
-
-    <page :open='postvoteox' :from='session.page.posting.from' @close='session.close_page()'>
-      <post type='postvoteox' :session='session'></post>
-    </page>
-  </div>
+      <div class='actions'>
+        <div class='action cancel' @click='session.close_page()'>취소</div>
+        <div class='action done' @click='save'>완료</div>
+      </div>
+    </div>
+  </page>
 </script>
 
 
@@ -24,26 +60,143 @@
     props: ['session'],
     data: function() {
       return {
-        postvoteab: false,
-        postvoteox: false
+        the_post: undefined
       }
     },
 
     watch: {
-      // 초기화
       'session.page.posting.open': function(_new, _old) {
-        this.postvoteab = false;
-        this.postvoteox = false;
+        if (_new && this.session.page.posting.post) {
+          this.the_post = _.cloneDeep(this.session.page.posting.post);
+
+        } else {
+          this.the_post = undefined;
+        }
       }
     },
 
-    computed: { },
-    methods: {
-      posting: function(type) {
-        if (type=="cancel") {
-          this.session.close_page();
+    computed: {
+      is_creating: function() {
+        return !this.the_post
+      },
+
+      the_post_type: function() {
+        if (this.the_post) {
+          return this.the_post.type
+
         } else {
-          this[type] = true;
+          return this.session.page.posting.type
+        }
+      },
+
+      the_boo: function() {
+        return this.session.auth.boo
+      },
+
+      swiper: function() {
+        return this.session.page.posts.swiper
+      }
+    },
+
+
+    methods: {
+      formdata_append: function(key, comp, formdata) {
+        if (comp) {
+          const val = comp.get();
+          if (val) {
+            formdata.append(key, val);
+            formdata.set('n_edited', Number(formdata.get('n_edited')) + 1);
+          }
+        }
+      },
+
+      postize_with: function(key, formdata, postobj) {
+        if (formdata.has(key)) {
+          let val = formdata.get(key);
+
+          if (val instanceof Blob) {
+            val = URL.createObjectURL(val);
+          }
+
+          postobj[key] = val;
+        }
+      },
+
+      postize: function(formdata, postobj) {
+        this.postize_with('text', formdata, postobj);
+        this.postize_with('keys', formdata, postobj);
+        this.postize_with('pix', formdata, postobj);
+        this.postize_with('pix_a', formdata, postobj);
+        this.postize_with('pix_b', formdata, postobj);
+        this.postize_with('pixlabel_a', formdata, postobj);
+        this.postize_with('pixlabel_b', formdata, postobj);
+      },
+
+      save: function() {
+        // 참고: console.log("")로 하면 <empty string>이라고 나온다 (이걸로 한참 헤맴)
+        const formdata = new FormData();
+        formdata.append('n_edited', 0);
+
+        this.formdata_append('text', this.$refs.post.$refs.post_text, formdata);
+        this.formdata_append('keys', this.$refs.post.$refs.post_keys, formdata);
+        this.formdata_append('pix', this.$refs.post.$refs.post_pix, formdata);
+        this.formdata_append('pix_a', this.$refs.post.$refs.post_pix_a, formdata);
+        this.formdata_append('pix_b', this.$refs.post.$refs.post_pix_b, formdata);
+        this.formdata_append('pixlabel_a', this.$refs.post.$refs.post_pixlabel_a, formdata);
+        this.formdata_append('pixlabel_b', this.$refs.post.$refs.post_pixlabel_b, formdata);
+
+
+        if (Number(formdata.get('n_edited')) > 0) {
+          formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+          formdata.append('type', this.the_post_type);
+
+          // 포스트를 수정하는 경우
+          if (!this.is_creating) {
+            formdata.append('post_id', this.the_post.id);
+            this.postize(formdata, this.session.page.posting.post);
+            this.session.close_page();
+
+          } else {
+            var post_target = {
+              boo: this.the_boo,
+              id: undefined,
+              nvotes_down: 0,
+              nvotes_up: 0,
+              type: this.the_post_type
+            };
+
+            this.postize(formdata, post_target);
+            this.postlist_in(post_target);
+            this.session.close_page();
+          }
+
+          // return
+
+          fetch('post/save/', { method: 'POST', body: formdata })
+            .then(res => res.json())
+            .then(js => {
+              console.log(js);
+
+              if (js.success && js.mode=='created') {
+                post_target.id = js.post_id;
+              }
+            });
+        }
+      },
+
+      postlist_in: function(post) {
+        if (this.swiper) {
+          const where = this.swiper.realIndex + 1;
+
+          if (this.session.page.posts.contents) {
+            this.session.page.posts.contents.list.splice(where, 0, post);
+
+            if (this.the_boo.posts) {
+              this.the_boo.posts.list.unshift(post);
+            }
+          }
+
+          this.swiper.slideTo(where);
         }
       }
     }

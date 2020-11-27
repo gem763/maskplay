@@ -11,12 +11,13 @@ class Session {
       profiler:   { open: false, from: 'right', type: undefined },
       boopage:    { open: false, from: 'left', boo: undefined },
       network:    { open: false, from: 'right' },
-      posting:    { open: false, from: 'right', mother: undefined },
+      // posting:    { open: false, from: 'right', mother: undefined },
+      posting:    { open: false, from: 'right', post: undefined, type: undefined },
       comments:   { open: false, from: 'right', post: undefined },
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
       texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
-      bridge:     { open: false, from: 'bottom', type: undefined },
+      bridge:     { open: false, from: undefined, type: undefined },
       searcher:   { open: false, from: 'right' },
     };
 
@@ -113,13 +114,14 @@ class Session {
       this.open_page('mypage');
 
     } else {
-      this.open_bridge('login_guide_for_mypage')
+      this.open_bridge('login_guide_for_mypage', 'bottom')
       // this.open_loginpage();
     }
   }
 
-  open_bridge(type) {
+  open_bridge(type, from) {
     this.page.bridge.type = type;
+    this.page.bridge.from = from;
     this.open_page('bridge');
   }
 
@@ -159,15 +161,30 @@ class Session {
 
   // open_posting() {
   open_posting_guide() {
-    this.close_pages_all();
+    // this.close_pages_all();
 
     if (this.auth) {
-      this.open_bridge('posting_guide');
+      this.open_bridge('posting_guide', 'bottom');
       // this.open_page('posting');
 
     } else {
-      this.open_bridge('login_guide_for_posting');
+      this.open_bridge('login_guide_for_posting', 'bottom');
     }
+  }
+
+  // open_posting(type) {
+  open_newpost(type) {
+    this.close_pages_all();
+    this.page.posting.post = undefined;
+    this.page.posting.type = type;
+    this.open_page('posting');
+
+  }
+
+  open_editpost(post) {
+    this.page.posting.post = post;
+    this.page.posting.type = undefined;
+    this.open_page('posting');
   }
 
   // open_posting(mother) {

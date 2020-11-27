@@ -8,7 +8,6 @@
 <script type='text/x-template' id='booposts-template'>
   <page class='booposts' :open='session.page.booposts.open' :from='session.page.booposts.from' @close='session.close_page()'>
     <baseposts :session='session' :postlist='postlist' :posts='this.session.booposts' ref='baseposts'></baseposts>
-    <!-- <baseposts :session='session' :postlist='postlist' :open_at='session.page.booposts.open_at' :posts='this.session.booposts' ref='baseposts'></baseposts> -->
   </page>
 </script>
 
@@ -33,8 +32,10 @@
         }
 
         const _postlist = this.session.booposts.list.map(post => {
+          if (!post.id)
+            return post
+            
           const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
-          // const _post = _.find(this.session.posts.list, ['id', post.id]);
 
           if (_post) {
             return _post;

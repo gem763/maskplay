@@ -65,7 +65,7 @@
 
 <script type='text/x-template' id='controller-template'>
   <div class='controller vcomp' :class='controller_class'>
-    <div class='_m btn' @click='session.open_navigator()'>
+    <div class='_m btn' @click='open_navigator'>
       <img src='/static/materials/icons/button_m.png'>
     </div>
 
@@ -73,7 +73,7 @@
       <img src='/static/materials/icons/button_oi.png'>
     </div>
 
-    <div class='_b btn' @click='session.open_mypage()'>
+    <div class='_b btn' @click='open_mypage'>
       <img src='/static/materials/icons/button_b_profile.png'>
     </div>
 
@@ -82,7 +82,8 @@
     </div>
 
     <!-- <div class='_r btn' @click='session.open_posting()'> -->
-    <div class='_r btn' @click='session.open_posting_guide()'>
+    <!-- <div class='_r btn' @click='session.open_posting_guide()'> -->
+    <div class='_r btn' @click='open_posting_guide'>
       <img src='/static/materials/icons/button_r.png'>
     </div>
   </div>
@@ -112,6 +113,33 @@
     methods: {
       on: function(where) {
         return this.session.mode.on == where
+      },
+
+      open_navigator: function() {
+        if (this.on('navigator')) {
+          this.session.close_page();
+
+        } else {
+          this.session.open_navigator();
+        }
+      },
+
+      open_mypage: function() {
+        if (this.on('bridge') || this.on('mypage')) {
+          this.session.close_page();
+
+        } else {
+          this.session.open_mypage();
+        }
+      },
+
+      open_posting_guide: function() {
+        if (this.on('bridge')) {
+          this.session.close_page();
+
+        } else {
+          this.session.open_posting_guide();
+        }
       }
     }
   });

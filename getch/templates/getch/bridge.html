@@ -35,7 +35,8 @@
     bottom: 0;
   }
 
-  .bridge.vcomp.posting_guide > .section.bottom {
+  .bridge.vcomp.posting_guide > .section.bottom,
+  .bridge.vcomp.delpost_guide > .section.top {
     background: rgba(255,255,255,0.9);;
   }
 
@@ -43,6 +44,11 @@
     text-align: center;
     font-size: 16px;
     font-weight: bold;
+  }
+
+  .bridge.vcomp.delpost_guide > .section.top > .title {
+    font-size: 12px;
+    font-weight: normal;
   }
 
   .bridge.vcomp > .section.top > .sub {
@@ -155,6 +161,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: row;
+    text-align: center;
   }
 
   .bridge.vcomp > .section.bottom > .postypes > .postype:first-child {
@@ -174,6 +181,24 @@
     height: var(--w-12);
     width: var(--w-12);
     box-sizing: border-box;
+  }
+
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table td.borderless {
+    border: none;
+  }
+
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table td > img {
+    width: 70%;
+    height: 70%;
+    vertical-align: middle;
+  }
+
+  .bridge.vcomp.posting_guide > .section.bottom > span.title {
+    position: absolute;
+    bottom: calc(50% + var(--w-16));
+    left: 50%;
+    font-size: 12px;
+    transform: translate(-50%, 0);
   }
 </style>
 
@@ -236,25 +261,48 @@
       <template v-else-if='is_posting_guide'>
         <div class='section bottom'>
 
+          <span class='title'>새 글 등록</span>
+
           <div class='postypes'>
-            <div class='postype' @click=''>
+            <div class='postype' @click='session.open_newpost("postvoteab")'>
               <table>
                 <tbody>
-                  <tr><td>1</td><td>2</td></tr>
-                  <tr><td>3</td><td>4</td></tr>
+                  <tr>
+                    <td><img src='/static/materials/icons/moiber_letter_a.png'></td>
+                    <td class='borderless'></td>
+                  </tr>
+                  <tr>
+                    <td><img src='/static/materials/icons/moiber_letter_b.png'></td>
+                    <td class='borderless'><img src='/static/materials/icons/button_r.png'></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
 
-            <div class='postype' @click=''>
+            <div class='postype' @click='session.open_newpost("postvoteox")'>
               <table>
                 <tbody>
-                  <tr><td>1</td><td>2</td></tr>
-                  <tr><td>3</td><td>4</td></tr>
+                  <tr>
+                    <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
+                    <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
+                  </tr>
+                  <tr>
+                    <td class='borderless'></td>
+                    <td class='borderless'><img src='/static/materials/icons/button_r.png'></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
+
+        </div>
+      </template>
+
+
+      <template v-else-if='is_delpost_guide'>
+        <div class='section top'>
+
+          <span class='title'>등록하신 글이 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
 
         </div>
       </template>
@@ -290,12 +338,16 @@
         return this.bridge_type == 'posting_guide'
       },
 
+      is_delpost_guide: function() {
+        return this.bridge_type == 'delpost_guide'
+      },
+
       hide_close: function() {
-        return this.is_posting_guide
+        return this.is_posting_guide || this.is_delpost_guide
       },
 
       hide_dimmer: function() {
-        return this.is_posting_guide
+        return this.is_posting_guide || this.is_delpost_guide
       }
     },
 

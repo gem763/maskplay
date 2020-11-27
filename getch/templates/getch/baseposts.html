@@ -82,6 +82,10 @@
     opacity: 0;
   }
 
+  .baseposts.vcomp > .spinner {
+    position: fixed;
+    bottom: var(--w-12);
+  }
 </style>
 
 
@@ -89,12 +93,7 @@
   <div class='baseposts vcomp'>
     <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in postlist' :key='post.id'>
-        <post
-          :post='post'
-          :session='session'
-          :mother='me'
-          @on_modify='toggle_modify($event)'
-        ></post>
+        <post :post='post' :session='session'></post>
       </swiper-slide>
     </swiper>
 
@@ -111,8 +110,8 @@
       </transition>
     </div>
 
+    <bar-loader class='spinner' :loading='!cpost_id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
   </div>
-
 </script>
 
 
@@ -122,12 +121,11 @@
   Vue.component('baseposts', {
     template: '#baseposts-template',
     delimiters: ['[[', ']]'],
-    props: ['postlist', 'session', 'posts'], //'open_at'
+    props: ['postlist', 'session', 'posts'],
 
     data: function() {
       return {
         more: false,
-        modifying: false,
         swiper: undefined,
         swiper_options: {
           direction: 'vertical',
@@ -188,26 +186,23 @@
             borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.cpost_boo)}`
           }
         }
+      },
+
+      // on_saving: function() {
+      //   return this.post && !this.post.id
+      // },
+
+      loader_width: function() {
+        return document.querySelector('#window').clientWidth
       }
     },
+
 
     mounted: function() {
       this.swiper = this.$refs.swiper.$swiper;
     },
 
     watch: {
-      // open_at: function(_new, _old) {
-      //   // console.log(_new);
-      //   if (this.swiper) {
-      //     this.swiper.slideTo(_new, 1, false);
-      //   }
-      //
-      //   // nexttick으로 안하면 swiper가 존재하지 않는 에러 발생
-      //   // this.$nextTick(function() {
-      //   //   this.posts.open_at(_new);
-      //   // })
-      // },
-
       cpost_id: function(_new, _old) {
         if (this.postlist.length > 1) {
           // console.log(this.postlist.length, this.swiper.realIndex);
@@ -230,15 +225,12 @@
       },
 
       modify_this_post: function() {
-        this.$set(this.cpost, 'on_edit', true);
+        this.session.open_editpost(this.cpost);
       },
 
       delete_this_post: function() {
-        alert('삭제했다')
-      },
-
-      toggle_modify: function(bool) {
-        this.modifying = bool;
+        // alert('삭제했다')
+        this.session.open_bridge('delpost_guide', 'top');
       }
     }
   });

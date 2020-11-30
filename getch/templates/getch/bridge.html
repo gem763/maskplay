@@ -35,20 +35,10 @@
     bottom: 0;
   }
 
-  .bridge.vcomp.posting_guide > .section.bottom,
-  .bridge.vcomp.delpost_guide > .section.top {
-    background: rgba(255,255,255,0.9);;
-  }
-
   .bridge.vcomp > .section.top > .title {
     text-align: center;
     font-size: 16px;
     font-weight: bold;
-  }
-
-  .bridge.vcomp.delpost_guide > .section.top > .title {
-    font-size: 12px;
-    font-weight: normal;
   }
 
   .bridge.vcomp > .section.top > .sub {
@@ -200,6 +190,44 @@
     font-size: 12px;
     transform: translate(-50%, 0);
   }
+
+  .bridge.vcomp > .section.top > .group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: none;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .bridge.vcomp > .section.top > .group > .sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .bridge.vcomp > .section.top > .group > .sub > .button {
+     width: var(--w-16);
+     height: var(--w-16);
+     background: none;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+  }
+
+  .bridge.vcomp > .section.top > .group > .sub > .button > img {
+    width: var(--w-8);
+    height: var(--w-8);
+  }
+
+  .bridge.vcomp.posting_guide > .section,
+  .bridge.vcomp.delpost_guide > .section,
+  .bridge.vcomp.delboo_guide > .section,
+  .bridge.vcomp.logout_guide > .section {
+    background: rgba(255,255,255,0.9);;
+  }
 </style>
 
 
@@ -302,7 +330,55 @@
       <template v-else-if='is_delpost_guide'>
         <div class='section top'>
 
-          <span class='title'>등록하신 글이 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
+          <div class='group'>
+            <span class='title'>등록하신 글이 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </template>
+
+
+      <template v-else-if='is_delboo_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>선택하신 부캐가 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </template>
+
+
+      <template v-else-if='is_logout_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>로그아웃 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
 
         </div>
       </template>
@@ -342,12 +418,20 @@
         return this.bridge_type == 'delpost_guide'
       },
 
+      is_delboo_guide: function() {
+        return this.bridge_type == 'delboo_guide'
+      },
+
+      is_logout_guide: function() {
+        return this.bridge_type == 'logout_guide'
+      },
+
       hide_close: function() {
-        return this.is_posting_guide || this.is_delpost_guide
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide
       },
 
       hide_dimmer: function() {
-        return this.is_posting_guide || this.is_delpost_guide
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide
       }
     },
 
@@ -358,6 +442,11 @@
       },
 
       action_cancel: function() {
+        this.session.close_page();
+      },
+
+      action_callback: function() {
+        this.session.page.bridge.callback();
         this.session.close_page();
       }
     }

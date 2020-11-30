@@ -104,8 +104,8 @@
       <transition name='show-more'>
         <div class='submenu' v-if='more'>
           <div class='item' v-if='!is_mypost' @click='report_this_post'>신고하기</div>
-          <div class='item' v-if='is_mypost' @click='modify_this_post'>수정하기</div>
-          <div class='item' v-if='is_mypost' @click='delete_this_post'>삭제</div>
+          <div class='item' v-if='is_mypost && cpost_id' @click='modify_this_post'>수정하기</div>
+          <div class='item' v-if='is_mypost && cpost_id' @click='delete_this_post'>삭제</div>
         </div>
       </transition>
     </div>
@@ -205,7 +205,6 @@
     watch: {
       cpost_id: function(_new, _old) {
         if (this.postlist.length > 1) {
-          // console.log(this.postlist.length, this.swiper.realIndex);
           if (this.postlist.length-this.swiper.realIndex < 5) {
             this.posts.load(3);
           }
@@ -221,7 +220,7 @@
       },
 
       report_this_post: function() {
-        alert('신고했다')
+        window.open('mailto:contact@moiber.com');
       },
 
       modify_this_post: function() {
@@ -229,9 +228,36 @@
       },
 
       delete_this_post: function() {
-        // alert('삭제했다')
-        this.session.open_bridge('delpost_guide', 'top');
+        this.session.open_bridge('delpost_guide', 'top', () => {
+          fetch(`post/${this.cpost_id}/delete`).then(res => res.json()).then(console.log);
+          this.cpost_listout();
+        });
+      },
+
+      cpost_listout: function() {
+        if (this.swiper) {
+          const cpost = this.cpost; // 아래에서 swiper로 이동할거기때문에, cpost를 고정
+          let where = this.swiper.realIndex;
+          this.swiper.slideTo(where - 1);
+
+          this.listout_from(cpost.id, this.session.page.posts.univ.history);
+          this.listout_from(cpost.id, this.session.page.posts.univ.hot);
+          this.listout_from(cpost.id, this.session.page.posts.univ.custom);
+          this.listout_from(cpost.id, this.session.page.posts.univ.search);
+          this.listout_from(cpost.id, cpost.boo.posts);
+        }
+      },
+
+      listout_from: function(post_id, from) {
+        if (from) {
+          where = _.findIndex(from.list, ['id', post_id]);
+
+          if (where != -1) {
+            from.list.splice(where, 1);
+          }
+        }
       }
+
     }
   });
 </script>

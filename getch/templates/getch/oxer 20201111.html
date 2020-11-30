@@ -1,8 +1,6 @@
 <style>
   .oxer.vcomp {
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     height: 100%;
     background: none;
@@ -59,7 +57,7 @@
   Vue.component('oxer', {
     template: '#oxer-template',
     delimiters: ['[[', ']]'],
-    props: [ 'act', 'vote_state', 'score', 'is_active', 'keyvalue' ],
+    props: [ 'act', 'vote_state', 'score', 'editable', 'is_active', 'keyvalue' ],
     data: function() {
       return {}
     },
@@ -79,14 +77,8 @@
         if (this.keyvalue=='O' || this.keyvalue=='살') {
           return '/static/materials/icons/moiber_letter_o.png'
 
-        } else if (this.keyvalue=='X' || this.keyvalue=='말') {
+        } else {
           return '/static/materials/icons/moiber_letter_x.png'
-
-        } else if (this.keyvalue=='A') {
-          return '/static/materials/icons/moiber_letter_a.png'
-
-        } else if (this.keyvalue=='B') {
-          return '/static/materials/icons/moiber_letter_b.png'
         }
       }
     }

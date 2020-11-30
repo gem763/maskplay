@@ -2,8 +2,8 @@ class Session {
   constructor() {
     this.page = {
       // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
+      // posts:      { contents: undefined, univ: { history: new Posts('hot', 4), hot: undefined, custom: undefined, search: undefined }, swiper: undefined },
       posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
-      // posts:      { contents: this.posts_univ.history, swiper: undefined },
       mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'bottom' },
       navigator:  { open: false, from: 'left' },
@@ -14,10 +14,12 @@ class Session {
       // posting:    { open: false, from: 'right', mother: undefined },
       posting:    { open: false, from: 'right', post: undefined, type: undefined },
       comments:   { open: false, from: 'right', post: undefined },
+      // comments:   { open: false, from: 'right', post: undefined },
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
       texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
-      bridge:     { open: false, from: undefined, type: undefined },
+      // bridge:     { open: true, from: 'top', type: 'delpost_guide', callback: undefined },
+      bridge:     { open: false, from: undefined, type: undefined, callback: undefined },
       searcher:   { open: false, from: 'right' },
     };
 
@@ -34,7 +36,6 @@ class Session {
     // this.hammer = this.get_hammer();
 
     this.page.posts.contents = this.page.posts.univ.history;
-    // this.ready = this.page.posts.univ.history.list.length > 0
     this.fetch_user();
   }
 
@@ -119,9 +120,10 @@ class Session {
     }
   }
 
-  open_bridge(type, from) {
+  open_bridge(type, from, callback) {
     this.page.bridge.type = type;
     this.page.bridge.from = from;
+    this.page.bridge.callback = callback;
     this.open_page('bridge');
   }
 
@@ -148,7 +150,10 @@ class Session {
 
   open_comments(post) {
     this.page.comments.post = post;
-    this.open_page('comments');
+
+    // 코멘트창이 최초로 열릴때 post정보를 업데이트하는 시간때문에 약간의 딜레이를 준다
+    setTimeout(() => { this.open_page('comments'); }, 100);
+    // this.open_page('comments');
   }
 
   // open_booposts(posts, where) {
@@ -426,9 +431,9 @@ class Baseposts extends ContentLoader {
 
 
 class Posts extends ContentLoader {
-  constructor(type) {
+  constructor(type, ninit) {
     super();
-    this.nloads_init = 24;
+    this.nloads_init = (ninit ? ninit : 24);
     this.idlist_url = `/posts/iposts/${type}`;
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();
@@ -472,7 +477,7 @@ class Comments extends ContentLoader {
 class Voters extends ContentLoader {
   constructor(post, act) {
     super();
-    this.nloads_init = 10;
+    this.nloads_init = 5;
     this.idlist_url = `/post/${post.id}/ivoters/${act}`;
     this.content_url = (id) => `/boo/${id}/voter`;
     this.load_idlist();

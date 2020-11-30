@@ -204,7 +204,7 @@
         </div>
       </div>
 
-      <bar-loader class='spinner' :loading='the_posts.onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+      <bar-loader class='spinner' :loading='the_posts_onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
     </div>
   </page>
 </script>
@@ -228,16 +228,26 @@
         return this.session.page.posts.univ[this.active_sorter]
       },
 
-      the_postlist: function() {
-        return this.the_posts.list
+      // the_postlist: function() {
+      //   return this.the_posts.list
+      // },
+
+      the_posts_onloading: function() {
+        if (this.the_posts) {
+          return this.the_posts.onloading
+        }
       },
 
       postlist_history: function() {
-        return this.session.page.posts.univ.history.list
+        if (this.session.page.posts.univ.history) {
+          return this.session.page.posts.univ.history.list
+        }
       },
 
       postlist_hot: function() {
-        return this.session.page.posts.univ.hot.list
+        if (this.session.page.posts.univ.hot) {
+          return this.session.page.posts.univ.hot.list
+        }
       },
 
       loader_width: function() {

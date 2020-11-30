@@ -1,0 +1,292 @@
+{% include "getch/comment.html" %}
+{% include "getch/scorekit.html" %}
+
+<style>
+  .comments.vcomp .comments-layout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    background: white;
+  }
+
+  .comments.vcomp .comments-layout > .area {
+    position: relative;
+  }
+
+  .comments.vcomp .comments-layout > .area:first-child {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  .comments.vcomp .comments-layout > .area:last-child {
+  }
+
+  .comments.vcomp .comments-layout > .area > .section {
+    position: relative;
+    padding: 10px;
+  }
+
+  .comments.vcomp .comments-layout > .area > .score.section {
+    background: none;
+    border-bottom: 1px solid black;
+    box-sizing: content-box;
+  }
+
+  .comments.vcomp .comments-layout > .area > .commentlist.section {
+    background: white;
+    overflow-y: auto;
+    -ms-overflow-style: none; /* IE 11 */
+    scrollbar-width: none; /* Firefox 64 */
+    flex-grow: 1;
+  }
+
+  .comments.vcomp .comments-layout > .area > .commenting.section {
+    background: white;
+    box-sizing: content-box;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+  }
+
+  .comments.vcomp .comments-layout > .area > .commenting.focused.section {
+    background: whitesmoke;
+  }
+
+  .comments.vcomp .comments-layout > .area > .section > .container {
+    position: relative;
+    background: none;
+  }
+
+  .comments.vcomp .comment-listing-enter-active {
+    transition: all 0.5s;
+  }
+
+  .comments.vcomp .comment-listing-enter,
+  .comments.vcomp .comment-listing-leave-to {
+    opacity: 0;
+  }
+
+  .comments.vcomp .comment-listing-move {
+    transition: all 0.5s;
+  }
+
+  .comments.vcomp .comments-layout > .area > .commentlist.section .scroll-to-here {
+    background: none;
+    height: 50px;
+  }
+
+  .comments.vcomp .comments-layout > .area > .commentlist.section > .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .comments.vcomp .show-boofiltering-enter-active,
+  .comments.vcomp .show-boofiltering-leave-active {
+    transition: all 0.1s;
+  }
+
+  .comments.vcomp .show-boofiltering-enter,
+  .comments.vcomp .show-boofiltering-leave-to {
+    opacity: 0;
+  }
+
+  .comments.vcomp .comments-layout span.whom {
+    background: black;
+    color: white;
+  }
+</style>
+
+<script type='text/x-template' id='comments-template'>
+  <page class='comments vcomp' :open='session.page.comments.open' :from='session.page.comments.from' @close='session.close_page()'>
+    <div class='comments-layout'>
+
+      <div class='area'>
+        <div class='score section'>
+          <scorekit :session='session' :post='cpost'></scorekit>
+        </div>
+
+        <div class='commentlist section'>
+          <transition-group tag='div' class='container' name='comment-listing'>
+            <comment
+              v-for='comment in commentlist'
+              :comment='comment'
+              :session='session'
+              :key='comment.created_at'
+              :comment_focused='the_comment'
+            ></comment>
+          </transition-group>
+
+          <div class='scroll-to-here' ref='scroll_to_here'></div>
+          <scale-loader class='spinner' :loading='comments_onloading'></scale-loader>
+        </div>
+
+        <transition name='show-boofiltering'>
+          <div v-if='boofiltering' style='position:absolute;height:30%;left:0;right:0;bottom:0;background:white;overflow-y:auto;padding:10px;box-shadow:0 -10px 50px rgba(0,0,0,0.5)'>
+            <div v-for='toboo in filtered_boolist' :key='toboo.id' style='position:relative;font-size:11px;display:flex;margin-bottom:5px;' @click='at_boo(toboo.nick)'>
+              <div style='width:var(--s-menu);height:var(--s-menu)'><img :src='toboo.profile.pix' style='width:100%;height:100%;object-fit:cover;'></div>
+              <div style='flex-grow:1;padding-left:5px;'>[[toboo.nick]]</div>
+            </div>
+          </div>
+        </transition>
+      </div>
+
+      <div class='area'>
+        <div class='commenting section' :class='{focused:the_comment.focused}' v-if='session.auth'>
+          <div class='container'>
+            <comment
+              type='commenter'
+              :comment='the_comment'
+              :session='session'
+              :comment_focused='the_comment'
+              @save='save'
+              ref='commenter'
+            ></comment>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('comments', {
+    template: '#comments-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        the_comment: {
+          text: '',
+          id: undefined,
+          focused: false,
+          // cword: '',
+          cword_ifrom: 0,
+          cword_ito: 0,
+        }
+      }
+    },
+
+    watch: {
+      'the_comment.focused': function(_new, _old) { },
+      // 'the_comment.cword': function(_new, _old) { },
+    },
+
+    computed: {
+      cpost: function() {
+        return this.session.page.comments.post
+      },
+
+      cword: function() {
+        return this.the_comment.text.slice(this.the_comment.cword_ifrom, this.the_comment.cword_ito)
+      },
+
+      boofiltering: function() {
+        return this.cword.includes('@')
+        // return this.the_comment.cword.includes('@')
+      },
+
+      filtering_keyword: function() {
+        if (this.boofiltering) {
+          // const strs = this.the_comment.cword.split('@');
+          const strs = this.cword.split('@');
+          return strs[strs.length-1]
+        }
+      },
+
+      filtered_boolist: function() {
+        if (this.cpost.comments && this.boofiltering) {
+          return this.cpost.comments.list.reduce((acc, cur) => {
+            if (!(cur.boo.id in acc) && cur.boo.nick.includes(this.filtering_keyword)) { acc[cur.boo.id] = cur.boo; }
+            return acc
+          }, {})
+        }
+      },
+
+      commentlist: function() {
+        if (!this.cpost.comments) {
+          this.$set(this.cpost, 'comments', new Comments(this.cpost))
+        }
+
+        return this.cpost.comments.list.sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
+      },
+
+      comments_onloading: function() {
+        if (this.cpost.comments) {
+          return this.cpost.comments.onloading
+        } else {
+          return true
+        }
+      },
+    },
+
+    methods: {
+      at_boo: function(nick) {
+        let txt_head = this.the_comment.text.slice(0, this.the_comment.cword_ifrom);
+        let txt_tail = this.the_comment.text.slice(this.the_comment.cword_ito);
+        let txt = txt_head + '@' + nick.split(' ').join('_') + txt_tail + '&nbsp;';
+        // let txt = txt_head + '<span class="whom">@' + nick + '</span>' + txt_tail + '&nbsp;';
+
+        txt = txt.replace(/@[\w|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|.]+/gi, '<span class="whom">$&</span>');
+
+        this.$refs.commenter.$refs.comment_text.innerHTML = txt;
+        this.$refs.commenter.change_text();
+        this.$refs.commenter.placeCaretAtEnd();
+        this.$refs.commenter.capture_cword();
+      },
+
+      save: function() {
+        let when;
+
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('post_id', this.cpost.id);
+        formdata.append('text', this.the_comment.text);
+
+        if (this.the_comment.id) {
+          formdata.append('id', this.the_comment.id);
+          const comment_changed = _.find(this.cpost.comments.list, ['id', this.the_comment.id]);
+          comment_changed.id = undefined;
+          comment_changed.text = this.the_comment.text;
+          when = comment_changed.created_at;
+
+        } else {
+          when = new Date().toISOString();
+
+          const _comment = {
+            boo: this.session.auth.boo,
+            id: undefined,
+            text: this.the_comment.text,
+            created_at: when
+          };
+
+          this.cpost.comments.list.push(_comment);
+          this.$refs.scroll_to_here.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        }
+
+        fetch('comment/save/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+
+            if (js.success) {
+              const comment_unsaved = _.find(this.cpost.comments.list, ['created_at', when]);
+              comment_unsaved.id = Number(js.comment_id);
+
+              this.the_comment.id = undefined;
+              this.the_comment.text = '';
+            }
+          });
+      },
+
+    }
+  });
+</script>

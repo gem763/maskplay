@@ -87,66 +87,6 @@
     top: var(--w-5);
   }
 
-  .post span.vs {
-    position: absolute;
-    background: var(--color-pos);
-    color: black;
-    font-size: 25px;
-    line-height: 33px;
-    font-weight: bold;
-  }
-
-  .post.postvoteox span.vs {
-    bottom: 25vh;
-    left: 50%;
-    transform: translate(-50%, 50%);
-  }
-
-  .post.postvoteab span.vs {
-    top: 50vh;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .post .score-label {
-    pointer-events: none;
-    position: absolute;
-    transform: translate(-50%,-50%);
-    font-family: 'Montserrat', sans-serif;
-    font-size: 15px;
-  }
-
-  .post.postvoteox .score-label {
-    top: 75vh;
-    left: 50%;
-  }
-
-  .post.postvoteab .score-label {
-    top: 50vh;
-    left: 20%;
-  }
-
-  .post .newpost.button {
-    position: absolute;
-    bottom: 30px;
-    left: 30px;
-    width: calc(100% - 60px);
-    height: 35px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    background: black;
-  }
-
-  .post > .onsaving {
-    position: absolute;
-    top: 10%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-  }
-
   .post > .description > .styletags {
     margin-top: 10px;
     margin-bottom:5px;
@@ -162,49 +102,6 @@
     padding: 5px;
     border-radius: 20px;
     margin: 2px;
-  }
-
-
-  .post > .modifier {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: var(--w-12);
-    background: none;
-    font-size: 12px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .post > .modifier > .item {
-    background: none;
-    padding-left: var(--w-6);
-    padding-right: var(--w-6);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .post > .modifier > .cancel.item {
-    color: gray;
-  }
-
-  .post > .modifier > .done.item {
-    color: var(--color-neg);
-  }
-
-  .baseposts.vcomp .show-modifier-enter-active,
-  .baseposts.vcomp .show-modifier-leave-active {
-    transition: all 0.1s;
-  }
-
-  .baseposts.vcomp .show-modifier-enter,
-  .baseposts.vcomp .show-modifier-leave-to {
-    opacity: 0;
   }
 
   .post > .scorebutton {
@@ -275,12 +172,11 @@
 
         <tr>
           <td class='bottom'>
-            <oxcard ref='post_keys' :rawkeys='oxkeys' :editable='editable'>
+            <oxcard :rawkeys='oxkeys'>
               <template #O='sprops'>
                 <oxer
                   @click.native='toggle_vote(0)'
                   :keyvalue='sprops.keyvalue'
-                  :editable='editable'
                   :act='0'
                   :vote_state='vote_state'
                   :score='post_nvotes_up'
@@ -292,7 +188,6 @@
                 <oxer
                   @click.native='toggle_vote(1)'
                   :keyvalue='sprops.keyvalue'
-                  :editable='editable'
                   :act='1'
                   :vote_state='vote_state'
                   :score='post_nvotes_down'
@@ -378,7 +273,6 @@
       </div>
     </template>
 
-    <modal :pop='on_delete' name='deleting' @delete='delete_post_really($event)'></modal>
   </div>
 </script>
 
@@ -391,7 +285,6 @@
 
     data: function() {
       return {
-        on_delete: false,
         squeezed: true,
       }
     },
@@ -511,16 +404,6 @@
       },
     },
 
-    watch: {
-      on_delete: function(_new, _old) {
-        if (_new) {
-          this.swiper.detachEvents();
-
-        } else if (_old) {
-          this.swiper.attachEvents();
-        }
-      }
-    },
 
     methods: {
       toggle_squeeze: function() {
@@ -561,58 +444,7 @@
           this.post.nvotes_up += 1;
           this.post.nvotes_down -= 1;
         }
-      },
-
-      show_deleting: function() {
-        this.on_delete = true;
-      },
-
-      hide_deleting: function() {
-        this.on_delete = false;
-      },
-
-      delete_post: function() {
-        this.show_deleting();
-      },
-
-      delete_post_really: function(how) {
-        this.hide_deleting();
-
-        // this.on_delete = false가 갱신된 후에 아래를 실행한다
-        this.$nextTick(function() {
-          if (how==1) {
-            fetch(`post/${this.post.id}/delete`)
-              .then(res => res.json())
-              .then(js => {
-                console.log(js);
-              });
-
-            this.postlist_out();
-          }
-        });
-      },
-
-      postlist_out: function() {
-        if (this.swiper) {
-          let where = this.swiper.realIndex;
-          this.swiper.slideTo(where-1);
-
-          if (this.session.page.posts.contents) {
-            where = _.findIndex(this.session.page.posts.contents.list, ['id', this.post.id]);
-
-            if (where!=-1) {
-              this.session.page.posts.contents.list.splice(where, 1);
-            }
-          }
-
-          if (this.post_boo.posts) {
-            where = _.findIndex(this.post_boo.posts.list, ['id', this.post.id]);
-            if (where!=-1) {
-              this.post_boo.posts.list.splice(where, 1);
-            }
-          }
-        }
-      },
+      }
 
     }
   });

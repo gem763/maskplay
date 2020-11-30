@@ -19,7 +19,7 @@
 
 
 <script type='text/x-template' id='oxcard-template'>
-  <div class='oxcard'>
+  <div class='oxcard' @click='change_keys'>
     <table>
       <tbody>
         <tr>
@@ -36,54 +36,50 @@
   Vue.component('oxcard', {
     template: '#oxcard-template',
     delimiters: ['[[', ']]'],
-    props: [ 'rawkeys' ],
+    props: [ 'rawkeys', 'editable' ],
     data: function() {
       return {
-        // keys: (this.rawkeys ? this.rawkeys : 'OX'),
-        // changed: false
+        keys: (this.rawkeys ? this.rawkeys : 'OX'),
+        changed: false
       }
     },
 
     // keys = SM
     // keyvalues = 살말
 
-    // watch: {
-    //   keys: function(_new, _old) {
-    //     this.changed = true;
-    //   }
-    // },
+    watch: {
+      keys: function(_new, _old) {
+        this.changed = true;
+      }
+    },
 
     computed: {
       keyvalues: function() {
-        if (this.rawkeys == 'OX') {
+        if (this.keys == 'OX') {
           return 'OX'
-
-        } else if (this.rawkeys == 'SM') {
+        } else if (this.keys == 'SM') {
           return '살말'
-
-        } else if (this.rawkeys == 'AB') {
-          return 'AB'
         }
       }
     },
 
     methods: {
-      // change_keys: function() {
-      //   if (this.editable) {
-      //     if (this.keys == 'OX') {
-      //       this.keys = 'SM';
-      //     } else if (this.keys = 'SM') {
-      //       this.keys = 'OX';
-      //     }
-      //   }
-      // },
+      change_keys: function() {
+        if (this.editable) {
+          if (this.keys == 'OX') {
+            this.keys = 'SM';
+          } else if (this.keys = 'SM') {
+            this.keys = 'OX';
+          }
+        }
+      },
 
-      // get: function() {
-      //   if (this.changed) {
-      //     this.changed = false;
-      //     return this.keys
-      //   }
-      // }
+      get: function() {
+        if (this.changed) {
+          this.changed = false;
+          return this.keys
+        }
+      }
     }
 
   });

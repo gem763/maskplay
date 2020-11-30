@@ -364,6 +364,8 @@
     </div>
 
     <bar-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading || !boo.id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+    <modal :pop='on_deleting' name='deleting' @delete='delboo_really($event)'></modal>
+    <modal :pop='on_logout' name='logout' @logout='logout_really($event)'></modal>
   </div>
 </script>
 
@@ -377,7 +379,9 @@
       return {
         on_changeboo: false,
         n_boos_max: 4,
-        more: false
+        more: false,
+        on_deleting: false,
+        on_logout: false
       }
     },
 
@@ -484,7 +488,30 @@
 
     methods: {
       delboo: function() {
+        // this.on_deleting = true;
         this.session.open_bridge('delboo_guide', 'top', () => {
+          console.log(1111)
+          // fetch(`post/${this.cpost_id}/delete`).then(res => res.json()).then(console.log);
+          // this.cpost_listout();
+        });
+      },
+
+      logout: function() {
+        this.on_logout = true;
+      },
+
+      logout_really: function() {
+        this.on_logout = false;
+
+        if (how=1) {
+          window.location.assign('/accounts/logout/');
+        }
+      },
+
+      delboo_really: function(how) {
+        this.on_deleting = false;
+
+        if (how==1) {
           const boos = this.session.auth.boos;
           const cboo_id = this.session.auth.boo_selected;
 
@@ -498,13 +525,7 @@
 
           this.session.auth.boo = Number(_boo_id);
           this.$delete(boos, cboo_id);
-        });
-      },
-
-      logout: function() {
-        this.session.open_bridge('logout_guide', 'top', () => {
-          window.location.assign('/accounts/logout/');
-        });
+        }
       },
 
       choose_this_boo: function(boo) {

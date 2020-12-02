@@ -1,6 +1,5 @@
 {% include "getch/loginpage.html" %}
 {% include "getch/mypage.html" %}
-{% include "getch/boochooser.html" %}
 {% include "getch/profiler.html" %}
 {% include "getch/boopage.html" %}
 {% include "getch/network.html" %}
@@ -12,6 +11,7 @@
 {% include "getch/texteditor.html" %}
 {% include "getch/bridge.html" %}
 {% include "getch/searcher.html" %}
+{% include "getch/company.html" %}
 
 
 <style>
@@ -33,6 +33,10 @@
       v-if='session.cnetwork.boo'
       :session='session'
     ></network> -->
+
+    <company
+      :session='session'
+    ></company>
 
     <navigator
       :session='session'
@@ -64,11 +68,6 @@
       v-if='session.auth'
       :session='session'
     ></posting>
-
-    <boochooser
-      v-if='session.auth'
-      :session='session'
-    ></boochooser>
 
     <profiler
       v-if='session.auth'

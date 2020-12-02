@@ -21,6 +21,7 @@
   }
 
   .navigator.vcomp > .top-header > .logo {
+  /* .navigator.vcomp .header .logo { */
     height: 100%;
     background: none;
     opacity: 0;
@@ -165,6 +166,12 @@
 
 <script type='text/x-template' id='navigator-template'>
   <page :open='session.page.navigator.open' :from='session.page.navigator.from' @close='session.close_page()'>
+    <!-- <template #header>
+      <div class='logo'>
+        <img src='/static/materials/logos/moiber-logo.png'>
+      </div>
+    </template> -->
+
     <div class='navigator vcomp' @scroll='scroll' ref='navigator'>
       <div class='sorters' ref='sorters'>
         <span class='sorter' :class='active_sorter=="history" ? "active" : ""' @click='sort_history'>최신</span>

@@ -1,0 +1,27 @@
+<style>
+  .company.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: lightpink;
+  }
+</style>
+
+<script type='text/x-template' id='company-template'>
+  <page :open='session.page.company.open' :from='session.page.company.from' @close='session.close_page()'>
+    <div class='company vcomp'>
+    </div>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('company', {
+    template: '#company-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {  }
+    }
+  });
+</script>

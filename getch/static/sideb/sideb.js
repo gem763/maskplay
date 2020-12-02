@@ -21,6 +21,7 @@ class Session {
       // bridge:     { open: true, from: 'top', type: 'delpost_guide', callback: undefined },
       bridge:     { open: false, from: undefined, type: undefined, callback: undefined },
       searcher:   { open: false, from: 'right' },
+      company:    { open: false, from: 'right' },
     };
 
     this.mode = { on: 'posts', order: 0, prev: undefined };
@@ -190,6 +191,10 @@ class Session {
     this.page.posting.post = post;
     this.page.posting.type = undefined;
     this.open_page('posting');
+  }
+
+  open_company() {
+    this.open_page('company');
   }
 
   // open_posting(mother) {

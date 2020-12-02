@@ -89,6 +89,33 @@
     height: var(--w-6);
     transform: rotate(180deg);
   }
+
+  .page > .content > .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--w-16);
+    background: lightblue;
+    /* transition: all 0.5s; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page > .content > .header > .hamburger {
+    position: absolute;
+    top: var(--w-5);
+    right: var(--w-4);
+    width: var(--w-6);
+    height: var(--w-6);
+  }
+
+  .page > .content > .header > .hamburger > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 </style>
 
 
@@ -102,6 +129,14 @@
       <!-- <div class='content' v-if='open'> -->
       <div class='content' v-show='open'>
         <slot></slot>
+
+        <!-- <div class='header'>
+          <div class='hamburger' @click=''>
+            <img src='/static/materials/icons/button_e.png'>
+          </div>
+
+          <slot name='header'></slot>
+        </div> -->
 
         <div class='close' @click='$emit("close")' v-show='!hide_close'>
           <img src='/static/materials/icons/right-chevron.png'>

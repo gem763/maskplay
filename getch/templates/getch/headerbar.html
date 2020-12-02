@@ -1,0 +1,54 @@
+<style>
+  .headerbar.vcomp {
+    position: fixed;
+    top: 0;
+    width: var(--width);
+    height: var(--w-16);
+    background: lightblue;
+    /* transition: all 0.5s; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .headerbar.vcomp > .hamburger {
+    position: absolute;
+    top: var(--w-5);
+    right: var(--w-4);
+    width: var(--w-6);
+    height: var(--w-6);
+  }
+
+  .headerbar.vcomp > .hamburger > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+</style>
+
+<script type='text/x-template' id='headerbar-template'>
+  <div class='headerbar vcomp'>
+    <div class='hamburger' @click=''>
+      <img src='/static/materials/icons/button_e.png'>
+
+      <!-- <transition name='show-more'>
+        <div class='submenu' v-if='more'>
+          <div class='item' v-if='!is_mypost' @click='report_this_post'>신고하기</div>
+          <div class='item' v-if='is_mypost && cpost_id' @click='modify_this_post'>수정하기</div>
+          <div class='item' v-if='is_mypost && cpost_id' @click='delete_this_post'>삭제</div>
+        </div>
+      </transition> -->
+    </div>
+  </div>
+</script>
+
+<script>
+  Vue.component('headerbar', {
+    template: '#headerbar-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {  }
+    }
+  });
+</script>

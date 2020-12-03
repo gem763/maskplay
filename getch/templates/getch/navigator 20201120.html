@@ -1,9 +1,62 @@
 <style>
-  .navigator.vcomp .page-body {
+  .navigator.vcomp {
+    width: 100%;
+    height: 100%;
     background: white;
+    overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
   }
 
-  .navigator.vcomp .page-body > .sorters {
+  .navigator.vcomp > .top-header {
+    position: fixed;
+    top: 0;
+    width: var(--width);
+    height: var(--w-16);
+    background: white;
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navigator.vcomp > .top-header > .logo {
+    height: 100%;
+    background: none;
+    opacity: 0;
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+
+  .navigator.vcomp > .top-header > .logo > img {
+    height: var(--w-6);
+    width: auto;
+  }
+
+
+  .navigator.vcomp > .top-header > .hamburger {
+    background: none;
+    position: absolute;
+    top: var(--w-2);
+    height: var(--w-12);
+    width: var(--w-12);
+    right: var(--w-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .navigator.vcomp > .top-header > .hamburger > img {
+    height: var(--w-6);
+    width: var(--w-6);
+  }
+
+  .navigator.vcomp > .sorters {
     background: none;
     margin-top: var(--w-16);
     display: flex;
@@ -12,71 +65,12 @@
     padding: 10px;
   }
 
-  .navigator.vcomp .page-body > .spinner {
+  .navigator.vcomp > .spinner {
     position: fixed;
     bottom: var(--w-12);
   }
 
-  .navigator.vcomp .page-body > .sorters > .sorter {
-    font-size: 15px;
-    margin-left: 5px;
-    margin-right: 5px;
-    padding: 10px;
-    border-radius: 50px;
-  }
-
-  .navigator.vcomp .page-body > .sorters > .sorter.active {
-    background: var(--color-dark);
-    color: white;
-  }
-
-  .navigator.vcomp .page-body > .contents {
-    position: relative;
-    width: 100%;
-    background: none;
-    overflow: hidden;
-  }
-
-  .navigator.vcomp .page-body > .contents > .sections {
-    position: relative;
-    width: 200%;
-    margin-left: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-direction: row;
-    transition: margin-left 0.5s;
-  }
-
-  .navigator.vcomp .page-body > .contents > .sections.history {
-    margin-left: 0;
-  }
-
-  .navigator.vcomp .page-body > .contents > .sections.hot {
-    margin-left: -100%;
-  }
-
-  .navigator.vcomp .page-body > .contents > .sections > .section {
-    position: relative;
-    width: 50%;
-    background: none;
-  }
-
-  .navigator.vcomp .headerbar-body-trans > .logo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* pointer-events: none; */
-  }
-
-  .navigator.vcomp .headerbar-body-trans > .logo > img {
-    height: var(--w-5);
-    width: auto;
-  }
-
-  .navigator.vcomp .headerbar-body-default > .searchbar {
+  .navigator.vcomp > .top-header > .searchbar {
     position: absolute;
     box-sizing: border-box;
     top: 50%;
@@ -92,9 +86,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 1;
+    transition: all 0.5s;
+    pointer-events: auto;
   }
 
-  .navigator.vcomp .headerbar-body-default > .searchbar > img {
+  .navigator.vcomp > .top-header > .searchbar > img {
     position: absolute;
     top: 50%;
     left: 5%;
@@ -102,39 +99,83 @@
     height: var(--w-6);
     transform: translateY(-50%);
   }
+
+  .navigator.vcomp.sticky > .top-header > .logo {
+    opacity: 1;
+
+  }
+
+  .navigator.vcomp.sticky > .top-header > .searchbar {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .navigator.vcomp > .sorters > .sorter {
+    font-size: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding: 10px;
+    border-radius: 50px;
+  }
+
+  .navigator.vcomp > .sorters > .sorter.active {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .navigator.vcomp > .contents {
+    position: relative;
+    width: 100%;
+    background: none;
+    overflow: hidden;
+  }
+
+  .navigator.vcomp > .contents > .sections {
+    position: relative;
+    width: 200%;
+    margin-left: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: row;
+    transition: margin-left 0.5s;
+  }
+
+  .navigator.vcomp > .search-result {
+    position: relative;
+    width: 100%;
+    background: lightblue;
+    margin-top: var(--w-16);
+  }
+
+  .navigator.vcomp > .contents > .sections.history {
+    margin-left: 0;
+  }
+
+  .navigator.vcomp > .contents > .sections.hot {
+    margin-left: -100%;
+  }
+
+  .navigator.vcomp > .contents > .sections > .section {
+    position: relative;
+    width: 50%;
+    background: none;
+  }
 </style>
 
 <script type='text/x-template' id='navigator-template'>
-  <page2
-    class='navigator vcomp'
-    :open='session.page.navigator.open'
-    :from='session.page.navigator.from'
-    :scrolload='{ obj:the_posts, n:16 }'
-    :sticky_trigger_margin='sticky_trigger_margin'
-    @close='session.close_page()'>
-
-    <template #headerbar-menu>
-      <div class='item'>테스트</div>
-      <div class='item'>테스트</div>
-      <div class='item'>테스트</div>
-    </template>
-
-    <template #headerbar-body-trans>
-      <div class='logo'>
-        <img src='/static/materials/icons/moiber-logo.png'>
-      </div>
-    </template>
-
+  <page2 :open='session.page.navigator.open' :from='session.page.navigator.from' @close='session.close_page()'>
     <template #headerbar-body-default>
       <div class='searchbar' @click='session.open_searcher()'>
         <img src='/static/materials/icons/search.png'>
       </div>
     </template>
 
-    <template #page-body>
+    <div class='navigator vcomp' @scroll='scroll' ref='navigator'>
       <div class='sorters' ref='sorters'>
         <span class='sorter' :class='active_sorter=="history" ? "active" : ""' @click='sort_history'>최신</span>
         <span class='sorter' :class='active_sorter=="hot" ? "active" : ""' @click='sort_hot'>인기</span>
+        <!-- <span @click='sort_custom'>맞춤</span> -->
       </div>
 
       <div class='contents'>
@@ -155,8 +196,22 @@
         </div>
       </div>
 
+      <!-- <div class='top-header' @click='upmost'>
+        <div class='hamburger' @click='pop_navigator_menu'>
+          <img src='/static/materials/icons/button_e.png'>
+        </div>
+
+        <div class='logo'>
+          <img src='/static/materials/logos/moiber-logo.png'>
+        </div>
+
+        <div class='searchbar' @click='session.open_searcher()'>
+          <img src='/static/materials/icons/search.png'>
+        </div>
+      </div> -->
+
       <bar-loader class='spinner' :loading='the_posts_onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
-    </template>
+    </div>
   </page2>
 </script>
 
@@ -179,6 +234,10 @@
         return this.session.page.posts.univ[this.active_sorter]
       },
 
+      // the_postlist: function() {
+      //   return this.the_posts.list
+      // },
+
       the_posts_onloading: function() {
         if (this.the_posts) {
           return this.the_posts.onloading
@@ -199,10 +258,6 @@
 
       loader_width: function() {
         return document.querySelector('#window').clientWidth
-      },
-
-      sticky_trigger_margin: function() {
-        return this.loader_width * 10 / 100
       }
     },
 
@@ -211,6 +266,35 @@
         this.session.page.posts.contents = this.the_posts;
         this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_page();
+      },
+
+      scroll: function() {
+        const h0 = this.$el.clientHeight;
+        const h1 = this.$refs.navigator.scrollHeight;
+        const scrollTop = this.$refs.navigator.scrollTop;
+        const nload = 16; // + (this.session.page.posts.contents.list.length % 4);
+
+        const gap = h1 - scrollTop - h0;
+        if ((gap < h0/2) && (!this.the_posts.onloading)) {
+          this.the_posts.load(nload);
+        }
+
+        const sticky = this.$refs.sorters.offsetTop + this.$refs.sorters.clientHeight;
+
+        if (scrollTop > sticky) {
+          this.$refs.navigator.classList.add("sticky");
+
+        } else {
+          this.$refs.navigator.classList.remove("sticky");
+        }
+      },
+
+      pop_navigator_menu: function() {
+        alert('navigator menu');
+      },
+
+      upmost: function() {
+        this.$refs.sorters.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
       },
 
       sort_history: function() {

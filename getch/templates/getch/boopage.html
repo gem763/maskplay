@@ -1,7 +1,46 @@
+<style>
+  .boopage.vcomp .headerbar-body-trans > .profile {
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+  }
+
+  .boopage.vcomp .headerbar-body-trans > .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+</style>
+
 <script type='text/x-template' id='boopage-template'>
-  <page class='boopage vcomp' :open='session.page.boopage.open' :from='session.page.boopage.from' @close='session.close_page()'>
-    <aboutboo v-if='boo' :boo='boo' :session='session' type='boo' :open='session.page.boopage.open'></aboutboo>
-  </page>
+  <page2
+    class='boopage vcomp'
+    :open='session.page.boopage.open'
+    :from='session.page.boopage.from'
+    :scrolload='scrolload'
+    :sticky_trigger_margin='sticky_trigger_margin'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+      <div class='item' @click='see_more'>더보기</div>
+    </template>
+
+    <template #headerbar-body-trans>
+      <div class='profile'>
+        <img :src='boo.profile.pix' v-if='boo'>
+      </div>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <aboutboo v-if='boo' :boo='boo' :session='session' type='boo' :open='session.page.boopage.open'></aboutboo>
+    </template>
+  </page2>
 </script>
 
 
@@ -11,12 +50,31 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return { }
+      return {  }
     },
 
     computed: {
       boo: function() {
         return this.session.page.boopage.boo
+      },
+
+      scrolload: function() {
+        if (this.boo) {
+          return {
+            obj: this.boo.posts,
+            n: 16
+          }
+        }
+      },
+
+      sticky_trigger_margin: function() {
+        return document.querySelector('#window').clientWidth * 33 / 100
+      }
+    },
+
+    methods: {
+      see_more: function() {
+        alert('더보기')
       }
     }
   });

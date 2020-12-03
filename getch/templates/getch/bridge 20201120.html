@@ -1,9 +1,12 @@
 <style>
-  .bridge.vcomp .page-body {
+  .bridge.vcomp {
+    width: 100%;
+    height: 100%;
+    background: none;
     font-size: 12px;
   }
 
-  .bridge.vcomp .page-body > .divider {
+  .bridge.vcomp > .divider {
     position: absolute;
     top: 50%;
     left: 0;
@@ -13,7 +16,7 @@
     border-bottom: none;
   }
 
-  .bridge.vcomp .page-body > .section {
+  .bridge.vcomp > .section {
     position: absolute;
     left: 0;
     width: 100%;
@@ -24,21 +27,21 @@
     background: white;
   }
 
-  .bridge.vcomp .page-body > .section.top {
+  .bridge.vcomp > .section.top {
     top: 0;
   }
 
-  .bridge.vcomp .page-body > .section.bottom {
+  .bridge.vcomp > .section.bottom {
     bottom: 0;
   }
 
-  .bridge.vcomp .page-body > .section.top > .title {
+  .bridge.vcomp > .section.top > .title {
     text-align: center;
     font-size: 16px;
     font-weight: bold;
   }
 
-  .bridge.vcomp .page-body > .section.top > .sub {
+  .bridge.vcomp > .section.top > .sub {
     text-align: center;
     /* font-size: 12pt; */
     position: absolute;
@@ -48,7 +51,7 @@
     transform: translateX(-50%);
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .sub {
+  .bridge.vcomp > .section.bottom > .sub {
     text-align: center;
     /* font-size: 12pt; */
     position: absolute;
@@ -62,25 +65,25 @@
     flex-direction: column;
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .sub > .action {
+  .bridge.vcomp > .section.bottom > .sub > .action {
     width: 35%;
     padding: 10px;
     box-sizing: border-box;
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .sub > .action.login {
+  .bridge.vcomp > .section.bottom > .sub > .action.login {
     background: #0095F6;
     color: white;
     margin-top: var(--w-4);
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .sub > .action.cancel {
+  .bridge.vcomp > .section.bottom > .sub > .action.cancel {
     background: white;
     margin-top: 10px;
     border: 1px solid var(--color-dark);
   }
 
-  .bridge.vcomp .page-body > .ab {
+  .bridge.vcomp > .ab {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -92,28 +95,28 @@
     justify-content: center;
   }
 
-  .bridge.vcomp .page-body > .ab.a {
+  .bridge.vcomp > .ab.a {
     background: none;
     bottom: calc(50% - 1px);
   }
 
-  .bridge.vcomp .page-body > .ab.b {
+  .bridge.vcomp > .ab.b {
     background: none;
     top: 50%;
   }
 
-  .bridge.vcomp .page-body > .ab > img {
+  .bridge.vcomp > .ab > img {
     width: 70%;
     height: 70%;
   }
 
-  .bridge.vcomp .page-body > .ab > img.question {
+  .bridge.vcomp > .ab > img.question {
     position: absolute;
     top: 15%;
     left: 115%;
   }
 
-  .bridge.vcomp .page-body > .updown {
+  .bridge.vcomp > .updown {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -124,26 +127,26 @@
     justify-content: center;
   }
 
-  .bridge.vcomp .page-body > .updown.up {
+  .bridge.vcomp > .updown.up {
     background: none;
     bottom: calc(50% - 1px);
   }
 
-  .bridge.vcomp .page-body > .updown.down {
+  .bridge.vcomp > .updown.down {
     background: none;
     top: 50%;
   }
 
-  .bridge.vcomp .page-body > .updown > img {
+  .bridge.vcomp > .updown > img {
     width: 100%;
     height: 100%;
   }
 
-  .bridge.vcomp .page-body > .updown.down > img {
+  .bridge.vcomp > .updown.down > img {
     transform: rotate(180deg);
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes {
+  .bridge.vcomp > .section.bottom > .postypes {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -151,36 +154,36 @@
     text-align: center;
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype:first-child {
+  .bridge.vcomp > .section.bottom > .postypes > .postype:first-child {
     margin-right: var(--w-6);
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype:last-child {
+  .bridge.vcomp > .section.bottom > .postypes > .postype:last-child {
     margin-left: var(--w-6);
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table {
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table {
     border-collapse: collapse;
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td {
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table td {
     border: 1px solid var(--color-dark);
     height: var(--w-12);
     width: var(--w-12);
     box-sizing: border-box;
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td.borderless {
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table td.borderless {
     border: none;
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td > img {
+  .bridge.vcomp > .section.bottom > .postypes > .postype > table td > img {
     width: 70%;
     height: 70%;
     vertical-align: middle;
   }
 
-  .bridge.vcomp.posting_guide .page-body > .section.bottom > span.title {
+  .bridge.vcomp.posting_guide > .section.bottom > span.title {
     position: absolute;
     bottom: calc(50% + var(--w-16));
     left: 50%;
@@ -188,7 +191,7 @@
     transform: translate(-50%, 0);
   }
 
-  .bridge.vcomp .page-body > .section.top > .group {
+  .bridge.vcomp > .section.top > .group {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -198,14 +201,14 @@
     text-align: center;
   }
 
-  .bridge.vcomp .page-body > .section.top > .group > .sub {
+  .bridge.vcomp > .section.top > .group > .sub {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: row;
   }
 
-  .bridge.vcomp .page-body > .section.top > .group > .sub > .button {
+  .bridge.vcomp > .section.top > .group > .sub > .button {
      width: var(--w-16);
      height: var(--w-16);
      background: none;
@@ -214,38 +217,23 @@
      justify-content: center;
   }
 
-  .bridge.vcomp .page-body > .section.top > .group > .sub > .button > img {
+  .bridge.vcomp > .section.top > .group > .sub > .button > img {
     width: var(--w-8);
     height: var(--w-8);
   }
 
-  .bridge.vcomp.posting_guide .page-body > .section.bottom,
-  .bridge.vcomp.delpost_guide .page-body > .section.top,
-  .bridge.vcomp.delboo_guide .page-body > .section.top,
-  .bridge.vcomp.logout_guide .page-body > .section.top {
+  .bridge.vcomp.posting_guide > .section,
+  .bridge.vcomp.delpost_guide > .section,
+  .bridge.vcomp.delboo_guide > .section,
+  .bridge.vcomp.logout_guide > .section {
     background: rgba(255,255,255,0.9);;
-  }
-
-  .bridge.vcomp.posting_guide .page-body > .section.top,
-  .bridge.vcomp.delpost_guide .page-body > .section.bottom,
-  .bridge.vcomp.delboo_guide .page-body > .section.bottom,
-  .bridge.vcomp.logout_guide .page-body > .section.bottom {
-    background: none;;
   }
 </style>
 
 
 <script type='text/x-template' id='bridge-template'>
-  <page2
-    class='bridge vcomp' :class='bridge_type'
-    :open='session.page.bridge.open'
-    :from='session.page.bridge.from'
-    :hide_close='hide_close'
-    :hide_dimmer='hide_dimmer'
-    :hide_headerbar='true'
-    @close='session.close_page()'>
-
-    <template #page-body>
+  <page :open='session.page.bridge.open' :from='session.page.bridge.from' @close='session.close_page()' :hide_close='hide_close' :hide_dimmer='hide_dimmer'>
+    <div class='bridge vcomp' :class='bridge_type'>
 
       <template v-if='is_login_guide_for_posting'>
         <div class='section top'>
@@ -299,9 +287,8 @@
       </template>
 
       <template v-else-if='is_posting_guide'>
-        <div class='section top' @click='session.close_page()'></div>
-
         <div class='section bottom'>
+
           <span class='title'>새 글 등록</span>
 
           <div class='postypes'>
@@ -356,8 +343,6 @@
           </div>
 
         </div>
-
-        <div class='section bottom' @click='session.close_page()'></div>
       </template>
 
 
@@ -377,8 +362,6 @@
           </div>
 
         </div>
-
-        <div class='section bottom' @click='session.close_page()'></div>
       </template>
 
 
@@ -398,12 +381,10 @@
           </div>
 
         </div>
-
-        <div class='section bottom' @click='session.close_page()'></div>
       </template>
 
-    </template>
-  </page2>
+    </div>
+  </page>
 </script>
 
 

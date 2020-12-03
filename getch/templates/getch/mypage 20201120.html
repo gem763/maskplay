@@ -1,0 +1,48 @@
+<style>
+  .mypage.vcomp .headerbar-body-default > .profile {
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+    /* transition: all 0.5s;
+    position: relative; */
+  }
+
+  .mypage.vcomp .headerbar-body-default > .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+</style>
+
+<script type='text/x-template' id='mypage-template'>
+  <page2 class='mypage vcomp' :open='session.page.mypage.open' :from='session.page.mypage.from' @close='session.close_page()'>
+    <template #headerbar-body-default>
+      <div class='profile'>
+        <img :src='boo.profile.pix'>
+      </div>
+    </template>
+
+    <aboutboo :boo='boo' :session='session' :open='session.page.mypage.open'></aboutboo>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('mypage', {
+    template: '#mypage-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.auth.boo
+      }
+    }
+  });
+</script>

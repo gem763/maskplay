@@ -1,9 +1,98 @@
 <style>
   .aboutboo.vcomp {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background: white;
+    overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
+  }
+
+  /* .aboutboo.vcomp > .top-header {
+    position: fixed;
+    top: 0;
+    width: var(--width);
+    height: var(--w-16);
+    background: white;
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .top-header > .profile {
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+    opacity: 0;
+    transition: all 0.5s;
+    position: relative;
+  }
+
+  .aboutboo.vcomp > .top-header > .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+
+
+  .aboutboo.vcomp > .top-header > .hamburger {
+    background: none;
+    position: absolute;
+    top: var(--w-2);
+    height: var(--w-12);
+    width: var(--w-12);
+    right: var(--w-1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .aboutboo.vcomp > .top-header > .hamburger > img {
+    height: var(--w-6);
+    width: var(--w-6);
+  } */
+
+  .aboutboo.vcomp > .top-header > .hamburger > .submenu {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    background: rgba(255,255,255,0.9);
+    width: var(--w-24);
+    border-radius: var(--w-3);
+    overflow: hidden;
+    font-size: 12px;
+  }
+
+  .aboutboo.vcomp > .top-header > .hamburger > .submenu > .item {
+    background: none;
+    height: var(--w-8);
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .top-header > .hamburger > .submenu > .item:last-child {
+    border-bottom: none;
+    color: red;
+  }
+
+  .aboutboo.vcomp .show-more-enter-active,
+  .aboutboo.vcomp .show-more-leave-active {
+    transition: all 0.1s;
+  }
+
+  .aboutboo.vcomp .show-more-enter,
+  .aboutboo.vcomp .show-more-leave-to {
+    opacity: 0;
   }
 
   .aboutboo.vcomp > .profiles {
@@ -80,9 +169,23 @@
     font-size: 12px;
   }
 
+  .aboutboo.vcomp > .profiles > .changeboo {
+    width: var(--w-12);
+    height: var(--w-12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .profiles > .changeboo > img {
+    width: var(--w-6);
+    height: var(--w-6);
+  }
+
   .aboutboo.vcomp > .profiles > .nick {
     font-size: 13px;
     font-weight: bold;
+    /* margin-top: 10px; */
   }
 
   .aboutboo.vcomp > .profiles > .text {
@@ -117,6 +220,14 @@
     color: white;
   }
 
+  .aboutboo.vcomp.sticky > .top-header > .profile {
+    opacity: 1;
+  }
+
+  .aboutboo.vcomp.sticky > .profiles > .profile {
+    opacity: 0;
+  }
+
   .aboutboo.vcomp > .contents {
     margin-top: 50px;
     background: none;
@@ -135,6 +246,8 @@
     justify-content: center;
     flex-wrap: wrap;
     width: 100%;
+    /* width: var(--w-80); */
+    /* background: rgba(0,0,0,0.5); */
     transition: all 0.5s;
     overflow: hidden;
   }
@@ -176,7 +289,7 @@
 
 
 <script type='text/x-template' id='aboutboo-template'>
-  <div class='aboutboo vcomp'>
+  <div class='aboutboo vcomp' @scroll='scroll'>
 
 
     <div class='profiles' ref='profiles'>
@@ -193,6 +306,11 @@
           <span class='nfollowers'>[[ nfollowers ]]</span>
         </div>
       </div>
+
+      <!-- <div class='changeboo' @click='toggle_changeboo' v-if='is_myboo'>
+        <img src='/static/materials/icons/changeboo.png' v-if='!on_changeboo'>
+        <img src='/static/materials/icons/times.png' v-if='on_changeboo'>
+      </div> -->
 
       <div class='nick'>[[ nick ]]</div>
 
@@ -227,6 +345,22 @@
       ></postlibrary>
     </div>
 
+    <!-- <div class='top-header'>
+      <div class='hamburger' @click='toggle_more'>
+        <img src='/static/materials/icons/button_e.png'>
+
+        <transition name='show-more'>
+          <div class='submenu' v-if='more'>
+            <div class='item' v-if='is_myboo' @click='delboo'>부캐삭제</div>
+            <div class='item' v-if='is_myboo' @click='logout'>로그아웃</div>
+          </div>
+        </transition>
+      </div>
+
+      <div class='profile'>
+        <img :src='profilepix'>
+      </div>
+    </div> -->
 
     <bar-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading || !boo.id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
   </div>
@@ -299,6 +433,7 @@
         if (this.is_myboo) {
           return this.session.auth.is_following(this.boo.id)
         }
+        // return !this.is_myboo && this.session.auth.is_following(this.boo.id)
       },
 
       is_myboo: function() {
@@ -347,6 +482,30 @@
     },
 
     methods: {
+      delboo: function() {
+        this.session.open_bridge('delboo_guide', 'top', () => {
+          const boos = this.session.auth.boos;
+          const cboo_id = this.session.auth.boo_selected;
+
+          fetch('/boo/profile/delete/')
+            .then(x => x.json())
+            .then(j => { console.log(j) });
+
+          const _boo_id = Object.keys(boos)
+            .filter(x => x !== String(cboo_id) )
+            .sort((a,b) => Number(b) - Number(a) )[0];
+
+          this.session.auth.boo = Number(_boo_id);
+          this.$delete(boos, cboo_id);
+        });
+      },
+
+      logout: function() {
+        this.session.open_bridge('logout_guide', 'top', () => {
+          window.location.assign('/accounts/logout/');
+        });
+      },
+
       choose_this_boo: function(boo) {
         this.session.auth.boo = boo.id;
       },
@@ -374,7 +533,29 @@
           this.session.auth.follow(this.boo.id);
           this.boo.nfollowers += 1;
         }
-      }
+      },
+
+      // scroll: function() {
+      //   // console.log(this.$el.scrollTop);
+      //
+      //   const sticky = this.$refs.profiles.offsetTop + this.$refs.profiles.clientHeight/4;
+      //   const scrollTop = this.$el.scrollTop;
+      //
+      //   if (scrollTop > sticky) {
+      //     this.$el.classList.add("sticky");
+      //
+      //   } else {
+      //     this.$el.classList.remove("sticky");
+      //   }
+      // },
+
+      pop_boomenu: function() {
+        alert('boopage-menu popup')
+      },
+
+      toggle_more: function() {
+        this.more = !this.more;
+      },
     }
   });
 </script>

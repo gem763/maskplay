@@ -1,16 +1,14 @@
+<style>
+  .booposts.vcomp {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
 <script type='text/x-template' id='booposts-template'>
-  <page2 class='booposts vcomp' :open='session.page.booposts.open' :trans_headerbar='true' :from='session.page.booposts.from' @close='session.close_page()'>
-
-    <template #headerbar-menu>
-      <div class='item' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
-      <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.modify_this_post'>수정하기</div>
-      <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.delete_this_post'>삭제</div>
-    </template>
-
-    <template #page-body>
-      <baseposts :session='session' :postlist='postlist' :posts='session.booposts' ref='baseposts'></baseposts>
-    </template>
-  </page2>
+  <page class='booposts' :open='session.page.booposts.open' :from='session.page.booposts.from' @close='session.close_page()'>
+    <baseposts :session='session' :postlist='postlist' :posts='this.session.booposts' ref='baseposts'></baseposts>
+  </page>
 </script>
 
 
@@ -28,18 +26,6 @@
     },
 
     computed: {
-      cpost: function() {
-        if (this.session.page.posts.swiper && this.postlist) {
-          return this.postlist[this.session.page.posts.swiper.realIndex]
-        }
-      },
-
-      is_mypost: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo_selected == this.cpost.boo.id
-        }
-      },
-
       postlist: function() {
         if (!this.session.booposts) {
           return []
@@ -48,7 +34,7 @@
         const _postlist = this.session.booposts.list.map(post => {
           if (!post.id)
             return post
-
+            
           const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
 
           if (_post) {
@@ -58,9 +44,11 @@
           }
         });
 
+        // if (this.session.auth && this.session.auth.boo.id==this.session.booposts.boo.id) {
         if (this.session.auth && this.session.booposts.boo.id in this.session.auth.boos) {
           _postlist.forEach(post => {
             post.boo = this.session.auth.boos[this.session.booposts.boo.id];
+            // post.boo = this.session.auth.boo;
           });
 
         } else {

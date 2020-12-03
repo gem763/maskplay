@@ -324,7 +324,7 @@
           <span class='author-nick'>[[ author.nick ]]</span>
         </div>
 
-        <div class='commenter-mode'>
+        <div class='commenter-mode' v-if='myboo'>
           <input class='commenter' v-model.trim='mycomment' @keyup.enter='save' :placeholder="myboo.nick + '(으)로 댓글달기'" spellcheck='false' @focus='focusin' @blur='focusout' ref='input'>
           <div class='profile'>
             <img v-if='myboo' :src='myboo.profile.pix'>

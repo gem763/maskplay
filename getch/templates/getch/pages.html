@@ -1,3 +1,4 @@
+{% include "getch/posts.html" %}
 {% include "getch/loginpage.html" %}
 {% include "getch/mypage.html" %}
 {% include "getch/profiler.html" %}
@@ -33,6 +34,10 @@
       v-if='session.cnetwork.boo'
       :session='session'
     ></network> -->
+
+    <posts
+      :session='session'>
+    </posts>
 
     <company
       :session='session'

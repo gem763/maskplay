@@ -55,7 +55,7 @@
 
     computed: {
       keyvalues: function() {
-        if (this.rawkeys == 'OX') {
+        if (this.rawkeys == 'OX' || !this.rawkeys) {
           return 'OX'
 
         } else if (this.rawkeys == 'SM') {

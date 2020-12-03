@@ -1,14 +1,16 @@
-<style>
-  .posts.vcomp {
-    width: 100%;
-    height: 100%;
-  }
-</style>
-
 <script type='text/x-template' id='posts-template'>
-  <div class='posts vcomp'>
-    <baseposts :session='session' :postlist='postlist' :posts='session.page.posts.contents' ref='baseposts'></baseposts>
-  </div>
+  <page2 class='posts vcomp' :open='session.page.posts.open' :hide_close='true' :trans_headerbar='true'>
+
+    <template #headerbar-menu>
+      <div class='item' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
+      <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.modify_this_post'>수정하기</div>
+      <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.delete_this_post'>삭제</div>
+    </template>
+
+    <template #page-body>
+      <baseposts :session='session' :postlist='postlist' :posts='session.page.posts.contents' ref='baseposts'></baseposts>
+    </template>
+  </page2>
 </script>
 
 
@@ -21,15 +23,23 @@
       return {}
     },
 
-    // created: function() {
-    //   this.session.page.posts.contents = this.session.page.posts.univ.history;
-    // },
-
     mounted: function() {
       this.session.page.posts.swiper = this.$refs.baseposts.swiper;
     },
 
     computed: {
+      cpost: function() {
+        if (this.session.page.posts.swiper && this.postlist) {
+          return this.postlist[this.session.page.posts.swiper.realIndex]
+        }
+      },
+
+      is_mypost: function() {
+        if (this.session.auth) {
+          return this.session.auth.boo_selected == this.cpost.boo.id
+        }
+      },
+
       postlist: function() {
         if (!this.session.page.posts.contents) {
           return []
@@ -37,10 +47,8 @@
 
         if (this.session.auth) {
           this.session.page.posts.contents.list.forEach(post => {
-            // if (this.session.auth.boo.id==post.boo.id) {
             if (post.boo.id in this.session.auth.boos) {
               post.boo = this.session.auth.boos[post.boo.id];
-              // post.boo = this.session.auth.boo;
             }
           });
         }

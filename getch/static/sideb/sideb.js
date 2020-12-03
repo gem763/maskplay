@@ -3,11 +3,11 @@ class Session {
     this.page = {
       // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
       // posts:      { contents: undefined, univ: { history: new Posts('hot', 4), hot: undefined, custom: undefined, search: undefined }, swiper: undefined },
-      posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
+      posts:      { open: true, contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
       mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'bottom' },
       navigator:  { open: false, from: 'left' },
-      boochooser: { open: false, from: 'left' },
+      // boochooser: { open: false, from: 'left' },
       profiler:   { open: false, from: 'right', type: undefined },
       boopage:    { open: false, from: 'left', boo: undefined },
       network:    { open: false, from: 'right' },

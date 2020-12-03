@@ -1,0 +1,52 @@
+<style>
+  .posts.vcomp {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script type='text/x-template' id='posts-template'>
+  <div class='posts vcomp'>
+    <baseposts :session='session' :postlist='postlist' :posts='session.page.posts.contents' ref='baseposts'></baseposts>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('posts', {
+    template: '#posts-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    // created: function() {
+    //   this.session.page.posts.contents = this.session.page.posts.univ.history;
+    // },
+
+    mounted: function() {
+      this.session.page.posts.swiper = this.$refs.baseposts.swiper;
+    },
+
+    computed: {
+      postlist: function() {
+        if (!this.session.page.posts.contents) {
+          return []
+        }
+
+        if (this.session.auth) {
+          this.session.page.posts.contents.list.forEach(post => {
+            // if (this.session.auth.boo.id==post.boo.id) {
+            if (post.boo.id in this.session.auth.boos) {
+              post.boo = this.session.auth.boos[post.boo.id];
+              // post.boo = this.session.auth.boo;
+            }
+          });
+        }
+        // this.session.page.comments.post = this.session.page.posts.contents.list[0]
+        return this.session.page.posts.contents.list
+      }
+    }
+  });
+</script>

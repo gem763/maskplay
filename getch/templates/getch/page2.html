@@ -1,0 +1,333 @@
+<style>
+  .page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+  }
+
+  .page > .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    pointer-events: auto;
+  }
+
+  .page > .dimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .page .show-content-enter-active,
+  .page .show-content-leave-active,
+  .page .show-content-from-right-enter-active,
+  .page .show-content-from-right-leave-active,
+  .page .show-content-from-left-enter-active,
+  .page .show-content-from-left-leave-active,
+  .page .show-content-from-top-enter-active,
+  .page .show-content-from-top-leave-active,
+  .page .show-content-from-bottom-enter-active,
+  .page .show-content-from-bottom-leave-active,
+  .page .show-dimmer-enter-active,
+  .page .show-dimmer-leave-active {
+    transition: all .3s;
+  }
+
+  .page .show-content-enter,
+  .page .show-content-leave-to {
+    opacity: 0;
+  }
+
+  .page .show-content-from-right-enter,
+  .page .show-content-from-right-leave-to {
+    left: 100%;
+  }
+
+  .page .show-content-from-left-enter,
+  .page .show-content-from-left-leave-to {
+    left: -100%;
+  }
+
+  .page .show-content-from-bottom-enter,
+  .page .show-content-from-bottom-leave-to {
+    top: 100%;
+  }
+
+  .page .show-content-from-top-enter,
+  .page .show-content-from-top-leave-to {
+    top: -100%;
+  }
+
+  .page .show-dimmer-enter,
+  .page .show-dimmer-leave-to {
+    background: rgba(0,0,0,0);
+  }
+
+  .page > .content > .close {
+    background: none;
+    position: absolute;
+    top: var(--w-2);
+    left: var(--w-1);
+    width: var(--w-12);
+    height: var(--w-12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page > .content > .close img {
+    width: var(--w-6);
+    height: var(--w-6);
+    transform: rotate(180deg);
+  }
+
+  .page > .content > .headerbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--w-16);
+    background: white;
+    /* background: rgba(255,165,0,0.5); */
+  }
+
+  .page > .content > .headerbar.transparent {
+    background: none;
+    pointer-events: none;
+  }
+
+  .page > .content > .headerbar > .hamburger {
+    position: absolute;
+    top: var(--w-5);
+    right: var(--w-4);
+    width: var(--w-6);
+    height: var(--w-6);
+    pointer-events: auto;
+  }
+
+  .page > .content > .headerbar > .hamburger > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .page > .content > .headerbar > .headerbar-body-default,
+  .page > .content > .headerbar > .headerbar-body-trans {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s;
+  }
+
+  .page > .content > .headerbar > .headerbar-body-default {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .page > .content > .headerbar > .headerbar-body-trans {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .page > .content.sticky > .headerbar > .headerbar-body-default {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .page > .content.sticky > .headerbar > .headerbar-body-trans {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  .page > .content > .headerbar.transparent > .headerbar-body-default,
+  .page > .content > .headerbar.transparent > .headerbar-body-trans {
+    pointer-events: none;
+  }
+
+  .page > .content > .page-body {
+    width: 100%;
+    height: 100%;
+    /* background: white; */
+    overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu {
+    position: absolute;
+    top: 150%;
+    right: 0;
+    background: rgba(19,18,18,0.7);
+    /* background: rgba(255,255,255,0.9); */
+    width: var(--w-24);
+    /* border: 1px solid black; */
+    border-radius: var(--w-3);
+    overflow: hidden;
+    font-size: 12px;
+    color: white;
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu > .item {
+    background: none;
+    height: var(--w-8);
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu > .item:last-child {
+    border-bottom: none;
+  }
+
+  .page > .content > .headerbar > .hamburger .show-menu-enter-active,
+  .page > .content > .headerbar > .hamburger .show-menu-leave-active {
+    transition: all 0.2s;
+  }
+
+  .page > .content > .headerbar > .hamburger .show-menu-enter,
+  .page > .content > .headerbar > .hamburger .show-menu-leave-to {
+    opacity: 0;
+    /* transform: translateY(calc(var(--w-10) * (-1))); */
+  }
+</style>
+
+
+<script type='text/x-template' id='page2-template'>
+  <div class='page' @click='close_menu'>
+    <transition name='show-dimmer'>
+      <div class='dimmer' v-show='open && !hide_dimmer'></div>
+    </transition>
+
+    <transition :name='show_content_type'>
+      <!-- <div class='content' v-if='open'> -->
+      <div class='content' v-show='open'>
+        <div class='page-body' @scroll='scroll' ref='scroller'>
+          <div ref='upmost'></div>
+          <slot name='page-body'></slot>
+        </div>
+
+        <div class='headerbar' :class='headerbar_class' v-if='!hide_headerbar'>
+          <div class='headerbar-body-trans' @click='goto_upmost'>
+            <slot name='headerbar-body-trans'></slot>
+          </div>
+
+          <div class='headerbar-body-default'>
+            <slot name='headerbar-body-default'></slot>
+          </div>
+
+          <div class='hamburger' @click.stop='toggle_menu'>
+            <img src='/static/materials/icons/button_e.png'>
+
+            <transition name='show-menu'>
+              <div class='headerbar-menu' v-if='on_menu'>
+                <slot name='headerbar-menu'>
+                  <div class='item'>메뉴</div>
+                </slot>
+              </div>
+            </transition>
+          </div>
+        </div>
+
+        <div class='close' @click='$emit("close")' v-show='!hide_close'>
+          <img src='/static/materials/icons/right-chevron.png'>
+        </div>
+      </div>
+    </transition>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('page2', {
+    template: '#page2-template',
+    delimiters: ['[[', ']]'],
+    props: ['open', 'from', 'hide_close', 'hide_headerbar', 'hide_dimmer', 'scrolload', 'sticky_trigger_margin', 'trans_headerbar'],
+    data: function() {
+      return {
+        on_menu: false,
+      }
+    },
+
+    computed: {
+      show_content_type: function() {
+        if (this.from) {
+          return 'show-content-from-' + this.from
+
+        } else {
+          return 'show-content'
+        }
+      },
+
+      headerbar_class: function() {
+        if (this.trans_headerbar) {
+          return 'transparent'
+
+        } else {
+          return ''
+        }
+      }
+    },
+
+    methods: {
+      toggle_menu: function() {
+        this.on_menu = !this.on_menu;
+      },
+
+      goto_upmost: function() {
+        if (this.$refs) {
+          this.$refs.upmost.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        }
+      },
+
+      scroll: function() {
+        this.close_menu();
+
+        // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sticky_header
+        const h0 = this.$el.clientHeight;
+        const h1 = this.$refs.scroller.scrollHeight;
+        const scrollTop = this.$refs.scroller.scrollTop;
+        // const nload = 16; // + (this.session.page.posts.contents.list.length % 4);
+
+        if (this.scrolload) {
+          const gap = h1 - scrollTop - h0;
+          if ((gap < h0/2) && (!this.scrolload.obj.onloading)) {
+            this.scrolload.obj.load(this.scrolload.n);
+          }
+        }
+
+        if (this.sticky_trigger_margin) {
+          // const sticky = this.sticky_trigger_margin;
+          // const sticky = this.sticky_trigger_margin - this.$refs.headerbar.clientHeight;
+          // const sticky = this.sticky_trigger.offsetTop + this.sticky_trigger.clientHeight - this.$refs.headerbar.clientHeight;
+
+          // if (scrollTop > sticky) {
+          if (scrollTop > this.sticky_trigger_margin) {
+            this.$refs.scroller.parentElement.classList.add("sticky");
+
+          } else {
+            this.$refs.scroller.parentElement.classList.remove("sticky");
+          }
+        }
+      },
+
+      close_menu: function() {
+        this.on_menu = false;
+      }
+    }
+  });
+</script>

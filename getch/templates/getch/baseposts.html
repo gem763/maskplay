@@ -18,56 +18,6 @@
     z-index: 0;
   }
 
-  .baseposts.vcomp > .hamburger {
-    position: absolute;
-    top: calc(var(--width-unit) * 5);
-    right: calc(var(--width-unit) * 4);
-    width: calc(var(--width-unit) * 6);
-    height: calc(var(--width-unit) * 6);
-  }
-
-  .baseposts.vcomp > .hamburger > img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .baseposts.vcomp > .hamburger > .submenu {
-    position: absolute;
-    top: 130%;
-    right: 0;
-    background: rgba(255,255,255,0.9);
-    width: var(--w-24);
-    /* border: 1px solid black; */
-    border-radius: var(--w-3);
-    overflow: hidden;
-    font-size: 12px;
-  }
-
-  .baseposts.vcomp > .hamburger > .submenu > .item {
-    background: none;
-    height: var(--w-8);
-    border-bottom: 1px solid #cccccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .baseposts.vcomp > .hamburger > .submenu > .item:last-child {
-    border-bottom: none;
-    color: red;
-  }
-
-  .baseposts.vcomp .show-more-enter-active,
-  .baseposts.vcomp .show-more-leave-active {
-    transition: all 0.1s;
-  }
-
-  .baseposts.vcomp .show-more-enter,
-  .baseposts.vcomp .show-more-leave-to {
-    opacity: 0;
-  }
-
   .baseposts.vcomp > .spinner {
     position: fixed;
     bottom: var(--w-12);
@@ -82,19 +32,6 @@
         <post :post='post' :session='session'></post>
       </swiper-slide>
     </swiper>
-
-
-    <div class='hamburger' @click='toggle_more'>
-      <img src='/static/materials/icons/button_e.png'>
-
-      <transition name='show-more'>
-        <div class='submenu' v-if='more'>
-          <div class='item' v-if='!is_mypost' @click='report_this_post'>신고하기</div>
-          <div class='item' v-if='is_mypost && cpost_id' @click='modify_this_post'>수정하기</div>
-          <div class='item' v-if='is_mypost && cpost_id' @click='delete_this_post'>삭제</div>
-        </div>
-      </transition>
-    </div>
 
     <bar-loader class='spinner' :loading='!cpost_id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
   </div>
@@ -111,7 +48,7 @@
 
     data: function() {
       return {
-        more: false,
+        // more: false,
         swiper: undefined,
         swiper_options: {
           direction: 'vertical',
@@ -123,10 +60,6 @@
     },
 
     computed: {
-      me: function() {
-        return this
-      },
-
       cpost: function() {
         if (this.swiper && this.postlist) {
           return this.postlist[this.swiper.realIndex]
@@ -138,45 +71,6 @@
           return this.cpost.id
         }
       },
-
-      cpost_boo: function() {
-        if (this.session.auth && this.cpost && this.cpost.boo.id==this.session.auth.boo_selected) {
-          return this.session.auth.boo
-
-        } else if (this.cpost) {
-          return this.cpost.boo
-        }
-      },
-
-      cpost_boo_id: function() {
-        if (this.cpost_boo) {
-          return this.cpost_boo.id
-        }
-      },
-
-      cpost_boo_profile: function() {
-        if (this.cpost_boo) {
-          return this.cpost_boo.profile.pix
-        }
-      },
-
-      is_mypost: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo_selected==this.cpost_boo_id
-        }
-      },
-
-      level_style: function() {
-        if (this.cpost_boo) {
-          return {
-            borderBottom: `calc(var(--s-menu) * 0.3) solid ${this.session.levelcolor(this.cpost_boo)}`
-          }
-        }
-      },
-
-      // on_saving: function() {
-      //   return this.post && !this.post.id
-      // },
 
       loader_width: function() {
         return document.querySelector('#window').clientWidth
@@ -196,15 +90,9 @@
           }
         }
       },
-
-      more: function(_new, _old) {}
     },
 
     methods: {
-      toggle_more: function() {
-        this.more = !this.more;
-      },
-
       report_this_post: function() {
         window.open('mailto:contact@moiber.com');
       },

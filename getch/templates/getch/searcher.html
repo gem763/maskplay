@@ -90,7 +90,7 @@
           <img src='/static/materials/icons/search.png'>
         </div>
 
-        <input class='searchbar' v-model.trim='keywords' @keyup.enter='run_search' placeholder='검색어를 입력하세요' ref='input'>
+        <input class='searchbar' v-model.trim='keywords' @keyup.enter='run_search' placeholder='검색어를 입력하세요' spellcheck="false" ref='input'>
       </div>
 
       <bar-loader class='spinner' :loading='on_searching' :width='loader_width' :height='1' color="#D0021B"></bar-loader>

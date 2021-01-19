@@ -22,12 +22,14 @@
     :from='session.page.mypage.from'
     :scrolload='scrolload'
     :sticky_trigger_margin='sticky_trigger_margin'
+    :onloading='onloading'
     @close='session.close_page()'>
 
     <template #headerbar-menu>
+      <div class='item' @click='session.open_profiler("new")' v-if='!$refs.aboutboo.myboos_maxed'>부캐 생성</div>
       <div class='item' @click='session.open_profiler()'>부캐 편집</div>
       <div class='item' @click='$refs.aboutboo.toggle_changeboo' v-if='!$refs.aboutboo.on_changeboo'>부캐 변경</div>
-      <div class='item' @click='delboo'>부캐 삭제</div>
+      <!-- <div class='item' @click='delboo'>부캐 삭제</div> -->
       <div class='item' @click='logout'>로그아웃</div>
       <div class='item' @click='see_more'>더보기</div>
     </template>
@@ -59,13 +61,30 @@
 
     computed: {
       boo: function() {
-        return this.session.auth.boo
+        // if (this.session.auth.boo) {
+          if (!this.session.auth.boo.posts) {
+            this.$set(this.session.auth.boo, 'posts', {
+              contents: undefined,
+              univ: {
+                own: new Booposts(this.session.auth.boo, 'own'),
+                follow: new Booposts(this.session.auth.boo, 'follow'),
+                attend: new Booposts(this.session.auth.boo, 'attend')
+              }
+            });
+            this.session.auth.boo.posts.contents = this.session.auth.boo.posts.univ.own;
+          }
+
+          return this.session.auth.boo
+        //
+        // } else {
+        //   this.session.open_profiler('new');
+        // }
       },
 
       scrolload: function() {
         if (this.boo) {
           return {
-            obj: this.boo.posts,
+            obj: this.boo.posts.contents,
             n: 16
           }
         }
@@ -73,31 +92,55 @@
 
       sticky_trigger_margin: function() {
         return document.querySelector('#window').clientWidth * 33 / 100
+      },
+
+      onloading: function() {
+        if (this.boo) {
+          if (this.boo.posts.contents) {
+            return this.boo.posts.contents.onloading || !this.boo.id
+
+          } else {
+            return false
+          }
+
+        } else {
+          return false
+        }
       }
     },
 
     methods: {
-      delboo: function() {
-        this.session.open_bridge('delboo_guide', 'top', () => {
-          const boos = this.session.auth.boos;
-          const cboo_id = this.session.auth.boo_selected;
-
-          fetch('/boo/profile/delete/')
-            .then(x => x.json())
-            .then(j => { console.log(j) });
-
-          const _boo_id = Object.keys(boos)
-            .filter(x => x !== String(cboo_id) )
-            .sort((a,b) => Number(b) - Number(a) )[0];
-
-          this.session.auth.boo = Number(_boo_id);
-          this.$delete(boos, cboo_id);
-        });
-      },
+      // delboo: function() {
+      //   this.session.open_bridge('delboo_guide', 'top', () => {
+      //     const boos = this.session.auth.boos;
+      //     const cboo_id = this.session.auth.boo_selected;
+      //
+      //     fetch('/boo/profile/delete/')
+      //       .then(x => x.json())
+      //       .then(j => { console.log(j) });
+      //
+      //     const _boo_id = Object.keys(boos)
+      //       .filter(x => x !== String(cboo_id) )
+      //       .sort((a,b) => Number(b) - Number(a) )[0];
+      //
+      //     this.session.auth.boo = Number(_boo_id);
+      //     this.$delete(boos, cboo_id);
+      //   });
+      // },
 
       logout: function() {
         this.session.open_bridge('logout_guide', 'top', () => {
-          window.location.assign('/accounts/logout/');
+          // window.location.assign('/accounts/logout/');
+
+          fetch('/accounts/logout/')
+            .then(x => {
+              if (x.ok) {
+                console.log('successfully logged out');
+              }
+            });
+
+          this.session.close_page();
+          this.session._auth = undefined;
         });
       },
 

@@ -8,14 +8,16 @@
     justify-content: center;
   }
 
-  .texteditor.vcomp > input {
+  .texteditor.vcomp > .input {
     border: none;
     text-align: center;
     font-size: 25px;
-    width: 100%;
+    width: 70%;
+    resize: none;
+    overflow: hidden;
   }
 
-  .texteditor.vcomp > input:focus {
+  .texteditor.vcomp > .input:focus {
     outline: none;
   }
 
@@ -24,7 +26,7 @@
     bottom: 0;
     /* left: 0; */
     width: var(--width);
-    height: var(--w-12);
+    height: var(--w-16);
     background: white;
     font-size: 12px;
     font-weight: bold;
@@ -55,7 +57,8 @@
 <script type='text/x-template' id='texteditor-template'>
   <page :open='session.page.texteditor.open' :hide_close='true'>
     <div class='texteditor vcomp'>
-      <input v-model.trim='texted' :placeholder='placeholder' ref='input'>
+      <textarea class='input' v-model.trim='texted' :placeholder='placeholder' ref='input' @input='texting' @keydown='linecheck'></textarea>
+      <!-- <input v-model.trim='texted' :placeholder='placeholder' ref='input'> -->
 
       <div class='actions'>
         <div class='action cancel' @click='session.close_page()'>취소</div>
@@ -80,7 +83,9 @@
     watch: {
       'session.page.texteditor.open': function(_new, _old) {
         if (_new) {
-          this.texted = this.session.page.texteditor.basetext;
+          if (this.session.page.texteditor.basetext) {
+            this.texted = this.session.page.texteditor.basetext;
+          }
 
           if (this.$refs) {
             this.fix_window_width();
@@ -89,7 +94,7 @@
 
         } else {
           if (this.$refs) {
-            this.release_window_width();
+            setTimeout(() => { this.release_window_width(); }, 500);
           }
         }
       }
@@ -98,10 +103,29 @@
     computed: {
       placeholder: function() {
         return this.session.page.texteditor.placeholder
+      },
+
+      maxlines: function() {
+        return this.session.page.texteditor.maxlines
       }
     },
 
     methods: {
+      texting: function() {
+        this.$refs.input.style.height = "5px";
+        this.$refs.input.style.height = (this.$refs.input.scrollHeight)+"px";
+      },
+
+      linecheck: function(e) {
+        // console.log(this.$refs.input.clientHeight);
+
+        // if ((e.keyCode==13 && this.texted.split('\n').length >= this.maxlines) || (this.$refs.input.clientHeight > 100)) {
+        if (e.keyCode==13 && this.texted.split('\n').length >= this.maxlines) {
+          e.preventDefault();
+          return
+        }
+      },
+
       fix_window_width: function() {
         const w = document.querySelector('#window').clientWidth;
         document.documentElement.style.setProperty('--width', w + 'px');

@@ -1,0 +1,482 @@
+{% include "getch/scorekit.html" %}
+
+<style>
+  .comments.vcomp {
+    font-size: 12px;
+  }
+
+  .comments.vcomp .page-body {
+    background: white;
+  }
+
+  .comments.vcomp .page-body > .prologue {
+    width: 100%;
+    background: white;
+    margin-top: var(--w-16);
+  }
+
+  .comments.vcomp.commenting .page-body > .prologue {
+    /* display: none; */
+    opacity: 0;
+    /* pointer-events: none; */
+  }
+
+  .comments.vcomp .page-body > .prologue > .review {
+    background: whitesmoke;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 10px;
+    white-space: pre-line;
+    border-radius: var(--w-6);
+  }
+
+  .comments.vcomp .page-body > .prologue > .commenter {
+    position: relative;
+    background: none;
+    width: calc(100% - 2px);
+    height: var(--w-8);
+    border-radius: var(--w-6);
+    border: 1px solid whitesmoke;
+    margin-bottom: 40px;
+  }
+
+  .comments.vcomp .page-body > .contents {
+    position: relative;
+    width: 100%;
+    margin-bottom: calc(var(--w-52) + var(--w-16));
+  }
+
+  .comments.vcomp.commenting .page-body > .contents {
+    /* display: none; */
+    opacity: 0;
+    /* pointer-events: none; */
+  }
+
+  .comments.vcomp .profile {
+    position: absolute;
+    width: var(--w-8);
+    height: var(--w-8);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+
+  .comments.vcomp .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .comments.vcomp .headerbar-body-default > .profile {
+    top: var(--w-4);
+    right: var(--w-13);
+  }
+
+  .comments.vcomp .headerbar-body-default > .author-nick {
+    position: absolute;
+    top: 50%;
+    right: var(--w-24);
+    transform: translateY(-50%);
+  }
+
+  .comments.vcomp .page-body > .prologue > .commenter > .profile {
+    top: 0;
+    left: var(--w-4);
+  }
+
+  .comments.vcomp .headerbar-body-trans > .commenter {
+    position: absolute;
+    background: none;
+    top: var(--w-3);
+    left: var(--w-12);
+    right: var(--w-12);
+    height: var(--w-10);
+    border-radius: var(--w-6);
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+
+  .comments.vcomp .headerbar-body-trans > .commenter > .profile {
+    top: 50%;
+    left: var(--w-1);
+    transform: translateY(-50%);
+  }
+
+  .comments.vcomp .headerbar-body-trans > .commenter > span.send {
+    background: none;
+    position: absolute;
+    top: 50%;
+    right: var(--w-3);
+    transform: translateY(-50%);
+    color: #0095F6;
+  }
+
+  .comments.vcomp .headerbar-body-trans > .commenter > input {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    box-sizing: border-box;
+    padding: 0;
+    padding-left: var(--w-10);
+    padding-right: var(--w-10);
+  }
+
+  .comments.vcomp .headerbar-body-trans > .commenter > input:focus {
+    outline: none;
+  }
+
+
+
+  .comments.vcomp .page-body span.send {
+    background: none;
+    position: absolute;
+    top: 50%;
+    right: var(--w-4);
+    transform: translateY(-50%);
+    color: #0095F6;
+  }
+
+  .comments.vcomp .page-body .commenter > span.placeholder {
+    background: none;
+    position: absolute;
+    top: 50%;
+    left: var(--w-16);
+    transform: translateY(-50%);
+    color: lightgray;
+  }
+
+  .comments.vcomp .page-body > .contents > .comment {
+    background: whitesmoke;
+    min-height: var(--w-8);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    padding-left: var(--w-16);
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: var(--w-6);
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .profile {
+    top: 0;
+    left: var(--w-4);
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .nick {
+    position: absolute;
+    bottom: 100%;
+    left: var(--w-16);
+    background: none;
+    /* font-weight: bold; */
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .when {
+    position: absolute;
+    bottom: 100%;
+    right: var(--w-4);
+    background: none;
+    color: lightgray;
+    font-size: 10px;
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .action {
+    position: absolute;
+    top: 0;
+    width: var(--w-8);
+    height: var(--w-8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .reply.action {
+    right: var(--w-10);
+    background: none;
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .like.action {
+    right: var(--w-2);
+    background: none;
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .action > img {
+    width: 40%;
+    height: 40%;
+    object-fit: contain;
+  }
+</style>
+
+<script type='text/x-template' id='comments-template'>
+  <page2
+    class='comments vcomp'
+    :class='on_commenting ? "commenting" : ""'
+    :open='session.page.comments.open'
+    :from='session.page.comments.from'
+    :scrolload='{ obj:the_post.comments, n:10 }'
+    :sticky_trigger_margin='100'
+    :onloading='onloading'
+    ref='page'
+    @close='session.close_page()'>
+
+
+    <template #headerbar-menu>
+      <div class='item' @click='report_this_post'>신고하기</div>
+    </template>
+
+    <template #headerbar-body-trans>
+      <div class='commenter' v-if='myboo' @click.stop>
+        <input v-model.trim='mycomment' @keyup.enter='save' :placeholder="myboo.nick + '(으)로 댓글달기'" spellcheck='false' @focus='begin_commenting' @blur='finish_commenting' ref='input'>
+        <div class='profile'>
+          <img v-if='myboo' :src='myboo.profile.pix'>
+        </div>
+        <span class='send' @mousedown='save'>전송</span>
+        <!-- mousedown이 blur보다 먼저 실행된다 -->
+        <!-- <span class='send' @click='save'>전송</span> -->
+      </div>
+    </template>
+
+    <template #headerbar-body-default>
+      <div class='profile'>
+        <img :src='author.profile.pix'>
+      </div>
+      <span class='author-nick'>[[ author.nick ]]</span>
+    </template>
+
+    <template #page-body>
+      <div class='prologue'>
+        <div class='review'>[[ the_post_text ]]</div>
+
+        <div class='commenter' v-if='myboo' ref='commenter' @click='$refs.input.focus()'>
+          <div class='profile'>
+            <img :src='myboo.profile.pix'>
+          </div>
+          <span class='placeholder'>[[myboo.nick]](으)로 댓글달기</span>
+          <span class='send'>전송</span>
+        </div>
+      </div>
+
+      <div class='contents'>
+        <div class='comment' v-for='c in commentlist'>
+          <div class='profile'><img :src='c.boo.profile.pix'></div>
+          <span class='nick'><b>[[ c.boo.nick ]]</b></span>
+          <span class='text'>[[ c.text ]]</span>
+          <span class='when'>[[ relative_date(c.created_at) ]]</span>
+          <div class='action reply' @click='reply(c.boo.nick)'><img src='/static/materials/icons/reply.png'></div>
+          <div class='action like' @click='toggle_like_comment(c.id)'>
+            <img src='/static/materials/icons/like_filled.png' v-if='is_liking_comment(c.id)'>
+            <img src='/static/materials/icons/like.png' v-else>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div style='position:absolute;bottom:50px;left:0;width:100%;height:30px;background:orange;'> -->
+      </div>
+
+
+    </template>
+
+    <template #page-tail>
+      <scorekit :session='session' :post='the_post'></scorekit>
+    </template>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('comments', {
+    template: '#comments-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        mycomment: '',
+        on_commenting: false
+      }
+    },
+
+    watch: {
+      'session.page.comments.open': function(_new, _old) {
+        if (_new) {
+          this.fix_window_width();
+
+          if (!this.the_post.voters) {
+            this.$set(this.the_post, 'voters', {
+              0: new Voters(this.the_post, 0),
+              1: new Voters(this.the_post, 1),
+            });
+          }
+
+          if (!this.the_post.comments) {
+            this.$set(this.the_post, 'comments', new Comments(this.the_post))
+          }
+
+        } else {
+          this.release_window_width();
+        }
+      }
+    },
+
+    computed: {
+      the_post: function() {
+        return this.session.page.comments.post
+      },
+
+      the_post_text: function() {
+        return this.the_post.text
+      },
+
+      myboo: function() {
+        if (this.session.auth) {
+          return this.session.auth.boo
+        }
+      },
+
+      author: function() {
+        return this.the_post.boo
+      },
+
+      commentlist: function() {
+        if (this.the_post.comments) {
+          return this.the_post.comments.list.sort((a,b) => new Date(a.created_at) - new Date(b.created_at))
+
+        } else {
+          return []
+        }
+      },
+
+      comments_onloading: function() {
+        if (this.the_post.comments) {
+          return this.the_post.comments.onloading
+        }
+      },
+
+      voters_onloading: function() {
+        if (this.the_post.voters) {
+          return this.the_post.voters[0].onloading || this.the_post.voters[1].onloading
+        }
+      },
+
+      onloading: function() {
+        return this.comments_onloading || this.voters_onloading
+      }
+    },
+
+    methods: {
+      report_this_post: function() {
+        window.open('mailto:contact@moiber.com');
+      },
+
+      relative_date: function(date) {
+        moment.locale('ko');
+        return moment(date).fromNow()
+      },
+
+      begin_commenting: function() {
+        this.on_commenting = true;
+        this.$refs.page.focus_headerbar();
+      },
+
+      finish_commenting: function() {
+        this.on_commenting = false;
+        this.$refs.page.defocus_headerbar();
+
+        // mycomment='' 할때 잔상이 남아서...
+        setTimeout(() => { this.mycomment = ''; }, 500);
+      },
+
+      fix_window_width: function() {
+        const w = document.querySelector('#window').clientWidth;
+        document.documentElement.style.setProperty('--width', w + 'px');
+      },
+
+      release_window_width: function() {
+        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+      },
+
+      reply: function(whom) {
+        this.mycomment = '@ ' + whom + ': ';
+        this.$refs.input.focus();
+        this.begin_commenting(whom);
+      },
+
+      is_liking_comment: function(comment_id) {
+        if (this.session.auth) {
+          return this.session.auth.has_liked_comment(comment_id)
+        }
+      },
+
+      toggle_like_comment: function(comment_id) {
+        if (!this.session.auth)
+          return
+
+        let how;
+        if (this.is_liking_comment(comment_id)) {
+          how = 'delike';
+          this.session.auth.delike_comment(comment_id);
+
+        } else {
+          how = 'like';
+          this.session.auth.like_comment(comment_id);
+        }
+
+        fetch(`/comment/${comment_id}/${how}/`)
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+          })
+      },
+
+      save: function() {
+        if (this.mycomment=='')
+          return
+
+        // this.on_commenting = false;
+        this.finish_commenting();
+        // return
+
+        let when;
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('post_id', this.the_post.id);
+        formdata.append('text', this.mycomment);
+
+        // if (this.the_comment.id) {
+        //   formdata.append('id', this.the_comment.id);
+        //   const comment_changed = _.find(this.cpost.comments.list, ['id', this.the_comment.id]);
+        //   comment_changed.id = undefined;
+        //   comment_changed.text = this.the_comment.text;
+        //   when = comment_changed.created_at;
+        //
+        // } else {
+          when = new Date().toISOString();
+
+          const _comment = {
+            boo: this.myboo,
+            id: undefined,
+            text: this.mycomment,
+            created_at: when
+          };
+
+          this.the_post.comments.list.push(_comment);
+          this.mycomment = '';
+        // }
+
+        fetch('/comment/save/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+
+            if (js.success) {
+              const comment_unsaved = _.find(this.the_post.comments.list, ['created_at', when]);
+              comment_unsaved.id = Number(js.comment_id);
+            }
+          });
+      },
+    }
+  });
+</script>

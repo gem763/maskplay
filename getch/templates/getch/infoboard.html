@@ -1,0 +1,175 @@
+<style>
+  .infoboard.vcomp .page-body {
+    background: white;
+    font-size: 14px;
+  }
+
+  .infoboard.vcomp .page-body > .container {
+    background: lightpink;
+    width: 100%;
+    /* height: 200px; */
+    margin-top: var(--w-16);
+    margin-bottom: var(--w-20);
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    box-sizing: border-box;
+  }
+
+  .infoboard.vcomp .page-body > .container > .apply {
+    background: var(--color-dark);
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 100px;
+    border-radius: 50px;
+  }
+</style>
+
+<script type='text/x-template' id='infoboard-template'>
+  <page2
+    class='infoboard vcomp'
+    :open='session.page.infoboard.open'
+    :from='session.page.infoboard.from'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-body-trans>
+      <span style='font-size:20px;font-weight:bold'>MOIBER 채용정보</span>
+    </template>
+
+    <template #headerbar-body-default>
+      <span style='font-size:20px;font-weight:bold'>MOIBER 채용정보</span>
+    </template>
+
+    <template #page-body>
+      <div class='container'>
+        <div ref='upmost'></div>
+
+        <div v-if='session.page.infoboard.contents=="designer_intern_0"'>
+          <p><strong>주니어 컨텐츠 디자이너 (계약직, 인턴)</strong></p>
+          <p>서울 마포구</p>
+          <p>모이버는 일상의 아무 패션 고민들을 단계적으로 해결할 수 있는 솔루션을 만드는 스타일 테크 스타트업 입니다. 파워유저(크리에이터)와 인공지능의 솔루션이 결합된 맞춤형 개인 패션 코디 플랫폼 ‘모이버’ 서비스를 만들고 지속적으로 업그레이드 시켜 나가고 있습니다.</p>
+          <p>팀 모이버는 주니어 마케팅 컨텐츠 디자이너를 찾고 있습니다. 팀 모이버 디자인 팀은 브랜드 비전과 차별화 된 가치가 시각적인 형태로 사용자들에게 전달될 수 있게 하며, 서비스-비즈니스-회사 전반에서 매력적인 브랜드 경험을 만들어내고 유지하기 위해 BX프로젝트를 기획하고 실행하고 있습니다.</p>
+          <p>마케팀 팀과 디자인 팀과의 긴밀한 협업을 통해, 성과를 창출하면서도 퀄리티 있는 결과물을 만들 수 있어야 합니다. 단기적인 성과에만 집중하지 않고, 장기적인 사용자들과의 대화의 관점에서 지속 가능한 디자인 전략을 제고하고 적용할 수 있는 고도화 프로젝트를 진행할 수 있어야 합니다. 주요 업무 외에, 틈틈히 다른 프로젝트에 참여할 수 있는 기회를 제공하여 디자이너로서의 잠재력을 발견할 수 있게 합니다.</p>
+          <p>트랜드에 대한 관심과 이해도가 높고, 선도할 수 있어야 합니다. 패션, 문화, 예술, 스포츠 분야에 대한 균형잡힌 관심은 큰 도움이 됩니다. 범람하는 컨텐츠 속에서 시선을 사로잡으면서도 납득하게 만드는 비쥬얼 커뮤니케이션 기술이 있다면 더할 나위가 없습니다. 탁월함을 추구하며 전문가로 성장하고 싶은 욕구가 강하거나, 아이디어를 기획으로 풀어내고 실행을 통해 검증하는 것에서 즐거움을 찾는 다면 이 직무에 꼭 필요한 중요한 자질을 갖춘 것 입니다.</p>
+          <p>팀 모이버는 독립적이지만 팀 스피릿이 강합니다. 탁월함을 추구하며, 즐거움을 추구합니다. 자유 가운데 책임이 있고, 주도적이며 솔직합니다. 새로운 도전과 변화를 주저하지 않으며, 스마트 하게 일 하는 법을 계속해서 연구합니다. 이러한 기업 문화에 잘 어울릴 수 있다면 더욱 환영 합니다.</p>
+
+          <p>
+          <strong>책임</strong>
+          <ul>
+            <li>인공지능 스타일 코디 플랫폼, 모이버 1.0의 마케팅 크리에이티브 총괄</li>
+            <li>마케팅 성과 달성을 위한 광고 소재 디자인</li>
+            <li>광고 소재 디자인 전략 도출 및 효율적인 효율적인 운영을 위한 업무 고도화 (프로세스 개선, 디자인 가이드 제작 등)</li>
+          </ul>
+          </p>
+
+          <p>
+          <strong>선호 자격</strong>
+          <ul>
+            <li>유사 분야 (웹/모바일 컨텐츠) 디자인 프로젝트 경험자 (포트폴리오 제출)</li>
+            <li>Adobe photoshop, illistrator 등 디자인 편집 툴 숙련자</li>
+            <li>크리에이티브, 컨셉을 비주얼로 표현할 수 있는 역량을 가진 분(사진합성, 타이포그래피, 일러스트레이션 등 다양한 그래픽 표현능력 보유자)</li>
+            <li>제반 업무를 효율화하고 주체적으로 업무 리소스를 관리/배분할 수 있는 분</li>
+            <li>효과적 협업을 이끌어낼 수 있는 뛰어난 커뮤니케이션 능력을 가지신 분</li>
+            <li>자기주도적이고, 실행력이 강한 분</li>
+          </ul>
+          </p>
+
+          <p>
+          <strong>혜택 및 복지</strong>
+          <ul>
+            <li>계약 기간 2021년 1월 ~3월 (3개월, 협의 가능)</li>
+            <li>주 40시간 근무 (9시-6시), 부분적 탄력 근무 가능</li>
+            <li>홍대역 도보 3분 이내 사무실 위치 (위워크 홍대점)</li>
+            <li>월 2회 원격 근무 가능</li>
+            <li>사무실 내 웰니스 룸 이용 가능</li>
+          </ul>
+          </p>
+
+          <p>공고일 : 2020년 12월 1일</p>
+        </div>
+
+
+        <div v-if='session.page.infoboard.contents=="marketer_intern_0"'>
+          <strong>주니어 마케터 (계약직, 인턴)</strong></p>
+          <p>서울 마포구</p>
+          <p>모이버는 일상의 아무 패션 고민들을 단계적으로 해결할 수 있는 솔루션을 만드는 스타일 테크 스타트업 입니다. 파워유저(크리에이터)와 인공지능의 솔루션이 결합된 맞춤형 개인 패션 코디 플랫폼 ‘모이버’ 서비스를 만들고 지속적으로 업그레이드 시켜 나가고 있습니다.</p>
+          <p>팀 모이버는 주니어 마케터를 찾고 있습니다. 기술을 통한 사용자들의 연결의 혁신을 통해 새로운 패션 정보를 교환하는 문화를 만들어 나가려는 모이버 마케팅 팀에게 사용자들과의 대화는 가장 중요한 요소 입니다.</p>
+          <p>한편으로 사용자들의 본질적인 욕구를 이해하고 이를 서비스로 구현해 내고 있는 지를 검증해 나가면서 다른편으로 모이버를 통해서 얻을 수 있는 차별화 된 사용자의 가치를 알리고 비전을 공유하는 역할을 담당해야 합니다. 창의적인 아이디어와 공감을 이끌어 내는 감성으로 모이버와 사용자들의 관계, 사용자와 사용자 사이의 관계에 대해 깊이 고민하고 바른 생태계로 이끌어야 합니다.</p>
+          <p>트랜드에 대한 관심과 이해도가 높고, 선도할 수 있어야 합니다. 패션, 문화, 예술, 스포츠 분야에 대한 균형잡힌 관심은 큰 도움이 됩니다. 사회 문화적 현상의 이면에 감춰진 사람들의 욕망에 대한 통찰력은 가장 적합한 자질 입니다. 탁월함을 추구하며 전문가로 성장하고 싶은 욕구가 강하거나, 아이디어를 기획으로 풀어내고 실행을 통해 검증하는 것에서 즐거움을 찾는 다면 이 직무에 꼭 필요한 중요한 자질을 갖춘 것 입니다.</p>
+          <p>팀 모이버는 독립적이지만 팀 스피릿이 강합니다. 탁월함을 추구하며, 즐거움을 추구합니다. 자유 가운데 책임이 있고, 주도적이며 솔직합니다. 새로운 도전과 변화를 주저하지 않으며, 스마트 하게 일 하는 법을 계속해서 연구합니다. 이러한 기업 문화에 잘 어울릴 수 있다면 더욱 환영 합니다.</p>
+
+          <p>
+          <strong>책임</strong>
+          <ul>
+            <li>인공지능 스타일 코디 플랫폼, 모이버 1.0의 사용자 검증 프로젝트 수행</li>
+            <li>소셜 채널을 통한 소비자 커뮤니케이션 기획 및 실무</li>
+            <li>소셜 마케팅 실무 (그로스 해킹)</li>
+          </ul>
+          </p>
+
+          <p>
+          <strong>선호 자격</strong>
+          <ul>
+            <li>4년재 대학교 졸업 예정자 (2021년 2월 ~ 2022년 2월)</li>
+            <li>프레젠테이션 지원, 컨텐츠 제작이나 이미지/영상 편집</li>
+            <li>생각을 글로 표현할 수 있는 언어 능력</li>
+            <li>소셜 마케팅 (페이스북, 인스타그램, 유투브) 광고 집행 경험자</li>
+          </ul>
+          </p>
+
+          <p>
+          <strong>혜택 및 복지</strong>
+          <ul>
+            <li>계약 기간 2021년 1월 ~3월 (3개월, 협의 가능)</li>
+            <li>주 40시간 근무 (9시-6시), 부분적 탄력 근무 가능</li>
+            <li>홍대역 도보 3분 이내 사무실 위치 (위워크 홍대점)</li>
+            <li>월 2회 원격 근무 가능</li>
+            <li>사무실 내 웰니스 룸 이용 가능</li>
+          </ul>
+          </p>
+
+          <p>공고일 : 2020년 12월 1일</p>
+        </div>
+
+        <div class='apply' @click='apply'>지원하기</div>
+      </div>
+    </template>
+
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('infoboard', {
+    template: '#infoboard-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    watch: {
+      'session.page.infoboard.open': function(_new, _old) {
+        if (_new) {
+          this.goto_upmost();
+        }
+      }
+    },
+
+    methods: {
+      goto_upmost: function() {
+        if (this.$refs) {
+          this.$refs.upmost.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        }
+      },
+
+      apply: function() {
+        window.open('mailto:contact@moiber.com');
+      }
+    }
+  });
+</script>

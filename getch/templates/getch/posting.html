@@ -10,10 +10,10 @@
     bottom: 0;
     /* left: 0; */
     width: var(--width);
-    height: var(--w-12);
+    height: var(--w-16);
     background: white;
     font-size: 12px;
-    font-weight: bold;
+    /* font-weight: bold; */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -34,7 +34,7 @@
   }
 
   .posting.vcomp > .actions > .done.action {
-    color: var(--color-neg);
+    color: #0095F6;
   }
 </style>
 
@@ -45,8 +45,8 @@
       <post :post='the_post' :type='the_post_type' :session='session' editable='true' ref='post' v-if='session.page.posting.open'></post>
 
       <div class='actions'>
-        <div class='action cancel' @click='session.close_page()'>취소</div>
-        <div class='action done' @click='save'>완료</div>
+        <div class='action cancel' @click='session.close_page()'><b>취소</b></div>
+        <div class='action done' @click='save'><b>완료</b></div>
       </div>
     </div>
   </page>
@@ -172,7 +172,7 @@
 
           // return
 
-          fetch('post/save/', { method: 'POST', body: formdata })
+          fetch('/post/save/', { method: 'POST', body: formdata })
             .then(res => res.json())
             .then(js => {
               console.log(js);
@@ -192,7 +192,8 @@
             this.session.page.posts.contents.list.splice(where, 0, post);
 
             if (this.the_boo.posts) {
-              this.the_boo.posts.list.unshift(post);
+              this.the_boo.posts.univ.own.list.unshift(post);
+              // this.the_boo.posts.list.unshift(post);
             }
           }
 

@@ -7,19 +7,28 @@ from datetime import datetime
 from django.conf import settings
 from django_currentuser.middleware import get_current_user, get_current_authenticated_user
 from django.db.models import Q
+from django.utils.translation import ugettext_lazy as _
 
 from IPython.core.debugger import set_trace
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 import json
 import os
+import re
+import collections
+# from gensim.models import Doc2Vec
 
 
 VOTE_UP = 0
 VOTE_DOWN = 1
 FOLLOW = 10
+LIKE_COMMENT = 100
 
 BOO_DELETED = 97
+
+
+# model_path = os.path.join(settings.BASE_DIR, 'data', 'doc2vec.model')
+# d2v = Doc2Vec.load(model_path)
 
 
 class BigIdAbstract(models.Model):
@@ -33,18 +42,30 @@ class Flager(FlagBase):
     user = models.ForeignKey('Boo', related_name='%(class)s_users', verbose_name='Boo', on_delete=models.CASCADE)
 
 
-class Styletag(BigIdAbstract):
-    tag = models.CharField(max_length=20, null=False, blank=False)
+class Label(BigIdAbstract):
+    label = models.CharField(max_length=20, null=False, blank=False)
+    key = models.IntegerField(default=0)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
-        return self.tag
+        return self.label
 
+class Genderlabel(Label):
+    pass
 
-class Fashiontem(BigIdAbstract):
-    item = models.CharField(max_length=20, null=False, blank=False)
+class Agelabel(Label):
+    pass
 
-    def __str__(self):
-        return self.item
+class Bodylabel(Label):
+    pass
+
+class Stylelabel(Label):
+    pass
+
+class Itemlabel(Label):
+    pass
 
 
 class User(AbstractEmailUser):
@@ -56,16 +77,14 @@ class User(AbstractEmailUser):
 
     @property
     def other_boos(self):
-        _boos = Boo.objects.filter(user=self).exclude(pk=self.boo_selected)
+        _boos = Boo.objects.filter(user=self, active=True).exclude(pk=self.boo_selected)
         _boos = BooSerializer(_boos, many=True).data
         _boos = {b['id']:b for b in _boos}
         return json.dumps(_boos)
 
     @property
     def serialized(self):
-        # _user = UserSerializer([self], many=True).data[0]
         _user = UserSerializer(self).data
-        # _user['boos'] = {boo['id']:boo for boo in _user['boos']}
         return json.dumps(_user)
 
     def set_boo(self, boo_id):
@@ -73,76 +92,14 @@ class User(AbstractEmailUser):
         self.save()
 
     def delete_boo(self):
-        self.boo.delete()
-        boos_id = Boo.objects.filter(user=self).values_list('id', flat=True)
+        # self.boo.delete()
+        # 삭제된 부캐가 작성한 포스트에서, 해당 부캐를 클릭하면 '삭제됐어요' 메시지 보이기
+        boo = self.boo
+        boo.active = False
+        boo.save()
+        boos_id = Boo.objects.filter(user=self, active=True).values_list('id', flat=True)
+        # boos_id = Boo.objects.filter(user=self).values_list('id', flat=True)
         self.set_boo(max(boos_id))
-        #print(boos_id, max(boos_id))
-
-    def save(self, *args, **kwargs):
-        created = not self.pk
-        super().save(*args, **kwargs)
-
-        if created:
-            boo = Boo.objects.create(user=self)
-            self.boo_selected = boo.id
-            super().save(*args, **kwargs)
-
-
-def _maskpix_path(instance, fname):
-    fname = str(datetime.now()) + fname
-    fmt = 'mask/{type}/{category}/{fname}'
-    return fmt.format(fname=fname, type=instance.type.lower(), category=instance.category)
-
-
-class MaskBase(BigIdAbstract):
-    MASK_TYPES = ( ('EYE', 'eye'), ('MOUTH', 'mouth') )
-    type = models.CharField(max_length=5, choices=MASK_TYPES, default='EYE')
-    category = models.CharField(max_length=50, null=False, blank=False, default='base')
-    pix = models.ImageField(upload_to=_maskpix_path, max_length=500, null=False, blank=False)
-
-    def __str__(self):
-        return self.type + ' | ' + self.category + ' | ' + str(self.id)
-
-
-
-class Mask(BigIdAbstract):
-    masked = models.BooleanField(default=False, null=False, blank=False)
-    top = models.FloatField(default=0, null=False, blank=False)
-    left = models.FloatField(default=0, null=False, blank=False)
-    width = models.FloatField(default=100, null=False, blank=False)
-    # height = models.FloatField(default=15, null=False, blank=False)
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        fmt = '{maskbase} | T={top}, L={left}, W={width}, H={height}'
-        return fmt.format(maskbase=self.maskbase, top=self.top, left=self.left, width=self.width, height=self.height)
-
-
-class EyeMask(Mask):
-    maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE, default=1)
-    height = models.FloatField(default=15, null=False, blank=False)
-
-
-class MouthMask(Mask):
-    maskbase = models.ForeignKey(MaskBase, null=False, blank=False, on_delete=models.CASCADE, default=35)
-    height = models.FloatField(default=30, null=False, blank=False)
-
-
-def _characterpix_path(instance, fname):
-    fname = str(datetime.now()) + fname
-    fmt = 'character/{category}/{fname}'
-    return fmt.format(fname=fname, category=instance.category)
-
-
-class Character(BigIdAbstract):
-    category = models.CharField(max_length=50, null=False, blank=False, default='base')
-    pix = models.ImageField(upload_to=_characterpix_path, max_length=500, null=False, blank=False)
-
-    def __str__(self):
-        return self.category + ' | ' + str(self.id)
-
 
 
 def _profilepix_path(instance, fname):
@@ -155,43 +112,16 @@ def _profilepix_path(instance, fname):
     fmt = 'user/{user}/{fname}'
     return fmt.format(user=user, fname=fname)
 
+
 class Profile(BigIdAbstract):
-    PROFILE_TYPES = ( ('CHARACTER', 'character'), ('IMAGE', 'image'), ('TEXT', 'text') )
-    type = models.CharField(max_length=10, choices=PROFILE_TYPES, default='CHARACTER', null=False, blank=False)
     pix = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
-    character = models.ForeignKey(Character, null=True, blank=True, on_delete=models.SET_NULL)
-    image = models.ImageField(upload_to=_profilepix_path, max_length=500, null=True, blank=True)
-    text = models.CharField(max_length=10, null=True, blank=True)
-    eyemask = models.OneToOneField(EyeMask, null=True, blank=True, on_delete=models.SET_NULL)
-    mouthmask = models.OneToOneField(MouthMask, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.type + ' | ' + str(self.id) #os.path.basename(self.pix.name)
-
     def save(self, *args, **kwargs):
-        if self.character is None:
-            self.character = Character.objects.get(pk=1)
-
-        if self.eyemask is None:
-            self.eyemask = EyeMask.objects.create()
-
-        if self.mouthmask is None:
-            self.mouthmask = MouthMask.objects.create()
-
         if not self.pix:
-            self.pix = 'material/SIDEB_CHARACTER_M_01.png'
-
-        # if not self.image:
-        #     self.image = 'material/character_default.png'
+            self.pix = 'material/character_default.png'
 
         super().save(*args, **kwargs)
-
-
-    @property
-    def serialized(self):
-        _profile = ProfileSerializer([self], many=True).data[0]
-        return json.dumps(_profile)
 
 
 class Boo(BigIdAbstract, ModelWithFlag):
@@ -200,13 +130,18 @@ class Boo(BigIdAbstract, ModelWithFlag):
     text = models.TextField(max_length=200, blank=True, null=True)
     profile = models.OneToOneField(Profile, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
-    key = models.IntegerField(default=0)
+    # key = models.IntegerField(default=0)
 
-    styletags = models.ManyToManyField(Styletag, blank=True)
-    fashiontems = models.ManyToManyField(Fashiontem, blank=True)
+    genderlabels = models.ManyToManyField(Genderlabel, blank=True)
+    agelabels = models.ManyToManyField(Agelabel, blank=True)
+    bodylabels = models.ManyToManyField(Bodylabel, blank=True)
+    stylelabels = models.ManyToManyField(Stylelabel, blank=True)
+    itemlabels = models.ManyToManyField(Itemlabel, blank=True)
 
     nposts = models.IntegerField(default=0)
     nfollowers = models.IntegerField(default=0)
+
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nick + ' | ' + self.user.email
@@ -284,9 +219,22 @@ class Boo(BigIdAbstract, ModelWithFlag):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
+    # @property
+    def iposts(self, type):
+        if type=='own':
+            return list(self.post_set.values_list('id', flat=True))
+
+        elif type=='follow':
+            return list(Post.objects.filter(boo_id__in=self.followees_id).values_list('id', flat=True))
+
+        elif type=='attend':
+            q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+            return list(Flager.objects.filter(q, user=self).values_list('object_id', flat=True))
+
+
     @property
-    def iposts(self):
-        return list(self.post_set.values_list('id', flat=True))
+    def ilikes_comment(self):
+        return list(Flager.objects.filter(status=LIKE_COMMENT, user=self).values_list('object_id', flat=True))
 
     # @property
     # def nfollowers(self):
@@ -300,6 +248,66 @@ class Boo(BigIdAbstract, ModelWithFlag):
     # def nposts(self):
     #     return Post.objects.filter(boo=self).count()
 
+
+    # @property
+    # def baseid(self):
+    #     styletags = list(self.styletags.values_list('tag', flat=True))
+    #     fashiontems = list(self.fashiontems.values_list('item', flat=True))
+    #     nick = self.nick.lower()
+    #     text = self.text.lower() if self.text else ''
+    #     return preproc(nick + ' ' + text).split(' ') + styletags + fashiontems
+    #
+    # @property
+    # def votokens(self):
+    #     pos = []
+    #     neg = []
+    #
+    #     votes = self.voting_record
+    #     for pix in Postpix.objects.filter(post_id__in=votes).select_related('post'):
+    #         act = votes[pix.post.id]
+    #         desc = preproc(pix.desc.lower()).split(' ') if pix.desc else []
+    #
+    #         if pix.key=='ox' and act==0:
+    #             pos += pix.tokens.split(', ') + desc
+    #
+    #         elif pix.key=='ox' and act==1:
+    #             neg += pix.tokens.split(', ') + desc
+    #
+    #         elif (pix.key=='a' and act==0) or (pix.key=='b' and act==1):
+    #             pos += pix.tokens.split(', ') + desc
+    #
+    #         elif (pix.key=='a' and act==1) or (pix.key=='b' and act==0):
+    #             neg += pix.tokens.split(', ') + desc
+    #
+    #     return { 'pos_tokens': pos, 'neg_tokens': neg }
+
+    @property
+    def fit(self):
+        return []
+        # try:
+        #     votokens = self.votokens
+        #     pos_tokens = votokens['pos_tokens']
+        #     neg_tokens = votokens['neg_tokens']
+        #     pos_freq = collections.Counter(pos_tokens)
+        #     neg_freq = collections.Counter(neg_tokens)
+        #
+        #     like_tokens = list(dict((pos_freq - neg_freq).most_common(10)).keys())
+        #     dislike_tokens = list(dict((neg_freq - pos_freq).most_common(10)).keys())
+        #
+        #     pos_vec = d2v.infer_vector(pos_tokens, epochs=500)
+        #     neg_vec = d2v.infer_vector(neg_tokens, epochs=500)
+        #     baseid_vec = d2v.infer_vector(self.baseid, epochs=500)
+        #     brand_freq = d2v.docvecs.most_similar(positive=[pos_vec, baseid_vec], negative=[neg_vec], topn=5)
+        #     yourbrands = list(dict(brand_freq).keys())
+        #
+        # except:
+        #     like_tokens = []
+        #     dislike_tokens = []
+        #     baseid_vec = d2v.infer_vector(self.baseid, epochs=500)
+        #     brand_freq = d2v.docvecs.most_similar(positive=[baseid_vec], topn=5)
+        #     yourbrands = list(dict(brand_freq).keys())
+        #
+        # return {'likes':like_tokens, 'dislikes':dislike_tokens, 'yourbrands':yourbrands}
 
 
 class Post(BigIdAbstract, ModelWithFlag):
@@ -396,6 +404,28 @@ def _postpix_path(instance, fname):
     fmt = 'post/{year}/{month}/{day}/{user}/{fname}'
     return fmt.format(year=now.year, month=now.month, day=now.day, user=user, fname=fname)
 
+def _postpix_path2(instance, fname):
+    try:
+        user = instance.post.boo.user.email
+    except:
+        user = 'anonymous'
+
+    now = datetime.now()
+    fname = str(now) + '__' + fname
+    fmt = 'post/{year}/{month}/{day}/{user}/{fname}'
+    return fmt.format(year=now.year, month=now.month, day=now.day, user=user, fname=fname)
+
+def _commentpix_path(instance, fname):
+    try:
+        user = instance.comment.boo.user.email
+    except:
+        user = 'anonymous'
+
+    now = datetime.now()
+    fname = str(now) + '__' + fname
+    fmt = 'comment/{year}/{month}/{day}/{user}/{fname}'
+    return fmt.format(year=now.year, month=now.month, day=now.day, user=user, fname=fname)
+
 
 class PostVoteOX(Post):
     OX_KEYS = ( ('OX', 'OX'), ('SM', '살말') )
@@ -421,121 +451,109 @@ class Comment(BigIdAbstract, ModelWithFlag):
     boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
     post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.SET_NULL)
     text = models.TextField(max_length=500, blank=False, null=False)
+    mention = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL, related_name='mentioned_comment_set')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def like(self, boo, note=None):
+        self.set_flag(boo, note=note, status=LIKE_COMMENT)
+
+    def delike(self, boo):
+        self.remove_flag(boo, status=LIKE_COMMENT)
 
     def __str__(self):
         return str(self.created_at) + ' | ' +  self.text + ((' | ' + str(self.boo)) if self.boo else '')
 
 
-class EyeMaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EyeMask
-        fields = ['id', 'maskbase', 'masked', 'top', 'left', 'width', 'height']
-        read_only_fields = ['id']
+class Commentpix(BigIdAbstract):
+    comment = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.SET_NULL)
+    img = models.ImageField(upload_to=_commentpix_path, max_length=500, null=False, blank=False)
 
 
-class MouthMaskSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MouthMask
-        fields = ['id', 'maskbase', 'masked', 'top', 'left', 'width', 'height']
-        read_only_fields = ['id']
+class Postpix(BigIdAbstract):
+    key = models.CharField(max_length=5, default='ox', null=False, blank=False)
+    post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.SET_NULL)
+    img = models.ImageField(upload_to=_postpix_path2, max_length=500, null=False, blank=False)
+    desc = models.TextField(max_length=200, blank=True, null=True)
+    tokens = models.TextField(max_length=500, blank=True, null=True)
+
+    @property
+    def owner(self):
+        return self.post.boo.nick if self.post is not None else None
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    eyemask = EyeMaskSerializer(required=False)
-    mouthmask = MouthMaskSerializer(required=False)
-
     class Meta:
         model = Profile
-        fields = ['id', 'type', 'pix', 'character', 'image', 'text', 'eyemask', 'mouthmask']
+        fields = ['id', 'pix']
         read_only_fields = ['id']
 
     def update(self, instance, validated_data):
         # initial_data에서 가져오는게 핵심이다
         # 만약 eyemask를 validated_data에서 가져온다면,
         # 이미 serializer로 가공된 data(예.maskbase id가 아니라 maskbase 객체로 가공)가 넘어간다
-        eyemask_data = self.initial_data.pop('eyemask', None)
-        mouthmask_data = self.initial_data.pop('mouthmask', None)
+        # eyemask_data = self.initial_data.pop('eyemask', None)
+        # mouthmask_data = self.initial_data.pop('mouthmask', None)
 
-        instance.type = validated_data.get('type', instance.type)
+        # instance.type = validated_data.get('type', instance.type)
         instance.pix = validated_data.get('pix', instance.pix)
-        instance.character = validated_data.get('character', instance.character)
-        instance.image = validated_data.get('image', instance.image)
-        instance.text = validated_data.get('text', instance.text)
+        # instance.character = validated_data.get('character', instance.character)
+        # instance.image = validated_data.get('image', instance.image)
+        # instance.text = validated_data.get('text', instance.text)
         instance.save()
 
-        if eyemask_data:
-            ser = EyeMaskSerializer(instance.eyemask, data=eyemask_data, partial=True)
-            if ser.is_valid():
-                ser.save()
-            else:
-                print('something wrong when updating eyemask data')
-
-        if mouthmask_data:
-            ser = MouthMaskSerializer(instance.mouthmask, data=mouthmask_data, partial=True)
-            if ser.is_valid():
-                ser.save()
-            else:
-                print('something wrong when updating mouthmask data')
+        # if eyemask_data:
+        #     ser = EyeMaskSerializer(instance.eyemask, data=eyemask_data, partial=True)
+        #     if ser.is_valid():
+        #         ser.save()
+        #     else:
+        #         print('something wrong when updating eyemask data')
+        #
+        # if mouthmask_data:
+        #     ser = MouthMaskSerializer(instance.mouthmask, data=mouthmask_data, partial=True)
+        #     if ser.is_valid():
+        #         ser.save()
+        #     else:
+        #         print('something wrong when updating mouthmask data')
 
         return instance
 
-
-# class StyletagSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Styletag
-#         fields = ['id', 'tag']
 
 
 # https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
 class BasebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
-    styletags = serializers.SerializerMethodField()
-    fashiontems = serializers.SerializerMethodField()
-    # styletags = StyletagSerializer(read_only=True, many=True)
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'styletags', 'fashiontems']
+        fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
 
-    def get_styletags(self, obj):
-        return list(obj.styletags.values_list('id', flat=True))
-
-    def get_fashiontems(self, obj):
-        return list(obj.fashiontems.values_list('id', flat=True))
-
-# class BasebooSerializer(serializers.ModelSerializer):
-#     profile = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Boo
-#         fields = ['id', 'nick', 'text', 'profile', 'nfollowers', 'nposts', 'posts']
-#         read_only_fields = fields
-#
-#     def get_profile(self, obj):
-#         return {'pix': obj.profile.pix.url}
+    # def get_styletags(self, obj):
+    #     return list(obj.styletags.values_list('id', flat=True))
+    #
+    # def get_fashiontems(self, obj):
+    #     return list(obj.fashiontems.values_list('id', flat=True))
 
 
 
 class BooSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
-    styletags = serializers.SerializerMethodField()
-    fashiontems = serializers.SerializerMethodField()
+    # styletags = serializers.SerializerMethodField()
+    # fashiontems = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'key', 'followees_id', 'nfollowers', 'voting_record', 'nposts', 'styletags', 'fashiontems']
-        read_only_fields = ['id', 'followers_id', 'followees_id', 'voting_record', 'nposts']
+        fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels']
+        read_only_fields = ['id', 'active', 'followers_id', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit']
 
-    def get_styletags(self, obj):
-        return list(obj.styletags.values_list('id', flat=True))
-
-    def get_fashiontems(self, obj):
-        return list(obj.fashiontems.values_list('id', flat=True))
+    # def get_styletags(self, obj):
+    #     return list(obj.styletags.values_list('id', flat=True))
+    #
+    # def get_fashiontems(self, obj):
+    #     return list(obj.fashiontems.values_list('id', flat=True))
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)
@@ -543,7 +561,7 @@ class BooSerializer(serializers.ModelSerializer):
         instance.user = validated_data.get('user', instance.user)
         instance.nick = validated_data.get('nick', instance.nick)
         instance.text = validated_data.get('text', instance.text)
-        instance.key = validated_data.get('key', instance.key)
+        # instance.key = validated_data.get('key', instance.key)
         instance.save()
 
         if profile_data:
@@ -578,14 +596,14 @@ class CommentSerializer(serializers.ModelSerializer):
 class BoopostVoteOXSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments']
+        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
         read_only_fields = fields
 
 
 class BoopostVoteABSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments']
+        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
         read_only_fields = fields
 
 
@@ -607,7 +625,7 @@ class PostVoteOXSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments']#, 'ivoters']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -616,7 +634,7 @@ class PostVoteABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments']#, 'ivoters']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -675,3 +693,40 @@ class PostSerializer(serializers.ModelSerializer):
     #         print('something wrong when updating post data')
     #
     #     return instance
+
+
+
+def preproc(text, remove_url=True, remove_mention=False, remove_hashtag=False):
+    LINEBREAK = r'\n' # str.replace에서는 r'\n'으로 검색이 안된다
+    RT = '((?: rt)|(?:^rt))[^ @]?'
+    EMOJI = r'[\U00010000-\U0010ffff]'
+    DOTS = '…'
+    LONG_BLANK = r'[ ]+'
+    SPECIALS = r'([^ a-zA-Z0-9_\u3131-\u3163\uac00-\ud7a3]+)|([ㄱ-ㅣ]+)'
+
+    # \u3131-\u3163\uac00-\ud7a3 는 한글을 의미함
+    # URL = r'(?P<url>(https?://)?(www[.])?[^ \u3131-\u3163\uac00-\ud7a3]+[.][a-z]{2,6}\b([^ \u3131-\u3163\uac00-\ud7a3]*))'
+    URL1 = r'(?:https?:\/\/)?(?:www[.])?[^ :\u3131-\u3163\uac00-\ud7a3]+[.][a-z]{2,6}\b(?:[^ \u3131-\u3163\uac00-\ud7a3]*)'
+    URL2 = r'pic.twitter.com/[a-zA-Z0-9_]+'
+    URL = '|'.join((URL1, URL2))
+
+    HASHTAG = r'#(?P<inner_hashtag>[^ #@]+)'
+    MENTION = r'@(?P<inner_mention>[^ #@]+)'
+
+    text = text.lower()
+
+    if remove_url:
+        text = re.sub(URL, ' ', text)
+
+    if remove_mention:
+        text = re.sub(MENTION, ' ', text)
+    else:
+        text = re.sub(MENTION, ' \g<inner_mention>', text)
+
+    if remove_hashtag:
+        text = re.sub(HASHTAG, ' ', text)
+    else:
+        text = re.sub(HASHTAG, ' \g<inner_hashtag>', text)
+
+    text = re.sub('|'.join((LINEBREAK, RT, EMOJI, DOTS, SPECIALS)), ' ', text)
+    return re.sub(LONG_BLANK, ' ', text).strip()

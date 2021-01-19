@@ -3,31 +3,36 @@
     background: white;
   }
 
-  .navigator.vcomp .page-body > .sorters {
+  .navigator.vcomp .page-body > .groupers {
     background: none;
     margin-top: var(--w-16);
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 10px;
+    /* padding: 10px; */
   }
 
-  .navigator.vcomp .page-body > .spinner {
-    position: fixed;
-    bottom: var(--w-12);
+  .navigator.vcomp .page-body > .groupers > .grouper {
+    /* font-size: 15px; */
+    /* margin-left: 5px; */
+    /* margin-right: 5px; */
+    /* padding: 10px; */
+    /* border-radius: 50px; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--w-25);
+    height: var(--w-6);
+    font-size: 12px;
+    border-bottom: 1px solid whitesmoke;
+    color: lightgray;
   }
 
-  .navigator.vcomp .page-body > .sorters > .sorter {
-    font-size: 15px;
-    margin-left: 5px;
-    margin-right: 5px;
-    padding: 10px;
-    border-radius: 50px;
-  }
-
-  .navigator.vcomp .page-body > .sorters > .sorter.active {
-    background: var(--color-dark);
-    color: white;
+  .navigator.vcomp .page-body > .groupers > .grouper.active {
+    color: black;
+    border-bottom: 1px solid var(--color-dark);
+    /* background: var(--color-dark); */
+    /* color: white; */
   }
 
   .navigator.vcomp .page-body > .contents {
@@ -111,12 +116,11 @@
     :from='session.page.navigator.from'
     :scrolload='{ obj:the_posts, n:16 }'
     :sticky_trigger_margin='sticky_trigger_margin'
+    :onloading='the_posts_onloading'
     @close='session.close_page()'>
 
     <template #headerbar-menu>
-      <div class='item'>테스트</div>
-      <div class='item'>테스트</div>
-      <div class='item'>테스트</div>
+      <div class='item' @click='company'>팀 모이버</div>
     </template>
 
     <template #headerbar-body-trans>
@@ -132,13 +136,15 @@
     </template>
 
     <template #page-body>
-      <div class='sorters' ref='sorters'>
-        <span class='sorter' :class='active_sorter=="history" ? "active" : ""' @click='sort_history'>최신</span>
-        <span class='sorter' :class='active_sorter=="hot" ? "active" : ""' @click='sort_hot'>인기</span>
+      <div class='groupers'>
+        <span class='grouper' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
+        <span class='grouper' :class='active_grouper=="hot" ? "active" : ""' @click='group_hot'>인기</span>
+        <span class='grouper'></span>
+        <span class='grouper'></span>
       </div>
 
       <div class='contents'>
-        <div class='sections' :class='active_sorter'>
+        <div class='sections' :class='active_grouper'>
           <div class='section' :style='{ height: history_section_height }' ref='section_history'>
             <postlibrary
               :postlist='postlist_history'
@@ -155,7 +161,6 @@
         </div>
       </div>
 
-      <bar-loader class='spinner' :loading='the_posts_onloading' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
     </template>
   </page2>
 </script>
@@ -168,15 +173,19 @@
     props: ['session'],
     data: function() {
       return {
-        active_sorter: 'history',
+        active_grouper: 'history',
         history_section_height: 'auto',
         hot_section_height: 'auto',
       }
     },
 
+    mounted: function() {
+      this.group_history();
+    },
+
     computed: {
       the_posts: function() {
-        return this.session.page.posts.univ[this.active_sorter]
+        return this.session.page.posts.univ[this.active_grouper]
       },
 
       the_posts_onloading: function() {
@@ -187,7 +196,7 @@
 
       postlist_history: function() {
         if (this.session.page.posts.univ.history) {
-          return this.session.page.posts.univ.history.list
+          return this.session.page.posts.univ.history.list.sort((a,b) => b.id - a.id )
         }
       },
 
@@ -213,8 +222,8 @@
         this.session.close_page();
       },
 
-      sort_history: function() {
-        this.active_sorter = 'history';
+      group_history: function() {
+        this.active_grouper = 'history';
         // console.log(this.$refs.section_history.clientHeight);
 
         // sections 엘리먼트가 relative로 되어있기 때문에,
@@ -226,18 +235,21 @@
         this.hot_section_height = Math.min(this.$refs.section_hot.clientHeight, baseh) + 'px';
       },
 
-      sort_hot: function() {
-        this.active_sorter = 'hot';
-        // console.log(this.$refs.section_hot.clientHeight);
+      group_hot: function() {
+        this.active_grouper = 'hot';
 
         const baseh = this.$refs.section_hot.clientHeight;
         this.hot_section_height = 'auto';
         this.history_section_height = Math.min(this.$refs.section_history.clientHeight, baseh) + 'px';
       },
 
-      sort_custom: function() {
+      group_custom: function() {
         alert('맞춤순');
       },
+
+      company: function() {
+        this.session.open_company('who');
+      }
     }
   });
 </script>

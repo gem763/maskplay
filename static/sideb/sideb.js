@@ -3,40 +3,41 @@ class Session {
     this.page = {
       // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
       // posts:      { contents: undefined, univ: { history: new Posts('hot', 4), hot: undefined, custom: undefined, search: undefined }, swiper: undefined },
-      posts:      { contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
+      posts:      { open: true, contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
       mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'bottom' },
       navigator:  { open: false, from: 'left' },
-      boochooser: { open: false, from: 'left' },
       profiler:   { open: false, from: 'right', type: undefined },
       boopage:    { open: false, from: 'left', boo: undefined },
-      network:    { open: false, from: 'right' },
-      // posting:    { open: false, from: 'right', mother: undefined },
+      network:    { open: false, from: 'right', boos: undefined },
       posting:    { open: false, from: 'right', post: undefined, type: undefined },
       comments:   { open: false, from: 'right', post: undefined },
-      // comments:   { open: false, from: 'right', post: undefined },
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
-      texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined },
-      // bridge:     { open: true, from: 'top', type: 'delpost_guide', callback: undefined },
+      texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
       bridge:     { open: false, from: undefined, type: undefined, callback: undefined },
       searcher:   { open: false, from: 'right' },
+      company:    { open: false, from: 'right', section: 'who' },
+      infoboard:  { open: false, from: 'right', contents: undefined },
     };
 
+    // this.req = undefined;
     this.mode = { on: 'posts', order: 0, prev: undefined };
-    this.auth = undefined;
-    // this.posts = new Posts();
-    // this.posts_univ = { history: new Posts(), hot: undefined, custom: undefined };
-    this.posts_open_at = 0;
+    this._auth = undefined;
+    // this.posts_open_at = 0;
     this.booposts = undefined;
-
-    this.anonyboo = undefined;
-    this.stats = undefined;
-    this.styletags = undefined;
     // this.hammer = this.get_hammer();
 
     this.page.posts.contents = this.page.posts.univ.history;
     this.fetch_user();
+  }
+
+  get auth() {
+    if (this._auth) {
+      if (this._auth.boo) {
+        return this._auth
+      }
+    }
   }
 
 
@@ -45,8 +46,13 @@ class Session {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
+          // console.log(js)
           // 화살표 함수 안에서는 그냥 this를 써도 된다
-          this.auth = new Auth(JSON.parse(js.user));
+          this._auth = new Auth(JSON.parse(js.user));
+
+          if (!this._auth.boo) {
+            this.open_profiler('new');
+          }
         }
       });
   }
@@ -114,8 +120,11 @@ class Session {
     if (this.auth) {
       this.open_page('mypage');
 
+    } else if (this._auth) {
+      this.open_profiler('new');
+
     } else {
-      this.open_bridge('login_guide_for_mypage', 'bottom')
+      this.open_bridge('login_guide_for_mypage', 'bottom');
       // this.open_loginpage();
     }
   }
@@ -172,6 +181,9 @@ class Session {
       this.open_bridge('posting_guide', 'bottom');
       // this.open_page('posting');
 
+    } else if (this._auth) {
+      this.open_profiler('new');
+
     } else {
       this.open_bridge('login_guide_for_posting', 'bottom');
     }
@@ -192,6 +204,23 @@ class Session {
     this.open_page('posting');
   }
 
+  open_company(section) {
+    if (section) {
+      this.page.company.section = section;
+
+    } else {
+      this.page.company.section = 'who';
+    }
+
+    this.close_pages_all();
+    this.open_page('company');
+  }
+
+  open_infoboard(position) {
+    this.page.infoboard.contents = position;
+    this.open_page('infoboard');
+  }
+
   // open_posting(mother) {
   //   if (this.auth) {
   //     this.page.posting.mother = mother;
@@ -203,13 +232,19 @@ class Session {
 
 
   open_boopage(boo) {
-    if (this.auth && this.auth.boo_selected==boo.id) {
+    if (this.mode.on=='posting') {
+      return
+
+    } else if (this.auth && this.auth.boo_selected==boo.id) {
       this.open_mypage();
 
     } else if (this.mode.on=='booposts') {
       this.close_page();
 
-    } else if (this.anonyboo.id==boo.id) {
+    // } else if (this.anonyboo.id==boo.id) {
+    //   alert('삭제된 사용자입니다');
+
+    } else if (!boo.active) {
       alert('삭제된 사용자입니다');
 
     } else {
@@ -229,10 +264,11 @@ class Session {
     this.open_page('pixeditor');
   }
 
-  open_texteditor(basetext, placeholder, setter) {
+  open_texteditor(basetext, placeholder, maxlines, setter) {
     this.page.texteditor.basetext = basetext;
     this.page.texteditor.placeholder = placeholder;
     this.page.texteditor.setter = setter;
+    this.page.texteditor.maxlines = maxlines;
     this.open_page('texteditor');
   }
 
@@ -243,6 +279,11 @@ class Session {
 
   open_searcher() {
     this.open_page('searcher');
+  }
+
+  open_network(boos) {
+    this.page.network.boos = boos;
+    this.open_page('network');
   }
 
   // open_network() {
@@ -286,55 +327,55 @@ class Session {
   }
 
 
-  pscore(boo) {
-    return (1*boo.nfollowers + 0.2*boo.nposts) + 10
-  }
+  // pscore(boo) {
+  //   return (1*boo.nfollowers + 0.2*boo.nposts) + 10
+  // }
+  //
+  // get total_pscore() {
+  //   return (1*this.stats.total_nfollowers + 0.2*this.stats.total_nposts) + 10*this.stats.total_nboos
+  // }
+  //
+  // level(boo) {
+  //   const scaler = 0.1;
+  //   const unit = 0.15 * scaler;
+  //   const _ps = this.pscore(boo) / this.total_pscore;
+  //
+  //   switch (true) {
+  //     case (0 <= _ps && _ps < unit):
+  //       return 0
+  //     case (unit <= _ps && _ps < 2*unit):
+  //       return 1
+  //     case (2*unit <= _ps && _ps < 3*unit):
+  //       return 2
+  //     case (3*unit <= _ps && _ps < 4*unit):
+  //       return 3
+  //     case (4*unit <= _ps && _ps < 5*unit):
+  //       return 4
+  //     case (5*unit <= _ps):
+  //       return 5
+  //   }
+  // }
 
-  get total_pscore() {
-    return (1*this.stats.total_nfollowers + 0.2*this.stats.total_nposts) + 10*this.stats.total_nboos
-  }
-
-  level(boo) {
-    const scaler = 0.1;
-    const unit = 0.15 * scaler;
-    const _ps = this.pscore(boo) / this.total_pscore;
-
-    switch (true) {
-      case (0 <= _ps && _ps < unit):
-        return 0
-      case (unit <= _ps && _ps < 2*unit):
-        return 1
-      case (2*unit <= _ps && _ps < 3*unit):
-        return 2
-      case (3*unit <= _ps && _ps < 4*unit):
-        return 3
-      case (4*unit <= _ps && _ps < 5*unit):
-        return 4
-      case (5*unit <= _ps):
-        return 5
-    }
-  }
-
-  barcode(boo) {
-    return `/static/materials/icons/barcode_${this.level(boo)}.png`
-  }
-
-  levelcolor(boo) {
-    switch (this.level(boo)) {
-      case (0):
-        return 'black'
-      case (1):
-        return 'rgba(0, 176, 240, 1)'
-      case (2):
-        return 'rgba(33, 170, 74, 1)'
-      case (3):
-        return 'rgba(247, 232, 3, 1)'
-      case (4):
-        return 'rgba(247, 123, 37, 1)'
-      case (5):
-        return 'rgba(255, 0, 0, 1)'
-    }
-  }
+  // barcode(boo) {
+  //   return `/static/materials/icons/barcode_${this.level(boo)}.png`
+  // }
+  //
+  // levelcolor(boo) {
+  //   switch (this.level(boo)) {
+  //     case (0):
+  //       return 'black'
+  //     case (1):
+  //       return 'rgba(0, 176, 240, 1)'
+  //     case (2):
+  //       return 'rgba(33, 170, 74, 1)'
+  //     case (3):
+  //       return 'rgba(247, 232, 3, 1)'
+  //     case (4):
+  //       return 'rgba(247, 123, 37, 1)'
+  //     case (5):
+  //       return 'rgba(255, 0, 0, 1)'
+  //   }
+  // }
 }
 
 
@@ -384,56 +425,41 @@ class ContentLoader {
     return fetch(this.content_url(id))
             .then(x => x.json())
             .then(js => {
-              this.list.push(js.content);
+              if (js.success) {
+                this.list.push(js.content);
+              }
             })
   }
 }
 
 
-class Baseposts extends ContentLoader {
-  load_idlist() {
-    fetch(this.idlist_url)
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          this.idlist = js.iposts;
-          this.load(this.nloads_init);
-        }
-      });
-  }
-
-  load_by_id(id) {
-    return fetch(this.post_url(id))
-            .then(x => x.json())
-            .then(js => {
-              this.list.push(js.post);
-            })
-  }
-
-  // delete_cpost() {
-  //   const where = this.swiper.realIndex;
-  //   this.swiper.slideTo(where - 1);
-  //   this.list.splice(where, 1);
-  //   // this.swiper.removeSlide(where);
-  // }
-  //
-  // listin(post) {
-  //   let where = _.findIndex(this.list, ['id', post.id]);
-  //
-  //   if (where==-1) {
-  //     this.list.push(post);
-  //
-  //   } else {
-  //     this.list.splice(where, 1, post);
-  //   }
-  // }
-}
+// class Baseposts extends ContentLoader {
+//   load_idlist() {
+//     fetch(this.idlist_url)
+//       .then(x => x.json())
+//       .then(js => {
+//         if (js.success) {
+//           this.idlist = js.iposts;
+//           this.load(this.nloads_init);
+//         }
+//       });
+//   }
+//
+//   load_by_id(id) {
+//     return fetch(this.post_url(id))
+//             .then(x => x.json())
+//             .then(js => {
+//               this.list.push(js.post);
+//             })
+//   }
+// }
 
 
 class Posts extends ContentLoader {
   constructor(type, ninit) {
     super();
-    this.nloads_init = (ninit ? ninit : 24);
+    // this.nloads_init = (ninit ? ninit : 24);
+    this.nloads_init = (ninit ? ninit : 5);
     this.idlist_url = `/posts/iposts/${type}`;
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();
@@ -453,11 +479,11 @@ class SearchPosts extends ContentLoader {
 
 
 class Booposts extends ContentLoader {
-  constructor(boo) {
+  constructor(boo, type) {
     super();
     this.boo = boo;
     this.nloads_init = 16;
-    this.idlist_url = `/boo/${boo.id}/iposts`;
+    this.idlist_url = `/boo/${boo.id}/iposts/${type}`;
     // this.idlist_url = `/posts/iposts/${boo.id}`;
     this.content_url = (id) => `/post/${id}/boo`;
     this.load_idlist();
@@ -467,7 +493,7 @@ class Booposts extends ContentLoader {
 class Comments extends ContentLoader {
   constructor(post) {
     super();
-    this.nloads_init = 30;
+    this.nloads_init = 10;
     this.idlist_url = `/post/${post.id}/icomments`;
     this.content_url = (id) => `/comment/${id}`;
     this.load_idlist();
@@ -492,7 +518,7 @@ class Auth {
     this.id = Number(cuser.id);
     this.email = cuser.email;
     this.boo_selected = Number(cuser.boo_selected);
-    this.boos = {[cuser.boo_selected]: cuser.boo};
+    this.boos = cuser.boo ? {[cuser.boo_selected]: cuser.boo} : {};
     this.boos_fully_loaded = false;
     this.load_other_boos();
   }
@@ -518,7 +544,13 @@ class Auth {
   }
 
   set boo(boo_id) {
-    console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);
+    if (this.boo) {
+      console.log(`boo changed to [${boo_id}]${this.boos[boo_id].nick} from [${this.boo_selected}]${this.boo.nick}`);
+
+    } else {
+      console.log(`boo [${boo_id}]${this.boos[boo_id].nick} created at the first time`);
+    }
+
     this.boo_selected = Number(boo_id);
     this.api_get(`/boo/${boo_id}/set/`);
   }
@@ -541,7 +573,7 @@ class Auth {
   }
 
   unfollow(author_id) {
-    this.api_get(`boo/${author_id}/unfollow`);
+    this.api_get(`/boo/${author_id}/unfollow`);
     // this.boo.followees_id.delete(author_id);
 
     const where = this.boo.followees_id.indexOf(author_id);
@@ -549,7 +581,7 @@ class Auth {
   }
 
   follow(author_id) {
-    this.api_get(`boo/${author_id}/follow`);
+    this.api_get(`/boo/${author_id}/follow`);
     this.boo.followees_id.push(author_id);
     // this.boo.followees_id.add(author_id);
   }
@@ -567,24 +599,44 @@ class Auth {
     }
   }
 
+  has_liked_comment(comment_id) {
+    return this.boo.ilikes_comment.includes(comment_id)
+  }
+
+  like_comment(comment_id) {
+    this.boo.ilikes_comment.push(comment_id)
+  }
+
+  delike_comment(comment_id) {
+    const where = this.boo.ilikes_comment.indexOf(comment_id);
+    this.boo.ilikes_comment.splice(where, 1);
+  }
+
   vote(post_id, action) {
     const feed_act = {};
     feed_act[post_id] = action;
     this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
 
-    this.api_get(`post/${post_id}/vote?action=${action}`);
+    // this.api_get(`/post/${post_id}/vote?action=${action}`);
+
+    fetch(`/post/${post_id}/vote?action=${action}`)
+      .then(x => x.json())
+      .then(js => {
+        console.log(js);
+        this.boo.fit = js.fit;
+      });
   }
 
-  new_boo() {
-    const self = this;
-    return fetch('boo/new/')
-      .then(res => res.json())
-      .then(js => {
-        if (js.success) {
-          const boo = JSON.parse(js.boo);
-          self.boos[boo.id] = boo;
-          self.boo_selected = boo.id;
-        }
-      })
-  }
+  // new_boo() {
+  //   const self = this;
+  //   return fetch('boo/new/')
+  //     .then(res => res.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         const boo = JSON.parse(js.boo);
+  //         self.boos[boo.id] = boo;
+  //         self.boo_selected = boo.id;
+  //       }
+  //     })
+  // }
 }

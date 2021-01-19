@@ -4,8 +4,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: calc(var(--width-unit) * 12);
-    /* background: rgba(255,255,255,0.6); */
+    height: var(--w-16);
     background: white;
     transition: all 0.2s;
   }
@@ -22,15 +21,17 @@
   .controller.vcomp > .btn {
     position: absolute;
     top: 50%;
-    height: calc(var(--width-unit) * 12);
-    width: calc(var(--width-unit) * 12);
-    display: flex;
+    height: 100%;
+    width: var(--w-16);
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
+    /* background: orange; */
   }
 
   .controller.vcomp > ._m {
-    left: calc(var(--width-unit) * 3);
+    /* left: calc(var(--width-unit) * 3); */
+    left: var(--w-3);
     transform: translate(0,-50%);
   }
 
@@ -52,14 +53,30 @@
   }
 
   .controller.vcomp > ._r {
-    right: calc(var(--width-unit) * 3);
+    /* right: calc(var(--width-unit) * 3); */
+    right: var(--w-3);
     transform: translate(0,-50%);
   }
 
   .controller.vcomp > .btn > img {
     width: auto;
-    height: calc(var(--width-unit) * 6);
+    height: var(--w-5);
     object-fit: contain;
+    position: absolute;
+    /* top: 40%; */
+    bottom: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .controller.vcomp > .btn > .title {
+    font-size: 11px;
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    text-align: center;
   }
 </style>
 
@@ -67,6 +84,7 @@
   <div class='controller vcomp' :class='controller_class'>
     <div class='_m btn' @click='open_navigator'>
       <img src='/static/materials/icons/button_m.png'>
+      <span class='title'>모아보기</span>
     </div>
 
     <div class='_oi btn'>
@@ -75,6 +93,7 @@
 
     <div class='_b btn' @click='open_mypage'>
       <img src='/static/materials/icons/button_b_profile.png'>
+      <span class='title'>내 페이지</span>
     </div>
 
     <div class='_e btn'>
@@ -85,6 +104,7 @@
     <!-- <div class='_r btn' @click='session.open_posting_guide()'> -->
     <div class='_r btn' @click='open_posting_guide'>
       <img src='/static/materials/icons/button_r.png'>
+      <span class='title'>새 피드</span>
     </div>
   </div>
 </script>
@@ -104,15 +124,20 @@
         if (this.on('posts') || this.on('booposts')) {
           return 'semi-trans'
 
-        } else if (this.on('posting') || this.on('profiler') || this.on('pixeditor') || this.on('texteditor')) {
+        } else if (this.on('posting') || this.on('profiler') || this.on('pixeditor') || this.on('texteditor') || this.on('bridge', 'profiler')) {
           return 'hidden'
         }
       }
     },
 
     methods: {
-      on: function(where) {
-        return this.session.mode.on == where
+      on: function(where, prev) {
+        if (prev) {
+          return (this.session.mode.on == where) && (this.session.mode.prev.on == prev)
+
+        } else {
+          return this.session.mode.on == where
+        }
       },
 
       open_navigator: function() {

@@ -1,5 +1,11 @@
 <script type='text/x-template' id='booposts-template'>
-  <page2 class='booposts vcomp' :open='session.page.booposts.open' :trans_headerbar='true' :from='session.page.booposts.from' @close='session.close_page()'>
+  <page2
+    class='booposts vcomp'
+    :onloading='onloading'
+    :open='session.page.booposts.open'
+    :trans_headerbar='true'
+    :from='session.page.booposts.from'
+    @close='session.close_page()'>
 
     <template #headerbar-menu>
       <div class='item' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
@@ -28,10 +34,20 @@
     },
 
     computed: {
-      cpost: function() {
-        if (this.session.page.posts.swiper && this.postlist) {
-          return this.postlist[this.session.page.posts.swiper.realIndex]
+      onloading: function() {
+        if (this.cpost) {
+          return !this.cpost.id
         }
+      },
+
+      cpost: function() {
+        if (this.session.page.booposts.swiper && this.postlist) {
+          return this.postlist[this.session.page.booposts.swiper.realIndex]
+        }
+
+        // if (this.session.page.posts.swiper && this.postlist) {
+        //   return this.postlist[this.session.page.posts.swiper.realIndex]
+        // }
       },
 
       is_mypost: function() {
@@ -58,14 +74,22 @@
           }
         });
 
-        if (this.session.auth && this.session.booposts.boo.id in this.session.auth.boos) {
-          _postlist.forEach(post => {
-            post.boo = this.session.auth.boos[this.session.booposts.boo.id];
-          });
+        // if (this.session.auth && this.session.booposts.boo.id in this.session.auth.boos) {
+        //   _postlist.forEach(post => {
+        //     post.boo = this.session.auth.boos[this.session.booposts.boo.id];
+        //   });
+        //
+        // } else {
+        //   _postlist.forEach(post => {
+        //     post.boo = this.session.booposts.boo;
+        //   });
+        // }
 
-        } else {
+        if (this.session.auth) {
           _postlist.forEach(post => {
-            post.boo = this.session.booposts.boo;
+            if (post.boo.id in this.session.auth.boos) {
+              post.boo = this.session.auth.boos[post.boo.id];
+            }
           });
         }
 

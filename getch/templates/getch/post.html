@@ -41,7 +41,7 @@
     height: var(--w-52);
   }
 
-  .post.postvoteox .backbone > tbody > tr > td.bottom > .v-divider {
+  /* .post.postvoteox .backbone > tbody > tr > td.bottom > .v-divider {
     position: absolute;
     top: var(--w-4);
     left: 0;
@@ -50,7 +50,7 @@
     background: none;
     border-right: 1px solid #302E2F;
     pointer-events: none;
-  }
+  } */
 
   .post .description {
     position: absolute;
@@ -62,7 +62,7 @@
     background: rgba(255,255,255,0.6);
     padding-left: var(--w-16);
     padding-top: var(--w-4);
-    padding-bottom: var(--w-4);
+    /* padding-bottom: var(--w-4); */
     padding-right: var(--w-32);
   }
 
@@ -97,11 +97,18 @@
 
   .post span.tag {
     font-size: 11px;
-    background: var(--color-dark);
-    color: white;
-    padding: 5px;
+    /* background: var(--color-dark); */
+    background: white;
+    color: red;
+    padding: 7px;
     border-radius: 20px;
     margin: 2px;
+    height: 25px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid red;
   }
 
   .post > .scorebutton {
@@ -196,7 +203,7 @@
               </template>
             </oxcard>
 
-            <div class='v-divider'></div>
+            <!-- <div class='v-divider'></div> -->
           </td>
         </tr>
       </tbody>
@@ -219,7 +226,7 @@
             ></aber>
 
             <div class='pixlabel'>
-              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='LABELING A' type='in-post'></editext>
+              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='제목 A' type='in-post'></editext>
             </div>
           </td>
         </tr>
@@ -239,7 +246,7 @@
             ></aber>
 
             <div class='pixlabel'>
-              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='LABELING B' type='in-post'></editext>
+              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='제목 B' type='in-post'></editext>
             </div>
           </td>
         </tr>
@@ -247,11 +254,26 @@
     </table>
 
 
-    <div class='description' @click='toggle_squeeze'>
-      <editext ref='post_text' :rawtext='post_text' :header='post_boo_nick' :editable='editable' placeholder='COMMENT HERE' type='in-post' :freeze='!editable' :squeeze='squeezed'></editext>
+    <div class='description'>
+      <editext
+        ref='post_text'
+        @click.native='toggle_squeeze'
+        :rawtext='post_text'
+        :header='post_boo_nick'
+        :date='post_date'
+        :editable='editable'
+        placeholder='질문 입력'
+        type='in-post'
+        :freeze='!editable'
+        :squeeze='squeezed'>
+      </editext>
 
       <div class='styletags' v-show='!squeezed'>
-        <span class='tag' v-for='t in post_boo_styletags'>[[ session.styletags[t] ]]</span>
+        <!-- <span class='tag' v-for='l in mylabels("gender")'>[[ l.label ]]</span> -->
+        <!-- <span class='tag' v-for='l in mylabels("age")'>[[ l.label ]]</span> -->
+        <span class='tag' v-for='l in mylabels("body")'>[[ l.label ]]</span>
+        <!-- <span class='tag' v-for='l in mylabels("style")'>[[ l.label ]]</span> -->
+        <!-- <span class='tag' v-for='l in mylabels("item")'>[[ l.label ]]</span> -->
       </div>
     </div>
 
@@ -351,15 +373,21 @@
         return this.post_boo.nick
       },
 
-      post_boo_styletags: function() {
-        return this.post_boo.styletags
-      },
+      // post_boo_styletags: function() {
+      //   return this.post_boo.styletags
+      // },
 
       post_text: function() {
         if (this.post) {
           return this.post.text
         } else {
           return ''
+        }
+      },
+
+      post_date: function() {
+        if (this.post) {
+          return this.relative_date(this.post.created_at)
         }
       },
 
@@ -406,6 +434,17 @@
 
 
     methods: {
+      relative_date: function(date) {
+        moment.locale('ko');
+        return moment(date).fromNow()
+      },
+
+      mylabels: function(type) {
+        return this.session.labels[type].filter(l => {
+          return this.post_boo[type + 'labels'].includes(l.id)
+        })
+      },
+
       toggle_squeeze: function() {
         this.squeezed = !this.squeezed;
       },
@@ -420,6 +459,12 @@
             this.rescore(this.vote_state, act);
             this.session.auth.vote(this.post.id, act);
           }
+
+        } else if (!this.session.auth && this.session._auth) {
+          this.session.open_profiler('new');
+
+        } else if (!this.session.auth) {
+          this.session.open_bridge('login_guide_for_mypage', 'bottom');
         }
       },
 

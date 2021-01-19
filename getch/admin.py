@@ -1,5 +1,6 @@
 from django.contrib import admin
 import getch.models as m
+from django.db.models import Q
 import os
 
 
@@ -10,7 +11,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(m.Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['type', 'boo', 'text', 'nvotes_up', 'nvotes_down']
+    list_display = ['type', 'boo', 'text', 'nvotes_up', 'nvotes_down', 'ncomments']
 
     def type(self, obj):
         return obj.cast.type
@@ -38,61 +39,10 @@ class UserAdmin(admin.ModelAdmin):
     list_editable = ['boo_selected']
 
 
-@admin.register(m.MaskBase)
-class MaskBaseAdmin(admin.ModelAdmin):
-    list_display = ['type', 'category', 'pix_name']#, 'pix']
-    list_display_links = ['pix_name']
-    list_editable = ['category']#, 'pix']
-
-    def pix_name(self, obj):
-        return os.path.basename(obj.pix.name)
-
-
-@admin.register(m.EyeMask)
-class EyeMaskAdmin(admin.ModelAdmin):
-    list_display = ['maskbase', 'owned_by', 'masked', 'top', 'left', 'width', 'height']
-    list_display_links = ['maskbase']
-    list_editable = ['top', 'left', 'width', 'height']
-
-    def owned_by(self, obj):
-        if obj.profile and obj.profile.boo:
-            return obj.profile.boo
-        else:
-            return None
-
-
-@admin.register(m.MouthMask)
-class MouthMaskAdmin(admin.ModelAdmin):
-    list_display = ['maskbase', 'owned_by', 'masked', 'top', 'left', 'width', 'height']
-    list_display_links = ['maskbase']
-    list_editable = ['top', 'left', 'width', 'height']
-
-    def owned_by(self, obj):
-        if obj.profile and obj.profile.boo:
-            return obj.profile.boo
-        else:
-            return None
-
-
-@admin.register(m.Character)
-class CharacterAdmin(admin.ModelAdmin):
-    list_display = ['category', 'pix_name']
-    list_display_links = ['pix_name']
-
-    def pix_name(self, obj):
-        return os.path.basename(obj.pix.name)
-
-
 @admin.register(m.Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['type', 'pix_name', 'owned_by', 'eyemask', 'mouthmask']
+    list_display = ['pix_name', 'boo']
     list_display_links = ['pix_name']
-
-    def owned_by(self, obj):
-        if obj.boo:
-            return obj.boo
-        else:
-            return None
 
     def pix_name(self, obj):
         return os.path.basename(obj.pix.name)
@@ -100,17 +50,57 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(m.Boo)
 class BooAdmin(admin.ModelAdmin):
-    list_display = ['user', 'nick', 'key', 'selected', 'text', 'nposts', 'nfollowers', 'profile']
+    list_display = ['user', 'nick', 'selected', 'active', 'text', 'n_posts', 'n_comments', 'n_followers', 'n_followees', 'n_votes']
     list_display_links = ['user']
     list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
-    list_editable = ['nick', 'key']
+    list_editable = ['nick']
+
+    def selected(self, obj):
+        return obj.user.boo_selected == obj.id
+
+    selected.boolean = True
+
+    def n_posts(self, obj):
+        return obj.post_set.count()
+
+    def n_comments(self, obj):
+        return obj.comment_set.count()
+
+    def n_followers(self, obj):
+        return obj.get_flags(status=m.FOLLOW).count()
+
+    def n_followees(self, obj):
+        return m.Flager.objects.filter(status=m.FOLLOW, user=obj).count()
+
+    def n_votes(self, obj):
+        q = Q(status=m.VOTE_UP) | Q(status=m.VOTE_DOWN)
+        return m.Flager.objects.filter(q, user=obj).count()
 
 
-@admin.register(m.Styletag)
-class StyletagAdmin(admin.ModelAdmin):
+class LabelAdmin(admin.ModelAdmin):
+    list_display = ['label', 'key']
+    list_editable = ['key']
+
+@admin.register(m.Genderlabel)
+class GenderlabelAdmin(LabelAdmin):
     pass
 
-
-@admin.register(m.Fashiontem)
-class FashiontemAdmin(admin.ModelAdmin):
+@admin.register(m.Agelabel)
+class AgelabelAdmin(LabelAdmin):
     pass
+
+@admin.register(m.Stylelabel)
+class StylelabelAdmin(LabelAdmin):
+    pass
+
+@admin.register(m.Bodylabel)
+class BodylabelAdmin(LabelAdmin):
+    pass
+
+@admin.register(m.Itemlabel)
+class ItemlabelAdmin(LabelAdmin):
+    pass
+
+@admin.register(m.Postpix)
+class PostpixAdmin(admin.ModelAdmin):
+    list_display = ['key', 'owner', 'post', 'img', 'desc', 'tokens']

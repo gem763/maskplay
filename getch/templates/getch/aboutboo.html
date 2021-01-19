@@ -9,7 +9,7 @@
   .aboutboo.vcomp > .profiles {
     position: relative;
     width: 100%;
-    background: none;
+    background: white;
     margin-top: var(--w-16);
     display: flex;
     align-items: center;
@@ -23,6 +23,7 @@
     background: none;
     transition: all 0.5s;
     position: relative;
+    /* margin-bottom: 10px; */
   }
 
   .aboutboo.vcomp > .profiles > .profile > img.profilepix {
@@ -35,7 +36,7 @@
   }
 
 
-  .aboutboo.vcomp > .profiles > .profile > .editboo {
+  /* .aboutboo.vcomp > .profiles > .profile > .editboo {
     position: absolute;
     top: 50%;
     right: calc(100% + var(--w-6));
@@ -46,7 +47,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+  } */
 
   .aboutboo.vcomp > .profiles > .profile > .follow {
     position: absolute;
@@ -74,24 +75,41 @@
   .aboutboo.vcomp > .profiles > .profile > .follow > span.nfollowers {
     background: none;
     position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    font-size: 15px;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .follow > span.follow-txt {
+    background: none;
+    position: absolute;
     top: 100%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 12px;
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
   }
 
   .aboutboo.vcomp > .profiles > .nick {
-    font-size: 13px;
-    font-weight: bold;
+    font-size: 15px;
+    margin-top: 20px;
+    /* font-weight: bold; */
   }
 
   .aboutboo.vcomp > .profiles > .text {
-    font-size: 12px;
+    font-size: 13px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    white-space: pre-line;
+    text-align: center;
   }
 
-  .aboutboo.vcomp > .profiles > .styletags,
-  .aboutboo.vcomp > .profiles > .fashiontems {
-    margin-top: 10px;
+  /* .aboutboo.vcomp > .profiles > .styletags,
+  .aboutboo.vcomp > .profiles > .fashiontems, */
+  .aboutboo.vcomp > .profiles > .labels {
+    /* margin-top: 10px; */
     width: var(--w-80);
     display: flex;
     align-items: center;
@@ -99,12 +117,24 @@
     flex-wrap: wrap;
   }
 
-  .aboutboo.vcomp > .profiles > .styletags > .tag,
-  .aboutboo.vcomp > .profiles > .fashiontems > .item {
-    font-size: 16px;
-    padding: 5px;
-    border-radius: 30px;
+  /* .aboutboo.vcomp > .profiles > .styletags > .tag,
+  .aboutboo.vcomp > .profiles > .fashiontems > .item, */
+  .aboutboo.vcomp > .profiles > .labels > .label {
+    font-size: 13px;
+    padding: 7px;
+    border-radius: 20px;
     margin: 2px;
+    border: 2px solid lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    box-sizing: border-box;
+  }
+
+  /* .aboutboo.vcomp > .profiles > .labels > .label.selected {
+    color: red;
+    border: 2px solid red;
   }
 
   .aboutboo.vcomp > .profiles > .styletags > .tag.selected {
@@ -115,12 +145,15 @@
   .aboutboo.vcomp > .profiles > .fashiontems > .item.selected {
     background: #292A4D;
     color: white;
-  }
+  } */
 
   .aboutboo.vcomp > .contents {
-    margin-top: 50px;
-    background: none;
+    /* margin-top: 50px; */
+    padding-top: 50px;
+    background: white;
     position: relative;
+    width: 100%;
+    overflow: hidden;
   }
 
   .aboutboo.vcomp > .spinner {
@@ -134,9 +167,10 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    width: 100%;
+    width: 80%;
     transition: all 0.5s;
     overflow: hidden;
+    margin-top: 20px;
   }
 
   .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate {
@@ -169,8 +203,61 @@
     width: 80%;
     height: 80%;
     border-radius: 50%;
-    border: 1px solid var(--color-dark);
+    border: 1px solid lightgray;
     box-sizing: border-box;
+  }
+
+  .aboutboo.vcomp > .contents > .groupers {
+    background: none;
+    /* margin-top: var(--w-16); */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .aboutboo.vcomp > .contents > .groupers > .grouper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--w-25);
+    height: var(--w-6);
+    font-size: 12px;
+    border-bottom: 1px solid whitesmoke;
+    color: lightgray;
+  }
+
+  .aboutboo.vcomp > .contents > .groupers > .grouper.active {
+    color: black;
+    border-bottom: 1px solid var(--color-dark);
+  }
+
+  .aboutboo.vcomp > .contents > .sections {
+    position: relative;
+    width: 300%;
+    margin-left: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: row;
+    transition: margin-left 0.5s;
+  }
+
+  .aboutboo.vcomp > .contents > .sections.own {
+    margin-left: 0;
+  }
+
+  .aboutboo.vcomp > .contents > .sections.attend {
+    margin-left: -100%;
+  }
+
+  .aboutboo.vcomp > .contents > .sections.follow {
+    margin-left: -200%;
+  }
+
+  .aboutboo.vcomp > .contents > .sections > .section {
+    position: relative;
+    width: calc(100% / 3);
+    background: none;
   }
 </style>
 
@@ -178,23 +265,58 @@
 <script type='text/x-template' id='aboutboo-template'>
   <div class='aboutboo vcomp'>
 
-
     <div class='profiles' ref='profiles'>
       <div class='profile'>
+        <!-- <img class='profilepix' :src='profilepix'> -->
         <img class='profilepix' :src='profilepix' @click='toggle_changeboo'>
 
-        <div class='editboo' @click='session.open_profiler()' v-if='is_myboo'>
+        <!-- <div class='editboo' @click='session.open_profiler()' v-if='is_myboo'>
           <img src='/static/materials/icons/edit.png'>
-        </div>
+        </div> -->
 
         <div class='follow' @click='toggle_follow'>
           <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following'>
           <img class='follow-off' src='/static/materials/icons/like.png' v-else>
-          <span class='nfollowers'>[[ nfollowers ]]</span>
+          <span class='nfollowers'><b>[[ nfollowers ]]</b></span>
+          <span class='follow-txt'>팔로우</span>
         </div>
       </div>
 
-      <div class='nick'>[[ nick ]]</div>
+      <div class='nick'><b>[[ nick ]]</b></div>
+      <div class='text'>[[ text ]]</div>
+
+      <p v-if='boo.fit && on_testbed' style='font-size:12px;text-align:center;'>
+        당신은 이 키워드를 선호하는 경향이 있습니다:<br>
+        [[boo.fit.likes.join(',').replace(/_/g," ").replace(/,/g, ", ")]]
+      </p>
+
+      <p v-if='boo.fit && on_testbed' style='font-size:12px;text-align:center;'>
+        당신은 이 키워드를 선호하지 않는 경향이 있습니다:<br>
+        [[boo.fit.dislikes.join(',').replace(/_/g," ").replace(/,/g, ", ")]]
+      </p>
+
+      <p v-if='boo.fit && on_testbed' style='font-size:12px;text-align:center;'>
+        당신에게는 이 브랜드가 맞을것 같네요:<br>
+        [[boo.fit.yourbrands.join(',').replace(/_/g," ").replace(/,/g, ", ")]]
+      </p>
+
+
+      <div class='labels'>
+        <span class='label selected' v-for='l in mylabels("gender")'>[[ l.label ]]</span>
+        <span class='label selected' v-for='l in mylabels("age")'>[[ l.label ]]</span>
+      </div>
+
+      <div class='labels'>
+        <span class='label selected' v-for='l in mylabels("body")'>[[ l.label ]]</span>
+      </div>
+
+      <div class='labels'>
+        <span class='label selected' v-for='l in mylabels("style")'>[[ l.label ]]</span>
+      </div>
+
+      <div class='labels'>
+        <span class='label selected' v-for='l in mylabels("item")'>[[ l.label ]]</span>
+      </div>
 
       <div class='boochooser' v-if='is_myboo'>
         <div class='boo-candidate' :style='boo_candidate_style' v-for='b in myboos' @click='choose_this_boo(b)'>
@@ -207,28 +329,57 @@
         </div>
       </div>
 
-      <div class='text'>[[ text ]]</div>
-
-      <div class='styletags'>
-        <span class='tag selected' v-for='t in mytags'>[[ session.styletags[t] ]]</span>
-      </div>
-
-      <div class='fashiontems'>
-        <span class='item selected' v-for='t in myitems'>[[ session.fashiontems[t] ]]</span>
-      </div>
-
     </div>
 
 
     <div class='contents'>
-      <postlibrary
-        :postlist='postlist'
-        @open_posts='open_posts($event)'
-      ></postlibrary>
+      <div class='groupers'>
+        <template v-if='is_myboo'>
+          <span class='grouper' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>내 피드</span>
+          <span class='grouper' :class='active_grouper=="attend" ? "active" : ""' @click='group_attend'>참여중</span>
+          <span class='grouper' :class='active_grouper=="follow" ? "active" : ""' @click='group_follow'>팔로우</span>
+          <span class='grouper'></span>
+        </template>
+        <template v-else>
+          <span class='grouper' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>피드</span>
+        </template>
+      </div>
+
+      <div class='sections' :class='active_grouper'>
+        <template v-if='is_myboo'>
+          <div class='section' :style='{ height: own_section_height }' ref='section_own'>
+            <postlibrary
+              :postlist='postlist("own")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+
+          <div class='section' :style='{ height: attend_section_height }' ref='section_attend'>
+            <postlibrary
+              :postlist='postlist("attend")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+
+          <div class='section' :style='{ height: follow_section_height }' ref='section_follow'>
+            <postlibrary
+              :postlist='postlist("follow")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class='section' :style='{ height: own_section_height }' ref='section_own'>
+            <postlibrary
+              :postlist='postlist("own")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+        </template>
+      </div>
     </div>
 
-
-    <bar-loader class='spinner' v-if='boo.posts' :loading='boo.posts.onloading || !boo.id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
   </div>
 </script>
 
@@ -240,9 +391,13 @@
     props: ['boo', 'session', 'open'],
     data: function() {
       return {
-        on_changeboo: false,
-        n_boos_max: 4,
-        more: false
+        on_changeboo: true,
+        n_boos_max: (this.session.utype=='staff' ? 100 : 4),
+        n_boos_max_inline: 4,
+        active_grouper: 'own',
+        own_section_height: 'auto',
+        follow_section_height: 'auto',
+        attend_section_height: 'auto'
       }
     },
 
@@ -254,29 +409,13 @@
       }
     },
 
+    mounted: function() {
+      this.group_own();
+    },
+
     computed: {
-      postlist: function() {
-        if (!this.boo.posts) {
-          this.$set(this.boo, 'posts', new Booposts(this.boo));
-        }
-
-        if (this.session.auth && this.session.auth.boo.id==this.boo.id) {
-          return this.boo.posts.list.map(post => {
-            if (!post.id)
-              return post
-
-            const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
-
-            if (_post) {
-              return _post;
-            } else {
-              return post
-            }
-          });
-
-        } else {
-          return this.boo.posts.list
-        }
+      the_posts: function() {
+        return this.boo.posts.univ[this.active_grouper]
       },
 
       profilepix: function() {
@@ -296,7 +435,7 @@
       },
 
       is_following: function() {
-        if (this.is_myboo) {
+        if (!this.is_myboo && this.session.auth) {
           return this.session.auth.is_following(this.boo.id)
         }
       },
@@ -305,13 +444,19 @@
         return (this.session.auth && this.session.auth.boo.id==this.boo.id)
       },
 
-      mytags: function() {
-        return this.boo.styletags
-      },
+      // mytags: function() {
+      //   return this.boo.styletags
+      // },
+      //
+      // myitems: function() {
+      //   return this.boo.fashiontems
+      // },
 
-      myitems: function() {
-        return this.boo.fashiontems
-      },
+      // my_genderlabels: function() {
+      //   return this.session.labels.gender.filter(l => {
+      //     return this.boo.genderlabels.includes(l.id)
+      //   })
+      // },
 
       myboos: function() {
         if (this.is_myboo) {
@@ -331,7 +476,7 @@
 
           if (this.on_changeboo) {
             // const n = Object.keys(this.myboos).length + (this.myboos_maxed ? 0 : 1);
-            size = `calc(var(--w-80) / ${this.n_boos_max})`;
+            size = `calc(var(--w-80) / ${this.n_boos_max_inline})`;
 
           } else {
             size = '0px';
@@ -341,12 +486,18 @@
         }
       },
 
-      loader_width: function() {
-        return document.querySelector('#window').clientWidth
+      on_testbed: function() {
+        return window.location.href.indexOf("testbed") > -1
       }
     },
 
     methods: {
+      mylabels: function(type) {
+        return this.session.labels[type].filter(l => {
+          return this.boo[type + 'labels'].includes(l.id)
+        })
+      },
+
       choose_this_boo: function(boo) {
         this.session.auth.boo = boo.id;
       },
@@ -356,12 +507,18 @@
       },
 
       open_posts: function(idx) {
-        this.session.booposts = this.boo.posts;
+        this.boo.posts.contents = this.the_posts;
+        this.session.booposts = this.boo.posts.contents;
         this.session.page.booposts.swiper.slideTo(idx, 1, false);
         this.session.open_booposts();
       },
 
       toggle_follow: function() {
+        if (!this.session.auth) {
+          this.session.open_bridge('login_guide_for_mypage', 'bottom');
+          return
+        }
+
         if (this.is_myboo) {
           return
         }
@@ -374,7 +531,63 @@
           this.session.auth.follow(this.boo.id);
           this.boo.nfollowers += 1;
         }
-      }
+      },
+
+      group_own: function() {
+        this.active_grouper = 'own';
+
+        const baseh = this.$refs.section_own.clientHeight;
+        this.own_section_height = 'auto';
+
+        if (this.is_myboo) {
+          this.follow_section_height = Math.min(this.$refs.section_follow.clientHeight, baseh) + 'px';
+          this.attend_section_height = Math.min(this.$refs.section_attend.clientHeight, baseh) + 'px';
+        }
+
+        this.boo.posts.contents = this.the_posts;
+      },
+
+      group_follow: function() {
+        this.active_grouper = 'follow';
+
+        const baseh = this.$refs.section_follow.clientHeight;
+        this.follow_section_height = 'auto';
+        this.own_section_height = Math.min(this.$refs.section_own.clientHeight, baseh) + 'px';
+        this.attend_section_height = Math.min(this.$refs.section_attend.clientHeight, baseh) + 'px';
+
+        this.boo.posts.contents = this.the_posts;
+      },
+
+      group_attend: function() {
+        this.active_grouper = 'attend';
+
+        const baseh = this.$refs.section_attend.clientHeight;
+        this.attend_section_height = 'auto';
+        this.own_section_height = Math.min(this.$refs.section_own.clientHeight, baseh) + 'px';
+        this.follow_section_height = Math.min(this.$refs.section_follow.clientHeight, baseh) + 'px';
+
+        this.boo.posts.contents = this.the_posts;
+      },
+
+      postlist: function(grouper) {
+        if (this.is_myboo) {
+          return this.boo.posts.univ[grouper].list.map(post => {
+            if (!post.id)
+              return post
+
+            const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
+
+            if (_post) {
+              return _post;
+            } else {
+              return post
+            }
+          });
+
+        } else {
+          return this.boo.posts.univ[grouper].list
+        }
+      },
     }
   });
 </script>

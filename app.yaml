@@ -1,8 +1,11 @@
 # [START django_app]
 runtime: python37
+instance_class: F1
+# instance_class: F4_1G
 
 # 다음줄이 있으면 main.py가 필요없어지는 같다
-# entrypoint: gunicorn -b :$PORT main.wsgi
+# entrypoint: gunicorn -b :$PORT --threads=4 home.wsgi
+# entrypoint: gunicorn -b :$PORT --threads=4 main:app
 
 handlers:
 # This configures Google App Engine to serve the files in the app's static

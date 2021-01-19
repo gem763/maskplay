@@ -135,7 +135,8 @@
   }
 
   .modal .content .sub.intro img.logo {
-    width: 40%;
+    /* width: 40%; */
+    width: calc(var(--width-unit) * 16.5);
     height: auto;
     object-fit: contain;
   }
@@ -197,15 +198,12 @@
 
         <div class='sub intro' v-if='is_intro'>
           <div class='logos'>
-            <img class='slogun-top' src='/static/materials/logos/moiber_landing_slogun0.png' style='position:absolute;bottom:105%;left:30%;width:15%;height:auto;'>
+            <img class='logo' src='/static/materials/logos/splash.gif'>
+            <!-- <img class='slogun-top' src='/static/materials/logos/moiber_landing_slogun0.png' style='position:absolute;bottom:105%;left:30%;width:15%;height:auto;'>
             <img class='logo' src='/static/materials/logos/moiber-logo.png'>
             <bar-loader :loading='true' :width='loader_width' :height='1' color="#302E2F"></bar-loader>
-            <!-- <bar-loader :loading='true' :width='loader_width' :height='1' color="#D0021B"></bar-loader> -->
             <img class='logo' src='/static/materials/logos/moiber-logo.png' style='transform: rotate(180deg) scaleX(-1);opacity:0.2;'>
-            <!-- <div style='position:absolute;background:none;bottom:105%;left:50%;transform:translateX(-50%);'>
-              나, 뭐입어? -스타일 컨설팅 플랫폼
-            </div> -->
-            <img class='slogun-bottom' src='/static/materials/logos/moiber_landing_slogun.png' style='position:absolute;top:105%;left:30%;width:40%;height:auto;'>
+            <img class='slogun-bottom' src='/static/materials/logos/moiber_landing_slogun.png' style='position:absolute;top:105%;left:30%;width:40%;height:auto;'> -->
           </div>
 
           <!-- <div style='position:absolute;bottom:30px;left:0;width:100%;font-size:min(2.5vw, 2.5vh)'>

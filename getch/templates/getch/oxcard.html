@@ -1,4 +1,13 @@
 <style>
+  .oxcard {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* height: calc(100% - var(--w-16)); */
+    height: var(--w-32);
+  }
+
   .oxcard > table {
     border-collapse: collapse;
     background: white;
@@ -7,13 +16,19 @@
     left: 0;
     width: 100%;
     height: 100%;
+    /* calc(100% - var(--w-12)); */
   }
 
   .oxcard > table > tbody > tr > td {
     width: 50%;
     box-sizing: border-box;
     position: relative;
-    height: 100%;
+    /* height: 100%; */
+    /* height: calc(100% - var(--w-12)); */
+  }
+
+  .oxcard > table > tbody > tr > td:first-child {
+    border-right: 1px solid lightgray;
   }
 </style>
 

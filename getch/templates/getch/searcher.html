@@ -70,7 +70,7 @@
 
   .searcher.vcomp > .spinner {
     position: fixed;
-    bottom: var(--w-12);
+    bottom: var(--w-16);
   }
 </style>
 
@@ -164,12 +164,14 @@
       },
 
       backto_posts: function(idx) {
-        this.session.page.posts.contents = this.session.page.posts.univ.history;
+        this.session.page.posts.contents = this.searchposts;
+        // this.session.page.posts.contents = this.session.page.posts.univ.history;
 
-        const selected = this.postlist[idx];
-        const where = this.session.page.posts.swiper.realIndex + 1;
-        this.session.page.posts.contents.list.splice(where, 0, selected);
-        this.session.page.posts.swiper.slideTo(where, 1, false);
+        // const selected = this.postlist[idx];
+        // const where = this.session.page.posts.swiper.realIndex + 1;
+        // this.session.page.posts.contents.list.splice(where, 0, selected);
+        // this.session.page.posts.swiper.slideTo(where, 1, false);
+        this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_pages_all();
       },
 

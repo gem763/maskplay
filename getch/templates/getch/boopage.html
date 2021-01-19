@@ -22,6 +22,7 @@
     :from='session.page.boopage.from'
     :scrolload='scrolload'
     :sticky_trigger_margin='sticky_trigger_margin'
+    :onloading='onloading'
     @close='session.close_page()'>
 
     <template #headerbar-menu>
@@ -55,13 +56,23 @@
 
     computed: {
       boo: function() {
+        if (this.session.page.boopage.boo && !this.session.page.boopage.boo.posts) {
+          this.$set(this.session.page.boopage.boo, 'posts', {
+            contents: undefined,
+            univ: {
+              own: new Booposts(this.session.page.boopage.boo, 'own')
+            }
+          });
+          this.session.page.boopage.boo.posts.contents = this.session.page.boopage.boo.posts.univ.own;
+        }
+
         return this.session.page.boopage.boo
       },
 
       scrolload: function() {
         if (this.boo) {
           return {
-            obj: this.boo.posts,
+            obj: this.boo.posts.contents,
             n: 16
           }
         }
@@ -69,6 +80,22 @@
 
       sticky_trigger_margin: function() {
         return document.querySelector('#window').clientWidth * 33 / 100
+      },
+
+      boo_onloading: function() {
+        if (this.boo) {
+          return !this.boo.id
+        }
+      },
+
+      booposts_onloading: function() {
+        if (this.boo && this.boo.posts && this.boo.posts.contents) {
+          return this.boo.posts.contents.onloading
+        }
+      },
+
+      onloading: function() {
+        return this.boo_onloading || this.booposts_onloading
       }
     },
 

@@ -9,7 +9,8 @@
   }
 
   .oxer.vcomp * {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Equilibrium';
+    /* font-family: 'Montserrat', sans-serif; */
   }
 
   .oxer.vcomp > .oxkey {
@@ -25,21 +26,33 @@
   .oxer.vcomp > .oxkey > img {
     position: absolute;
     left: 50%;
-    top: var(--w-4);
-    height: var(--w-32);
-    width: var(--w-32);
+    /* top: var(--w-4); */
+    /* height: var(--w-32); */
+    height: 100%;
+    width: auto;
+    /* width: var(--w-32); */
     object-fit: contain;
     transform: translateX(-50%);
   }
 
   .oxer.vcomp > .oxkey > .score {
     position: absolute;
-    top: var(--w-20);
+    top: calc(50% + var(--width-unit) * 2);
+    /* top: var(--w-21); */
     left: 50%;
     transform: translate(-50%,-50%);
     font-size: var(--w-20);
     -webkit-text-stroke: 2px white;
     color: var(--color-dark);
+    /* text-shadow:
+      -1px -1px 0 white,
+       0   -1px 0 white,
+       1px -1px 0 white,
+       1px  0   0 white,
+       1px  1px 0 white,
+       0    1px 0 white,
+      -1px  1px 0 white,
+      -1px  0   0 white; */
   }
 </style>
 
@@ -48,7 +61,7 @@
 
     <div class='oxkey' :class='phase'>
       <img :src='ox_src'>
-      <div class='score' v-if='is_active'>[[ score ]]</div>
+      <div class='score' v-if='is_active'><b>[[ score ]]</b></div>
     </div>
 
   </div>

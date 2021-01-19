@@ -1,0 +1,539 @@
+<style>
+  .aboutboo.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .aboutboo.vcomp > .profiles {
+    position: relative;
+    width: 100%;
+    background: none;
+    margin-top: var(--w-16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile {
+    width: var(--w-33);
+    height: var(--w-33);
+    background: none;
+    transition: all 0.5s;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > img.profilepix {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+  }
+
+
+  .aboutboo.vcomp > .profiles > .profile > .editboo {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + var(--w-6));
+    width: var(--w-12);
+    height: var(--w-12);
+    transform: translateY(-50%);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .follow {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + var(--w-6));
+    width: var(--w-12);
+    height: var(--w-12);
+    transform: translateY(-50%);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .editboo > img {
+    width: var(--w-6);
+    height: var(--w-6);
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .follow > img {
+    width: var(--w-8);
+    height: var(--w-8);
+  }
+
+  .aboutboo.vcomp > .profiles > .profile > .follow > span.nfollowers {
+    background: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+  }
+
+  .aboutboo.vcomp > .profiles > .nick {
+    font-size: 13px;
+    /* font-weight: bold; */
+  }
+
+  .aboutboo.vcomp > .profiles > .text {
+    font-size: 12px;
+  }
+
+  .aboutboo.vcomp > .profiles > .styletags,
+  .aboutboo.vcomp > .profiles > .fashiontems {
+    margin-top: 10px;
+    width: var(--w-80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .aboutboo.vcomp > .profiles > .styletags > .tag,
+  .aboutboo.vcomp > .profiles > .fashiontems > .item {
+    font-size: 16px;
+    padding: 5px;
+    border-radius: 30px;
+    margin: 2px;
+  }
+
+  .aboutboo.vcomp > .profiles > .styletags > .tag.selected {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .aboutboo.vcomp > .profiles > .fashiontems > .item.selected {
+    background: #292A4D;
+    color: white;
+  }
+
+  .aboutboo.vcomp > .contents {
+    margin-top: 50px;
+    background: white;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .aboutboo.vcomp > .spinner {
+    position: fixed;
+    bottom: var(--w-12);
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    transition: all 0.5s;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate {
+    max-width: var(--w-25);
+    max-height: var(--w-25);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s;
+    position: relative;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > img {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > img.add {
+    width: 33%;
+    height: 33%;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > .circle {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    border: 1px solid var(--color-dark);
+    box-sizing: border-box;
+  }
+
+  .aboutboo.vcomp > .contents > .groupers {
+    background: none;
+    /* margin-top: var(--w-16); */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .aboutboo.vcomp > .contents > .groupers > .grouper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--w-25);
+    height: var(--w-6);
+    font-size: 12px;
+    border-bottom: 1px solid whitesmoke;
+    color: lightgray;
+  }
+
+  .aboutboo.vcomp > .contents > .groupers > .grouper.active {
+    color: black;
+    border-bottom: 1px solid var(--color-dark);
+  }
+
+  .aboutboo.vcomp > .contents > .sections {
+    position: relative;
+    width: 300%;
+    margin-left: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: row;
+    transition: margin-left 0.5s;
+  }
+
+  .aboutboo.vcomp > .contents > .sections.own {
+    margin-left: 0;
+  }
+
+  .aboutboo.vcomp > .contents > .sections.attend {
+    margin-left: -100%;
+  }
+
+  .aboutboo.vcomp > .contents > .sections.follow {
+    margin-left: -200%;
+  }
+
+  .aboutboo.vcomp > .contents > .sections > .section {
+    position: relative;
+    width: calc(100% / 3);
+    background: none;
+  }
+</style>
+
+
+<script type='text/x-template' id='aboutboo-template'>
+  <div class='aboutboo vcomp'>
+
+    <div class='profiles' ref='profiles'>
+      <div class='profile'>
+        <!-- <img class='profilepix' :src='profilepix'> -->
+        <img class='profilepix' :src='profilepix' @click='toggle_changeboo'>
+
+        <div class='editboo' @click='session.open_profiler()' v-if='is_myboo'>
+          <img src='/static/materials/icons/edit.png'>
+        </div>
+
+        <div class='follow' @click='toggle_follow'>
+          <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following'>
+          <img class='follow-off' src='/static/materials/icons/like.png' v-else>
+          <span class='nfollowers'>[[ nfollowers ]]</span>
+        </div>
+      </div>
+
+      <div class='nick'><b>[[ nick ]]</b></div>
+      <div class='text'>[[ text ]]</div>
+
+      <p v-if='boo.fit && on_testbed' style='font-size:12px;text-align:center;'>
+        당신은 이 키워드를 선호하는 경향이 있습니다:<br>
+        [[boo.fit.likes.join(',').replace(/_/g," ").replace(/,/g, ", ")]]
+      </p>
+
+      <p v-if='boo.fit && on_testbed' style='font-size:12px;text-align:center;'>
+        당신은 이 키워드를 선호하지 않는 경향이 있습니다:<br>
+        [[boo.fit.dislikes.join(',').replace(/_/g," ").replace(/,/g, ", ")]]
+      </p>
+
+      <p v-if='boo.fit && on_testbed' style='font-size:12px;text-align:center;'>
+        당신에게는 이 브랜드가 맞을것 같네요:<br>
+        [[boo.fit.yourbrands.join(',').replace(/_/g," ").replace(/,/g, ", ")]]
+      </p>
+
+      <div class='styletags'>
+        <span class='tag selected' v-for='t in mytags'>[[ session.styletags[t] ]]</span>
+      </div>
+
+      <div class='fashiontems'>
+        <span class='item selected' v-for='t in myitems'>[[ session.fashiontems[t] ]]</span>
+      </div>
+
+      <div class='boochooser' v-if='is_myboo'>
+        <div class='boo-candidate' :style='boo_candidate_style' v-for='b in myboos' @click='choose_this_boo(b)'>
+          <img :src='b.profile.pix'>
+        </div>
+
+        <div class='boo-candidate' :style='boo_candidate_style' v-if='!myboos_maxed' @click='session.open_profiler("new")'>
+          <img class='add' src='/static/materials/icons/plus.png'>
+          <div class='circle'></div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class='contents'>
+      <div class='groupers'>
+        <template v-if='is_myboo'>
+          <span class='grouper' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>내포스트</span>
+          <span class='grouper' :class='active_grouper=="attend" ? "active" : ""' @click='group_attend'>참여중</span>
+          <span class='grouper' :class='active_grouper=="follow" ? "active" : ""' @click='group_follow'>관심캐</span>
+          <span class='grouper'></span>
+        </template>
+        <template v-else>
+          <span class='grouper' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>포스트</span>
+        </template>
+      </div>
+
+      <div class='sections' :class='active_grouper'>
+        <template v-if='is_myboo'>
+          <div class='section' :style='{ height: own_section_height }' ref='section_own'>
+            <postlibrary
+              :postlist='postlist("own")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+
+          <div class='section' :style='{ height: attend_section_height }' ref='section_attend'>
+            <postlibrary
+              :postlist='postlist("attend")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+
+          <div class='section' :style='{ height: follow_section_height }' ref='section_follow'>
+            <postlibrary
+              :postlist='postlist("follow")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class='section' :style='{ height: own_section_height }' ref='section_own'>
+            <postlibrary
+              :postlist='postlist("own")'
+              @open_posts='open_posts($event)'
+            ></postlibrary>
+          </div>
+        </template>
+      </div>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('aboutboo', {
+    template: '#aboutboo-template',
+    delimiters: ['[[', ']]'],
+    props: ['boo', 'session', 'open'],
+    data: function() {
+      return {
+        on_changeboo: true,
+        n_boos_max: 4,
+        active_grouper: 'own',
+        own_section_height: 'auto',
+        follow_section_height: 'auto',
+        attend_section_height: 'auto'
+      }
+    },
+
+    watch: {
+      open: function(_new, _old) {
+        if (_new) {
+          this.$refs.profiles.scrollIntoView({behavior: 'auto', block: 'end', inline: 'nearest'});
+        }
+      }
+    },
+
+    mounted: function() {
+      this.group_own();
+    },
+
+    computed: {
+      the_posts: function() {
+        return this.boo.posts.univ[this.active_grouper]
+      },
+
+      profilepix: function() {
+        return this.boo.profile.pix
+      },
+
+      text: function() {
+        return this.boo.text
+      },
+
+      nick: function() {
+        return this.boo.nick
+      },
+
+      nfollowers: function() {
+        return this.boo.nfollowers
+      },
+
+      is_following: function() {
+        if (!this.is_myboo && this.session.auth) {
+          return this.session.auth.is_following(this.boo.id)
+        }
+      },
+
+      is_myboo: function() {
+        return (this.session.auth && this.session.auth.boo.id==this.boo.id)
+      },
+
+      mytags: function() {
+        return this.boo.styletags
+      },
+
+      myitems: function() {
+        return this.boo.fashiontems
+      },
+
+      myboos: function() {
+        if (this.is_myboo) {
+          return this.session.auth.boos
+        }
+      },
+
+      myboos_maxed: function() {
+        if (this.is_myboo) {
+          return Object.keys(this.session.auth.boos).length >= this.n_boos_max
+        }
+      },
+
+      boo_candidate_style: function() {
+        if (this.is_myboo) {
+          let size;
+
+          if (this.on_changeboo) {
+            // const n = Object.keys(this.myboos).length + (this.myboos_maxed ? 0 : 1);
+            size = `calc(var(--w-80) / ${this.n_boos_max})`;
+
+          } else {
+            size = '0px';
+          }
+
+          return { width: size, height: size }
+        }
+      },
+
+      on_testbed: function() {
+        return window.location.href.indexOf("testbed") > -1
+      }
+    },
+
+    methods: {
+      choose_this_boo: function(boo) {
+        this.session.auth.boo = boo.id;
+      },
+
+      toggle_changeboo: function() {
+        this.on_changeboo = !this.on_changeboo;
+      },
+
+      open_posts: function(idx) {
+        this.boo.posts.contents = this.the_posts;
+        this.session.booposts = this.boo.posts.contents;
+        this.session.page.booposts.swiper.slideTo(idx, 1, false);
+        this.session.open_booposts();
+      },
+
+      toggle_follow: function() {
+        if (!this.session.auth) {
+          this.session.open_bridge('login_guide_for_mypage', 'bottom');
+          return
+        }
+
+        if (this.is_myboo) {
+          return
+        }
+
+        if (this.is_following) {
+          this.session.auth.unfollow(this.boo.id);
+          this.boo.nfollowers -= 1;
+
+        } else {
+          this.session.auth.follow(this.boo.id);
+          this.boo.nfollowers += 1;
+        }
+      },
+
+      group_own: function() {
+        this.active_grouper = 'own';
+
+        const baseh = this.$refs.section_own.clientHeight;
+        this.own_section_height = 'auto';
+
+        if (this.is_myboo) {
+          this.follow_section_height = Math.min(this.$refs.section_follow.clientHeight, baseh) + 'px';
+          this.attend_section_height = Math.min(this.$refs.section_attend.clientHeight, baseh) + 'px';
+        }
+
+        this.boo.posts.contents = this.the_posts;
+      },
+
+      group_follow: function() {
+        this.active_grouper = 'follow';
+
+        const baseh = this.$refs.section_follow.clientHeight;
+        this.follow_section_height = 'auto';
+        this.own_section_height = Math.min(this.$refs.section_own.clientHeight, baseh) + 'px';
+        this.attend_section_height = Math.min(this.$refs.section_attend.clientHeight, baseh) + 'px';
+
+        this.boo.posts.contents = this.the_posts;
+      },
+
+      group_attend: function() {
+        this.active_grouper = 'attend';
+
+        const baseh = this.$refs.section_attend.clientHeight;
+        this.attend_section_height = 'auto';
+        this.own_section_height = Math.min(this.$refs.section_own.clientHeight, baseh) + 'px';
+        this.follow_section_height = Math.min(this.$refs.section_follow.clientHeight, baseh) + 'px';
+
+        this.boo.posts.contents = this.the_posts;
+      },
+
+      postlist: function(grouper) {
+        if (this.is_myboo) {
+          return this.boo.posts.univ[grouper].list.map(post => {
+            if (!post.id)
+              return post
+
+            const _post = _.find(this.session.page.posts.contents.list, ['id', post.id]);
+
+            if (_post) {
+              return _post;
+            } else {
+              return post
+            }
+          });
+
+        } else {
+          return this.boo.posts.univ[grouper].list
+        }
+      },
+    }
+  });
+</script>

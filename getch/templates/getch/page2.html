@@ -167,6 +167,47 @@
     scrollbar-width: none; /*Firefox 64*/
   }
 
+  .page > .content > .page-body.frozen {
+    overflow-y: hidden;
+  }
+
+  .page > .content > .page-tail {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    /* height: 200px; */
+    /* background: orange; */
+    transition: all 0.2s;
+  }
+
+  .page > .content > .page-tail.hidden {
+    transform: translateY(100%);
+  }
+
+  /* .page > .content.sticky > .page-tail {
+    transform: translateY(100%);
+  } */
+
+  .page > .content > .page-tail > .close {
+    position: absolute;
+    top: var(--w-8);
+    right: var(--w-8);
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+    transform: translate(50%,-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page > .content > .page-tail > .close > img {
+    width: var(--w-6);
+    height: var(--w-6);
+    transform: rotate(90deg);
+  }
+
   .page > .content > .headerbar > .hamburger > .headerbar-menu {
     position: absolute;
     top: 150%;
@@ -183,7 +224,7 @@
 
   .page > .content > .headerbar > .hamburger > .headerbar-menu > .item {
     background: none;
-    height: var(--w-8);
+    height: var(--w-9);
     border-bottom: 1px solid #cccccc;
     display: flex;
     align-items: center;
@@ -204,6 +245,11 @@
     opacity: 0;
     /* transform: translateY(calc(var(--w-10) * (-1))); */
   }
+
+  .page > .content > .spinner {
+    position: fixed;
+    bottom: var(--w-16);
+  }
 </style>
 
 
@@ -215,8 +261,8 @@
 
     <transition :name='show_content_type'>
       <!-- <div class='content' v-if='open'> -->
-      <div class='content' v-show='open'>
-        <div class='page-body' @scroll='scroll' ref='scroller'>
+      <div class='content' v-show='open' :class='sticky ? "sticky" : ""'>
+        <div class='page-body' @scroll='scroll' ref='scroller' :class='frozen ? "frozen" : ""'>
           <div ref='upmost'></div>
           <slot name='page-body'></slot>
         </div>
@@ -230,22 +276,31 @@
             <slot name='headerbar-body-default'></slot>
           </div>
 
-          <div class='hamburger' @click.stop='toggle_menu'>
+          <div class='hamburger' @click.stop='toggle_menu' v-if='!hide_menu'>
             <img src='/static/materials/icons/button_e.png'>
 
             <transition name='show-menu'>
               <div class='headerbar-menu' v-if='on_menu'>
                 <slot name='headerbar-menu'>
-                  <div class='item'>메뉴</div>
+                  <!-- <div class='item'>메뉴</div> -->
                 </slot>
               </div>
             </transition>
           </div>
         </div>
 
+        <div class='page-tail' :class='tailout ? "hidden" : ""' v-if='!no_tail'>
+          <slot name='page-tail'></slot>
+          <div class='close' @click='hide_tail'>
+            <img src='/static/materials/icons/right-chevron.png'>
+          </div>
+        </div>
+
         <div class='close' @click='$emit("close")' v-show='!hide_close'>
           <img src='/static/materials/icons/right-chevron.png'>
         </div>
+
+        <bar-loader class='spinner' :loading='onloading ? onloading : false' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
       </div>
     </transition>
   </div>
@@ -256,10 +311,26 @@
   Vue.component('page2', {
     template: '#page2-template',
     delimiters: ['[[', ']]'],
-    props: ['open', 'from', 'hide_close', 'hide_headerbar', 'hide_dimmer', 'scrolload', 'sticky_trigger_margin', 'trans_headerbar'],
+    props: ['open', 'from', 'hide_close', 'hide_headerbar', 'hide_menu', 'hide_dimmer', 'no_tail', 'scrolload', 'sticky_trigger_margin', 'trans_headerbar', 'onloading'],
     data: function() {
       return {
         on_menu: false,
+        sticky: false,
+        tailout: false,
+        frozen: false,
+      }
+    },
+
+    watch: {
+      open: function(_new, _old) {
+        if (_new) {
+          // console.log(1234);
+          // this.goto_upmost();
+          this.on_menu = false;
+          this.sticky = false;
+          this.tailout = false;
+          this.frozen = false;
+        }
       }
     },
 
@@ -280,10 +351,25 @@
         } else {
           return ''
         }
-      }
+      },
+
+      loader_width: function() {
+        return document.querySelector('#window').clientWidth
+      },
     },
 
     methods: {
+      focus_headerbar: function() {
+        this.sticky = true;
+        this.tailout = true;
+        this.frozen = true;
+      },
+
+      defocus_headerbar: function() {
+        this.sticky = false;
+        this.frozen = false;
+      },
+
       toggle_menu: function() {
         this.on_menu = !this.on_menu;
       },
@@ -317,16 +403,29 @@
 
           // if (scrollTop > sticky) {
           if (scrollTop > this.sticky_trigger_margin) {
-            this.$refs.scroller.parentElement.classList.add("sticky");
+            // this.$refs.scroller.parentElement.classList.add("sticky");
+            this.sticky = true;
+            this.tailout = true;
 
           } else {
-            this.$refs.scroller.parentElement.classList.remove("sticky");
+            // this.$refs.scroller.parentElement.classList.remove("sticky");
+            if (this.sticky!=this.tailout) {
+              this.sticky = false;
+
+            } else {
+              this.sticky = false;
+              this.tailout = false;
+            }
           }
         }
       },
 
       close_menu: function() {
         this.on_menu = false;
+      },
+
+      hide_tail: function() {
+        this.tailout = true
       }
     }
   });

@@ -32,11 +32,11 @@
     bottom: 0;
   }
 
-  .bridge.vcomp .page-body > .section.top > .title {
+  /* .bridge.vcomp .page-body > .section.top > .title {
     text-align: center;
     font-size: 16px;
     font-weight: bold;
-  }
+  } */
 
   .bridge.vcomp .page-body > .section.top > .sub {
     text-align: center;
@@ -63,7 +63,7 @@
   }
 
   .bridge.vcomp .page-body > .section.bottom > .sub > .action {
-    width: 35%;
+    width: var(--w-40);
     padding: 10px;
     box-sizing: border-box;
   }
@@ -161,13 +161,16 @@
 
   .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table {
     border-collapse: collapse;
+    /* height: var(--w-24);
+    width: var(--w-24); */
+    /* background: lightpink; */
   }
 
   .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td {
     border: 1px solid var(--color-dark);
     height: var(--w-12);
     width: var(--w-12);
-    box-sizing: border-box;
+    /* box-sizing: border-box; */
   }
 
   .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td.borderless {
@@ -222,14 +225,16 @@
   .bridge.vcomp.posting_guide .page-body > .section.bottom,
   .bridge.vcomp.delpost_guide .page-body > .section.top,
   .bridge.vcomp.delboo_guide .page-body > .section.top,
-  .bridge.vcomp.logout_guide .page-body > .section.top {
+  .bridge.vcomp.logout_guide .page-body > .section.top,
+  .bridge.vcomp.browser_guide .page-body > .section.top {
     background: rgba(255,255,255,0.9);;
   }
 
   .bridge.vcomp.posting_guide .page-body > .section.top,
   .bridge.vcomp.delpost_guide .page-body > .section.bottom,
   .bridge.vcomp.delboo_guide .page-body > .section.bottom,
-  .bridge.vcomp.logout_guide .page-body > .section.bottom {
+  .bridge.vcomp.logout_guide .page-body > .section.bottom,
+  .bridge.vcomp.browser_guide .page-body > .section.bottom {
     background: none;;
   }
 </style>
@@ -243,19 +248,22 @@
     :hide_close='hide_close'
     :hide_dimmer='hide_dimmer'
     :hide_headerbar='true'
+    :no_tail='true'
     @close='session.close_page()'>
 
     <template #page-body>
 
       <template v-if='is_login_guide_for_posting'>
         <div class='section top'>
-          <div class='title'>아무 패션 고민-수다 글을<br>새로 포스팅 하세요.</div>
-          <div class='sub'>위 아니면 아래?<br>둘 중에 뭐 살지 - 뭐 입을지 고민될 때.</div>
+          <div class='sub'>
+            <p style='font-size:16px;'><b>아무 패션 고민 글을<br>새로 포스팅 하세요.</b></p>
+            <span>위 아니면 아래?<br>둘 중에 뭐 살지 - 뭐 입을지 고민될 때.</span>
+          </div>
         </div>
 
         <div class='section bottom'>
           <div class='sub'>
-            <span>지금 로그인하여 솔직한 패션 컨설팅을 받아보세요.</span>
+            <span>가입하고 솔직한 패션 컨설팅을 받아보세요.</span>
             <div class='action login' @click='action_login'>로그인하기</div>
             <div class='action cancel' @click='action_cancel'>취소</div>
           </div>
@@ -275,8 +283,10 @@
 
       <template v-else-if='is_login_guide_for_mypage'>
         <div class='section top'>
-          <div class='title'>부캐를 만들고<br>진솔한 패션 조언을 얻어보세요.</div>
-          <div class='sub'>화보 속 완벽한 패션<br>내 체형에도 어울릴까 고민이라면?</div>
+          <div class='sub'>
+            <p style='font-size:16px;'><b>부캐를 만들고<br>진솔한 패션 조언을 얻어보세요.</b></p>
+            <span>화보 속 완벽한 패션<br>내 체형에도 어울릴까 고민이라면?</span>
+          </div>
         </div>
 
         <div class='section bottom'>
@@ -402,6 +412,27 @@
         <div class='section bottom' @click='session.close_page()'></div>
       </template>
 
+
+      <template v-else-if='is_browser_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>인앱 브라우저에서는 로그인 할 수 없습니다.<br>새로운 브라우저로 접속해 주세요.</span>
+            <div class='sub'>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='section bottom' @click='session.close_page()'></div>
+      </template>
+
     </template>
   </page2>
 </script>
@@ -445,12 +476,16 @@
         return this.bridge_type == 'logout_guide'
       },
 
+      is_browser_guide: function() {
+        return this.bridge_type == 'browser_guide'
+      },
+
       hide_close: function() {
-        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
       },
 
       hide_dimmer: function() {
-        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
       }
     },
 

@@ -87,7 +87,7 @@
     bottom: 0;
     /* left: 0; */
     width: var(--width);
-    height: var(--w-12);
+    height: var(--w-16);
     /* background: white; */
     font-size: 12px;
     font-weight: bold;
@@ -125,6 +125,7 @@
 
       <div class='toolbar' :style='toolbar_style'>
         <div class='opt' @click='fit_inside'><img src='/static/materials/icons/expand.png'></div>
+        <div class='opt' @click='fit_outside'><img src='/static/materials/icons/shrink.png'></div>
         <div class='opt' @click='zoom(0.1)'><img src='/static/materials/icons/zoomin.png'></div>
         <div class='opt' @click='zoom(-0.1)'><img src='/static/materials/icons/zoomout.png'></div>
         <!-- <div class='opt' @click='rotate(-10)'><img src='/static/materials/icons/rotate-left.png'></div>
@@ -249,6 +250,32 @@
           width = cropbox.width;
           height = canvas.naturalHeight / canvas.naturalWidth * width;
           top = cropbox.top + cropbox.height/2 - height/2;
+        }
+
+        this.cropper.setCanvasData({
+          top: top,
+          left: left,
+          width: width,
+          height: height
+        });
+      },
+
+      fit_outside: function() {
+        let top, left, width, height;
+        const cropbox = this.cropper.getCropBoxData();
+        const canvas = this.cropper.getCanvasData();
+
+        if (canvas.naturalWidth < canvas.naturalHeight) {
+          left = cropbox.left;
+          width = cropbox.width;
+          height = canvas.naturalHeight / canvas.naturalWidth * width;
+          top = cropbox.top + cropbox.height/2 - height/2;
+
+        } else {
+          top = cropbox.top;
+          height = cropbox.height;
+          width = canvas.naturalWidth / canvas.naturalHeight * height;
+          left = cropbox.left + cropbox.width/2 - width/2;
         }
 
         this.cropper.setCanvasData({

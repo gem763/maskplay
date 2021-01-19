@@ -2,196 +2,112 @@
   .scorekit.vcomp {
     position: relative;
     width: 100%;
-    background: white;
-  }
-
-  .scorekit.vcomp * {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: bold;
-  }
-
-  .scorekit.vcomp > .loginplz {
-    position: relative;
-    width: 100%;
-    height: calc(var(--s-menu) * 2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-  }
-
-  .scorekit.vcomp > .loginplz > div {
-    width: 40%;
-    height: 40%;
-    background: black;
-    color: white;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .scorekit.vcomp > .scores {
     position: relative;
     width: 100%;
-    height: calc(var(--s-menu) * 2);
+    height: var(--w-52);
     background: white;
-    font-size: calc(var(--s-menu) * 1);
   }
 
-  .scorekit.vcomp > .scores > .score {
+  .scorekit.vcomp > .scores img.pix-ab {
     position: absolute;
     top: 0;
-    width: 50%;
+    left: 0;
+    width: 100%;
     height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+  }
+
+  .scorekit.vcomp > .scores span.mypick {
+    position: absolute;
+    top: 101%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .scorekit.vcomp > .voters {
+    width: 100%;
+    height: var(--w-16);
+    background: white;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: row;
+    padding-left: var(--w-4);
+    box-sizing: border-box;
+  }
+
+  .scorekit.vcomp > .voters > .profile {
+    position: relative;
+    width: var(--w-8);
+    height: var(--w-8);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+    margin-right: var(--w-2);
+    font-size: 10px;
+    line-height: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.2;
   }
 
-  .scorekit.vcomp > .scores > .score.is_focused {
-    opacity: 1;
-    text-decoration: underline;
-  }
-
-  .scorekit.vcomp > .scores > .score.up {
-    left: 0;
-    /* background: lightpink; */
-  }
-
-  .scorekit.vcomp > .scores > .score.down {
-    right: 0;
-    /* background: lightyellow; */
-  }
-
-  .scorekit.vcomp > .scores > .label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    font-size: calc(var(--s-menu) * 0.3);
-    transform: translate(-50%, -50%);
-  }
-
-  .scorekit.vcomp > .scores > .score > .yourpick {
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    color: red;
-    font-size: calc(var(--s-menu) * 0.2);
-    transform: translate(-50%, -50%);
-    opacity: 0;
-  }
-
-  .scorekit.vcomp > .scores > .score.is_yourpick > .yourpick {
-    opacity: 1;
-  }
-
-  .scorekit.vcomp > .voters-section {
-    position: relative;
+  .scorekit.vcomp > .voters > .profile > img {
     width: 100%;
-    min-height: calc(var(--s-menu) * 1);
-    background: none;
-  }
-
-  .scorekit.vcomp > .voters-section > .spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .scorekit.vcomp > .voters-section > .voters {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    transition: opacity 0.5s;
-  }
-
-  .scorekit.vcomp > .voters-section > .voters.loading {
-    opacity: 0.5;
-  }
-
-  .scorekit.vcomp > .voters-section > .voters > .voter {
-    position: relative;
-    width: calc(100% / 8);
-    padding-top: calc(100% / 8);
-    background: none;
-    margin-right: 1px;
-  }
-
-  .scorekit.vcomp > .voters-section > .voters > .voter > img {
-    position: absolute;
-    top: 2%;
-    left: 2%;
-    width: 96%;
-    height: 96%;
+    height: 100%;
     object-fit: cover;
-    background: white;
-  }
-
-
-  /* .scorekit.vcomp .voters-list-leave-active  */
-  .scorekit.vcomp .voters-list-enter-active {
-    transition: all 1s;
-    position: absolute;
-  }
-
-  .scorekit.vcomp .voters-list-enter,
-  .scorekit.vcomp .voters-list-leave-to {
-    opacity: 0;
-    transform: translateY(var(--s-menu));
-  }
-
-  .scorekit.vcomp .voters-list-move {
-    transition: all 0.5s;
   }
 </style>
 
 
 <script type='text/x-template' id='scorekit-template'>
-  <div class='scorekit vcomp'>
+  <div class='scorekit vcomp' v-if='vote_state != -1'>
 
-    <template v-if='boo'>
-      <div class='scores'>
-        <div class='score up' :class='score_0_class' @click='focus_this(0)'>
-          <div class='yourpick'>your pick</div>
-          [[ post.nvotes_up ]]
-        </div>
-
-        <div class='score down' :class='score_1_class' @click='focus_this(1)'>
-          <div class='yourpick'>your pick</div>
-          [[ post.nvotes_down ]]
-        </div>
-
-        <div class='label'>SCORE</div>
+    <div class='voters'>
+      <div class='profile' v-for='v in voterlist[focused]' @click='session.open_boopage(v)'>
+        <img :src='v.profile.pix'>
       </div>
 
-      <div class='voters-section'>
-        <transition-group tag='div' class='voters' :class='{loading:postvoters[0].onloading}' name='voters-list' v-show='focused==0'>
-          <div class='voter' :style='level_style(voter)' v-for='voter in postvoters[0].list' :key='voter.id' @click='session.open_boopage(voter)'>
-            <img :src='voter.profile.pix'>
-          </div>
-        </transition-group>
-
-        <transition-group tag='div' class='voters' :class='{loading:postvoters[1].onloading}' name='voters-list' v-show='focused==1'>
-          <div class='voter' :style='level_style(voter)' v-for='voter in postvoters[1].list' :key='voter.id' @click='session.open_boopage(voter)'>
-            <img :src='voter.profile.pix'>
-          </div>
-        </transition-group>
-
-        <scale-loader class='spinner' :loading='postvoters[0].onloading || postvoters[1].onloading'></scale-loader>
+      <div class='profile' v-if='(n_more_voters[focused]>0) && !post.voters[focused].onloading' @click='show_more_voters'>
+        +[[ n_more_voters[focused] ]]
       </div>
-    </template>
+    </div>
 
-    <template v-else>
-      <div class='loginplz' @click='session.open_loginpage()'>
-        <div>See Result</div>
-      </div>
-    </template>
 
+    <div class='scores'>
+      <oxcard :rawkeys='rawkeys'>
+        <template #O='sprops'>
+          <img class='pix-ab' :src='post.pix_a' v-if='post.pix_a'>
+          <oxer
+            @click.native='focus(0)'
+            :keyvalue='sprops.keyvalue'
+            :act='0'
+            :vote_state='focused'
+            :score='post.nvotes_up'
+            :is_active='true'
+          ></oxer>
+          <span class='mypick' v-if='vote_state==0'>마이픽</span>
+        </template>
+
+        <template #X='sprops'>
+          <img class='pix-ab' :src='post.pix_b' v-if='post.pix_b'>
+          <oxer
+            @click.native='focus(1)'
+            :keyvalue='sprops.keyvalue'
+            :act='1'
+            :vote_state='focused'
+            :score='post.nvotes_down'
+            :is_active='true'
+          ></oxer>
+          <span class='mypick' v-if='vote_state==1'>마이픽</span>
+        </template>
+      </oxcard>
+    </div>
   </div>
 </script>
 
@@ -203,58 +119,48 @@
     props: [ 'session', 'post' ],
     data: function() {
       return {
-        focused: 0, // 디폴트
+        focused: 0
       }
     },
 
     watch: {
-      'session.page.comments.open': {
-        handler: function(_new, _old) {
-          if (_new) {
-            if (this.yourpick != -1) {
-              this.focused = this.yourpick;
-            }
-          }
+      'post.id': {
+        handler: function() {
+          this.focused = this.vote_state;
         }, immediate: true
-      },
-
-      yourpick: function(_new, _old) {
-        if (this.boo && this.post.voters) {
-          if (_old==-1) {
-            this.post.voters[_new].list.push(this.boo);
-
-          } else if (_new==-1) {
-            const where = _.findIndex(this.post.voters[_old].list, ['id', this.boo.id]);
-            this.post.voters[_old].list.splice(where, 1);
-
-          } else {
-            const where = _.findIndex(this.post.voters[_old].list, ['id', this.boo.id]);
-            this.post.voters[_old].list.splice(where, 1);
-            this.post.voters[_new].list.push(this.boo);
-          }
-        }
       }
     },
 
+    methods: {
+      focus: function(act) {
+        this.focused = act;
+      },
+
+      show_more_voters: function() {
+        // alert('선택놀이 참여한 부캐 더보기')
+        this.session.open_network(this.post.voters[this.focused]);
+      },
+    },
+
     computed: {
-      boo: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo
+      is_postvoteox: function() {
+        return this.post.type == 'postvoteox'
+      },
+
+      is_postvoteab: function() {
+        return this.post.type == 'postvoteab'
+      },
+
+      rawkeys: function() {
+        if (this.is_postvoteox) {
+          return 'OX'
+
+        } else if (this.is_postvoteab) {
+          return 'AB'
         }
       },
 
-      postvoters: function() {
-        if (!this.post.voters) {
-          this.$set(this.post, 'voters', {
-            0: new Voters(this.post, 0),
-            1: new Voters(this.post, 1),
-          });
-        }
-
-        return this.post.voters
-      },
-
-      yourpick: function() {
+      vote_state: function() {
         if (this.session.auth) {
           return this.session.auth.has_voted_as(this.post.id)
         } else {
@@ -262,29 +168,25 @@
         }
       },
 
-      score_0_class: function() {
-        return {
-          is_yourpick: this.yourpick == 0,
-          is_focused: this.focused == 0
+      voterlist: function() {
+        if (this.post.voters) {
+          return {
+            0: this.post.voters[0].list.slice(0, 5),
+            1: this.post.voters[1].list.slice(0, 5)
+          }
+        } else {
+          return { 0: [], 1: []}
         }
       },
 
-      score_1_class: function() {
-        return {
-          is_yourpick: this.yourpick == 1,
-          is_focused: this.focused == 1
-        }
-      },
-    },
-
-    methods: {
-      focus_this: function(act) {
-        this.focused = act;
-      },
-
-      level_style: function(boo) {
-        return {
-          borderBottom: `calc(var(--s-menu) * 0.1) solid ${this.session.levelcolor(boo)}`
+      n_more_voters: function() {
+        if (this.post.voters) {
+          return {
+            0: Math.max(this.post.voters[0].idlist.length, this.post.voters[0].list.length - 5),
+            1: Math.max(this.post.voters[1].idlist.length, this.post.voters[1].list.length - 5)
+          }
+        } else {
+          return { 0:0, 1:0}
         }
       },
     }

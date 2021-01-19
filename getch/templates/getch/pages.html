@@ -13,6 +13,7 @@
 {% include "getch/bridge.html" %}
 {% include "getch/searcher.html" %}
 {% include "getch/company.html" %}
+{% include "getch/infoboard.html" %}
 
 
 <style>
@@ -30,11 +31,6 @@
 
 <script type='text/x-template' id='pages-template'>
   <div class='pages'>
-    <!-- <network
-      v-if='session.cnetwork.boo'
-      :session='session'
-    ></network> -->
-
     <posts
       :session='session'>
     </posts>
@@ -42,6 +38,10 @@
     <company
       :session='session'
     ></company>
+
+    <infoboard
+      :session='session'
+    ></infoboard>
 
     <navigator
       :session='session'
@@ -69,13 +69,18 @@
       :session='session'
     ></comments>
 
+    <network
+      v-if='session.page.network.boos'
+      :session='session'
+    ></network>
+
     <posting
       v-if='session.auth'
       :session='session'
     ></posting>
 
     <profiler
-      v-if='session.auth'
+      v-if='session._auth'
       :session='session'
     ></profiler>
 

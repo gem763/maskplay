@@ -17,11 +17,6 @@
   .baseposts.vcomp > .swiper-container > .swiper-wrapper {
     z-index: 0;
   }
-
-  .baseposts.vcomp > .spinner {
-    position: fixed;
-    bottom: var(--w-12);
-  }
 </style>
 
 
@@ -33,7 +28,7 @@
       </swiper-slide>
     </swiper>
 
-    <bar-loader class='spinner' :loading='!cpost_id' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
+    <!-- <bar-loader class='spinner' :loading='!cpost_id' :width='loader_width' :height='1' color="#D0021B"></bar-loader> -->
   </div>
 </script>
 
@@ -72,9 +67,9 @@
         }
       },
 
-      loader_width: function() {
-        return document.querySelector('#window').clientWidth
-      }
+      // loader_width: function() {
+      //   return document.querySelector('#window').clientWidth
+      // }
     },
 
 
@@ -90,6 +85,13 @@
           }
         }
       },
+
+      'postlist.length': function(_new, _old) {
+        if (_new == 0) {
+          // booposts에서, 하나남은 포스트를 삭제했을때
+          this.session.close_page();
+        }
+      }
     },
 
     methods: {
@@ -103,7 +105,7 @@
 
       delete_this_post: function() {
         this.session.open_bridge('delpost_guide', 'top', () => {
-          fetch(`post/${this.cpost_id}/delete`).then(res => res.json()).then(console.log);
+          fetch(`/post/${this.cpost_id}/delete`).then(res => res.json()).then(console.log);
           this.cpost_listout();
         });
       },
@@ -118,7 +120,10 @@
           this.listout_from(cpost.id, this.session.page.posts.univ.hot);
           this.listout_from(cpost.id, this.session.page.posts.univ.custom);
           this.listout_from(cpost.id, this.session.page.posts.univ.search);
-          this.listout_from(cpost.id, cpost.boo.posts);
+
+          this.listout_from(cpost.id, cpost.boo.posts.univ.own);
+          // this.listout_from(cpost.id, cpost.boo.posts.univ.following);
+          this.listout_from(cpost.id, cpost.boo.posts.univ.attend);
         }
       },
 

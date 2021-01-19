@@ -1,5 +1,5 @@
 <style>
-  .profiler.vcomp {
+  .profiler.vcomp .page-body > .profiler-body {
     position: absolute;
     top: 0;
     left: 0;
@@ -7,21 +7,21 @@
     height: 100%;
     background: white;
     overflow-y: auto;
-    -ms-overflow-style: none; /*IE 11*/
-    scrollbar-width: none; /*Firefox 64*/
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
-  .profiler.vcomp > .profiles {
+  .profiler.vcomp .page-body > .profiler-body > .profiles {
     background: none;
     margin-top: var(--w-16);
-    margin-bottom: var(--w-12);
+    margin-bottom: var(--w-20);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
   }
 
-  .profiler.vcomp > .profiles > .profile {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile {
     width: var(--w-33);
     height: var(--w-33);
     background: none;
@@ -33,11 +33,11 @@
     overflow: hidden;
   }
 
-  .profiler.vcomp > .profiles > .profile.new {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile.new {
     background: var(--color-dark);
   }
 
-  .profiler.vcomp > .profiles > .profile > img.profilepix {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > img.profilepix {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -47,7 +47,7 @@
     opacity: 0.5;
   }
 
-  .profiler.vcomp > .profiles > .profile > img.icon {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > img.icon {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -58,35 +58,42 @@
     pointer-events: none;
   }
 
-  .profiler.vcomp > .profiles > .nick {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .nick {
     font-size: 15px;
-    font-weight: bold;
-    margin-top: 10px;
+    /* font-weight: bold; */
+    margin-top: 20px;
   }
 
-  .profiler.vcomp > .profiles > .text {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .text {
     font-size: 13px;
+    margin-top: 15px;
+    white-space: pre-line;
+    text-align: center;
+    position: relative;
   }
 
-  .profiler.vcomp > .profiles > .nick > span > img,
-  .profiler.vcomp > .profiles > .text > span > img {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .text > .edit {
+    position: absolute;
+    top: 50%;
+    left: 110%;
+    transform: translateY(-50%);
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .nick > span > img,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .text > span > img {
     width: 11px;
     height: 11px;
     margin-left: 5px;
   }
 
-  .profiler.vcomp > .profiles > .nick > span.tmp,
-  .profiler.vcomp > .profiles > .text > span.tmp {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .nick > span.tmp,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .text > span.tmp {
     color: lightgray;
   }
 
-  .profiler.vcomp > .spinner {
-    position: fixed;
-    bottom: var(--w-12);
-  }
-
-  .profiler.vcomp > .profiles > .styletags,
-  .profiler.vcomp > .profiles > .fashiontems {
+  /* .profiler.vcomp .page-body > .profiler-body > .profiles > .styletags,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .fashiontems, */
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels {
     margin-top: 10px;
     width: var(--w-90);
     display: flex;
@@ -95,41 +102,85 @@
     flex-wrap: wrap;
   }
 
-  .profiler.vcomp > .profiles > .styletags > .tag,
-  .profiler.vcomp > .profiles > .fashiontems > .item {
-    font-size: 16px;
-    padding: 5px;
-    border-radius: 20px;
-    margin: 2px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .gender.labels {
+    margin-top: 30px;
   }
 
-  .profiler.vcomp > .profiles > .styletags > .tag.selected {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .title {
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .labels-guide {
+    font-size: 11px;
+    color: lightgray;
+    margin-top: 10px;
+  }
+
+  /* .profiler.vcomp .page-body > .profiler-body > .profiles > .styletags > .tag,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .fashiontems > .item, */
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label {
+    font-size: 13px;
+    padding: 7px;
+    border-radius: 20px;
+    margin: 2px;
+    /* padding-top: 2px; */
+    /* padding-bottom: 2px; */
+    border: 2px solid lightgray;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    box-sizing: border-box;
+  }
+
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.selected {
+    /* background: var(--color-dark); */
+    color: red;
+    border: 2px solid red;
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.more {
+    border: none;
+  }
+
+  /* .profiler.vcomp .page-body > .profiler-body > .profiles > .styletags > .tag.selected {
     background: var(--color-dark);
     color: white;
   }
 
-  .profiler.vcomp > .profiles > .fashiontems > .item.selected {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .fashiontems > .item.selected {
     background: #292A4D;
     color: white;
+  } */
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .labels_divider {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    border: 0;
   }
 
-  .profiler.vcomp > .actions {
+  .profiler.vcomp .page-body > .profiler-body > .actions {
     position: fixed;
     bottom: 0;
     /* left: 0; */
     width: var(--width);
-    height: var(--w-12);
+    height: var(--w-16);
     background: white;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 15px;
+    /* font-weight: bold; */
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    border-top: 1px solid lightgray;
   }
 
-  .profiler.vcomp > .actions > .action {
+  .profiler.vcomp .page-body > .profiler-body > .actions > .action {
     background: none;
     padding-left: var(--w-6);
     padding-right: var(--w-6);
@@ -139,70 +190,132 @@
     justify-content: center;
   }
 
-  .profiler.vcomp > .actions > .cancel.action {
+  .profiler.vcomp .page-body > .profiler-body > .actions > .cancel.action {
     color: gray;
   }
 
-  .profiler.vcomp > .actions > .done.action {
-    color: var(--color-neg);
-  }
-
-  .profiler.vcomp > .profiles > p.tags-guide {
-    color: #808080;
-    font-size: 11px;
+  .profiler.vcomp .page-body > .profiler-body > .actions > .done.action {
+    color: red;
   }
 </style>
 
 
 <script type='text/x-template' id='profiler-template'>
-  <page :open='session.page.profiler.open' :from='session.page.profiler.from' @close='session.close_page()'>
-    <div class='profiler vcomp' v-if='boo'>
+  <page2
+    class='profiler vcomp'
+    :open='session.page.profiler.open'
+    :from='session.page.profiler.from'
+    :onloading='on_creating'
+    @close='session.close_page()'>
 
-      <div class='profiles' ref='profiles'>
-        <div class='profile' :class='profilepix ? "" : "new"' @click='load_pixeditor'>
-          <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
-          <img class='profilepix' :src='profilepix' v-if='profilepix'>
-          <img class='icon' src='/static/materials/icons/edit.png'>
+    <template #headerbar-menu>
+      <div class='item' @click='delboo' v-if='deletable'>부캐 삭제</div>
+    </template>
+
+    <template #headerbar-body-trans>
+      <!-- <div class='profile'>
+        <img :src='boo.profile.pix'>
+      </div> -->
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+
+    <template #page-body>
+      <div class='profiler-body' v-if='boo'>
+
+        <div class='profiles' ref='profiles'>
+          <div class='profile' :class='profilepix ? "" : "new"' @click='load_pixeditor'>
+            <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
+            <img class='profilepix' :src='profilepix' v-if='profilepix'>
+            <img class='icon' src='/static/materials/icons/edit.png'>
+          </div>
+
+          <div class='nick' @click='edit_boo_nick'>
+            <span v-if='nick'><b>[[ nick ]]</b></span>
+            <span class='tmp' v-else>이름</span>
+            <span class='edit'><img src='/static/materials/icons/edit.png'></span>
+          </div>
+
+          <div class='text' @click='edit_boo_text'>
+            <span v-if='text'>[[ text ]]</span>
+            <span class='tmp' v-else>설명을 입력해주세요</span>
+            <span class='edit'><img src='/static/materials/icons/edit.png'></span>
+          </div>
+
+          <div class='gender labels'>
+            <span class='label' v-for='l in genderlabels' :class='select_class(l.id, my_genderlabels)' @click='toggle_select(l.id, my_genderlabels)'>[[ l.label ]]</span>
+          </div>
+
+          <div class='age labels'>
+            <span class='label' v-for='l in agelabels' :class='select_class(l.id, my_agelabels)' @click='toggle_select_exclusive(l.id, my_agelabels)'>[[ l.label ]]</span>
+          </div>
+
+          <div class='body labels'>
+            <div class='title'><b>체형 유형</b></div>
+            <hr class='labels_divider'>
+
+            <span class='label' v-for='l in bodylabels' :class='select_class(l.id, my_bodylabels)' @click='toggle_select(l.id, my_bodylabels)'>[[ l.label ]]</span>
+            <span class='label more' @click='toggle_more("body")'>[[ more_display("body") ]]</span>
+
+            <template v-if='more_bodylabels'>
+              <hr class='labels_divider'>
+              <span class='label' v-for='l in bodylabels_more' :class='select_class(l.id, my_bodylabels)' @click='toggle_select(l.id, my_bodylabels)'>[[ l.label ]]</span>
+            </template>
+
+            <hr class='labels_divider'>
+            <div class='labels-guide'>
+              체형 정보가 솔직할 수록 패션 조언이 정확해 집니다.
+            </div>
+          </div>
+
+
+          <div class='style labels'>
+            <div class='title'><b>스타일 유형</b></div>
+            <hr class='labels_divider'>
+
+            <span class='label' v-for='l in stylelabels' :class='select_class(l.id, my_stylelabels)' @click='toggle_select(l.id, my_stylelabels)'>[[ l.label ]]</span>
+            <span class='label more' @click='toggle_more("style")'>[[ more_display("style") ]]</span>
+
+            <template v-if='more_stylelabels'>
+              <hr class='labels_divider'>
+              <span class='label' v-for='l in stylelabels_more' :class='select_class(l.id, my_stylelabels)' @click='toggle_select(l.id, my_stylelabels)'>[[ l.label ]]</span>
+            </template>
+
+            <hr class='labels_divider'>
+            <div class='labels-guide'>
+              선호하는 스타일을 선택하면 관련 콘텐츠를 노출해 드립니다.
+            </div>
+          </div>
+
+          <div class='item labels'>
+            <div class='title'><b>관심 아이템</b></div>
+            <hr class='labels_divider'>
+
+            <span class='label' v-for='l in itemlabels' :class='select_class(l.id, my_itemlabels)' @click='toggle_select(l.id, my_itemlabels)'>[[ l.label ]]</span>
+            <span class='label more' @click='toggle_more("item")'>[[ more_display("item") ]]</span>
+
+            <template v-if='more_itemlabels'>
+              <hr class='labels_divider'>
+              <span class='label' v-for='l in itemlabels_more' :class='select_class(l.id, my_itemlabels)' @click='toggle_select(l.id, my_itemlabels)'>[[ l.label ]]</span>
+            </template>
+
+            <hr class='labels_divider'>
+            <div class='labels-guide'>
+              관심 아이템을 선택하면 관련 콘텐츠를 노출해 드립니다.
+            </div>
+          </div>
         </div>
 
-        <div class='nick' @click='edit_boo_nick'>
-          <span v-if='nick'>[[ nick ]]</span>
-          <span class='tmp' v-else>부캐이름</span>
-          <span><img src='/static/materials/icons/edit.png'></span>
+
+        <div class='actions'>
+          <!-- <div class='action cancel' @click='session.close_page()'><b>취소</b></div> -->
+          <div class='action done' @click='action_done'><b>저장</b></div>
         </div>
-
-        <div class='text' @click='edit_boo_text'>
-          <span v-if='text'>[[ text ]]</span>
-          <span class='tmp' v-else>부캐설명</span>
-          <span><img src='/static/materials/icons/edit.png'></span>
-        </div>
-
-        <div class='styletags'>
-          <span class='tag' v-for='(val, key) in styletags' :class='select_class(key, mytags)' @click='toggle_select(key, mytags)'>[[val]]</span>
-        </div>
-
-        <p class='tags-guide'>
-          체형취향 정보가 솔직할 수록 패션 조언이 정확해 집니다.
-        </p>
-
-        <div class='fashiontems'>
-          <span class='item' v-for='(val, key) in fashiontems' :class='select_class(key, myitems)' @click='toggle_select(key, myitems)'>[[val]]</span>
-        </div>
-
-        <p class='tags-guide'>
-          관심 아이템을 선택하면 관련 콘텐츠를 더 많이 노출해 줍니다.
-        </p>
       </div>
-
-
-      <div class='actions'>
-        <div class='action cancel' @click='session.close_page()'>취소</div>
-        <div class='action done' @click='action_done'>완료</div>
-      </div>
-
-      <bar-loader class='spinner' :loading='on_creating' :width='loader_width' :height='1' color="#D0021B"></bar-loader>
-    </div>
-  </page>
+    </template>
+  </page2>
 </script>
 
 
@@ -214,41 +327,78 @@
     data: function() {
       return {
         boo: undefined,
-        on_creating: false
+        on_creating: false,
+
+        // my_genderlabels: [],
+        // my_agelabels: [],
+        // my_bodylabels: [],
+        // my_stylelabels: [],
+        // my_itemlabels: [],
+
+        more_bodylabels: false,
+        more_stylelabels: false,
+        more_itemlabels: false,
       }
     },
 
     watch: {
-      'session.page.profiler.open': function(_new, _old) {
-        if (_new) {
-          if (this.session.page.profiler.type == 'new') {
-            console.log(1234);
-            this.boo = _.cloneDeep(this.session.auth.boo);
-            this.boo.id = undefined;//new Date().getTime();
-            this.boo.nick = '';
-            this.boo.text = '';
-            this.boo.profile.pix = undefined;
-            this.boo.followees_id = [];
-            this.boo.nfollowers = 0;
-            this.boo.nposts = 0;
-            this.boo.voting_record = {};
+      'session.page.profiler.open': {
+        handler: function(_new, _old) {
+          if (_new) {
+            if (this.session.page.profiler.type == 'new') {
+              console.log('making new profile');
+              // this.boo = _.cloneDeep(this.session.auth.boo);
+              // this.boo.id = undefined;//new Date().getTime();
+              // this.boo.nick = '';
+              // this.boo.text = '';
+              // this.boo.profile.pix = undefined;
+              // this.boo.followees_id = [];
+              // this.boo.nfollowers = 0;
+              // this.boo.nposts = 0;
+              // this.boo.voting_record = {};
+              // this.boo.posts = undefined;
 
-          } else {
-            this.boo = _.cloneDeep(this.session.auth.boo);
+              this.boo = {
+                id: undefined,
+                nick: '',
+                text: '',
+                profile: { id: undefined, pix: undefined },
+                followees_id: [],
+                nfollowers: 0,
+                nposts: 0,
+                voting_record: {},
+                posts: undefined,
+                // fashiontems: [],
+                // styletags: [],
+
+                genderlabels: [],
+                agelabels: [],
+                bodylabels: [],
+                stylelabels: [],
+                itemlabels: [],
+
+                fit: {},
+                ilikes_comment: []
+              }
+
+            } else {
+              console.log(1234)
+              this.boo = _.cloneDeep(this.session.auth.boo);
+            }
           }
-        }
+        }, immediate: true
       }
     },
 
     methods: {
       edit_boo_text: function() {
-        this.session.open_texteditor(this.boo.text, '소개', txt_done => {
+        this.session.open_texteditor(this.boo.text, '설명을 입력해주세요', 3, txt_done => {
           this.boo.text = txt_done;
         });
       },
 
       edit_boo_nick: function() {
-        this.session.open_texteditor(this.boo.nick, '부캐이름', txt_done => {
+        this.session.open_texteditor(this.boo.nick, '이름', 1, txt_done => {
           this.boo.nick = txt_done;
         });
       },
@@ -268,6 +418,35 @@
         }
       },
 
+      labels_to_update: function(what) {
+        const labels = {};
+        let add, remove;
+
+        if (this.making_new) {
+          add = this.boo[what];
+          remove = []
+
+        } else {
+          add = _.difference(this.boo[what], this.session.auth.boo[what]);
+          remove = _.difference(this.session.auth.boo[what], this.boo[what]);
+        }
+
+        // 빈 배열인지 확인해야한다
+        if (add.length > 0) {
+          labels.add = add;
+        }
+
+        if (remove.length > 0) {
+          labels.remove = remove;
+        }
+
+        return labels
+      },
+
+      _is_not_empty_obj: function(obj) {
+        return Object.keys(obj).length > 0
+      },
+
       action_done: function() {
         if (this.boo.nick == '') {
           alert('부캐이름은 반드시 입력해주세요');
@@ -279,58 +458,55 @@
           return;
         }
 
-        const formdata = new FormData();
-        const styletags_to_update = this.tags_to_update('styletags');
-        const fashiontems_to_update = this.tags_to_update('fashiontems');
         let n_updates = 0;
+        const formdata = new FormData();
+        // const styletags_to_update = this.tags_to_update('styletags');
+        // const fashiontems_to_update = this.tags_to_update('fashiontems');
+
+        const labels = {};
+        const genderlabels = this.labels_to_update('genderlabels');
+        const agelabels = this.labels_to_update('agelabels');
+        const bodylabels = this.labels_to_update('bodylabels');
+        const stylelabels = this.labels_to_update('stylelabels');
+        const itemlabels = this.labels_to_update('itemlabels');
+
+        if (this._is_not_empty_obj(genderlabels)) {
+          labels.genderlabels = genderlabels
+        }
+
+        if (this._is_not_empty_obj(agelabels)) {
+          labels.agelabels = agelabels
+        }
+
+        if (this._is_not_empty_obj(bodylabels)) {
+          labels.bodylabels = bodylabels
+        }
+
+        if (this._is_not_empty_obj(stylelabels)) {
+          labels.stylelabels = stylelabels
+        }
+
+        if (this._is_not_empty_obj(itemlabels)) {
+          labels.itemlabels = itemlabels
+        }
+
+        if (this._is_not_empty_obj(labels)) {
+          formdata.append('labels', JSON.stringify(labels));
+          n_updates += 1;
+        }
 
         if ((this.making_new && this.boo.nick!='') || (!this.making_new && this.boo.nick!=this.session.auth.boo.nick)) {
           formdata.append('boo_nick', this.boo.nick);
           n_updates += 1;
         }
 
-        // if (this.boo.nick != this.session.auth.boo.nick) {
-        //   formdata.append('boo_nick', this.boo.nick);
-        //   n_updates += 1;
-        // }
-
         if ((this.making_new && this.boo.text!='') || (!this.making_new && this.boo.text!=this.session.auth.boo.text)) {
           formdata.append('boo_text', this.boo.text);
           n_updates += 1;
         }
 
-        // if (this.boo.text != this.session.auth.boo.text) {
-        //   formdata.append('boo_text', this.boo.text);
-        //   n_updates += 1;
-        // }
-
         if ((this.making_new && this.boo.profile.pix) || (!this.making_new && this.boo.profile.pix!=this.session.auth.boo.profile.pix)) {
           formdata.append('profilepix', this.boo.profile.pixblob);
-          n_updates += 1;
-        }
-
-        // if (this.boo.profile.pix != this.session.auth.boo.profile.pix) {
-        //   formdata.append('profilepix', this.boo.profile.pixblob);
-        //   n_updates += 1;
-        // }
-
-        if (styletags_to_update.add.length) {
-          formdata.append('styletags_to_add', JSON.stringify(styletags_to_update.add));
-          n_updates += 1;
-        }
-
-        if (styletags_to_update.remove.length) {
-          formdata.append('styletags_to_remove', JSON.stringify(styletags_to_update.remove));
-          n_updates += 1;
-        }
-
-        if (fashiontems_to_update.add.length) {
-          formdata.append('fashiontems_to_add', JSON.stringify(fashiontems_to_update.add));
-          n_updates += 1;
-        }
-
-        if (fashiontems_to_update.remove.length) {
-          formdata.append('fashiontems_to_remove', JSON.stringify(fashiontems_to_update.remove));
           n_updates += 1;
         }
 
@@ -348,20 +524,18 @@
       },
 
       boo_create: function(formdata) {
-        // const boo_id = this.boo.id;
-        // this.boo.id = undefined;
-
         this.on_creating = true;
+        formdata.append('on_creating', true);
 
-        fetch('boo/create/', { method: 'POST', body: formdata })
+        fetch('/boo/save/', { method: 'POST', body: formdata })
           .then(res => res.json())
           .then(js => {
             console.log(js);
             this.on_creating = false;
             this.boo.id = js.boo_id;
-            this.$set(this.boo, 'posts', new Booposts(this.boo));
-            this.session.auth.boos[this.boo.id] = this.boo;
-            this.session.auth.boo = this.boo.id;
+            // this.$set(this.boo, 'posts', new Booposts(this.boo));
+            this.session._auth.boos[this.boo.id] = this.boo;
+            this.session._auth.boo = this.boo.id;
             this.session.close_page();
           });
       },
@@ -370,14 +544,14 @@
         const boo_id = this.boo.id;
         this.boo.id = undefined;
 
-        fetch('boo/update/', { method: 'POST', body: formdata })
+        fetch('/boo/save/', { method: 'POST', body: formdata })
           .then(res => res.json())
           .then(js => {
             console.log(js);
             this.boo.id = boo_id;
           });
 
-        this.session.auth.boos[boo_id] = this.boo;
+        this.session._auth.boos[boo_id] = this.boo;
         this.session.close_page();
       },
 
@@ -397,19 +571,44 @@
           const idx = my.indexOf(k);
 
           if (idx !== -1) {
-            // this._fetch(`/styletags/untag/${k}`);
             my.splice(idx, 1);
           }
 
         } else {
-          // this._fetch(`/styletags/tag/${k}`);
           my.push(k);
         }
       },
 
-      _fetch: function(url) {
-        fetch(url).then(x => x.json()).then(console.log);
+      toggle_select_exclusive: function(key, my) {
+        const k = Number(key);
+
+        if (my.includes(k)) {
+          const idx = my.indexOf(k);
+
+          if (idx !== -1) {
+            my.splice(idx, 1);
+          }
+
+        } else {
+          my.length = 0;
+          my.push(k);
+        }
       },
+
+      toggle_more: function(what) {
+        const target = 'more_' + what + 'labels';
+        this[target] = !this[target];
+        // what = !what;
+      },
+
+      more_display: function(what) {
+        const target = 'more_' + what + 'labels';
+        return this[target] ? "덜보기" : "더보기"
+      },
+
+      // _fetch: function(url) {
+      //   fetch(url).then(x => x.json()).then(console.log);
+      // },
 
       load_pixeditor: function() {
         if (this.$refs) {
@@ -438,6 +637,26 @@
         this.boo.profile.pix = URL.createObjectURL(blob);
         this.boo.profile.pixblob = blob;
       },
+
+
+      delboo: function() {
+        this.session.open_bridge('delboo_guide', 'top', () => {
+          const boos = this.session.auth.boos;
+          const cboo_id = this.session.auth.boo_selected;
+
+          fetch('/boo/profile/delete/')
+            .then(x => x.json())
+            .then(j => { console.log(j) });
+
+          const _boo_id = Object.keys(boos)
+            .filter(x => x !== String(cboo_id) )
+            .sort((a,b) => Number(b) - Number(a) )[0];
+
+          this.session.auth.boo = Number(_boo_id);
+          this.session.close_page();
+          this.$delete(boos, cboo_id);
+        });
+      },
     },
 
 
@@ -454,20 +673,73 @@
         return this.boo.nick
       },
 
-      mytags: function() {
-        return this.boo.styletags
+      // mytags: function() {
+      //   return this.boo.styletags
+      // },
+      //
+      // myitems: function() {
+      //   return this.boo.fashiontems
+      // },
+      //
+      // styletags: function() {
+      //   return this.session.styletags
+      // },
+      //
+      // fashiontems: function() {
+      //   return this.session.fashiontems
+      // },
+
+
+      my_genderlabels: function() {
+        return this.boo.genderlabels
       },
 
-      myitems: function() {
-        return this.boo.fashiontems
+      my_agelabels: function() {
+        return this.boo.agelabels
       },
 
-      styletags: function() {
-        return this.session.styletags
+      my_bodylabels: function() {
+        return this.boo.bodylabels
       },
 
-      fashiontems: function() {
-        return this.session.fashiontems
+      my_stylelabels: function() {
+        return this.boo.stylelabels
+      },
+
+      my_itemlabels: function() {
+        return this.boo.itemlabels
+      },
+
+      genderlabels: function() {
+        return this.session.labels.gender
+      },
+
+      agelabels: function() {
+        return this.session.labels.age
+      },
+
+      bodylabels: function() {
+        return this.session.labels.body.slice(0, 4)
+      },
+
+      bodylabels_more: function() {
+        return this.session.labels.body.slice(4)
+      },
+
+      stylelabels: function() {
+        return this.session.labels.style.slice(0, 4)
+      },
+
+      stylelabels_more: function() {
+        return this.session.labels.style.slice(4)
+      },
+
+      itemlabels: function() {
+        return this.session.labels.item.slice(0, 4)
+      },
+
+      itemlabels_more: function() {
+        return this.session.labels.item.slice(4)
       },
 
       making_new: function() {
@@ -476,6 +748,10 @@
 
       loader_width: function() {
         return document.querySelector('#window').clientWidth
+      },
+
+      deletable: function() {
+        return (this.session.page.profiler.type!="new") && (Object.keys(this.session._auth.boos).length>1)
       }
     }
   });

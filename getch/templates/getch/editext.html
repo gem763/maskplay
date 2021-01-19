@@ -32,9 +32,14 @@
 
   .editext.in-post.vcomp > span.header {
     color: black;
-    font-weight: bold;
+    /* font-weight: bold; */
     /* line-height: calc(var(--width-unit)*6); */
     line-height: var(--w-4);
+  }
+
+  .editext.in-post.vcomp > span.date {
+    color: lightgray;
+    margin-left: 5px;
   }
 
   .editext.in-post.vcomp > span.text[contenteditable=true]:focus {
@@ -66,16 +71,23 @@
     font-size: 20px;
     line-height: 1.3;
   }
+
+  .editext.vcomp > .text > span.text-more {
+    color: lightgray;
+    margin-left: 5px;
+  }
 </style>
 
 
 <script type='text/x-template' id='editext-template'>
   <div class='editext vcomp' :class='type'>
     <template v-if='header'>
-      <span class='header'>[[ header ]]</span><br>
+      <span class='header'><b>[[ header ]]</b></span>
+      <span class='date' v-if='date'>[[ date ]]</span>
+      <br>
     </template>
 
-    <span class='text' v-if='freeze'>[[ rawtext_display ]]</span>
+    <div class='text' v-if='freeze'>[[ rawtext_display ]]<span class='text-more' v-if='has_more'>더보기</span></div>
     <span class='text' v-else v-show='text || editable' :contenteditable='editable' spellcheck='false' :placeholder='placeholder' @input='change_text'></span>
   </div>
 </script>
@@ -84,11 +96,12 @@
   Vue.component('editext', {
     template: '#editext-template',
     delimiters: ['[[', ']]'],
-    props: ['rawtext', 'header', 'editable', 'placeholder', 'type', 'freeze', 'squeeze'],
+    props: ['rawtext', 'header', 'date', 'editable', 'placeholder', 'type', 'freeze', 'squeeze'],
     data: function() {
       return {
         text: (this.rawtext ? this.rawtext : ''),
-        changed: false
+        changed: false,
+        has_more: false
       }
     },
 
@@ -100,7 +113,29 @@
 
     computed: {
       rawtext_display: function() {
-        return (this.squeeze && this.rawtext && this.rawtext.length>15) ? this.rawtext.slice(0,15)+'...' : this.rawtext
+        if (this.squeeze && this.rawtext) {
+          this.has_more = true;
+          const lines = this.rawtext.slice(0,40).split('\n');
+          // console.log(lines)
+
+          if (lines.length==1) {
+            return lines[0].replace(/\s+$/, '') + '  ..'// 더보기'
+
+          } else {
+            const line1 = lines[0].replace(/\s+$/, '');
+            const line2 = lines[1].replace(/\s+$/, '');
+
+            return line1 + (line2.length==0 ? '' : '\n' + line2) + '  ..'// 더보기'
+          }
+
+        } else {
+          this.has_more = false;
+          return this.rawtext
+        }
+
+
+        // return (this.squeeze && this.rawtext) ? this.rawtext.slice(0,15).split('\n')[0] + '...' : this.rawtext
+        // return (this.squeeze && this.rawtext && this.rawtext.length>15) ? this.rawtext.slice(0,15).split('\n')[0] + '...' : this.rawtext
       }
     },
 

@@ -1,5 +1,10 @@
 <script type='text/x-template' id='posts-template'>
-  <page2 class='posts vcomp' :open='session.page.posts.open' :hide_close='true' :trans_headerbar='true'>
+  <page2
+    class='posts vcomp'
+    :onloading='onloading'
+    :open='session.page.posts.open'
+    :hide_close='true'
+    :trans_headerbar='true'>
 
     <template #headerbar-menu>
       <div class='item' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
@@ -28,6 +33,12 @@
     },
 
     computed: {
+      onloading: function() {
+        if (this.cpost) {
+          return !this.cpost.id
+        }
+      },
+
       cpost: function() {
         if (this.session.page.posts.swiper && this.postlist) {
           return this.postlist[this.session.page.posts.swiper.realIndex]
@@ -52,7 +63,7 @@
             }
           });
         }
-        // this.session.page.comments.post = this.session.page.posts.contents.list[0]
+
         return this.session.page.posts.contents.list
       }
     }

@@ -60,7 +60,7 @@
   }
 
   .loginpage.vcomp > .section.top > .sub > .action {
-    width: 35%;
+    width: var(--w-40);
     padding: 10px;
     box-sizing: border-box;
     text-align: center;
@@ -75,6 +75,18 @@
 
   .loginpage.vcomp > .section.top > .sub > .action.login-google {
     background: black;
+    margin-bottom: var(--w-12);
+  }
+
+  .loginpage.vcomp > .section.top > .sub > .action.login-kakao {
+    background: #FFE810;
+    margin-bottom: 10px;
+    /* margin-bottom: var(--w-12); */
+    color: black;
+  }
+
+  .loginpage.vcomp > .section.top > .sub > .action.login-naver {
+    background: #04C75A;
     margin-bottom: var(--w-12);
   }
 
@@ -118,7 +130,7 @@
 
   .loginpage.vcomp > .section.bottom > .tail {
     position: absolute;
-    bottom: calc(var(--w-12) + 10px);
+    bottom: calc(var(--w-16) + 10px);
     width: 100%;
     left: 0;
     background: none;
@@ -139,15 +151,18 @@
   <page :open='session.page.loginpage.open' :from='session.page.loginpage.from' @close='session.close_page()'>
     <div class='loginpage vcomp'>
       <div class='section top'>
-        <div class='title'>가입하고 솔직한 패션 조언을 얻으세요.</div>
+        <!-- <div class='title'>가입하고 솔직한 패션 조언을 얻으세요.</div> -->
         <div class='sub'>
+          <p>가입하고 솔직한 패션 조언을 얻으세요.</p>
           <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 로그인</div>
-          <div class='action login-google' @click='action_login_google'>구글로 로그인</div>
+          <!-- <div class='action login-google' @click='action_login_google'>구글로 로그인</div> -->
+          <div class='action login-kakao' @click='action_login_kakao'>카카오로 로그인</div>
+          <div class='action login-naver' @click='action_login_naver'>네이버로 로그인</div>
         </div>
         <span class='login-alert'>약관에 동의하고 로그인합니다.</span>
       </div>
 
-      <div class='section bottom'>
+      <div class='section bottom' ref='login_frame'>
         <div class='sub'>
           <div class='action register' @click='action_register'>가입하기</div>
           <img class='logo' src='/static/materials/logos/moiber-logo.png'>
@@ -155,8 +170,8 @@
 
         <div class='tail'>
           <span class='item' @click='corporate'>소개</span>
-          <!-- <span class='item' @click='recruit'>채용</span> -->
-          <span class='item' @click='help'>도움말</span>
+          <span class='item' @click='recruit'>채용</span>
+          <!-- <span class='item' @click='help'>도움말</span> -->
           <span class='item' @click='policy'>약관</span>
           <span class='item' @click='privacy'>개인정보보호</span>
           <span class='item' @click='contact'>컨텍트</span>
@@ -177,7 +192,9 @@
     data: function() {
       return {
         facebook_login_url: "{% provider_login_url 'facebook' method='oauth2' %}",
-        google_login_url: "{% provider_login_url 'google' method='oauth2' %}"
+        google_login_url: "{% provider_login_url 'google' method='oauth2' %}",
+        kakao_login_url: "{% provider_login_url 'kakao' method='oauth2' %}",
+        naver_login_url: "{% provider_login_url 'naver' method='oauth2' %}"
       }
     },
 
@@ -187,7 +204,19 @@
       },
 
       action_login_google: function() {
+        // this.session.open_bridge('browser_guide', 'top');
+        // return
         window.location.assign(this.google_login_url);
+      },
+
+      action_login_kakao: function() {
+        window.location.assign(this.kakao_login_url);
+        // var win = window.open(this.kakao_login_url, "PopupWin", "width=500,height=600");
+        // this.$refs.login_frame.innerHTML = `<iframe src=${this.kakao_login_url} width="100%" height="100%" border="0"></iframe>`;
+      },
+
+      action_login_naver: function() {
+        window.location.assign(this.naver_login_url);
       },
 
       action_register: function() {
@@ -195,11 +224,11 @@
       },
 
       corporate: function() {
-        alert('모이버 소개');
+        this.session.open_company('who');
       },
 
       recruit: function() {
-        alert('채용');
+        this.session.open_company('recruit');
       },
 
       help: function() {

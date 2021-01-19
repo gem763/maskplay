@@ -3,6 +3,17 @@
 
 {% load static %}
 <head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VR4NJXTXV4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-VR4NJXTXV4');
+  </script>
+
+
   <title>MOIBER</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
@@ -22,8 +33,10 @@
   <style>
     :root {
       --color-pos: rgb(241,20,15);
-      --color-neg: rgb(22,187,204);
+      /* --color-neg: rgb(22,187,204); */
+      --color-neg: #0095F6;
       --color-dark: #302E2F;
+      --color-inactive: #CBCAC9;
       --s-menu: 50px;
 
       /* --width: min(100vw, calc(100vh * 9 / 16)); */
@@ -37,19 +50,26 @@
       --w-4: calc(var(--width-unit) * 4);
       --w-5: calc(var(--width-unit) * 5);
       --w-6: calc(var(--width-unit) * 6);
+      --w-7: calc(var(--width-unit) * 7);
       --w-8: calc(var(--width-unit) * 8);
+      --w-9: calc(var(--width-unit) * 9);
       --w-10: calc(var(--width-unit) * 10);
       --w-11: calc(var(--width-unit) * 11);
       --w-12: calc(var(--width-unit) * 12);
+      --w-13: calc(var(--width-unit) * 13);
       --w-14: calc(var(--width-unit) * 14);
+      --w-15: calc(var(--width-unit) * 15);
       --w-16: calc(var(--width-unit) * 16);
       --w-18: calc(var(--width-unit) * 18);
       --w-20: calc(var(--width-unit) * 20);
+      --w-21: calc(var(--width-unit) * 21);
       --w-22: calc(var(--width-unit) * 22);
       --w-24: calc(var(--width-unit) * 24);
       --w-25: calc(var(--width-unit) * 25);
+      --w-30: calc(var(--width-unit) * 30);
       --w-32: calc(var(--width-unit) * 32);
       --w-33: calc(var(--width-unit) * 33);
+      --w-40: calc(var(--width-unit) * 40);
       --w-50: calc(var(--width-unit) * 50);
       --w-52: calc(var(--width-unit) * 52);
       --w-60: calc(var(--width-unit) * 60);
@@ -59,13 +79,36 @@
       --w-88: calc(var(--width-unit) * 88);
       --w-90: calc(var(--width-unit) * 90);
 
-      --t-0: 100vw;
+      /* --t-0: 100vw;
       --t-1: calc(var(--t-0) * 352 / 572);
       --t-2: calc(var(--t-0) * 220 / 572);
       --t-3: calc(var(--t-0) * 132 / 572);
-      --t-4: calc(var(--t-0) / 4);
+      --t-4: calc(var(--t-0) / 4); */
     }
 
+    @font-face {
+      font-family: 'AppleSDGothicNeo';
+      src: url('/static/font/AppleSDGothicNeoR00-01.otf') format('opentype');
+      font-weight: normal;
+    }
+
+    @font-face {
+      font-family: 'AppleSDGothicNeo';
+      src: url('/static/font/AppleSDGothicNeoB00-07.otf') format('opentype');
+      font-weight: bold;
+    }
+
+    @font-face {
+      font-family: 'Equilibrium';
+      src: url('/static/font/Equilibrium.ttf') format('truetype');
+      font-weight: normal;
+    }
+
+    @font-face {
+      font-family: 'Equilibrium';
+      src: url('/static/font/Equilibrium_Bold.ttf') format('truetype');
+      font-weight: bold;
+    }
 
     html, body {
       /* 모바일브라우저 검색바를 고정하기 위함
@@ -76,7 +119,8 @@
     }
 
     * {
-      font-family: 'Noto Sans KR', sans-serif;
+      font-family: 'AppleSDGothicNeo';
+      /* font-family: 'Noto Sans KR', sans-serif; */
     }
 
     #window {
@@ -99,7 +143,7 @@
     <controller :session='session'></controller>
 
     <!-- <modal :pop='true' name='intro'></modal> -->
-    <modal :pop='session.page.posts.contents.list.length==0' name='intro'></modal>
+    <modal :pop='introing' name='intro'></modal>
     <!-- <modal :pop='!session.ready' name='intro'></modal> -->
   </div>
 
@@ -113,7 +157,7 @@
   <script src="/static/hammer/hammer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script>
   <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
-  <script src="https://momentjs.com/downloads/moment.min.js"></script>
+  <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
   <!-- <script src="https://unpkg.com/fast-average-color/dist/index.min.js"></script> post 20200915.html에 테스트 구현 -->
   <script src="https://unpkg.com/@saeris/vue-spinners"></script>
   <!-- 아.. 요건 너무 쓰기 어려워서 포기 <script src="https://unpkg.com/vue-advanced-cropper@latest/dist/index.umd.js"></script> -->
@@ -149,11 +193,32 @@
       el: '#window',
       delimiters: ['[[', ']]'],
       data: {
-        session: undefined
+        session: undefined,
+        req: undefined
       },
 
       created: function() {
         this.session = new Session();
+        this.req = {{req}};
+
+        if (this.req==3) {
+          setTimeout(()=> { this.session.open_company('landing'); }, 100);
+
+        } else if (this.req==1) {
+          setTimeout(()=> { this.session.open_company('who'); }, 100);
+
+        } else if (this.req==2) {
+          setTimeout(()=> { this.session.open_company('recruit'); }, 100);
+        }
+      },
+
+      computed: {
+        introing: function() {
+          // return true
+          if (this.session.page.posts.contents.list.length==0) {
+            return true
+          }
+        }
       }
     });
 
@@ -183,10 +248,9 @@
       });
     });
 
-    sideb.session.anonyboo = {{anonyboo|safe}};
-    sideb.session.stats = {{stats|safe}};
-    sideb.session.styletags = {{styletags|safe}};
-    sideb.session.fashiontems = {{fashiontems|safe}};
+    sideb.session.req = {{req}};
+    sideb.session.labels = {{labels|safe}};
+    sideb.session.utype = '{{utype|safe}}';
   </script>
 
 </body>

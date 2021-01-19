@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.naver',
     'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.kakao',
     'custom_user',
     'rest_framework',
     'django_extensions',
@@ -86,6 +87,7 @@ INTERNAL_IPS = ('127.0.0.1')
 #1331691227003429:eedf26d0e0df7b15784591d5eeabf513f:test
 #Q60jbPX1POJFmqb0dgGl:5RnWiWQnmln
 #671339125678-c9in180buoiu79t797tppifmm8qk24ja.apps.googleusercontent.com:JPgwwfpI5lnlC4M7IgqFaUpTg
+#126234b4fe871fa3cd5ecabe9cce6001:k
 
 SITEFLAGS_FLAG_MODEL = 'getch.Flager'
 
@@ -127,8 +129,10 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
 LOGIN_REDIRECT_URL = 'play'
-ACCOUNT_LOGOUT_REDIRECT_URL = 'play'
+# SIGNUP_REDIRECT_URL = 'profiler'
+# ACCOUNT_LOGOUT_REDIRECT_URL = 'play'
 ACCOUNT_LOGOUT_ON_GET = True
 
 SITE_ID = 1
@@ -137,6 +141,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+# ACCOUNT_UNIQUE_EMAIL = False
 
 
 

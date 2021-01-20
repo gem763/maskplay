@@ -347,19 +347,45 @@ def profile_delete(request):
 
 def comment_save(request):
     if request.method == 'POST':
-        print(request.POST)
+        print(request.POST, request.FILES)
         post_id = request.POST.get('post_id', None)
         text = request.POST.get('text', None)
         id = request.POST.get('id', None)
+        mention_id = request.POST.get('mention_id', None)
+        attached = request.FILES.get('attached', None)
+        # return
 
-        if text and post_id:
+        # if text and post_id:
+        if post_id:
             if id:
                 comment = m.Comment.objects.get(pk=id)
-                comment.text = text
+
+                if text:
+                    comment.text = text
+
+                if mention_id:
+                    comment.mention = m.Boo.objects.get(id=mention_id)
+
                 comment.save()
 
             else:
-                comment = m.Comment.objects.create(boo=request.user.boo, post_id=post_id, text=text)
+                comment = m.Comment(boo=request.user.boo, post_id=post_id)
+
+                if text:
+                    comment.text = text
+
+                if mention_id:
+                    comment.mention = m.Boo.objects.get(id=mention_id)
+                    # comment = m.Comment.objects.create(boo=request.user.boo, post_id=post_id, text=text, mention_id=mention_id)
+
+                # else:
+                #     comment = m.Comment.objects.create(boo=request.user.boo, post_id=post_id, text=text)
+
+                comment.save()
+
+                if attached:
+                    commentpix = m.Commentpix.objects.create(comment_id=comment.id, img=attached)
+
 
             return JsonResponse({'success':True, 'message':'successfully commented', 'comment_id':comment.id}, safe=False)
 

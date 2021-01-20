@@ -104,3 +104,7 @@ class ItemlabelAdmin(LabelAdmin):
 @admin.register(m.Postpix)
 class PostpixAdmin(admin.ModelAdmin):
     list_display = ['key', 'owner', 'post', 'img', 'desc', 'tokens']
+
+@admin.register(m.Commentpix)
+class CommentpixAdmin(admin.ModelAdmin):
+    list_display = ['comment', 'img']

@@ -585,12 +585,28 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     boo = BasebooSerializer()
+    mention = serializers.SerializerMethodField()
+    attached = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ['id', 'boo', 'text', 'created_at']
+        fields = ['id', 'boo', 'text', 'mention', 'attached', 'created_at']
         read_only_fields = ['id']
 
+    def get_mention(self, obj):
+        if obj.mention:
+            return {'id': obj.mention.id, 'nick': obj.mention.nick}
+
+    def get_attached(self, obj):
+        try:
+            # print(obj.commentpix_set.all())
+            # print(list(ob.commentpix_set.all())[0])
+            return { 'img': obj.commentpix_set.first().img.url }
+            # return obj.commentpix_set.values('img')[0]
+        except:
+            pass
+        # if commentpixes.count() > 0:
+        #     return commentpixes[0]
 
 
 class BoopostVoteOXSerializer(serializers.ModelSerializer):

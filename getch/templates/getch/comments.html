@@ -5,7 +5,8 @@
     font-size: 13px;
   }
 
-  .comments.vcomp .headerbar-body-default {
+  .comments.vcomp .headerbar-body-default,
+  .comments.vcomp .headerbar-body-trans {
     font-size: 17px;
   }
 
@@ -20,6 +21,7 @@
     background: white;
     margin-top: var(--w-16);
     padding-left: var(--w-6);
+    box-sizing: border-box;
   }
 
   .comments.vcomp .page-body > .author-header > .profile {
@@ -101,12 +103,34 @@
     top: 50%;
     right: var(--w-3);
     transform: translateY(-50%);
-    color: red;
+    color: var(--color-inactive);
     display: flex;
     align-items: center;
     justify-content: center;
     height: var(--w-8);
     width: var(--w-8);
+  }
+
+  .comments.vcomp .page-body > .commenter > .attach {
+    /* background: orange; */
+    position: absolute;
+    top: 50%;
+    right: var(--w-12);
+    transform: translateY(-50%);
+    height: var(--w-8);
+    width: var(--w-8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .comments.vcomp .page-body > .commenter > .attach > img {
+    width: 60%;
+    height: auto;
+  }
+
+  .comments.vcomp .page-body > .commenter > .send.sendable {
+    color: red;
   }
 
   .comments.vcomp .page-body > .commenter > .commenter-body {
@@ -120,13 +144,20 @@
     color: red;
   }
 
+  .comments.vcomp .page-body > .commenter > .commenter-body > .mention > .mention-remove {
+    color: var(--color-inactive);
+    font-size: 11px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
   .comments.vcomp .page-body > .commenter > .commenter-body > textarea {
     width: 100%;
-    background: lightpink;
+    /* background: lightpink; */
     border: none;
     box-sizing: border-box;
     padding-left: var(--w-12);
-    padding-right: var(--w-12);
+    padding-right: var(--w-20);
     resize: none;
     /* margin-top: var(--w-2); */
     margin-bottom: var(--w-2);
@@ -134,8 +165,23 @@
     display: block;
   }
 
-  .comments.vcomp .page-body > .commenter > div > textarea:focus {
+  .comments.vcomp .page-body > .commenter > .commenter-body > textarea:focus {
     outline: none;
+  }
+
+  .comments.vcomp .page-body > .commenter > .commenter-body > .attaches {
+    /* background: lightblue; */
+    width: 100%;
+    margin-bottom: var(--w-2);
+    padding-left: var(--w-12);
+  }
+
+  .comments.vcomp .page-body > .commenter > .commenter-body > .attaches > img {
+    height: auto;
+    width: auto;
+    max-height: var(--w-50);
+    max-width: var(--w-50);
+    border-radius: var(--w-2);
   }
 
 
@@ -186,6 +232,26 @@
     white-space: pre-line;
   }
 
+  .comments.vcomp .page-body > .contents > .comment > .attaches {
+    position: relative;
+    padding-left: var(--w-16);
+    margin-right: var(--w-25);
+    background: none;
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .attaches > img {
+    height: auto;
+    width: auto;
+    max-height: var(--w-50);
+    max-width: var(--w-50);
+    border-radius: var(--w-2);
+  }
+
+  .comments.vcomp .page-body > .contents > .comment > .text > .mention {
+    color: red;
+    margin-right: 5px;
+  }
+
   .comments.vcomp .page-body > .contents > .comment > .nick > .when {
     background: none;
     color: var(--color-inactive);
@@ -204,7 +270,7 @@
   }
 
   .comments.vcomp .page-body > .contents > .comment > .text > .reply.action {
-    right: var(--w-13);
+    right: var(--w-16);
     background: none;
   }
 
@@ -271,6 +337,7 @@
             <span class='when'>[[ relative_date(c.created_at) ]]</span>
           </div>
           <div class='text'>
+            <span class='mention' v-if='c.mention'>[[ '@' + c.mention.nick ]]</span>
             <span>[[ c.text ]]</span>
 
             <div class='action reply' @click='reply(c.boo)'><img src='/static/materials/icons/comment.png'></div>
@@ -279,13 +346,17 @@
               <img src='/static/materials/icons/like.png' v-else>
             </div>
           </div>
+
+          <div class='attaches' v-if='c.attached'>
+            <img :src='c.attached.img'>
+          </div>
         </div>
       </div>
 
 
       <div class='commenter' v-if='myboo'>
         <div class='commenter-body'>
-          <div class='mention'>[[ mention ? mention : '' ]]</div>
+          <div class='mention'>[[ mention_at ]]<span v-if='mention' class='mention-remove' @click='remove_mention'>삭제</span></div>
 
           <textarea
             v-model.trim='mycomment'
@@ -297,13 +368,24 @@
             @blur='finish_commenting'
             ref='input'>
           </textarea>
+
+          <div class='attaches' v-if='attached'>
+            <img :src='attached.img'>
+            <span class='attach-remove' @click='remove_attach'>삭제</span>
+          </div>
         </div>
 
         <div class='profile'>
           <img v-if='myboo' :src='myboo.profile.pix'>
         </div>
 
-        <div class='send' @click='save'>전송</div>
+
+        <div class='attach' @click='load_pixeditor'>
+          <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
+          <img src='/static/materials/icons/camera.png'>
+        </div>
+
+        <div class='send' :class=' sendable ? "sendable" : ""' @click='save'>전송</div>
       </div>
     </template>
   </page2>
@@ -318,15 +400,23 @@
     data: function() {
       return {
         mycomment: '',
+        mention: undefined,
         on_commenting: false,
-        mention: undefined
+        attached: undefined,
       }
     },
 
     watch: {
       'session.page.comments.open': function(_new, _old) {
         if (_new) {
+          this.mycomment = '';
+          this.mention = undefined;
+          this.attached = undefined;
           this.fix_window_width();
+
+          this.$nextTick(function() {
+            this.finish_commenting();
+          });
 
           // if (!this.the_post.voters) {
           //   this.$set(this.the_post, 'voters', {
@@ -340,7 +430,8 @@
           }
 
         } else {
-          this.release_window_width();
+          // this.release_window_width();
+          setTimeout(() => { this.release_window_width(); }, 500);
         }
       }
     },
@@ -355,7 +446,7 @@
       },
 
       the_post_date: function() {
-        return this.relative_date(this.the_post)
+        return this.relative_date(this.the_post.created_at)
       },
 
       myboo: function() {
@@ -391,10 +482,32 @@
 
       onloading: function() {
         return this.comments_onloading //|| this.voters_onloading
+      },
+
+      sendable: function() {
+        return (this.mycomment.trim().length > 0) || this.attached!=undefined
+        // return this.on_commenting && ((this.mycomment.trim().length > 0) || this.attached!=undefined)
+      },
+
+      mention_at: function() {
+        if (this.mention) {
+          return '@' + this.mention.nick
+
+        } else {
+          return ''
+        }
       }
     },
 
     methods: {
+      remove_mention: function() {
+        this.mention = undefined;
+      },
+
+      remove_attach: function() {
+        this.attached = undefined;
+      },
+
       texting: function() {
         this.$refs.input.style.height = "auto";
         this.$refs.input.style.height = (this.$refs.input.scrollHeight)+"px";
@@ -414,6 +527,7 @@
       },
 
       finish_commenting: function() {
+        this.texting();
         this.on_commenting = false;
         // setTimeout(() => { this.mycomment = ''; }, 500);
       },
@@ -428,8 +542,9 @@
       },
 
       reply: function(boo) {
-        this.mention = '@ ' + boo.nick;
+        // this.mention = '@' + boo.nick;
         // this.$refs.input.focus();
+        this.mention = boo;
         this.begin_commenting();
       },
 
@@ -460,11 +575,40 @@
           })
       },
 
-      save: function() {
-        if (this.mycomment=='')
-          return
+      load_pixeditor: function() {
+        if (this.$refs) {
+          this.$refs.pixinput.click();
+        }
+      },
 
-        this.finish_commenting();
+      imagize: function(event) {
+        const input = event.target;
+        const self = this;
+
+        if (input.files && input.files[0]) {
+          let reader = new FileReader();
+          reader.onload = function(e) {
+            self.session.open_pixeditor(e.target.result, 'post', self);
+          };
+
+          reader.readAsDataURL(input.files[0]);
+        }
+      },
+
+      set: function(blob) {
+        // this.attached.push(URL.createObjectURL(blob));
+        // this.boo.profile.pixblob = blob;
+        this.attached = {
+          img: URL.createObjectURL(blob),
+          blob: blob
+        };
+
+        this.$refs.input.focus();
+      },
+
+      save: function() {
+        if (!this.sendable)
+          return
 
         let when;
         const formdata = new FormData();
@@ -472,17 +616,33 @@
         formdata.append('post_id', this.the_post.id);
         formdata.append('text', this.mycomment);
 
+        if (this.mention) {
+          formdata.append('mention_id', this.mention.id);
+        }
+
+        if (this.attached) {
+          formdata.append('attached', this.attached.blob);
+        }
+
         when = new Date().toISOString();
 
         const _comment = {
           boo: this.myboo,
           id: undefined,
           text: this.mycomment,
+          mention: this.mention,
+          attached: this.attached,
           created_at: when
         };
 
         this.the_post.comments.list.push(_comment);
         this.mycomment = '';
+        this.mention = undefined;
+        this.attached = undefined;
+
+        this.$nextTick(function() {
+          this.finish_commenting();
+        });
 
         fetch('/comment/save/', { method: 'POST', body: formdata })
           .then(res => res.json())

@@ -17,6 +17,75 @@
   .baseposts.vcomp > .swiper-container > .swiper-wrapper {
     z-index: 0;
   }
+
+  .baseposts.vcomp > .remocon {
+    position: absolute;
+    top: 50%;
+    right: var(--w-3);
+    width: var(--w-16);
+    border-radius: var(--w-8);
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 11px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+
+  .baseposts.vcomp > .remocon > .menu {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .baseposts.vcomp > .remocon > .comments.menu,
+  .baseposts.vcomp > .remocon > .voters.menu,
+  .baseposts.vcomp > .remocon > .like.menu {
+    height: var(--w-16);
+  }
+
+  /* .baseposts.vcomp > .remocon > .voters.menu {
+    height: var(--w-16);
+  } */
+
+  .baseposts.vcomp > .remocon > .upward.menu,
+  .baseposts.vcomp > .remocon > .downward.menu {
+    height: var(--w-8);
+  }
+
+  .baseposts.vcomp > .remocon > .edge.menu {
+    height: var(--w-4);
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .icon {
+    width: 100%;
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .count {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .title {
+    width: 100%;
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .icon > img {
+    width: var(--w-5);
+    height: var(--w-5);
+    object-fit: contain;
+  }
+
+  .baseposts.vcomp > .remocon > .upward.menu > .item > .icon > img {
+    transform: rotate(270deg) translateX(var(--w-2));
+  }
+
+  .baseposts.vcomp > .remocon > .downward.menu > .item > .icon > img {
+    transform: rotate(90deg) translateX(var(--w-2));
+  }
 </style>
 
 
@@ -28,7 +97,51 @@
       </swiper-slide>
     </swiper>
 
-    <!-- <bar-loader class='spinner' :loading='!cpost_id' :width='loader_width' :height='1' color="#D0021B"></bar-loader> -->
+    <div class='remocon'>
+      <div class='menu edge'></div>
+
+
+      <div class='menu upward' v-if='!is_beginning' @click='goto_prev'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+        </div>
+      </div>
+
+      <div class='menu comments' @click='session.open_comments(cpost)'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/comment.png'></div>
+          <div class='count'><b>[[ncomments]]</b></div>
+          <div class='title'>댓글</div>
+        </div>
+      </div>
+
+      <div class='menu like' v-if='is_postqa' @click='like'>
+        <div class='item'>
+          <div class='icon'>
+            <img src='/static/materials/icons/like_filled.png' v-if='onlike'>
+            <img src='/static/materials/icons/like.png' v-else>
+          </div>
+          <div class='count'><b>[[nvotes]]</b></div>
+          <div class='title'>좋아요</div>
+        </div>
+      </div>
+
+      <div class='menu voters' v-else @click='show_voters'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/voters.png'></div>
+          <div class='count'><b>[[nvotes]]</b></div>
+          <div class='title'>투표자</div>
+        </div>
+      </div>
+
+      <div class='menu downward' v-if='!is_end' @click='goto_next'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+        </div>
+      </div>
+
+      <div class='menu edge'></div>
+    </div>
   </div>
 </script>
 
@@ -70,6 +183,42 @@
       // loader_width: function() {
       //   return document.querySelector('#window').clientWidth
       // }
+
+      is_beginning: function() {
+        if (this.swiper) {
+          return this.swiper.isBeginning
+        }
+      },
+
+      is_end: function() {
+        if (this.swiper) {
+          return this.swiper.isEnd
+        }
+      },
+
+      is_postqa: function() {
+        if (this.cpost) {
+          return this.cpost.type == 'postqa'
+        }
+      },
+
+      ncomments: function() {
+        if (this.cpost) {
+          return this.cpost.ncomments
+        }
+      },
+
+      nvotes: function() {
+        if (this.cpost) {
+          return (this.cpost.nvotes_up ? this.cpost.nvotes_up : 0) + (this.cpost.nvotes_down ? this.cpost.nvotes_down : 0)
+        }
+      },
+
+      onlike: function() {
+        if (this.session.auth && this.cpost) {
+          return this.session.auth.has_voted_as(this.cpost.id) == 0
+        }
+      }
     },
 
 
@@ -95,6 +244,56 @@
     },
 
     methods: {
+      like: function() {
+        if (!this.cpost) {
+          return
+        }
+
+        if (this.session.auth) {
+          if (this.onlike) {
+            this.cpost.nvotes_up -= 1;
+            this.session.auth.vote(this.cpost.id, -1);
+
+          } else {
+            this.cpost.nvotes_up += 1;
+            this.session.auth.vote(this.cpost.id, 0);
+          }
+
+        } else if (this.session._auth) {
+          this.session.open_profiler('new');
+
+        } else {
+          this.session.open_bridge('login_guide_for_mypage', 'bottom');
+        }
+      },
+
+      show_voters: function() {
+        if (!this.cpost) {
+          return
+        }
+
+        if (!this.cpost.voters) {
+          this.$set(this.cpost, 'voters', {
+            0: new Voters(this.cpost, 0),
+            1: new Voters(this.cpost, 1),
+          });
+        }
+
+        this.session.open_network(this.cpost.voters[0]);
+      },
+
+      goto_prev: function() {
+        if (this.swiper) {
+          this.swiper.slidePrev();
+        }
+      },
+
+      goto_next: function() {
+        if (this.swiper) {
+          this.swiper.slideNext();
+        }
+      },
+
       report_this_post: function() {
         window.open('mailto:contact@moiber.com');
       },

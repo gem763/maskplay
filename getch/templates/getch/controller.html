@@ -38,7 +38,7 @@
   .controller.vcomp > ._oi {
     left: calc(var(--width-unit) * 29.5);
     transform: translate(-50%,-50%);
-    opacity: 0.1;
+    /* opacity: 0.1; */
   }
 
   .controller.vcomp > ._b {
@@ -49,7 +49,7 @@
   .controller.vcomp > ._e {
     right: calc(var(--width-unit) * 29.5);
     transform: translate(50%,-50%);
-    opacity: 0.1;
+    /* opacity: 0.1; */
   }
 
   .controller.vcomp > ._r {
@@ -83,27 +83,27 @@
 <script type='text/x-template' id='controller-template'>
   <div class='controller vcomp' :class='controller_class'>
     <div class='_m btn' @click='open_navigator'>
-      <img src='/static/materials/icons/button_m.png'>
+      <img src='/static/materials/icons/m.png'>
       <span class='title'>모아보기</span>
     </div>
 
     <div class='_oi btn'>
-      <img src='/static/materials/icons/button_oi.png'>
+      <img src='/static/materials/icons/oi.png'>
     </div>
 
     <div class='_b btn' @click='open_mypage'>
-      <img src='/static/materials/icons/button_b_profile.png'>
+      <img src='/static/materials/icons/b.png'>
       <span class='title'>내 페이지</span>
     </div>
 
     <div class='_e btn'>
-      <img src='/static/materials/icons/button_e.png'>
+      <img src='/static/materials/icons/e.png'>
     </div>
 
     <!-- <div class='_r btn' @click='session.open_posting()'> -->
     <!-- <div class='_r btn' @click='session.open_posting_guide()'> -->
     <div class='_r btn' @click='open_posting_guide'>
-      <img src='/static/materials/icons/button_r.png'>
+      <img src='/static/materials/icons/r.png'>
       <span class='title'>새 피드</span>
     </div>
   </div>

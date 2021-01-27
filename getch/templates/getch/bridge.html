@@ -143,7 +143,134 @@
     transform: rotate(180deg);
   }
 
-  .bridge.vcomp .page-body > .section.bottom > .postypes {
+
+  .bridge.vcomp .page-body > .section > table.type-selector {
+    position: absolute;
+    bottom: var(--w-16);
+    left: var(--w-4);
+    width: calc(100% - var(--w-4)*2);
+    height: 50%;
+    background: none;
+    border-collapse: collapse;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector > tbody > tr > td {
+    width: calc(100% / 3);
+    height: 100%;
+    padding: var(--w-2);
+    box-sizing: border-box;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+    box-shadow: 0 0 10px var(--color-inactive);
+    border-radius: var(--w-2);
+    overflow: hidden;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > .motiv {
+    width: 100%;
+    height: 35%;
+    background: none;
+    padding-top: 20%;
+    box-sizing: border-box;
+    text-align: center;
+    /* color: var(--color-inactive); */
+    font-size: 11px;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons {
+    position: relative;
+    width: 100%;
+    height: 60%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table {
+    position: relative;
+    border-collapse: collapse;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > table {
+    height: 100%;
+    width: 100%
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table {
+    height: 35%;
+    width: 80%;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postqa > .icons > table {
+    height: 40%;
+    width: 80%;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table td {
+    width: 50%;
+    height: 50%;
+    position: relative;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table td:first-child {
+    border-right: 1px solid var(--color-inactive);
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table td > img {
+    position: absolute;
+    object-fit: contain;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > table tr:first-child > td > img {
+    bottom: 10%;
+    left: 50%;
+    width: 100%;
+    height: 60%;
+    transform: translateX(-50%);
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > table tr:last-child > td > img {
+    top: 10%;
+    left: 50%;
+    width: 100%;
+    height: 60%;
+    transform: translateX(-50%);
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table td:first-child > img {
+    top: 50%;
+    right: 10%;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-50%);
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table td:last-child > img {
+    top: 50%;
+    left: 10%;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-50%);
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postqa > .icons > table td > img {
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+  }
+
+
+  /* .bridge.vcomp .page-body > .section.bottom > .postypes {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,16 +288,12 @@
 
   .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table {
     border-collapse: collapse;
-    /* height: var(--w-24);
-    width: var(--w-24); */
-    /* background: lightpink; */
   }
 
   .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td {
     border: 1px solid var(--color-dark);
     height: var(--w-12);
     width: var(--w-12);
-    /* box-sizing: border-box; */
   }
 
   .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td.borderless {
@@ -181,13 +304,13 @@
     width: 70%;
     height: 70%;
     vertical-align: middle;
-  }
+  } */
 
   .bridge.vcomp.posting_guide .page-body > .section.bottom > span.title {
     position: absolute;
     bottom: calc(50% + var(--w-16));
     left: 50%;
-    font-size: 12px;
+    font-size: 16px;
     transform: translate(-50%, 0);
   }
 
@@ -312,39 +435,54 @@
         <div class='section top' @click='session.close_page()'></div>
 
         <div class='section bottom'>
-          <span class='title'>새 글 등록</span>
+          <span class='title'><b>새 피드 등록</b></span>
 
-          <div class='postypes'>
-            <div class='postype' @click='session.open_newpost("postvoteab")'>
-              <table>
-                <tbody>
-                  <tr>
-                    <td><img src='/static/materials/icons/moiber_letter_a.png'></td>
-                    <td class='borderless'></td>
-                  </tr>
-                  <tr>
-                    <td><img src='/static/materials/icons/moiber_letter_b.png'></td>
-                    <td class='borderless'><img src='/static/materials/icons/button_r.png'></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div class='postype' @click='session.open_newpost("postvoteox")'>
-              <table>
-                <tbody>
-                  <tr>
-                    <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
-                    <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
-                  </tr>
-                  <tr>
-                    <td class='borderless'></td>
-                    <td class='borderless'><img src='/static/materials/icons/button_r.png'></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <table class='type-selector'>
+            <tbody>
+              <tr>
+                <td>
+                  <div class='postype postvoteab' @click='session.open_newpost("postvoteab")'>
+                    <div class='motiv'>둘 중에서 고민이라면?</div>
+                    <div class='icons'>
+                      <table>
+                        <tbody>
+                          <tr><td><img src='/static/materials/icons/moiber_letter_a.png'></td></tr>
+                          <tr><td><img src='/static/materials/icons/moiber_letter_b.png'></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class='postype postvoteox' @click='session.open_newpost("postvoteox")'>
+                    <div class='motiv'>이거 살까? 말까?<br>고민이라면?</div>
+                    <div class='icons'>
+                      <table>
+                        <tbody>
+                          <tr>
+                            <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
+                            <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class='postype postqa' @click='session.open_newpost("postqa")'>
+                    <div class='motiv'>이거 뭐야?<br>정보 공유하고 싶다면?</div>
+                    <div class='icons'>
+                      <table>
+                        <tbody>
+                          <tr><td><img src='/static/materials/icons/qa.png'></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
         </div>
       </template>

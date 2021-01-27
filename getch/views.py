@@ -72,31 +72,22 @@ def play(request):
 def company(request):
     context['req'] = 1
     return load(request, context)
-    # ctx = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':1}
-    # return render(request, 'getch/play.html', ctx)
 
 def company_recruit(request):
     context['req'] = 2
     return load(request, context)
-    # ctx = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':2}
-    # return render(request, 'getch/play.html', ctx)
 
 def landing(request):
     context['req'] = 3
     return load(request, context)
-    # ctx = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':3}
-    # return render(request, 'getch/play.html', ctx)
-
-# def profiler(request):
-#     return JsonResponse({'test':'kkkkkkkkkkkkkkkkkkkkkk'}, safe=False)
-#     # ctx = {'stats':stats, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':4}
-#     # return render(request, 'getch/play.html', ctx)
 
 def testbed(request):
     context['req'] = 5
     return load(request, context)
-    # ctx = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':5}
-    # return render(request, 'getch/play.html', ctx)
+
+def testfeed(request):
+    context['req'] = 6
+    return load(request, context)
 
 # def memb(request):
 #     ctx = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':6}
@@ -113,6 +104,7 @@ def get_user(request):
 def get_iposts(request, type):
     if type == 'history':
         _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED).order_by('-created_at').values_list('id', flat=True)
+        # print(_iposts)
         # _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
 
     elif type == 'hot':

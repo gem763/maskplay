@@ -85,6 +85,9 @@
         if (_new) {
           if (this.session.page.texteditor.basetext) {
             this.texted = this.session.page.texteditor.basetext;
+
+          } else {
+            this.texted = '';
           }
 
           if (this.$refs) {

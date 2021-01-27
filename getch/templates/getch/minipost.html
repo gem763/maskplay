@@ -5,13 +5,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    transition: all 2s;
+    /* opacity: 1; */
+    /* transition: all 2s; */
   }
 
-  .minipost.vcomp.active {
+  /* .minipost.vcomp.active {
     opacity: 1;
-  }
+  } */
 
   .minipost.vcomp > .postbody {
     border-collapse: collapse;
@@ -33,65 +33,30 @@
     left: 0;
     width: 100%;
     height: 100%;
+    opacity: 0;
     object-fit: cover;
-  }
-
-  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard {
-    position: relative;
-    background: none;
-    border-collapse: collapse;
-    width: 100%;
-    height: 35%;
-  }
-
-  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard td {
-    position: relative;
-    width: 50%;
-    height: 100%;
-    text-align: center;
-  }
-
-  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard td:first-child {
-    border-right: 1px solid black;
-  }
-
-  .minipost.vcomp > .postbody > tbody > tr > td > .oxcard td > img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    transition: all 2s;
   }
 </style>
 
 <script type='text/x-template' id='minipost-template'>
-  <div class='minipost vcomp' :class='status<=0 ? "active" : ""'>
-    <table class='postbody' v-if='post.type=="postvoteab"'>
+  <!-- <div class='minipost vcomp' :class='[status<=0 ? "active" : "", post_type]'> -->
+  <div class='minipost vcomp'>
+
+    <table class='postbody' v-if='is_postvoteab' @click='$emit("open_posts", post[0].id)'>
       <tbody>
-        <tr><td><img :src='post.pix_a' @load='imgloaded'></td></tr>
-        <tr><td><img :src='post.pix_b' @load='imgloaded'></td></tr>
+        <tr><td><img :src='post[0].pix_a' @load='imgloaded' v-if='post[0]'></td></tr>
+        <tr><td><img :src='post[0].pix_b' @load='imgloaded' v-if='post[0]'></td></tr>
       </tbody>
     </table>
 
-    <table class='postbody' v-if='post.type=="postvoteox"'>
+    <table class='postbody' v-else>
       <tbody>
-        <tr><td><img :src='post.pix' @load='imgloaded'></td></tr>
-        <tr>
-          <td>
-            <table class='oxcard'>
-              <tbody>
-                <tr>
-                  <td><img src='/static/materials/icons/moiber_letter_o.png' @load='imgloaded'></td>
-                  <td><img src='/static/materials/icons/moiber_letter_x.png' @load='imgloaded'></td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
+        <tr><td><img :src='post[0].pix' @load='imgloaded' v-if='post[0]' @click='$emit("open_posts", post[0].id)'></td></tr>
+        <tr><td><img :src='post[1].pix' @load='imgloaded' v-if='post[1]' @click='$emit("open_posts", post[1].id)'></td></tr>
       </tbody>
     </table>
+
   </div>
 </script>
 
@@ -102,13 +67,47 @@
     props: [ 'post' ],
     data: function() {
       return {
-        status: (this.post.type=='postvoteab' ? 2 : 3)
+        status: undefined
       }
     },
 
+    created: function() {
+      // if (this.is_postqa) {
+      //   this.status = 1;
+      //
+      // } else if (this.is_postvoteab) {
+      //   this.status = 2;
+      //
+      // } else if (this.is_postvoteox) {
+      //   this.status = 1;
+      // }
+    },
+
+    computed: {
+      post_type: function() {
+        if (this.post[0]) {
+          return this.post[0].type
+        }
+      },
+      //
+      // is_postqa: function() {
+      //   return this.post_type == 'postqa'
+      // },
+      //
+      // is_postvoteox: function() {
+      //   return this.post_type == 'postvoteox'
+      // },
+      //
+      is_postvoteab: function() {
+        return this.post_type == 'postvoteab'
+      },
+    },
+
     methods: {
-      imgloaded: function() {
-        this.status -= 1;
+      imgloaded: function(event) {
+        event.target.style.opacity = 1;
+        // console.log(event.target)
+        // this.status -= 1;
       }
     }
   });

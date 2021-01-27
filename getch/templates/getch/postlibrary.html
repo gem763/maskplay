@@ -27,34 +27,14 @@
     width: 25%;
     height: var(--w-50);
   }
-
-  /* .show-posts-enter-active,
-  .show-posts-leave-active {
-    transition: all 3s;
-  }
-
-  .show-posts-enter,
-  .show-posts-leave-to {
-    opacity: 0;
-  }
-
-  .show-posts-move {
-    transition: all 3s;
-  } */
 </style>
 
 <script type='text/x-template' id='postlibrary-template'>
   <div class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
-    <div class='post' v-for='(post, idx) in postlist' :key='post_key(post, idx)' @click='$emit("open_posts", idx)'>
-      <minipost :post='post'></minipost>
+    <div class='post' v-for='(post, idx) in postlist' :key='post_key(post, idx)'>
+      <minipost :post='post' @open_posts='$emit("open_posts", $event)'></minipost>
     </div>
   </div>
-
-  <!-- <transition-group name='show-posts' tag='div' class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
-    <div class='post' v-for='(post, idx) in postlist' :key='post_key(post)' @click='$emit("open_posts", idx)'>
-      <minipost :post='post'></minipost>
-    </div>
-  </transition-group> -->
 </script>
 
 
@@ -71,8 +51,9 @@
       // newpost를 저장한 경우, post.id가 undefined 일 때가 있어서
       // post_key를 따로 지정한다
       post_key: function(post, idx) {
-        if (post.id) {
-          return post.id
+        // console.log(post)
+        if (post[0]) {
+          return post[0].id
 
         } else {
           return new Date().getTime() + idx

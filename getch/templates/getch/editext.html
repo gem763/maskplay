@@ -2,7 +2,7 @@
   .editext.vcomp {
     background: none;
     /* font-size: calc(var(--width-unit)*3.3); */
-    font-size: 12px;
+    font-size: 14px;
     white-space: pre-line;
     /* pre-line으로 해야 span 앞에 여백이 없어진다.. 왜? */
   }
@@ -10,6 +10,10 @@
   .editext.vcomp > span.text[contentEditable=true]:empty::before {
     content: attr(placeholder);
     color: gray;
+  }
+
+  .editext.vcomp > .text {
+    padding-top: 3px;
   }
 
   .editext.vcomp > span {
@@ -40,6 +44,7 @@
   .editext.in-post.vcomp > span.date {
     color: lightgray;
     margin-left: 5px;
+    font-size: 12px;
   }
 
   .editext.in-post.vcomp > span.text[contenteditable=true]:focus {
@@ -75,6 +80,7 @@
   .editext.vcomp > .text > span.text-more {
     color: lightgray;
     margin-left: 5px;
+    font-size: 12px;
   }
 </style>
 

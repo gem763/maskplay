@@ -222,14 +222,14 @@ class Boo(BigIdAbstract, ModelWithFlag):
     # @property
     def iposts(self, type):
         if type=='own':
-            return list(self.post_set.values_list('id', flat=True))
+            return list(self.post_set.order_by('-id').values_list('id', flat=True))
 
         elif type=='follow':
-            return list(Post.objects.filter(boo_id__in=self.followees_id).values_list('id', flat=True))
+            return list(Post.objects.order_by('-id').filter(boo_id__in=self.followees_id).values_list('id', flat=True))
 
         elif type=='attend':
             q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
-            return list(Flager.objects.filter(q, user=self).values_list('object_id', flat=True))
+            return list(Flager.objects.order_by('-id').filter(q, user=self).values_list('object_id', flat=True))
 
 
     @property
@@ -447,6 +447,13 @@ class PostVoteAB(Post):
         return 'AB | ' + super().__str__()
 
 
+class PostQA(Post):
+    pix = models.ImageField(upload_to=_postpix_path, max_length=500, null=False, blank=False)
+
+    def __str__(self):
+        return 'QA | ' + super().__str__()
+
+
 class Comment(BigIdAbstract, ModelWithFlag):
     boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
     post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.SET_NULL)
@@ -654,6 +661,15 @@ class PostVoteABSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
+class PostQASerializer(serializers.ModelSerializer):
+    boo = BasebooSerializer()
+
+    class Meta:
+        model = PostQA
+        fields = ['id', 'boo', 'text', 'pix', 'nvotes_up', 'ncomments', 'created_at']
+        read_only_fields = ['id']
+
+
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
@@ -665,6 +681,9 @@ class PostSerializer(serializers.ModelSerializer):
 
         elif isinstance(instance, PostVoteAB):
             return {'type':'postvoteab', **PostVoteABSerializer(instance=instance).data}
+
+        elif isinstance(instance, PostQA):
+            return {'type':'postqa', **PostQASerializer(instance=instance).data}
 
     @staticmethod
     def setup_eager_loading(queryset):

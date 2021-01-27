@@ -1,0 +1,526 @@
+<style>
+  .bridge.vcomp .page-body {
+    font-size: 12px;
+  }
+
+  .bridge.vcomp .page-body > .divider {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    border-top: 1px solid var(--color-dark);
+    border-bottom: none;
+  }
+
+  .bridge.vcomp .page-body > .section {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+  }
+
+  .bridge.vcomp .page-body > .section.top {
+    top: 0;
+  }
+
+  .bridge.vcomp .page-body > .section.bottom {
+    bottom: 0;
+  }
+
+  /* .bridge.vcomp .page-body > .section.top > .title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+  } */
+
+  .bridge.vcomp .page-body > .section.top > .sub {
+    text-align: center;
+    /* font-size: 12pt; */
+    position: absolute;
+    bottom: var(--w-20);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .sub {
+    text-align: center;
+    /* font-size: 12pt; */
+    position: absolute;
+    top: var(--w-20);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .sub > .action {
+    width: var(--w-40);
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .sub > .action.login {
+    background: #0095F6;
+    color: white;
+    margin-top: var(--w-4);
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .sub > .action.cancel {
+    background: white;
+    margin-top: 10px;
+    border: 1px solid var(--color-dark);
+  }
+
+  .bridge.vcomp .page-body > .ab {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--w-12);
+    height: var(--w-12);
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge.vcomp .page-body > .ab.a {
+    background: none;
+    bottom: calc(50% - 1px);
+  }
+
+  .bridge.vcomp .page-body > .ab.b {
+    background: none;
+    top: 50%;
+  }
+
+  .bridge.vcomp .page-body > .ab > img {
+    width: 70%;
+    height: 70%;
+  }
+
+  .bridge.vcomp .page-body > .ab > img.question {
+    position: absolute;
+    top: 15%;
+    left: 115%;
+  }
+
+  .bridge.vcomp .page-body > .updown {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--w-12);
+    height: var(--w-12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bridge.vcomp .page-body > .updown.up {
+    background: none;
+    bottom: calc(50% - 1px);
+  }
+
+  .bridge.vcomp .page-body > .updown.down {
+    background: none;
+    top: 50%;
+  }
+
+  .bridge.vcomp .page-body > .updown > img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .bridge.vcomp .page-body > .updown.down > img {
+    transform: rotate(180deg);
+  }
+
+
+  .bridge.vcomp .page-body > .section > table.type-selector {
+    position: absolute;
+    bottom: var(--w-16);
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: lightblue;
+    border-collapse: collapse;
+  }
+
+
+  /* .bridge.vcomp .page-body > .section.bottom > .postypes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    text-align: center;
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype:first-child {
+    margin-right: var(--w-6);
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype:last-child {
+    margin-left: var(--w-6);
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table {
+    border-collapse: collapse;
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td {
+    border: 1px solid var(--color-dark);
+    height: var(--w-12);
+    width: var(--w-12);
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td.borderless {
+    border: none;
+  }
+
+  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td > img {
+    width: 70%;
+    height: 70%;
+    vertical-align: middle;
+  } */
+
+  .bridge.vcomp.posting_guide .page-body > .section.bottom > span.title {
+    position: absolute;
+    bottom: calc(50% + var(--w-16));
+    left: 50%;
+    font-size: 12px;
+    transform: translate(-50%, 0);
+  }
+
+  .bridge.vcomp .page-body > .section.top > .group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: none;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .bridge.vcomp .page-body > .section.top > .group > .sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .bridge.vcomp .page-body > .section.top > .group > .sub > .button {
+     width: var(--w-16);
+     height: var(--w-16);
+     background: none;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+  }
+
+  .bridge.vcomp .page-body > .section.top > .group > .sub > .button > img {
+    width: var(--w-8);
+    height: var(--w-8);
+  }
+
+  .bridge.vcomp.posting_guide .page-body > .section.bottom,
+  .bridge.vcomp.delpost_guide .page-body > .section.top,
+  .bridge.vcomp.delboo_guide .page-body > .section.top,
+  .bridge.vcomp.logout_guide .page-body > .section.top,
+  .bridge.vcomp.browser_guide .page-body > .section.top {
+    background: rgba(255,255,255,0.9);;
+  }
+
+  .bridge.vcomp.posting_guide .page-body > .section.top,
+  .bridge.vcomp.delpost_guide .page-body > .section.bottom,
+  .bridge.vcomp.delboo_guide .page-body > .section.bottom,
+  .bridge.vcomp.logout_guide .page-body > .section.bottom,
+  .bridge.vcomp.browser_guide .page-body > .section.bottom {
+    background: none;;
+  }
+</style>
+
+
+<script type='text/x-template' id='bridge-template'>
+  <page2
+    class='bridge vcomp' :class='bridge_type'
+    :open='session.page.bridge.open'
+    :from='session.page.bridge.from'
+    :hide_close='hide_close'
+    :hide_dimmer='hide_dimmer'
+    :hide_headerbar='true'
+    :no_tail='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+
+      <template v-if='is_login_guide_for_posting'>
+        <div class='section top'>
+          <div class='sub'>
+            <p style='font-size:16px;'><b>아무 패션 고민 글을<br>새로 포스팅 하세요.</b></p>
+            <span>위 아니면 아래?<br>둘 중에 뭐 살지 - 뭐 입을지 고민될 때.</span>
+          </div>
+        </div>
+
+        <div class='section bottom'>
+          <div class='sub'>
+            <span>가입하고 솔직한 패션 컨설팅을 받아보세요.</span>
+            <div class='action login' @click='action_login'>로그인하기</div>
+            <div class='action cancel' @click='action_cancel'>취소</div>
+          </div>
+        </div>
+
+        <div class='ab a'>
+          <img src='/static/materials/icons/moiber_letter_a.png'>
+        </div>
+
+        <div class='ab b'>
+          <img src='/static/materials/icons/moiber_letter_b.png'>
+          <img class='question' src='/static/materials/icons/button_r.png'>
+        </div>
+
+        <hr class='divider'>
+      </template>
+
+      <template v-else-if='is_login_guide_for_mypage'>
+        <div class='section top'>
+          <div class='sub'>
+            <p style='font-size:16px;'><b>부캐를 만들고<br>진솔한 패션 조언을 얻어보세요.</b></p>
+            <span>화보 속 완벽한 패션<br>내 체형에도 어울릴까 고민이라면?</span>
+          </div>
+        </div>
+
+        <div class='section bottom'>
+          <div class='sub'>
+            <span>지금 로그인하여 나만의 부캐로 패션 수다에 참여하세요.</span>
+            <div class='action login' @click='action_login'>로그인하기</div>
+            <div class='action cancel' @click='action_cancel'>취소</div>
+          </div>
+        </div>
+
+        <div class='updown up'>
+          <img src='/static/materials/icons/button_profile_circle.png'>
+        </div>
+
+        <div class='updown down'>
+          <img src='/static/materials/icons/button_profile_circle.png'>
+        </div>
+
+        <hr class='divider'>
+      </template>
+
+      <template v-else-if='is_posting_guide'>
+        <div class='section top' @click='session.close_page()'></div>
+
+        <div class='section bottom'>
+          <span class='title'>새 글 등록</span>
+
+          <table class='type-selector'>
+            <tbody>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- <div class='postypes'>
+            <div class='postype' @click='session.open_newpost("postvoteab")'>
+              <table>
+                <tbody>
+                  <tr>
+                    <td><img src='/static/materials/icons/moiber_letter_a.png'></td>
+                    <td class='borderless'></td>
+                  </tr>
+                  <tr>
+                    <td><img src='/static/materials/icons/moiber_letter_b.png'></td>
+                    <td class='borderless'><img src='/static/materials/icons/button_r.png'></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class='postype' @click='session.open_newpost("postvoteox")'>
+              <table>
+                <tbody>
+                  <tr>
+                    <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
+                    <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
+                  </tr>
+                  <tr>
+                    <td class='borderless'></td>
+                    <td class='borderless'><img src='/static/materials/icons/button_r.png'></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div> -->
+
+        </div>
+      </template>
+
+
+      <template v-else-if='is_delpost_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>등록하신 글이 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='section bottom' @click='session.close_page()'></div>
+      </template>
+
+
+      <template v-else-if='is_delboo_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>선택하신 부캐가 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='section bottom' @click='session.close_page()'></div>
+      </template>
+
+
+      <template v-else-if='is_logout_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>로그아웃 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='section bottom' @click='session.close_page()'></div>
+      </template>
+
+
+      <template v-else-if='is_browser_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>인앱 브라우저에서는 로그인 할 수 없습니다.<br>새로운 브라우저로 접속해 주세요.</span>
+            <div class='sub'>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='section bottom' @click='session.close_page()'></div>
+      </template>
+
+    </template>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('bridge', {
+    template: '#bridge-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      bridge_type: function() {
+        return this.session.page.bridge.type
+      },
+
+      is_login_guide_for_posting: function() {
+        return this.bridge_type == 'login_guide_for_posting'
+      },
+
+      is_login_guide_for_mypage: function() {
+        return this.bridge_type == 'login_guide_for_mypage'
+      },
+
+      is_posting_guide: function() {
+        return this.bridge_type == 'posting_guide'
+      },
+
+      is_delpost_guide: function() {
+        return this.bridge_type == 'delpost_guide'
+      },
+
+      is_delboo_guide: function() {
+        return this.bridge_type == 'delboo_guide'
+      },
+
+      is_logout_guide: function() {
+        return this.bridge_type == 'logout_guide'
+      },
+
+      is_browser_guide: function() {
+        return this.bridge_type == 'browser_guide'
+      },
+
+      hide_close: function() {
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
+      },
+
+      hide_dimmer: function() {
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
+      }
+    },
+
+    methods: {
+      action_login: function() {
+        this.session.close_page();
+        this.session.open_loginpage();
+      },
+
+      action_cancel: function() {
+        this.session.close_page();
+      },
+
+      action_callback: function() {
+        this.session.page.bridge.callback();
+        this.session.close_page();
+      }
+    }
+  });
+</script>

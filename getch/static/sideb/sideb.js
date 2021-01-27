@@ -458,8 +458,9 @@ class ContentLoader {
 class Posts extends ContentLoader {
   constructor(type, ninit) {
     super();
-    // this.nloads_init = (ninit ? ninit : 24);
-    this.nloads_init = (ninit ? ninit : 5);
+    this.nloads_init = (ninit ? ninit : 24);
+    // this.nloads_init = (ninit ? ninit : 12);
+    // this.nloads_init = (ninit ? ninit : 4);
     this.idlist_url = `/posts/iposts/${type}`;
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();

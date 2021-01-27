@@ -72,6 +72,10 @@
     height: var(--w-8);
   }
 
+  .aboutboo.vcomp > .profiles > .profile > .follow > img.on {
+    background: red;
+  }
+
   .aboutboo.vcomp > .profiles > .profile > .follow > span.nfollowers {
     background: none;
     position: absolute;
@@ -90,18 +94,19 @@
     font-size: 13px;
     width: 100%;
     text-align: center;
+    padding-top: 10px;
   }
 
   .aboutboo.vcomp > .profiles > .nick {
-    font-size: 15px;
+    font-size: 16px;
     margin-top: 20px;
     /* font-weight: bold; */
   }
 
   .aboutboo.vcomp > .profiles > .text {
-    font-size: 13px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    font-size: 14px;
+    margin-top: 3px;
+    margin-bottom: 8px;
     white-space: pre-line;
     text-align: center;
   }
@@ -117,35 +122,18 @@
     flex-wrap: wrap;
   }
 
-  /* .aboutboo.vcomp > .profiles > .styletags > .tag,
-  .aboutboo.vcomp > .profiles > .fashiontems > .item, */
   .aboutboo.vcomp > .profiles > .labels > .label {
-    font-size: 13px;
-    padding: 7px;
+    font-size: 11px;
+    padding: 9px;
     border-radius: 20px;
     margin: 2px;
     border: 2px solid lightgray;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 30px;
+    height: 23px;
     box-sizing: border-box;
   }
-
-  /* .aboutboo.vcomp > .profiles > .labels > .label.selected {
-    color: red;
-    border: 2px solid red;
-  }
-
-  .aboutboo.vcomp > .profiles > .styletags > .tag.selected {
-    background: var(--color-dark);
-    color: white;
-  }
-
-  .aboutboo.vcomp > .profiles > .fashiontems > .item.selected {
-    background: #292A4D;
-    color: white;
-  } */
 
   .aboutboo.vcomp > .contents {
     /* margin-top: 50px; */
@@ -277,6 +265,7 @@
         <div class='follow' @click='toggle_follow'>
           <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following'>
           <img class='follow-off' src='/static/materials/icons/like.png' v-else>
+          <!-- <img :class='is_following ? "on" : "off"' src='/static/materials/icons/like.png'> -->
           <span class='nfollowers'><b>[[ nfollowers ]]</b></span>
           <span class='follow-txt'>팔로우</span>
         </div>
@@ -302,20 +291,20 @@
 
 
       <div class='labels'>
-        <span class='label selected' v-for='l in mylabels("gender")'>[[ l.label ]]</span>
-        <span class='label selected' v-for='l in mylabels("age")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("gender")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("age")'>[[ l.label ]]</span>
       </div>
 
       <div class='labels'>
-        <span class='label selected' v-for='l in mylabels("body")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("body")'>[[ l.label ]]</span>
       </div>
 
       <div class='labels'>
-        <span class='label selected' v-for='l in mylabels("style")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("style")'>[[ l.label ]]</span>
       </div>
 
       <div class='labels'>
-        <span class='label selected' v-for='l in mylabels("item")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("item")'>[[ l.label ]]</span>
       </div>
 
       <div class='boochooser' v-if='is_myboo'>
@@ -349,21 +338,21 @@
         <template v-if='is_myboo'>
           <div class='section' :style='{ height: own_section_height }' ref='section_own'>
             <postlibrary
-              :postlist='postlist("own")'
+              :postlist='postlist_own'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
 
           <div class='section' :style='{ height: attend_section_height }' ref='section_attend'>
             <postlibrary
-              :postlist='postlist("attend")'
+              :postlist='postlist_attend'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
 
           <div class='section' :style='{ height: follow_section_height }' ref='section_follow'>
             <postlibrary
-              :postlist='postlist("follow")'
+              :postlist='postlist_follow'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
@@ -372,7 +361,7 @@
         <template v-else>
           <div class='section' :style='{ height: own_section_height }' ref='section_own'>
             <postlibrary
-              :postlist='postlist("own")'
+              :postlist='postlist_own'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
@@ -488,7 +477,22 @@
 
       on_testbed: function() {
         return window.location.href.indexOf("testbed") > -1
-      }
+      },
+
+      postlist_own: function() {
+        // :postlist='postlist_rearranged("own")' 이라고 바로 하면
+        // 이상하게 infinite loop 에러가 뜬다
+        // 2021.01.26
+        return this.postlist_rearranged('own')
+      },
+
+      postlist_attend: function() {
+        return this.postlist_rearranged('attend')
+      },
+
+      postlist_follow: function() {
+        return this.postlist_rearranged('follow')
+      },
     },
 
     methods: {
@@ -506,9 +510,17 @@
         this.on_changeboo = !this.on_changeboo;
       },
 
-      open_posts: function(idx) {
+      // open_posts: function(idx) {
+      //   this.boo.posts.contents = this.the_posts;
+      //   this.session.booposts = this.boo.posts.contents;
+      //   this.session.page.booposts.swiper.slideTo(idx, 1, false);
+      //   this.session.open_booposts();
+      // },
+
+      open_posts: function(postid) {
         this.boo.posts.contents = this.the_posts;
         this.session.booposts = this.boo.posts.contents;
+        const idx = _.findIndex(this.the_posts.list, ['id', postid]);
         this.session.page.booposts.swiper.slideTo(idx, 1, false);
         this.session.open_booposts();
       },
@@ -587,6 +599,37 @@
         } else {
           return this.boo.posts.univ[grouper].list
         }
+      },
+
+      sorter_by: function(how, islist) {
+        if (how == 'history' && !islist) {
+          return (a,b) => b.id - a.id
+
+        } else if (how == 'history' && islist) {
+          return (a,b) => b[0].id - a[0].id
+
+        } else if (how == 'hot' && !islist) {
+          return (a,b) => b.nvotes_up + b.nvotes_down - a.nvotes_up - a.nvotes_down
+
+        } else if (how == 'hot' && islist) {
+          return (a,b) => b[0].nvotes_up + b[0].nvotes_down - a[0].nvotes_up - a[0].nvotes_down
+        }
+      },
+
+      postlist_rearranged: function(what) {
+        const _postlist = this.postlist(what);
+        _postlist.sort(this.sorter_by('history', false));
+
+        const _plist = _.groupBy(_postlist, post => post.type);
+        const _ab = _plist.postvoteab ? _plist.postvoteab : [];
+        const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
+        const _plist_qa = _plist.postqa ? _plist.postqa : [];
+        const _oxqa = _plist_ox.concat(_plist_qa).sort(this.sorter_by('history', false))
+
+        const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
+        const plist_ab = _ab.map(_ => [_]);
+
+        return plist_ab.concat(plist_oxqa).sort(this.sorter_by('history', true))
       },
     }
   });

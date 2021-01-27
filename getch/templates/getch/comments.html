@@ -37,7 +37,9 @@
     top: 50%;
     left: var(--w-18);
     transform: translateY(-50%);
-    font-size: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
   }
 
   .comments.vcomp .page-body > .author-header > .author-nick > .post-date {
@@ -48,7 +50,7 @@
 
   .comments.vcomp .page-body > .post-text {
     /* background: orange; */
-    padding-top: 15px;
+    /* padding-top: 15px; */
     padding-left: var(--w-6);
     padding-right: var(--w-6);
     white-space: pre-line;
@@ -76,7 +78,7 @@
     bottom: var(--w-20);
     left: var(--w-5);
     right: var(--w-5);
-    border: 1px solid var(--color-inactive);
+    /* border: 1px solid var(--color-inactive); */
     border-radius: var(--w-6);
     /* box-sizing: border-box; */
     min-height: var(--w-12);
@@ -84,6 +86,7 @@
     align-items: center;
     overflow: hidden;
     background: white;
+    box-shadow: inset 0.5px 0.5px 2px rgba(0,0,0,0.1);
   }
 
   .comments.vcomp .page-body > .commenter > .profile {
@@ -109,6 +112,7 @@
     justify-content: center;
     height: var(--w-8);
     width: var(--w-8);
+    font-size: 12px;
   }
 
   .comments.vcomp .page-body > .commenter > .attach {
@@ -134,7 +138,10 @@
   }
 
   .comments.vcomp .page-body > .commenter > .commenter-body {
-    width: 100%;
+    /* width: 100%; */
+    width: 96%;
+    margin-left: 2%;
+    margin-right: 2%;
   }
 
   .comments.vcomp .page-body > .commenter > .commenter-body > .mention {
@@ -156,13 +163,14 @@
     /* background: lightpink; */
     border: none;
     box-sizing: border-box;
-    padding-left: var(--w-12);
+    padding-left: var(--w-10);
     padding-right: var(--w-20);
     resize: none;
     /* margin-top: var(--w-2); */
     margin-bottom: var(--w-2);
     overflow: hidden;
     display: block;
+    font-size: 12px;
   }
 
   .comments.vcomp .page-body > .commenter > .commenter-body > textarea:focus {
@@ -198,7 +206,7 @@
   .comments.vcomp .page-body > .contents > .comment {
     /* background: orange; */
     min-height: var(--w-8);
-    margin-bottom: 15px;
+    margin-bottom: 18px;
     /* display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -222,7 +230,7 @@
   .comments.vcomp .page-body > .contents > .comment > .nick {
     background: none;
     padding-left: var(--w-16);
-    padding-bottom: 3px;
+    padding-bottom: 1px;
   }
 
   .comments.vcomp .page-body > .contents > .comment > .text {
@@ -313,7 +321,7 @@
 
     <template #page-body>
       <div class='author-header'>
-        <div class='profile'>
+        <div class='profile' @click='session.open_boopage(author)'>
           <img :src='author.profile.pix'>
         </div>
 
@@ -331,7 +339,6 @@
 
       <div class='contents'>
         <div class='comment' v-for='c in commentlist'>
-          <div class='profile'><img :src='c.boo.profile.pix'></div>
           <div class='nick'>
             <b>[[ c.boo.nick ]]</b>
             <span class='when'>[[ relative_date(c.created_at) ]]</span>
@@ -347,6 +354,7 @@
             </div>
           </div>
 
+          <div class='profile' @click='session.open_boopage(c.boo)'><img :src='c.boo.profile.pix'></div>
           <div class='attaches' v-if='c.attached'>
             <img :src='c.attached.img'>
           </div>
@@ -523,6 +531,9 @@
       },
 
       begin_commenting: function() {
+        // setTimeout(() => {
+        //   $(window).scrollTop(document.body.scrollLeft, document.body.scrollTop);
+        // }, 0);
         this.on_commenting = true;
       },
 

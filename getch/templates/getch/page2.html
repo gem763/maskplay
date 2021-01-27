@@ -85,8 +85,9 @@
   }
 
   .page > .content > .close img {
-    width: var(--w-6);
-    height: var(--w-6);
+    width: var(--w-5);
+    height: auto;
+    /* height: var(--w-6); */
     transform: rotate(180deg);
   }
 
@@ -277,7 +278,7 @@
           </div>
 
           <div class='hamburger' @click.stop='toggle_menu' v-if='!hide_menu'>
-            <img src='/static/materials/icons/button_e.png'>
+            <img src='/static/materials/icons/moreinfo.png'>
 
             <transition name='show-menu'>
               <div class='headerbar-menu' v-if='on_menu'>

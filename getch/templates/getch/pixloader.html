@@ -18,17 +18,24 @@
 
   .pixloader img.pix.focused {
     object-fit: contain;
-    left: var(--w-6);
-    width: var(--w-88);
-    height: calc(100% - var(--w-20));
+    left: var(--w-4);
+    width: var(--w-92);
+    /* height: calc(100% - var(--w-20)); */
   }
 
   .pixloader.top img.pix.focused {
-    top: var(--w-16);
+    top: calc(var(--w-16) + var(--w-4));
+    height: calc(100% - var(--w-16) - 2*var(--w-4));
   }
 
   .pixloader.bottom img.pix.focused {
     top: var(--w-4);
+    height: calc(100% - var(--w-16) - 2*var(--w-4));
+  }
+
+  .pixloader.full img.pix.focused {
+    top: calc(var(--w-16) + var(--w-4));
+    height: calc(100% - 2*var(--w-16) - var(--w-4));
   }
 
   .pixloader input[type='file'] {

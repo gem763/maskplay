@@ -1,3 +1,26 @@
+<style>
+  .booposts.vcomp .page-body > .goback {
+    background: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    top: 50%;
+    left: var(--w-3);
+    width: var(--w-10);
+    height: var(--w-10);
+    transform: translateY(-50%);
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .booposts.vcomp .page-body > .goback > img {
+    width: var(--w-5);
+    height: var(--w-5);
+    transform: rotate(180deg);
+  }
+</style>
+
 <script type='text/x-template' id='booposts-template'>
   <page2
     class='booposts vcomp'
@@ -5,6 +28,7 @@
     :open='session.page.booposts.open'
     :trans_headerbar='true'
     :from='session.page.booposts.from'
+    :hide_close='true'
     @close='session.close_page()'>
 
     <template #headerbar-menu>
@@ -15,6 +39,10 @@
 
     <template #page-body>
       <baseposts :session='session' :postlist='postlist' :posts='session.booposts' ref='baseposts'></baseposts>
+
+      <div class='goback' @click='session.close_page()'>
+        <img src='/static/materials/icons/right-chevron.png'>
+      </div>
     </template>
   </page2>
 </script>

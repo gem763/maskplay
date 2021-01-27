@@ -89,23 +89,29 @@
     width: var(--w-70);
     height: var(--w-10);
     transform: translate(-50%,-50%);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
-    background: whitesmoke;
+    background: white;
     padding: 5px;
     border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0.5px 0.5px 2px rgba(0,0,0,0.1);
   }
 
   .navigator.vcomp .headerbar-body-default > .searchbar > img {
     position: absolute;
     top: 50%;
     left: 5%;
-    width: var(--w-6);
-    height: var(--w-6);
+    width: var(--w-4);
+    height: auto;
+    /* height: var(--w-6); */
     transform: translateY(-50%);
+  }
+
+  .navigator.vcomp .headerbar-body-default {
+    background: #fafafa;
   }
 </style>
 
@@ -195,16 +201,24 @@
       },
 
       postlist_history: function() {
-        if (this.session.page.posts.univ.history) {
-          return this.session.page.posts.univ.history.list.sort((a,b) => b.id - a.id )
-        }
+        return this.postlist_rearranged('history')
       },
 
       postlist_hot: function() {
-        if (this.session.page.posts.univ.hot) {
-          return this.session.page.posts.univ.hot.list
-        }
+        return this.postlist_rearranged('hot')
       },
+
+      // postlist_history_old: function() {
+      //   if (this.session.page.posts.univ.history) {
+      //     return this.session.page.posts.univ.history.list.sort((a,b) => b.id - a.id )
+      //   }
+      // },
+      //
+      // postlist_hot_old: function() {
+      //   if (this.session.page.posts.univ.hot) {
+      //     return this.session.page.posts.univ.hot.list
+      //   }
+      // },
 
       loader_width: function() {
         return document.querySelector('#window').clientWidth
@@ -216,8 +230,68 @@
     },
 
     methods: {
-      backto_posts: function(idx) {
+      sorter_by: function(how, islist) {
+        if (how == 'history' && !islist) {
+          return (a,b) => b.id - a.id
+
+        } else if (how == 'history' && islist) {
+          return (a,b) => b[0].id - a[0].id
+
+        } else if (how == 'hot' && !islist) {
+          return (a,b) => b.nvotes_up + b.nvotes_down - a.nvotes_up - a.nvotes_down
+
+        } else if (how == 'hot' && islist) {
+          return (a,b) => b[0].nvotes_up + b[0].nvotes_down - a[0].nvotes_up - a[0].nvotes_down
+        }
+      },
+
+      postlist_rearranged: function(what) {
+        if (!this.session.page.posts.univ[what]) {
+          return
+        }
+
+        const _postlist = this.session.page.posts.univ[what].list
+        _postlist.sort(this.sorter_by(what, false));
+
+        const _plist = _.groupBy(_postlist, post => post.type);
+        const _ab = _plist.postvoteab ? _plist.postvoteab : [];
+        const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
+        const _plist_qa = _plist.postqa ? _plist.postqa : [];
+        const _oxqa = _plist_ox.concat(_plist_qa).sort(this.sorter_by(what, false))
+
+        const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
+        const plist_ab = _ab.map(_ => [_]);
+
+        return plist_ab.concat(plist_oxqa).sort(this.sorter_by(what, true))
+      },
+
+      // postlist_rearranged_old: function(postlist, sorted) {
+      //   const _plist = _.groupBy(postlist, post => post.type);
+      //   const _ab = _plist.postvoteab ? _plist.postvoteab : [];
+      //   const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
+      //   const _plist_qa = _plist.postqa ? _plist.postqa : [];
+      //   let _oxqa = _plist_ox.concat(_plist_qa)
+      //
+      //   if (sorted) {
+      //     _oxqa = _oxqa.sort((a,b) => b.id - a.id );
+      //   }
+      //
+      //   const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
+      //   const plist_ab = _ab.map(_ => [_]);
+      //
+      //   const result = plist_ab.concat(plist_oxqa);
+      //
+      //   if (sorted) {
+      //     return result.sort((a,b) => b[0].id - a[0].id )
+      //
+      //   } else {
+      //     return result
+      //   }
+      // },
+
+      backto_posts: function(postid) {
         this.session.page.posts.contents = this.the_posts;
+        const idx = _.findIndex(this.the_posts.list, ['id', postid]);
         this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_page();
       },

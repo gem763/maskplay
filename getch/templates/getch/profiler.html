@@ -27,10 +27,10 @@
     background: none;
     transition: all 0.5s;
     position: relative;
-    border-radius: 50%;
-    border: 1px solid whitesmoke;
+    /* border-radius: 50%; */
+    /* border: 1px solid whitesmoke; */
     box-sizing: border-box;
-    overflow: hidden;
+    /* overflow: hidden; */
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .profile.new {
@@ -44,18 +44,37 @@
     /* border-radius: 50%;
     border: 1px solid whitesmoke;
     box-sizing: border-box; */
-    opacity: 0.5;
+    /* opacity: 0.5; */
+    border-radius: 50%;
+    /* background: orange; */
   }
 
-  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > img.icon {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > .profilepix-editor {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20%;
-    height: 20%;
-    transform: translate(-50%, -50%);
-    filter: invert(100%);
+    width: 25%;
+    height: 25%;
     pointer-events: none;
+    bottom: 0;
+    right: 0;
+    background: white;
+    border-radius: 20%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > .profilepix-editor > img.icon {
+    /* position: absolute; */
+    /* top: 50%; */
+    /* left: 50%; */
+    width: 60%;
+    height: 60%;
+    /* transform: translate(-50%, -50%); */
+    /* filter: invert(100%); */
+    /* pointer-events: none;
+    bottom: 0;
+    right: 0; */
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .nick {
@@ -190,12 +209,12 @@
     justify-content: center;
   }
 
-  .profiler.vcomp .page-body > .profiler-body > .actions > .cancel.action {
-    color: gray;
+  .profiler.vcomp .page-body > .profiler-body > .actions > .done.action.active {
+    color: red;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .actions > .done.action {
-    color: red;
+    color: var(--color-inactive);
   }
 </style>
 
@@ -226,10 +245,15 @@
       <div class='profiler-body' v-if='boo'>
 
         <div class='profiles' ref='profiles'>
-          <div class='profile' :class='profilepix ? "" : "new"' @click='load_pixeditor'>
+          <!-- <div class='profile' :class='profilepix ? "" : "new"' @click='load_pixeditor'> -->
+          <div class='profile' @click='load_pixeditor'>
             <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
             <img class='profilepix' :src='profilepix' v-if='profilepix'>
-            <img class='icon' src='/static/materials/icons/edit.png'>
+            <!-- <img class='profilepix' :src='default_character' v-else> -->
+
+            <div class='profilepix-editor'>
+              <img class='icon' src='/static/materials/icons/edit.png'>
+            </div>
           </div>
 
           <div class='nick' @click='edit_boo_nick'>
@@ -310,8 +334,7 @@
 
 
         <div class='actions'>
-          <!-- <div class='action cancel' @click='session.close_page()'><b>취소</b></div> -->
-          <div class='action done' @click='action_done'><b>저장</b></div>
+          <div class='action done' :class='on_creating ? "" : "active"' @click='action_done'><b>저장</b></div>
         </div>
       </div>
     </template>
@@ -328,13 +351,6 @@
       return {
         boo: undefined,
         on_creating: false,
-
-        // my_genderlabels: [],
-        // my_agelabels: [],
-        // my_bodylabels: [],
-        // my_stylelabels: [],
-        // my_itemlabels: [],
-
         more_bodylabels: false,
         more_stylelabels: false,
         more_itemlabels: false,
@@ -347,29 +363,17 @@
           if (_new) {
             if (this.session.page.profiler.type == 'new') {
               console.log('making new profile');
-              // this.boo = _.cloneDeep(this.session.auth.boo);
-              // this.boo.id = undefined;//new Date().getTime();
-              // this.boo.nick = '';
-              // this.boo.text = '';
-              // this.boo.profile.pix = undefined;
-              // this.boo.followees_id = [];
-              // this.boo.nfollowers = 0;
-              // this.boo.nposts = 0;
-              // this.boo.voting_record = {};
-              // this.boo.posts = undefined;
 
               this.boo = {
                 id: undefined,
                 nick: '',
                 text: '',
-                profile: { id: undefined, pix: undefined },
+                profile: { id: undefined, pix: undefined, pixblob: undefined },
                 followees_id: [],
                 nfollowers: 0,
                 nposts: 0,
                 voting_record: {},
                 posts: undefined,
-                // fashiontems: [],
-                // styletags: [],
 
                 genderlabels: [],
                 agelabels: [],
@@ -381,8 +385,19 @@
                 ilikes_comment: []
               }
 
+              const profilepix = '/static/materials/characters/ghost_' + _.sample(['b', 'm', 'p', 'y']) + '.png';
+
+              fetch(profilepix)
+                .then(x => x.blob())
+                .then(blob => {
+                  // console.log(URL.createObjectURL(blob));
+                  this.boo.profile.pix = profilepix;
+                  this.boo.profile.pixblob = blob; //URL.createObjectURL(blob);
+                });
+
+
             } else {
-              console.log(1234)
+              // console.log(1234)
               this.boo = _.cloneDeep(this.session.auth.boo);
             }
           }
@@ -458,6 +473,10 @@
           return;
         }
 
+        if (this.on_creating) {
+          return
+        }
+
         let n_updates = 0;
         const formdata = new FormData();
         // const styletags_to_update = this.tags_to_update('styletags');
@@ -506,7 +525,8 @@
         }
 
         if ((this.making_new && this.boo.profile.pix) || (!this.making_new && this.boo.profile.pix!=this.session.auth.boo.profile.pix)) {
-          formdata.append('profilepix', this.boo.profile.pixblob);
+          const pixname = new Date().getTime() + '__profilepix.png';
+          formdata.append('profilepix', this.boo.profile.pixblob, pixname);
           n_updates += 1;
         }
 
@@ -534,7 +554,8 @@
             this.on_creating = false;
             this.boo.id = js.boo_id;
             // this.$set(this.boo, 'posts', new Booposts(this.boo));
-            this.session._auth.boos[this.boo.id] = this.boo;
+            // this.session._auth.boos[this.boo.id] = _.cloneDeep(this.boo);
+            this.$set(this.session._auth.boos, this.boo.id, this.boo);
             this.session._auth.boo = this.boo.id;
             this.session.close_page();
           });
@@ -552,6 +573,7 @@
           });
 
         this.session._auth.boos[boo_id] = this.boo;
+        // this.$set(this.session._auth.boos, this.boo.id, this.boo);
         this.session.close_page();
       },
 

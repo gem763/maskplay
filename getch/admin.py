@@ -27,6 +27,11 @@ class PostVoteOXAdmin(admin.ModelAdmin):
     list_display = ['boo', 'text', 'keys', 'nvotes_up', 'nvotes_down']
 
 
+@admin.register(m.PostQA)
+class PostQAAdmin(admin.ModelAdmin):
+    list_display = ['boo', 'text']
+
+
 @admin.register(m.User)
 class UserAdmin(admin.ModelAdmin):
     class BooInline(admin.TabularInline):
@@ -41,11 +46,12 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(m.Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['pix_name', 'boo']
-    list_display_links = ['pix_name']
+    # list_display = ['pix_name', 'boo']
+    list_display = ['pix', 'boo']
+    list_display_links = ['boo'] #['pix_name']
 
-    def pix_name(self, obj):
-        return os.path.basename(obj.pix.name)
+    # def pix_name(self, obj):
+    #     return os.path.basename(obj.pix.name)
 
 
 @admin.register(m.Boo)

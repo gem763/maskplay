@@ -16,7 +16,7 @@
 
   <title>MOIBER</title>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1, user-scalable=no">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
@@ -78,6 +78,7 @@
       --w-86: calc(var(--width-unit) * 86);
       --w-88: calc(var(--width-unit) * 88);
       --w-90: calc(var(--width-unit) * 90);
+      --w-92: calc(var(--width-unit) * 92);
 
       /* --t-0: 100vw;
       --t-1: calc(var(--t-0) * 352 / 572);
@@ -131,6 +132,10 @@
       position: relative;
       margin: auto;
       box-shadow: 0 0 10px 1px rgba(0,0,0,0.5);
+
+      /* position: fixed;
+      top: 0;
+      left: 0; */
     }
   </style>
 </head>
@@ -222,6 +227,13 @@
       }
     });
 
+
+    // window.visualViewport.addEventListener('resize', function() {
+    //   console.log(document.querySelector('#window').clientHeight);
+    //   console.log(window.innerHeight);
+    //
+    //   document.querySelector('#window').style.height = window.innerHeight + 'px';
+    // });
 
     // https://docs.djangoproject.com/en/2.2/ref/csrf/
     function csrfSafeMethod(method) {

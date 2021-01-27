@@ -41,16 +41,9 @@
     height: var(--w-52);
   }
 
-  /* .post.postvoteox .backbone > tbody > tr > td.bottom > .v-divider {
-    position: absolute;
-    top: var(--w-4);
-    left: 0;
-    width: 50%;
-    height: var(--w-32);
-    background: none;
-    border-right: 1px solid #302E2F;
-    pointer-events: none;
-  } */
+  .post.postqa .backbone > tbody > tr > td {
+    height: 100%;
+  }
 
   .post .description {
     position: absolute;
@@ -60,10 +53,11 @@
     min-height: var(--w-8);
     text-align: left;
     background: rgba(255,255,255,0.6);
-    padding-left: var(--w-16);
+    padding-left: var(--w-18);
     padding-top: var(--w-4);
     /* padding-bottom: var(--w-4); */
-    padding-right: var(--w-32);
+    /* padding-right: var(--w-32); */
+    padding-right: var(--w-12);
   }
 
   .post .backbone .pixlabel {
@@ -115,8 +109,8 @@
     position: absolute;
     top: var(--w-4);
     left: var(--w-4);
-    width: var(--w-8);
-    height: var(--w-8)
+    width: var(--w-11);
+    height: var(--w-11)
   }
 
   .post > .like {
@@ -162,6 +156,72 @@
     transform: translate(-50%,-50%);
     color: white;
     font-size: var(--w-3);
+  }
+
+  .post > .remocon {
+    position: absolute;
+    top: 50%;
+    right: var(--w-3);
+    width: var(--w-16);
+    border-radius: var(--w-8);
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 11px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+
+  .post > .remocon > .menu {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .post > .remocon > .comments.menu {
+    height: var(--w-16);
+  }
+
+  .post > .remocon > .voters.menu {
+    height: var(--w-16);
+  }
+
+  .post > .remocon > .upward.menu,
+  .post > .remocon > .downward.menu {
+    height: var(--w-8);
+  }
+
+  .post > .remocon > .edge.menu {
+    height: var(--w-4);
+  }
+
+  .post > .remocon > .menu > .item > .icon {
+    width: 100%;
+  }
+
+  .post > .remocon > .menu > .item > .count {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .post > .remocon > .menu > .item > .title {
+    width: 100%;
+  }
+
+  .post > .remocon > .menu > .item > .icon > img {
+    width: var(--w-5);
+    height: var(--w-5);
+    object-fit: contain;
+  }
+
+  .post > .remocon > .upward.menu > .item > .icon > img {
+    transform: rotate(270deg) translateX(var(--w-2));
+  }
+
+  .post > .remocon > .downward.menu > .item > .icon > img {
+    transform: rotate(90deg) translateX(var(--w-2));
   }
 </style>
 
@@ -225,7 +285,7 @@
               :session='session'
             ></aber>
 
-            <div class='pixlabel'>
+            <div class='pixlabel' v-if='post_pixlabel_a'>
               <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='제목 A' type='in-post'></editext>
             </div>
           </td>
@@ -245,9 +305,19 @@
               :session='session'
             ></aber>
 
-            <div class='pixlabel'>
+            <div class='pixlabel' v-if='post_pixlabel_b'>
               <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='제목 B' type='in-post'></editext>
             </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table v-if='is_postqa' class='backbone'>
+      <tbody>
+        <tr>
+          <td>
+            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='editable' where='full'></pixloader>
           </td>
         </tr>
       </tbody>
@@ -262,13 +332,13 @@
         :header='post_boo_nick'
         :date='post_date'
         :editable='editable'
-        placeholder='질문 입력'
+        placeholder='질문을 입력해주세요'
         type='in-post'
         :freeze='!editable'
         :squeeze='squeezed'>
       </editext>
 
-      <div class='styletags' v-show='!squeezed'>
+      <div class='styletags' v-show='post && !squeezed'>
         <!-- <span class='tag' v-for='l in mylabels("gender")'>[[ l.label ]]</span> -->
         <!-- <span class='tag' v-for='l in mylabels("age")'>[[ l.label ]]</span> -->
         <span class='tag' v-for='l in mylabels("body")'>[[ l.label ]]</span>
@@ -284,7 +354,7 @@
       @click.native='session.open_boopage(post_boo)'
     ></scorebutton>
 
-    <template v-if='!editable'>
+    <!-- <template v-if='!editable'>
       <div class='like' @click='session.open_comments(post)'>
         <img src='/static/materials/icons/like.png'>
       </div>
@@ -293,7 +363,43 @@
         <img src='/static/materials/icons/button_reply.png'>
         <span>[[post_ncomments==0 ? "-" : post_ncomments]]</span>
       </div>
-    </template>
+    </template> -->
+
+
+
+    <!-- <div class='remocon'>
+      <div class='menu edge'></div>
+
+      <div class='menu upward' v-if='!swiper.isBeginning' @click='swiper.slidePrev()'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+        </div>
+      </div>
+
+      <div class='menu comments' @click='session.open_comments(post)'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/comment.png'></div>
+          <div class='count'><b>[[post_ncomments]]</b></div>
+          <div class='title'>댓글</div>
+        </div>
+      </div>
+
+      <div class='menu voters' v-if='!is_postqa' @click='show_voters'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/voters.png'></div>
+          <div class='count'><b>[[post_nvotes]]</b></div>
+          <div class='title'>투표자</div>
+        </div>
+      </div>
+
+      <div class='menu downward' v-if='!swiper.isEnd' @click='swiper.slideNext()'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+        </div>
+      </div>
+
+      <div class='menu edge'></div>
+    </div> -->
 
   </div>
 </script>
@@ -330,6 +436,10 @@
 
       is_postvoteab: function() {
         return (this.post_type == 'postvoteab')
+      },
+
+      is_postqa: function() {
+        return (this.post_type == 'postqa')
       },
 
       post_pix: function() {
@@ -393,7 +503,7 @@
 
       post_nvotes_up: function() {
         if (this.post) {
-          return this.post.nvotes_up
+          return this.post.nvotes_up ? this.post.nvotes_up : 0
         } else {
           return 0
         }
@@ -401,10 +511,14 @@
 
       post_nvotes_down: function() {
         if (this.post) {
-          return this.post.nvotes_down
+          return this.post.nvotes_down ? this.post.nvotes_down : 0
         } else {
           return 0
         }
+      },
+
+      post_nvotes: function() {
+        return this.post_nvotes_up + this.post_nvotes_down
       },
 
       post_ncomments: function() {
@@ -434,6 +548,17 @@
 
 
     methods: {
+      // show_voters: function() {
+      //   if (!this.post.voters) {
+      //     this.$set(this.post, 'voters', {
+      //       0: new Voters(this.post, 0),
+      //       1: new Voters(this.post, 1),
+      //     });
+      //   }
+      //
+      //   this.session.open_network(this.post.voters[Math.max(0, this.vote_state)]);
+      // },
+
       relative_date: function(date) {
         moment.locale('ko');
         return moment(date).fromNow()

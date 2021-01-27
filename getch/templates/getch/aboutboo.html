@@ -532,6 +532,11 @@
         }
 
         if (this.is_myboo) {
+          if (!this.boo.followers) {
+            this.$set(this.boo, 'followers', new Followers(this.boo));
+          }
+
+          this.session.open_network(this.boo.followers);
           return
         }
 

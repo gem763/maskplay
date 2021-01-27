@@ -29,9 +29,10 @@
       <div class='item' @click='session.open_profiler("new")' v-if='!$refs.aboutboo.myboos_maxed'>부캐 생성</div>
       <div class='item' @click='session.open_profiler()'>부캐 편집</div>
       <div class='item' @click='$refs.aboutboo.toggle_changeboo' v-if='!$refs.aboutboo.on_changeboo'>부캐 변경</div>
+      <div class='item' @click='see_followers'>팔로워 보기</div>
       <!-- <div class='item' @click='delboo'>부캐 삭제</div> -->
       <div class='item' @click='logout'>로그아웃</div>
-      <div class='item' @click='see_more'>더보기</div>
+      <!-- <div class='item' @click='see_more'>더보기</div> -->
     </template>
 
     <template #headerbar-body-trans>
@@ -146,6 +147,14 @@
 
       see_more: function() {
         alert('더보기')
+      },
+
+      see_followers: function() {
+        if (!this.boo.followers) {
+          this.$set(this.boo, 'followers', new Followers(this.boo));
+        }
+
+        this.session.open_network(this.boo.followers);
       }
     }
   });

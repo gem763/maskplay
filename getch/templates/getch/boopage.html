@@ -26,7 +26,9 @@
     @close='session.close_page()'>
 
     <template #headerbar-menu>
-      <div class='item' @click='see_more'>더보기</div>
+      <div class='item' @click='follow' v-if='!is_following'>팔로우하기</div>
+      <div class='item' @click='see_followers'>팔로워 보기</div>
+      <div class='item' @click='goto_feeds' v-if='has_post'>피드 둘러보기</div>
     </template>
 
     <template #headerbar-body-trans>
@@ -39,7 +41,7 @@
     </template>
 
     <template #page-body>
-      <aboutboo v-if='boo' :boo='boo' :session='session' type='boo' :open='session.page.boopage.open'></aboutboo>
+      <aboutboo v-if='boo' :boo='boo' :session='session' type='boo' :open='session.page.boopage.open' ref='aboutboo'></aboutboo>
     </template>
   </page2>
 </script>
@@ -96,12 +98,45 @@
 
       onloading: function() {
         return this.boo_onloading || this.booposts_onloading
+      },
+
+      is_following: function() {
+        if (this.$refs) {
+          return this.$refs.aboutboo.is_following
+        }
+      },
+
+      has_post: function() {
+        if (this.$refs) {
+          return this.$refs.aboutboo.postlist_own.length > 0
+        }
       }
     },
 
     methods: {
       see_more: function() {
         alert('더보기')
+      },
+
+      follow: function() {
+        if (this.$refs) {
+          this.$refs.aboutboo.toggle_follow();
+        }
+      },
+
+      goto_feeds: function() {
+        if (this.$refs) {
+          const postid = this.$refs.aboutboo.postlist_own[0][0].id;
+          this.$refs.aboutboo.open_posts(postid);
+        }
+      },
+
+      see_followers: function() {
+        if (!this.boo.followers) {
+          this.$set(this.boo, 'followers', new Followers(this.boo));
+        }
+
+        this.session.open_network(this.boo.followers);
       }
     }
   });

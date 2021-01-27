@@ -28,7 +28,7 @@ class Session {
     this.booposts = undefined;
     // this.hammer = this.get_hammer();
 
-    this.page.posts.contents = this.page.posts.univ.history;
+    this.page.posts.contents = this.page.posts.univ.hot;
     this.fetch_user();
   }
 
@@ -415,6 +415,7 @@ class ContentLoader {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
+          // console.log(js);
           this.idlist = js.idlist;
           this.load(this.nloads_init);
         }
@@ -511,6 +512,15 @@ class Voters extends ContentLoader {
   }
 }
 
+class Followers extends ContentLoader {
+  constructor(boo) {
+    super();
+    this.nloads_init = 10;
+    this.idlist_url = `/boo/${boo.id}/ifollowers`;
+    this.content_url = (id) => `/boo/${id}/follower`;
+    this.load_idlist();
+  }
+}
 
 
 

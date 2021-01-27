@@ -133,6 +133,16 @@ def get_ibooposts(request, boo_id, type):
         return JsonResponse({'success':False}, safe=False)
 
 
+def get_ifollowers(request, boo_id):
+    try:
+        _boo = m.Boo.objects.get(pk=boo_id)
+        # print('*********************', _boo.followers_id)
+        return JsonResponse({'success':True, 'idlist':_boo.followers_id}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
 def get_boopost(request, post_id):
     try:
         _post = m.Post.objects.get_subclass(pk=post_id)
@@ -179,6 +189,16 @@ def get_voter(request, boo_id):
         _voter = m.Boo.objects.get(pk=boo_id)
         _voter = m.BasebooSerializer(_voter).data
         return JsonResponse({'success':True, 'content':_voter}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_follower(request, boo_id):
+    try:
+        _follower = m.Boo.objects.get(pk=boo_id)
+        _follower = m.BasebooSerializer(_follower).data
+        return JsonResponse({'success':True, 'content':_follower}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)

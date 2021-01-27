@@ -83,13 +83,58 @@
   }
 
   .company.vcomp .page-body > .container > .section.landing > .cover > .journey.bottom {
-    bottom: var(--w-20);
+    /* bottom: var(--w-20); */
+    bottom: calc(30px + 180px + var(--w-15));
   }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links {
+    position: absolute;
+    width: 100%;
+    bottom: calc(30px + 180px);
+    /* height: 50px; */
+    /* background: lightblue; */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link {
+    width: var(--w-20);
+    height: var(--w-15);
+    margin: 5px;
+    /* background: lightpink; */
+    position: relative;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link > img {
+    position: absolute;
+    bottom: 40%;
+    left: 50%;
+    width: var(--w-7);
+    height: var(--w-7);
+    transform: translateX(-50%);
+    /* filter: invert(100%); */
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link > span {
+    position: absolute;
+    top: calc(60% + 7px);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+  }
+
 
   .company.vcomp .page-body > .container > .section.landing > .cover > .tail {
     position: absolute;
     left: 0;
-    bottom: var(--w-15);
+    /* bottom: var(--w-10); */
+    bottom: 30px;
     width: 100%;
     background: none;
     font-size: 11px;
@@ -163,6 +208,18 @@
           <div class='cover'>
             <img src='/static/materials/pages/landing5.png'>
             <div class='journey bottom' @click='session.close_page()'>시작하기</div>
+
+            <div class='links'>
+              <div class='link' @click='goto_fb'>
+                <img src='/static/materials/icons/Facebook.png'>
+                <span><b>페이스북</b></span>
+              </div>
+
+              <div class='link' @click='goto_insta'>
+                <img src='/static/materials/icons/Instagram.png'>
+                <span><b>인스타그램</b></span>
+              </div>
+            </div>
 
             <div class='tail'>
               <span class='item' @click='open_who'>소개</span>
@@ -262,7 +319,15 @@
 
       journey: function() {
         console.log(1);
-      }
+      },
+
+      goto_fb: function() {
+        window.open('https://www.facebook.com/moiber.official');
+      },
+
+      goto_insta: function() {
+        window.open('https://www.instagram.com/moiber_official');
+      },
     }
   });
 </script>

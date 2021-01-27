@@ -11,7 +11,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(m.Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['type', 'boo', 'text', 'nvotes_up', 'nvotes_down', 'ncomments']
+    list_display = ['type', 'boo', 'text', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
 
     def type(self, obj):
         return obj.cast.type

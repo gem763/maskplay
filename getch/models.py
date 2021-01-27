@@ -138,8 +138,8 @@ class Boo(BigIdAbstract, ModelWithFlag):
     stylelabels = models.ManyToManyField(Stylelabel, blank=True)
     itemlabels = models.ManyToManyField(Itemlabel, blank=True)
 
-    nposts = models.IntegerField(default=0)
-    nfollowers = models.IntegerField(default=0)
+    # nposts = models.IntegerField(default=0)
+    # nfollowers = models.IntegerField(default=0)
 
     active = models.BooleanField(default=True)
 
@@ -160,10 +160,18 @@ class Boo(BigIdAbstract, ModelWithFlag):
         # 포스트가 새로 만들어지거나 팔로우할때 아래 코드가 실행되게 하고 싶은데
         # 늘 두개씩 다 실행시키는게 불필요해보이기도 하고
         # 팔로우 한후에 Boo가 자동저장되는지도 불확실
-        self.nposts = self.post_set.count()
-        self.nfollowers = self.get_flags(status=FOLLOW).count()
+        # self.nposts = self.post_set.count()
+        # self.nfollowers = self.get_flags(status=FOLLOW).count()
 
         super().save(*args, **kwargs)
+
+    @property
+    def nfollowers(self):
+        return self.get_flags(status=FOLLOW).count()
+
+    @property
+    def nposts(self):
+        return self.post_set.count()
 
     @property
     def serialized(self):
@@ -554,7 +562,7 @@ class BooSerializer(serializers.ModelSerializer):
     class Meta:
         model = Boo
         fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels']
-        read_only_fields = ['id', 'active', 'followers_id', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit']
+        read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit']
 
     # def get_styletags(self, obj):
     #     return list(obj.styletags.values_list('id', flat=True))

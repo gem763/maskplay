@@ -187,12 +187,29 @@
     width: 100%;
     height: 60%;
     background: none;
-    display: flex;
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
   }
 
-  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table {
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    transform: translate(-50%, -50%);
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > img,
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > img {
+    height: 65%;
+  }
+
+  .bridge.vcomp .page-body > .section > table.type-selector .postype.postqa > .icons > img {
+    height: 40%;
+  }
+
+  /* .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table {
     position: relative;
     border-collapse: collapse;
     width: 100%;
@@ -267,7 +284,7 @@
     width: 100%;
     height: 100%;
     transform: translate(-50%, -50%);
-  }
+  } */
 
 
   /* .bridge.vcomp .page-body > .section.bottom > .postypes {
@@ -308,10 +325,12 @@
 
   .bridge.vcomp.posting_guide .page-body > .section.bottom > span.title {
     position: absolute;
-    bottom: calc(50% + var(--w-16));
+    bottom: calc(50% + var(--w-20));
     left: 50%;
-    font-size: 16px;
+    width: 100%;
+    font-size: 15px;
     transform: translate(-50%, 0);
+    text-align: center;
   }
 
   .bridge.vcomp .page-body > .section.top > .group {
@@ -435,48 +454,54 @@
         <div class='section top' @click='session.close_page()'></div>
 
         <div class='section bottom'>
-          <span class='title'><b>새 피드 등록</b></span>
+          <span class='title'>
+            <b>새 피드 등록</b><br>
+            <span style='font-size:9px;color:var(--color-inactive)'>다양한 고민을 던지고 사용자들에게 솔직한 검증 받아보세요.</span>
+          </span>
 
           <table class='type-selector'>
             <tbody>
               <tr>
                 <td>
                   <div class='postype postvoteab' @click='session.open_newpost("postvoteab")'>
-                    <div class='motiv'>둘 중에서 고민이라면?</div>
+                    <div class='motiv'>이거 저거?<br>고민이라면?</div>
                     <div class='icons'>
-                      <table>
+                      <img src='/static/materials/icons/ab.png'>
+                      <!-- <table>
                         <tbody>
                           <tr><td><img src='/static/materials/icons/moiber_letter_a.png'></td></tr>
                           <tr><td><img src='/static/materials/icons/moiber_letter_b.png'></td></tr>
                         </tbody>
-                      </table>
+                      </table> -->
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class='postype postvoteox' @click='session.open_newpost("postvoteox")'>
-                    <div class='motiv'>이거 살까? 말까?<br>고민이라면?</div>
+                    <div class='motiv'>살까 말까?<br>고민이라면?</div>
                     <div class='icons'>
-                      <table>
+                      <img src='/static/materials/icons/ox.png'>
+                      <!-- <table>
                         <tbody>
                           <tr>
                             <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
                             <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
                           </tr>
                         </tbody>
-                      </table>
+                      </table> -->
                     </div>
                   </div>
                 </td>
                 <td>
                   <div class='postype postqa' @click='session.open_newpost("postqa")'>
-                    <div class='motiv'>이거 뭐야?<br>정보 공유하고 싶다면?</div>
+                    <div class='motiv'>추천해줘!<br>정보 알려줘!</div>
                     <div class='icons'>
-                      <table>
+                      <img src='/static/materials/icons/qa.png'>
+                      <!-- <table>
                         <tbody>
                           <tr><td><img src='/static/materials/icons/qa.png'></td></tr>
                         </tbody>
-                      </table>
+                      </table> -->
                     </div>
                   </div>
                 </td>

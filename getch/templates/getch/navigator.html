@@ -3,9 +3,46 @@
     background: white;
   }
 
+  .navigator.vcomp .page-body > .links {
+    margin-top: var(--w-20);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+
+  .navigator.vcomp .page-body > .links > .link {
+    width: var(--w-20);
+    height: var(--w-15);
+    margin: 5px;
+    /* background: lightpink; */
+    position: relative;
+  }
+
+  .navigator.vcomp .page-body > .links > .link > img {
+    position: absolute;
+    bottom: 40%;
+    left: 50%;
+    width: var(--w-7);
+    height: var(--w-7);
+    transform: translateX(-50%);
+    filter: invert(100%);
+  }
+
+  .navigator.vcomp .page-body > .links > .link > span {
+    position: absolute;
+    top: calc(60% + 7px);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    /* background: orange; */
+    text-align: center;
+  }
+
   .navigator.vcomp .page-body > .groupers {
     background: none;
-    margin-top: var(--w-16);
+    margin-top: var(--w-5);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -53,11 +90,11 @@
     transition: margin-left 0.5s;
   }
 
-  .navigator.vcomp .page-body > .contents > .sections.history {
+  .navigator.vcomp .page-body > .contents > .sections.hot {
     margin-left: 0;
   }
 
-  .navigator.vcomp .page-body > .contents > .sections.hot {
+  .navigator.vcomp .page-body > .contents > .sections.history {
     margin-left: -100%;
   }
 
@@ -126,12 +163,13 @@
     @close='session.close_page()'>
 
     <template #headerbar-menu>
+      <div class='item' @click='landing'>서비스 소개</div>
       <div class='item' @click='company'>팀 모이버</div>
     </template>
 
     <template #headerbar-body-trans>
       <div class='logo'>
-        <img src='/static/materials/icons/moiber-logo.png'>
+        <img src='/static/materials/logos/moiber_logo.png'>
       </div>
     </template>
 
@@ -142,21 +180,32 @@
     </template>
 
     <template #page-body>
+      <div class='links'>
+        <div class='link' @click='goto_fb'>
+          <img src='/static/materials/icons/Facebook.png'>
+          <!-- <span><b>페이스북</b></span> -->
+        </div>
+
+        <div class='link' @click='goto_insta'>
+          <img src='/static/materials/icons/Instagram.png'>
+          <!-- <span><b>인스타그램</b></span> -->
+        </div>
+
+        <!-- <div class='link' @click='bookmark'>
+          <img src='/static/materials/icons/Tag.png'>
+          <span><b>즐겨찾기</b></span>
+        </div> -->
+      </div>
+
       <div class='groupers'>
-        <span class='grouper' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
         <span class='grouper' :class='active_grouper=="hot" ? "active" : ""' @click='group_hot'>인기</span>
+        <span class='grouper' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
         <span class='grouper'></span>
         <span class='grouper'></span>
       </div>
 
       <div class='contents'>
         <div class='sections' :class='active_grouper'>
-          <div class='section' :style='{ height: history_section_height }' ref='section_history'>
-            <postlibrary
-              :postlist='postlist_history'
-              @open_posts='backto_posts($event)'
-            ></postlibrary>
-          </div>
 
           <div class='section' :style='{ height: hot_section_height }' ref='section_hot'>
             <postlibrary
@@ -164,6 +213,14 @@
               @open_posts='backto_posts($event)'
             ></postlibrary>
           </div>
+
+          <div class='section' :style='{ height: history_section_height }' ref='section_history'>
+            <postlibrary
+              :postlist='postlist_history'
+              @open_posts='backto_posts($event)'
+            ></postlibrary>
+          </div>
+
         </div>
       </div>
 
@@ -179,14 +236,14 @@
     props: ['session'],
     data: function() {
       return {
-        active_grouper: 'history',
+        active_grouper: 'hot',
         history_section_height: 'auto',
         hot_section_height: 'auto',
       }
     },
 
     mounted: function() {
-      this.group_history();
+      this.group_hot();
     },
 
     computed: {
@@ -230,6 +287,56 @@
     },
 
     methods: {
+      goto_fb: function() {
+        window.open('https://www.facebook.com/moiber.official');
+      },
+
+      goto_insta: function() {
+        window.open('https://www.instagram.com/moiber_official');
+      },
+
+      // onCreated: function(node) {
+      //   console.log(node);
+      // },
+
+      bookmark: function() {
+        var createBookmark = browser.bookmarks.create({
+          title: "bookmarks.create() on MDN",
+          url: "https://developer.mozilla.org/Add-ons/WebExtensions/API/bookmarks/create"
+        });
+
+        createBookmark.then(onCreated);
+
+        // var bookmarkURL = 'https://moiber.com';
+        // var bookmarkTitle = '모이버';
+        // var triggerDefault = false;
+        //
+        // if (window.sidebar && window.sidebar.addPanel) {
+        //   // Firefox version < 23
+        //   window.sidebar.addPanel(bookmarkTitle, bookmarkURL, '');
+        //
+        // } else if ((window.sidebar && (navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) || (window.opera && window.print)) {
+        //   // Firefox version >= 23 and Opera Hotlist
+        //   var $this = $(this);
+        //   $this.attr('href', bookmarkURL);
+        //   $this.attr('title', bookmarkTitle);
+        //   $this.attr('rel', 'sidebar');
+        //   $this.off(e);
+        //   triggerDefault = true;
+        //
+        // } else if (window.external && ('AddFavorite' in window.external)) {
+        //   // IE Favorite
+        //   window.external.AddFavorite(bookmarkURL, bookmarkTitle);
+        //
+        // } else {
+        //   // WebKit - Safari/Chrome
+        //   alert((navigator.userAgent.toLowerCase().indexOf('mac') != -1 ? 'Cmd' : 'Ctrl') + '+D 키를 눌러 즐겨찾기에 등록하실 수 있습니다.');
+        // }
+        //
+        // return triggerDefault;
+      },
+
+
       sorter_by: function(how, islist) {
         if (how == 'history' && !islist) {
           return (a,b) => b.id - a.id
@@ -323,6 +430,10 @@
 
       company: function() {
         this.session.open_company('who');
+      },
+
+      landing: function() {
+        this.session.open_company('landing');
       }
     }
   });

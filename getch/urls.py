@@ -42,9 +42,11 @@ urlpatterns = [
     # path('boo/<int:boo_id>/posts/', v.boo_posts, name='boo_posts'),
     # path('boo/<int:boo_id>/iposts/', v.get_ibooposts, name='get_ibooposts'),
     path('boo/<int:boo_id>/iposts/<str:type>/', v.get_ibooposts, name='get_ibooposts'),
+    path('boo/<int:boo_id>/ifollowers/', v.get_ifollowers, name='get_ifollowers'),
 
     path('boo/<int:boo_id>/profile/pix/', v.boo_profilepix, name='boo_profilepix'),
     path('boo/<int:boo_id>/voter/', v.get_voter, name='get_voter'),
+    path('boo/<int:boo_id>/follower/', v.get_follower, name='get_follower'),
     # path('boo/<int:boo_id>/moreinfo/', v.boo_moreinfo, name='boo_moreinfo'),
     # path('boo/profile/save/', v.profile_save, name='profile_save'),
     path('boo/profile/delete/', v.profile_delete, name='profile_delete'),

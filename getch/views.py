@@ -10,6 +10,7 @@ import getch.models as m
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from notifications.signals import notify
 import os
 import json
 
@@ -65,6 +66,7 @@ def load(request, ctx):
     return render(request, 'getch/play.html', ctx)
 
 def play(request):
+    # notify.send(request.user, recipient=request.user, verb='you reached level 10')
     context['req'] = 0
     return load(request, context)
 
@@ -96,7 +98,13 @@ def testfeed(request):
 
 def get_user(request):
     if request.user.is_authenticated:
-        return JsonResponse({'success':True, 'user':request.user.serialized}, safe=False)
+        if request.user.has_active_boo:
+            return JsonResponse({'success':True, 'user':request.user.serialized}, safe=False)
+        else:
+            request.user.create_default_boo()
+            return JsonResponse({'success':True, 'user':request.user.serialized, 'first_visit':True}, safe=False)
+
+        # return JsonResponse({'success':True, 'user':request.user.serialized}, safe=False)
     else:
         return JsonResponse({'success':False})
 

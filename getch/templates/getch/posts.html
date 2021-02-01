@@ -11,7 +11,7 @@
       <div class='item' v-if='!is_postqa' @click='$refs.baseposts.show_voters'>투표자 보기</div>
       <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.modify_this_post'>수정하기</div>
       <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.delete_this_post'>삭제</div>
-      <div class='item' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
+      <div class='item report' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
     </template>
 
     <template #page-body>

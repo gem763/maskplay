@@ -68,11 +68,6 @@
     /* font-size: 12pt; */
   }
 
-  .loginpage.vcomp > .section.top > .sub > .action.login-facebook {
-    background: #0095F6;
-    margin-bottom: 10px;
-  }
-
   .loginpage.vcomp > .section.top > .sub > .action.login-google {
     background: black;
     margin-bottom: var(--w-12);
@@ -87,6 +82,11 @@
 
   .loginpage.vcomp > .section.top > .sub > .action.login-naver {
     background: #04C75A;
+    margin-bottom: 10px;
+  }
+
+  .loginpage.vcomp > .section.top > .sub > .action.login-facebook {
+    background: #0095F6;
     margin-bottom: var(--w-12);
   }
 
@@ -154,10 +154,10 @@
         <!-- <div class='title'>가입하고 솔직한 패션 조언을 얻으세요.</div> -->
         <div class='sub'>
           <p>가입하고 솔직한 패션 조언을 얻으세요.</p>
-          <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 로그인</div>
           <!-- <div class='action login-google' @click='action_login_google'>구글로 로그인</div> -->
           <div class='action login-kakao' @click='action_login_kakao'>카카오로 로그인</div>
           <div class='action login-naver' @click='action_login_naver'>네이버로 로그인</div>
+          <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 로그인</div>
         </div>
         <span class='login-alert'>약관에 동의하고 로그인합니다.</span>
       </div>

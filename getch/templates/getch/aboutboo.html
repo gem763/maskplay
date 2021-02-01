@@ -31,8 +31,9 @@
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: 1px solid whitesmoke;
+    /* border: 1px solid whitesmoke; */
     box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
   }
 
 
@@ -69,7 +70,8 @@
 
   .aboutboo.vcomp > .profiles > .profile > .follow > img {
     width: var(--w-8);
-    height: var(--w-8);
+    height: auto;
+    /* height: var(--w-8); */
   }
 
   .aboutboo.vcomp > .profiles > .profile > .follow > img.on {
@@ -127,12 +129,13 @@
     padding: 9px;
     border-radius: 20px;
     margin: 2px;
-    border: 2px solid lightgray;
+    border: 2px solid black;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 23px;
     box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
   }
 
   .aboutboo.vcomp > .contents {
@@ -177,11 +180,13 @@
     height: 80%;
     border-radius: 50%;
     object-fit: cover;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
   }
 
   .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > img.add {
     width: 33%;
     height: 33%;
+    box-shadow: none;
   }
 
   .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > .circle {
@@ -191,8 +196,9 @@
     width: 80%;
     height: 80%;
     border-radius: 50%;
-    border: 1px solid lightgray;
+    /* border: 1px solid lightgray; */
     box-sizing: border-box;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
   }
 
   .aboutboo.vcomp > .contents > .groupers {
@@ -216,7 +222,8 @@
 
   .aboutboo.vcomp > .contents > .groupers > .grouper.active {
     color: black;
-    border-bottom: 1px solid var(--color-dark);
+    border-bottom: 2px solid var(--color-dark);
+    font-weight: bold;
   }
 
   .aboutboo.vcomp > .contents > .sections {
@@ -536,7 +543,8 @@
             this.$set(this.boo, 'followers', new Followers(this.boo));
           }
 
-          this.session.open_network(this.boo.followers);
+          // this.session.open_network(this.boo.followers);
+          this.session.open_network('followers', {0:this.boo.followers});
           return
         }
 

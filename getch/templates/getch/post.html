@@ -93,7 +93,7 @@
     font-size: 11px;
     /* background: var(--color-dark); */
     background: white;
-    color: red;
+    /* color: red; */
     padding: 7px;
     border-radius: 20px;
     margin: 2px;
@@ -102,7 +102,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid red;
+    border: 2px solid black;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
   }
 
   .post > .scorebutton {
@@ -285,8 +286,8 @@
               :session='session'
             ></aber>
 
-            <div class='pixlabel' v-if='post_pixlabel_a'>
-              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='제목 A' type='in-post'></editext>
+            <div class='pixlabel' v-if='post_pixlabel_a || editable'>
+              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='제목을 적어주세요' type='in-post'></editext>
             </div>
           </td>
         </tr>
@@ -305,8 +306,8 @@
               :session='session'
             ></aber>
 
-            <div class='pixlabel' v-if='post_pixlabel_b'>
-              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='제목 B' type='in-post'></editext>
+            <div class='pixlabel' v-if='post_pixlabel_b || editable'>
+              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='제목을 적어주세요' type='in-post'></editext>
             </div>
           </td>
         </tr>
@@ -585,8 +586,8 @@
             this.session.auth.vote(this.post.id, act);
           }
 
-        } else if (!this.session.auth && this.session._auth) {
-          this.session.open_profiler('new');
+        // } else if (!this.session.auth && this.session._auth) {
+        //   this.session.open_profiler('new');
 
         } else if (!this.session.auth) {
           this.session.open_bridge('login_guide_for_mypage', 'bottom');

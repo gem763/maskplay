@@ -22,7 +22,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
-  <link rel="stylesheet" href='/static/swiper/swiper.min.css'>
+  <link rel="stylesheet" href='/static/swiper/swiper-bundle.css'>
+  <!-- <link rel="stylesheet" href='/static/swiper/swiper.min.css'> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href='/static/jquery-ui/jquery-ui.min.css'>
   <link rel="stylesheet" href='/static/cropperjs/cropper.min.css'>
@@ -74,6 +75,7 @@
       --w-52: calc(var(--width-unit) * 52);
       --w-60: calc(var(--width-unit) * 60);
       --w-70: calc(var(--width-unit) * 70);
+      --w-75: calc(var(--width-unit) * 75);
       --w-80: calc(var(--width-unit) * 80);
       --w-86: calc(var(--width-unit) * 86);
       --w-88: calc(var(--width-unit) * 88);
@@ -156,11 +158,17 @@
   <script src="/static/jquery-ui/jquery-ui.min.js"></script>
   <script src="/static/jquery-ui/jquery.ui.touch-punch.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-  <script src="/static/vue/vue.js"></script>
-  <script src="/static/swiper/swiper.js"></script>
+  <script src="/static/vue/vue.2.6.11.js"></script>
+  <!-- <script src="/static/vue/vue.js"></script> -->
+  <script src="/static/swiper/swiper-bundle.js"></script>
+  <!-- <script src="/static/swiper/swiper.js"></script> -->
   <script src="/static/sideb/sideb.js"></script>
   <script src="/static/hammer/hammer.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script>
+
+  <!-- vue-awesome-swiper를 쓰면, 첫 슬라이드에서 터치이벤트가 잘 안먹힘. 이유는 모름. 2021.01.31 -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper@4.1.0/dist/vue-awesome-swiper.min.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue-awesome-swiper"></script> -->
+
   <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
   <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
   <!-- <script src="https://unpkg.com/fast-average-color/dist/index.min.js"></script> post 20200915.html에 테스트 구현 -->
@@ -190,7 +198,7 @@
   {% include "getch/oxcard.html" %}
   {% include "getch/scorebutton.html" %}
   {% include "getch/controller.html" %}
-
+  {% include "getch/boolist.html" %}
 
 
   <script>

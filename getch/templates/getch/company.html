@@ -7,7 +7,7 @@
     width: 100%;
     /* height: 200px; */
     margin-top: var(--w-16);
-    margin-bottom: var(--w-20);
+    /* margin-bottom: var(--w-20); */
     background: none;
     padding-left: var(--w-6);
     padding-right: var(--w-6);
@@ -68,7 +68,7 @@
   .company.vcomp .page-body > .container > .section.landing > .cover > .journey {
     position: absolute;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     background: var(--color-dark);
     color: white;
     padding: 10px;
@@ -84,16 +84,26 @@
 
   .company.vcomp .page-body > .container > .section.landing > .cover > .journey.bottom {
     /* bottom: var(--w-20); */
-    bottom: calc(30px + 180px + var(--w-15));
+    bottom: calc(var(--w-10) + var(--w-60));
+  }
+
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .contactus {
+    position: absolute;
+    width: 100%;
+    bottom: calc(var(--w-10) + var(--w-50));
+    /* background: orange; */
+    text-align: center;
+    font-size: 15px;
+    color: white;
   }
 
   .company.vcomp .page-body > .container > .section.landing > .cover > .links {
     position: absolute;
     width: 100%;
-    bottom: calc(30px + 180px);
+    bottom: calc(var(--w-10) + var(--w-40));
     /* height: 50px; */
     /* background: lightblue; */
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -102,20 +112,20 @@
   }
 
   .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link {
-    width: var(--w-20);
-    height: var(--w-15);
-    margin: 5px;
+    width: var(--w-10);
+    height: var(--w-10);
+    /* margin: 5px; */
     /* background: lightpink; */
     position: relative;
   }
 
   .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link > img {
     position: absolute;
-    bottom: 40%;
+    top: 50%;
     left: 50%;
     width: var(--w-7);
     height: var(--w-7);
-    transform: translateX(-50%);
+    transform: translate(-50%,-50%);
     /* filter: invert(100%); */
   }
 
@@ -133,8 +143,8 @@
   .company.vcomp .page-body > .container > .section.landing > .cover > .tail {
     position: absolute;
     left: 0;
-    /* bottom: var(--w-10); */
-    bottom: 30px;
+    bottom: var(--w-10);
+    /* bottom: 30px; */
     width: 100%;
     background: none;
     font-size: 11px;
@@ -175,7 +185,7 @@
           <img src='/static/materials/pages/moiber_corporate_header4.png'>
           <br><br>
           <hr style='border-top:1px solid black;border-bottom:none;'>
-          <p style='font-size:11px;'>주식회사 모이버 | 주소 : 서울시 마포구 양화로 147, 4층 | 사업자 등록 번호 : 707-87-01867 | 인터넷 정보 매개업</p>
+          <p style='font-size:11px;margin-bottom: 50px;'>주식회사 모이버 | 주소 : 서울시 마포구 양화로 147, 4층 | 사업자 등록 번호 : 707-87-01867 | 인터넷 정보 매개업</p>
         </div>
 
         <div class='section recruit' v-show='is_recruit'>
@@ -189,35 +199,43 @@
 
         <div class='section landing' v-show='is_landing'>
           <div class='cover'>
-            <img src='/static/materials/pages/landing1.gif'>
+            <img src='/static/materials/pages/landing0.gif'>
           </div>
 
           <div class='cover'>
-            <img src='/static/materials/pages/landing2.png'>
-            <div class='journey top' @click='session.close_page()'>둘러보기</div>
+            <img src='/static/materials/pages/landing1@2x.png'>
+            <div class='journey top' @click='session.close_page()'>시작하기</div>
           </div>
 
           <div class='cover'>
-            <img src='/static/materials/pages/landing3.png'>
+            <img src='/static/materials/pages/landing2@2x.png'>
           </div>
 
           <div class='cover'>
-            <img src='/static/materials/pages/landing4.png'>
+            <img src='/static/materials/pages/landing3@2x.png'>
           </div>
 
           <div class='cover'>
-            <img src='/static/materials/pages/landing5.png'>
+            <img src='/static/materials/pages/landing4@2x.png'>
+          </div>
+
+          <div class='cover'>
+            <img src='/static/materials/pages/landing5@2x.png'>
             <div class='journey bottom' @click='session.close_page()'>시작하기</div>
+
+            <div class='contactus'>
+              Contact us
+            </div>
 
             <div class='links'>
               <div class='link' @click='goto_fb'>
                 <img src='/static/materials/icons/Facebook.png'>
-                <span><b>페이스북</b></span>
+                <!-- <span><b>페이스북</b></span> -->
               </div>
 
               <div class='link' @click='goto_insta'>
                 <img src='/static/materials/icons/Instagram.png'>
-                <span><b>인스타그램</b></span>
+                <!-- <span><b>인스타그램</b></span> -->
               </div>
             </div>
 

@@ -112,7 +112,7 @@
     justify-content: center;
     height: var(--w-8);
     width: var(--w-8);
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .comments.vcomp .page-body > .commenter > .attach {
@@ -145,7 +145,7 @@
   }
 
   .comments.vcomp .page-body > .commenter > .commenter-body > .mention {
-    padding-left: var(--w-12);
+    padding-left: var(--w-10);
     /* padding-bottom: 3px; */
     margin-top: var(--w-2);
     color: red;
@@ -170,7 +170,7 @@
     margin-bottom: var(--w-2);
     overflow: hidden;
     display: block;
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .comments.vcomp .page-body > .commenter > .commenter-body > textarea:focus {
@@ -393,7 +393,7 @@
           <img src='/static/materials/icons/camera.png'>
         </div>
 
-        <div class='send' :class=' sendable ? "sendable" : ""' @click='save'>전송</div>
+        <div class='send' :class=' sendable ? "sendable" : ""' @click='save'><b>전송</b></div>
       </div>
     </template>
   </page2>
@@ -517,8 +517,10 @@
       },
 
       texting: function() {
-        this.$refs.input.style.height = "auto";
-        this.$refs.input.style.height = (this.$refs.input.scrollHeight)+"px";
+        if (this.$refs.input) {
+          this.$refs.input.style.height = "auto";
+          this.$refs.input.style.height = (this.$refs.input.scrollHeight)+"px";
+        }
       },
 
       report_this_post: function() {

@@ -85,7 +85,7 @@
   }
 
   .page > .content > .close img {
-    width: var(--w-5);
+    width: var(--w-4);
     height: auto;
     /* height: var(--w-6); */
     transform: rotate(180deg);
@@ -108,10 +108,10 @@
 
   .page > .content > .headerbar > .hamburger {
     position: absolute;
-    top: var(--w-5);
+    top: var(--w-6);
     right: var(--w-4);
-    width: var(--w-6);
-    height: var(--w-6);
+    width: var(--w-4);
+    height: var(--w-4);
     pointer-events: auto;
   }
 
@@ -213,14 +213,18 @@
     position: absolute;
     top: 150%;
     right: 0;
-    background: rgba(19,18,18,0.7);
+    /* background: rgba(19,18,18,0.7); */
     /* background: rgba(255,255,255,0.9); */
+    background: white;
     width: var(--w-24);
     /* border: 1px solid black; */
-    border-radius: var(--w-3);
+    /* border-radius: var(--w-3); */
+    border-radius: 9px;
     overflow: hidden;
     font-size: 12px;
-    color: white;
+    /* color: white; */
+
+    box-shadow: 0px 2px 6px rgb(70, 71, 105, 0.3);
   }
 
   .page > .content > .headerbar > .hamburger > .headerbar-menu > .item {
@@ -230,6 +234,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu > .item.report {
+    color: #808080;
   }
 
   .page > .content > .headerbar > .hamburger > .headerbar-menu > .item:last-child {

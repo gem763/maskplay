@@ -51,13 +51,35 @@
     height: var(--w-16);
   } */
 
-  .baseposts.vcomp > .remocon > .upward.menu,
+  .baseposts.vcomp > .remocon > .upward.menu {
+    height: var(--w-8);
+    align-items: flex-start;
+  }
+
+  .baseposts.vcomp > .remocon > .upward.menu.upmost {
+    opacity: 0.3;
+  }
+
   .baseposts.vcomp > .remocon > .downward.menu {
     height: var(--w-8);
+    align-items: flex-end;
+  }
+
+  .baseposts.vcomp > .remocon > .comments.menu {
+    align-items: flex-start;
+  }
+
+  .baseposts.vcomp > .remocon > .voters.menu,
+  .baseposts.vcomp > .remocon > .like.menu {
+    align-items: flex-end;
   }
 
   .baseposts.vcomp > .remocon > .edge.menu {
     height: var(--w-4);
+  }
+
+  .baseposts.vcomp > .remocon > .mid.menu {
+    height: var(--w-3);
   }
 
   .baseposts.vcomp > .remocon > .menu > .item > .icon {
@@ -66,7 +88,7 @@
 
   .baseposts.vcomp > .remocon > .menu > .item > .count {
     width: 100%;
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .baseposts.vcomp > .remocon > .menu > .item > .title {
@@ -74,36 +96,60 @@
   }
 
   .baseposts.vcomp > .remocon > .menu > .item > .icon > img {
-    width: var(--w-5);
-    height: var(--w-5);
+    width: var(--w-6);
+    height: auto;
+    /* height: var(--w-5); */
     object-fit: contain;
   }
 
+  .baseposts.vcomp > .remocon > .voters.menu > .item > .icon > img {
+    width: var(--w-8);
+    height: auto;
+  }
+
   .baseposts.vcomp > .remocon > .upward.menu > .item > .icon > img {
-    transform: rotate(270deg) translateX(var(--w-2));
+    width: auto;
+    height: var(--w-3);
+    /* transform: rotate(270deg) translateX(var(--w-2)); */
   }
 
   .baseposts.vcomp > .remocon > .downward.menu > .item > .icon > img {
-    transform: rotate(90deg) translateX(var(--w-2));
+    width: auto;
+    height: var(--w-3);
+    transform: rotate(180deg);
+    /* transform: rotate(90deg) translateX(var(--w-2)); */
   }
 </style>
 
 
 <script type='text/x-template' id='baseposts-template'>
   <div class='baseposts vcomp'>
-    <swiper ref='swiper' :options='swiper_options'>
+    <div class='swiper-container' ref='swiper'>
+      <div class='swiper-wrapper'>
+        <div class="swiper-slide" v-for='post in postlist' :key='post.id'>
+          <post :post='post' :session='session'></post>
+        </div>
+      </div>
+    </div>
+
+    <!-- 아래의 방식으로 했더니, 첫 슬라이드에서 터치이벤트가 잘 안되었다.
+    vue-awesome-swiper 라이브러리의 내부적인 문제인것 같다
+    2021.01.31 -->
+    <!-- <swiper ref='swiper' :options='swiper_options'>
       <swiper-slide v-for='post in postlist' :key='post.id'>
         <post :post='post' :session='session'></post>
       </swiper-slide>
-    </swiper>
+    </swiper> -->
 
     <div class='remocon'>
       <div class='menu edge'></div>
 
 
-      <div class='menu upward' v-if='!is_beginning' @click='goto_prev'>
+      <!-- <div class='menu upward' v-if='!is_beginning' @click='goto_prev'> -->
+      <div class='menu upward' :class='is_beginning ? "upmost": ""' @click='goto_prev'>
         <div class='item'>
-          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+          <div class='icon'><img src='/static/materials/icons/backicon.png'></div>
+          <!-- <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div> -->
         </div>
       </div>
 
@@ -114,6 +160,8 @@
           <div class='title'>댓글</div>
         </div>
       </div>
+
+      <div class='menu mid'></div>
 
       <div class='menu like' v-if='is_postqa' @click='like'>
         <div class='item'>
@@ -136,7 +184,8 @@
 
       <div class='menu downward' v-if='!is_end' @click='goto_next'>
         <div class='item'>
-          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+          <div class='icon'><img src='/static/materials/icons/backicon.png'></div>
+          <!-- <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div> -->
         </div>
       </div>
 
@@ -147,7 +196,7 @@
 
 
 <script>
-  Vue.use(VueAwesomeSwiper);
+  // Vue.use(VueAwesomeSwiper);
 
   Vue.component('baseposts', {
     template: '#baseposts-template',
@@ -160,6 +209,10 @@
         swiper: undefined,
         swiper_options: {
           direction: 'vertical',
+          simulateTouch: true,
+          // loop: true,
+          observer: true,
+          observeParents: true,
           mousewheel: {
             releaseOnEdges: true,
           },
@@ -223,7 +276,8 @@
 
 
     mounted: function() {
-      this.swiper = this.$refs.swiper.$swiper;
+      // this.swiper = this.$refs.swiper.$swiper;
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
     },
 
     watch: {
@@ -259,8 +313,8 @@
             this.session.auth.vote(this.cpost.id, 0);
           }
 
-        } else if (this.session._auth) {
-          this.session.open_profiler('new');
+        // } else if (this.session._auth) {
+        //   this.session.open_profiler('new');
 
         } else {
           this.session.open_bridge('login_guide_for_mypage', 'bottom');
@@ -272,14 +326,43 @@
           return
         }
 
+        let voted_to = -1;
+
+        if (this.session.auth) {
+          voted_to = this.session.auth.has_voted_as(this.cpost.id);
+
+        // } else if (this.session._auth) {
+        //   this.session.open_profiler('new');
+        //   return
+
+        } else {
+          this.session.open_bridge('login_guide_for_mypage', 'bottom');
+          return
+        }
+
         if (!this.cpost.voters) {
           this.$set(this.cpost, 'voters', {
             0: new Voters(this.cpost, 0),
             1: new Voters(this.cpost, 1),
+            default: Math.max(0, voted_to)
           });
+
+        } else {
+          this.cpost.voters.default = Math.max(0, voted_to);
         }
 
-        this.session.open_network(this.cpost.voters[0]);
+        let network_type;
+        if (this.cpost.type == 'postvoteox') {
+          network_type = 'ox_voters';
+
+        } else if (this.cpost.type == 'postvoteab') {
+          network_type = 'ab_voters';
+        }
+
+        this.session.open_network(network_type, this.cpost.voters);
+        // this.session.open_network(network_type, [ this.cpost.voters[0], this.cpost.voters[1] ]);
+
+        // this.session.open_network(this.cpost.voters[0]);
       },
 
       goto_prev: function() {

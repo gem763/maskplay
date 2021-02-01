@@ -8,6 +8,9 @@ from django.conf import settings
 from django_currentuser.middleware import get_current_user, get_current_authenticated_user
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+# from notifications.base.models import AbstractNotification
+from notifications.signals import notify
 
 from IPython.core.debugger import set_trace
 from rest_framework import serializers
@@ -16,6 +19,7 @@ import json
 import os
 import re
 import collections
+import random
 # from gensim.models import Doc2Vec
 
 
@@ -36,6 +40,11 @@ class BigIdAbstract(models.Model):
 
     class Meta:
         abstract = True
+
+
+# class Notification(AbstractNotification):
+#     class Meta(AbstractNotification.Meta):
+#         abstract = False
 
 
 class Flager(FlagBase):
@@ -72,12 +81,31 @@ class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
 
     @property
+    def has_active_boo(self):
+        return self.boo_set.filter(active=True).count() > 0
+
+    @property
     def boo(self):
-        return Boo.objects.get(pk=self.boo_selected, user=self)
+        return self.boo_set.get(pk=self.boo_selected)
+        # try:
+        #     return self.boo_set.get(pk=self.boo_selected)
+        #
+        # except:
+        #     active_boos = self.boo_set.filter(active=True)
+        #
+        #     if active_boos.count() > 0:
+        #         self.set_boo(max(active_boos.values_list('id', flat=True)))
+        #
+        #     else:
+        #         boo = Boo.objects.create(user=self)
+        #         self.set_boo(boo.id)
+        #
+        #     return self.boo_set.get(pk=self.boo_selected)
+
 
     @property
     def other_boos(self):
-        _boos = Boo.objects.filter(user=self, active=True).exclude(pk=self.boo_selected)
+        _boos = self.boo_set.filter(active=True).exclude(pk=self.boo_selected)
         _boos = BooSerializer(_boos, many=True).data
         _boos = {b['id']:b for b in _boos}
         return json.dumps(_boos)
@@ -87,18 +115,21 @@ class User(AbstractEmailUser):
         _user = UserSerializer(self).data
         return json.dumps(_user)
 
+    def create_default_boo(self):
+        boo = Boo.objects.create(user=self)
+        self.set_boo(boo.id)
+
     def set_boo(self, boo_id):
         self.boo_selected = boo_id
         self.save()
 
     def delete_boo(self):
         # self.boo.delete()
-        # 삭제된 부캐가 작성한 포스트에서, 해당 부캐를 클릭하면 '삭제됐어요' 메시지 보이기
         boo = self.boo
         boo.active = False
         boo.save()
-        boos_id = Boo.objects.filter(user=self, active=True).values_list('id', flat=True)
-        # boos_id = Boo.objects.filter(user=self).values_list('id', flat=True)
+        boos_id = self.boo_set.filter(active=True).values_list('id', flat=True)
+        # boos_id = Boo.objects.filter(user=self, active=True).values_list('id', flat=True)
         self.set_boo(max(boos_id))
 
 
@@ -119,7 +150,8 @@ class Profile(BigIdAbstract):
 
     def save(self, *args, **kwargs):
         if not self.pix:
-            self.pix = 'material/character_default.png'
+            self.pix = 'material/ghost_' + random.choice(['b','m','p','y']) + '.png'
+            # self.pix = 'material/character_default.png'
 
         super().save(*args, **kwargs)
 
@@ -152,6 +184,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
 
     def save(self, *args, **kwargs):
         if (self.nick is None) or (self.nick.strip() == ''):
+            # self.nick = ''
             self.nick = self.user.email.split('@')[0]
 
         if self.profile is None:
@@ -170,8 +203,25 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return self.get_flags(status=FOLLOW).count()
 
     @property
+    def nfollowees(self):
+        return Flager.objects.filter(status=FOLLOW, user=self).count()
+
+    @property
     def nposts(self):
         return self.post_set.count()
+
+    @property
+    def ncomments(self):
+        return self.comment_set.count()
+
+    @property
+    def nlikes_comment(self):
+        return Flager.objects.filter(status=LIKE_COMMENT, user=self).count()
+
+    @property
+    def nvotes(self):
+        q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+        return Flager.objects.filter(q, user=self).count()
 
     @property
     def serialized(self):
@@ -182,11 +232,13 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def follow(self, boo_id, note=None):
         boo = Boo.objects.get(pk=boo_id)
         boo.set_flag(self, note=note, status=FOLLOW)
+        notify.send(self, recipient=boo.user, verb='follow')
         boo.save()
 
     def unfollow(self, boo_id):
         boo = Boo.objects.get(pk=boo_id)
         boo.remove_flag(self, status=FOLLOW)
+        notify.send(self, recipient=boo.user, verb='unfollow')
         boo.save()
 
     def is_following(self, boo_id):
@@ -214,20 +266,11 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def followees(self):
         return Boo.objects.filter(id__in=self.followees_id)
 
-    # @property
-    # def network(self):
-    #     _network = {
-    #         'followers': SimplebooSerializer(self.followers, many=True).data,
-    #         'followees': SimplebooSerializer(self.followees, many=True).data
-    #     }
-    #     return json.dumps(_network)
-
     @property
     def voting_record(self):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
-    # @property
     def iposts(self, type):
         if type=='own':
             return list(self.post_set.order_by('-id').values_list('id', flat=True))
@@ -243,18 +286,6 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def ilikes_comment(self):
         return list(Flager.objects.filter(status=LIKE_COMMENT, user=self).values_list('object_id', flat=True))
-
-    # @property
-    # def nfollowers(self):
-    #     return self.get_flags(status=FOLLOW).count()
-    #
-    # @property
-    # def nfollowees(self):
-    #     return Flager.objects.filter(status=FOLLOW, user=self).count()
-
-    # @property
-    # def nposts(self):
-    #     return Post.objects.filter(boo=self).count()
 
 
     # @property
@@ -321,7 +352,8 @@ class Boo(BigIdAbstract, ModelWithFlag):
 class Post(BigIdAbstract, ModelWithFlag):
     boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_DEFAULT, default=BOO_DELETED)
     text = models.TextField(max_length=500, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+    # created_at = models.DateTimeField(auto_now_add=True)
     objects = InheritanceManager()
 
     nvotes_up = models.IntegerField(default=0)

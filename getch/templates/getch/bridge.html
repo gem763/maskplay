@@ -179,7 +179,7 @@
     box-sizing: border-box;
     text-align: center;
     /* color: var(--color-inactive); */
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons {
@@ -453,7 +453,7 @@
       <template v-else-if='is_posting_guide'>
         <div class='section top' @click='session.close_page()'></div>
 
-        <div class='section bottom'>
+        <div class='section bottom' style='height:var(--w-75);background:white;box-shadow:4px 0px 5px rgba(0,0,0,0.05)'>
           <span class='title'>
             <b>새 피드 등록</b><br>
             <span style='font-size:9px;color:var(--color-inactive)'>다양한 고민을 던지고 사용자들에게 솔직한 검증 받아보세요.</span>
@@ -464,7 +464,7 @@
               <tr>
                 <td>
                   <div class='postype postvoteab' @click='session.open_newpost("postvoteab")'>
-                    <div class='motiv'>이거 저거?<br>고민이라면?</div>
+                    <div class='motiv'><b>이거 저거?<br>고민이라면?</b></div>
                     <div class='icons'>
                       <img src='/static/materials/icons/ab.png'>
                       <!-- <table>
@@ -478,7 +478,7 @@
                 </td>
                 <td>
                   <div class='postype postvoteox' @click='session.open_newpost("postvoteox")'>
-                    <div class='motiv'>살까 말까?<br>고민이라면?</div>
+                    <div class='motiv'><b>살까 말까?<br>고민이라면?</b></div>
                     <div class='icons'>
                       <img src='/static/materials/icons/ox.png'>
                       <!-- <table>
@@ -494,7 +494,7 @@
                 </td>
                 <td>
                   <div class='postype postqa' @click='session.open_newpost("postqa")'>
-                    <div class='motiv'>추천해줘!<br>정보 알려줘!</div>
+                    <div class='motiv'><b>추천해줘!<br>정보 알려줘!</b></div>
                     <div class='icons'>
                       <img src='/static/materials/icons/qa.png'>
                       <!-- <table>

@@ -70,7 +70,7 @@
     ></comments>
 
     <network
-      v-if='session.page.network.boos'
+      v-if='session.page.network.boos_group'
       :session='session'
     ></network>
 
@@ -80,7 +80,7 @@
     ></posting>
 
     <profiler
-      v-if='session._auth'
+      v-if='session.auth'
       :session='session'
     ></profiler>
 

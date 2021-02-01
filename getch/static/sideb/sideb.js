@@ -9,7 +9,7 @@ class Session {
       navigator:  { open: false, from: 'left' },
       profiler:   { open: false, from: 'right', type: undefined },
       boopage:    { open: false, from: 'left', boo: undefined },
-      network:    { open: false, from: 'right', boos: undefined },
+      network:    { open: false, from: 'right', type: undefined, boos_group: undefined },
       posting:    { open: false, from: 'right', post: undefined, type: undefined },
       comments:   { open: false, from: 'right', post: undefined },
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
@@ -21,24 +21,21 @@ class Session {
       infoboard:  { open: false, from: 'right', contents: undefined },
     };
 
-    // this.req = undefined;
     this.mode = { on: 'posts', order: 0, prev: undefined };
-    this._auth = undefined;
-    // this.posts_open_at = 0;
+    this.auth = undefined;
     this.booposts = undefined;
+    this.page.posts.contents = this.page.posts.univ.history;
     // this.hammer = this.get_hammer();
-
-    this.page.posts.contents = this.page.posts.univ.hot;
     this.fetch_user();
   }
 
-  get auth() {
-    if (this._auth) {
-      if (this._auth.boo) {
-        return this._auth
-      }
-    }
-  }
+  // get auth() {
+  //   if (this._auth) {
+  //     if (this._auth.boo) {
+  //       return this._auth
+  //     }
+  //   }
+  // }
 
 
   fetch_user() {
@@ -46,13 +43,16 @@ class Session {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          // console.log(js)
-          // 화살표 함수 안에서는 그냥 this를 써도 된다
-          this._auth = new Auth(JSON.parse(js.user));
+          this.auth = new Auth(JSON.parse(js.user));
 
-          if (!this._auth.boo) {
-            this.open_profiler('new');
+          if (js.first_visit) {
+            this.auth.first_visit = js.first_visit;
+            this.open_profiler();
           }
+
+          // if (!this._auth.boo) {
+          //   this.open_profiler('new');
+          // }
         }
       });
   }
@@ -120,8 +120,8 @@ class Session {
     if (this.auth) {
       this.open_page('mypage');
 
-    } else if (this._auth) {
-      this.open_profiler('new');
+    // } else if (this._auth) {
+    //   this.open_profiler('new');
 
     } else {
       this.open_bridge('login_guide_for_mypage', 'bottom');
@@ -181,8 +181,8 @@ class Session {
       this.open_bridge('posting_guide', 'bottom');
       // this.open_page('posting');
 
-    } else if (this._auth) {
-      this.open_profiler('new');
+    // } else if (this._auth) {
+    //   this.open_profiler('new');
 
     } else {
       this.open_bridge('login_guide_for_posting', 'bottom');
@@ -281,33 +281,12 @@ class Session {
     this.open_page('searcher');
   }
 
-  open_network(boos) {
-    this.page.network.boos = boos;
+  open_network(type, boos_group) {
+    this.page.network.type = type;
+    this.page.network.boos_group = boos_group;
     this.open_page('network');
   }
 
-  // open_network() {
-  //   if (this.mode.on=='mypage') {
-  //     this.cnetwork.boo = this.auth.boo;
-  //   } else if (this.mode.on=='authorpage') {
-  //     this.cnetwork.boo = this.cpost.boo;
-  //   }
-  //
-  //   this.cnetwork.followers = undefined;
-  //   this.cnetwork.followees = undefined;
-  //
-  //   self = this;
-  //   fetch(`/boo/${self.cnetwork.boo.id}/network/`)
-  //     .then(x => x.json())
-  //     .then(js => {
-  //       const _network = JSON.parse(js.network);
-  //       console.log(_network);
-  //       self.cnetwork.followers = _network.followers;
-  //       self.cnetwork.followees = _network.followees;
-  //     })
-  //
-  //   this.open_page('network');
-  // }
 
   checkin(on) {
     console.log(`check-in to ${on}`);
@@ -385,6 +364,7 @@ class ContentLoader {
     this.list = [];
     this.idlist = [];
     this.onloading = true;
+    this.counter = 0;
   }
 
   load(n) {
@@ -401,7 +381,7 @@ class ContentLoader {
     // const promises = this.idlist.map(id => this.load_by_id(id));
     const promises = [];
     for (let i = 0; i < n; i++) {
-      promises.push(this.load_by_id(this.idlist.shift()));
+      promises.push(this.load_by_id(this.idlist.shift(), this.counter++));
     };
 
     Promise.all(promises).then(results => {
@@ -422,11 +402,12 @@ class ContentLoader {
       });
   }
 
-  load_by_id(id) {
+  load_by_id(id, order) {
     return fetch(this.content_url(id))
             .then(x => x.json())
             .then(js => {
               if (js.success) {
+                js.content.order = order;
                 this.list.push(js.content);
               }
             })
@@ -531,6 +512,7 @@ class Auth {
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = cuser.boo ? {[cuser.boo_selected]: cuser.boo} : {};
     this.boos_fully_loaded = false;
+    this.first_visit = false;
     this.load_other_boos();
   }
 

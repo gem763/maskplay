@@ -7,6 +7,8 @@ from allauth.utils import get_user_model
 from allauth.exceptions import ImmediateHttpResponse
 from django.shortcuts import redirect
 from django.conf import settings
+from notifications.signals import notify
+
 
 
 # @receiver(post_save, sender=User)
@@ -25,13 +27,15 @@ from django.conf import settings
 #
 # @receiver(user_logged_in)
 # def allauth_user_logged_in(request, user, **kwargs):
+#     notify.send(request.user, recipient=request.user, verb='have just logged in')
 #     print(user)
-#     raise ImmediateHttpResponse(redirect(settings.SIGNUP_REDIRECT_URL))
 
 
 # @receiver(user_signed_up)
 # def allauth_user_signed_up(request, user, **kwargs):
-#     print(user)
+    # request.signed_up = True
+    # user.signed_up = True
+    # notify.send(user, recipient=user, verb='signed up')
 
 
 @receiver(pre_social_login)

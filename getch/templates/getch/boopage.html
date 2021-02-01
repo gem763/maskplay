@@ -136,7 +136,8 @@
           this.$set(this.boo, 'followers', new Followers(this.boo));
         }
 
-        this.session.open_network(this.boo.followers);
+        // this.session.open_network(this.boo.followers);
+        this.session.open_network('followers', {0:this.boo.followers});
       }
     }
   });

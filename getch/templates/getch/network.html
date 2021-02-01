@@ -1,66 +1,41 @@
 <style>
+  .network.vcomp .headerbar-body-default,
+  .network.vcomp .headerbar-body-trans {
+    font-size: 17px;
+  }
+
   .network.vcomp .page-body {
     background: white;
   }
 
   .network.vcomp .page-body > .content {
     background: none;
-    margin-top: var(--w-16);
+    margin-top: var(--w-2);
     margin-bottom: var(--w-16);
   }
 
-  .network.vcomp .page-body > .content > .boo {
+  .network.vcomp .page-body > .groupers {
     background: none;
-    font-size: 12px;
-    margin-bottom: 5px;
-    padding: 10px;
-    padding-left: calc(var(--w-12) + 10px);
-    padding-right: var(--w-12);
-    position: relative;
+    margin-top: var(--w-16);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
 
-  .network.vcomp .page-body > .content > .boo > .profile {
-    position: absolute;
-    top: 50%;
-    left: var(--w-4);
-    width: var(--w-8);
-    height: var(--w-8);
-    border-radius: 50%;
-    overflow: hidden;
-    border: 1px solid whitesmoke;
-    box-sizing: border-box;
-    transform: translateY(-50%);
-  }
-
-  .network.vcomp .page-body > .content > .boo > .profile > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .network.vcomp .page-body > .content > .boo > .follow {
-    position: absolute;
-    top: 50%;
-    right: var(--w-4);
-    width: var(--w-6);
+  .network.vcomp .page-body > .groupers > .grouper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--w-50);
     height: var(--w-6);
-    transform: translateY(-50%);
-    background: none;
+    font-size: 15px;
+    border-bottom: 1px solid whitesmoke;
+    color: lightgray;
   }
 
-  .network.vcomp .page-body > .content > .boo > .follow > img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .network.vcomp .page-body > .content > .boo > .follow > .nfollowers {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: none;
-    font-size: 10px;
-    line-height: 10px;
+  .network.vcomp .page-body > .groupers > .grouper.active {
+    color: black;
+    border-bottom: 2px solid var(--color-dark);
   }
 </style>
 
@@ -77,28 +52,21 @@
     </template>
 
     <template #headerbar-body-trans>
+      <b>[[title]]</b>
     </template>
 
     <template #headerbar-body-default>
+      <b>[[title]]</b>
     </template>
 
     <template #page-body>
+      <div class='groupers'>
+        <span class='grouper' :class='group==0 ? "active": ""' @click='group_by(0)' v-if='is_voters'><b>[[groupkey_0]]</b></span>
+        <span class='grouper' :class='group==1 ? "active": ""' @click='group_by(1)' v-if='is_voters'><b>[[groupkey_1]]</b></span>
+      </div>
+
       <div class='content'>
-        <div class='boo' v-for='b in boolist'>
-          <div class='profile' @click='session.open_boopage(b)'>
-            <img :src='b.profile.pix'>
-          </div>
-
-          <div class='follow' @click='toggle_follow(b)'>
-            <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following(b)'>
-            <img class='follow-off' src='/static/materials/icons/like.png' v-else>
-            <span class='nfollowers'>[[ b.nfollowers ]]</span>
-            <!-- 좀전에 다른 화면에서 follow 한 경우, nfollower 숫자가 업데이트 안된다... -->
-          </div>
-
-          <span><b>[[b.nick]]</b></span><br>
-          <span>[[b.text ? b.text : "&nbsp;"]]</span>
-        </div>
+        <boolist :session='session' :boolist='boolist'></boolist>
       </div>
     </template>
   </page2>
@@ -111,12 +79,75 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return { }
+      return {
+        group: 0
+        // 선택놀이 직후에 바로 내 부캐가 해당 그룹으로 업데이트 안된다
+      }
+    },
+
+    watch: {
+      'session.page.network.open': {
+        handler: function(_new, _old) {
+          if (_new) {
+            this.group = this.boos_group.default ? this.boos_group.default : 0;
+          }
+        }, immediate: true
+      }
     },
 
     computed: {
+      type: function() {
+        return this.session.page.network.type
+      },
+
+      boos_group: function() {
+        return this.session.page.network.boos_group
+      },
+
+      is_voters: function() {
+        return this.type=='ox_voters' || this.type=='ab_voters'
+      },
+
+      is_followers: function() {
+        return this.type=='followers'
+      },
+
+      is_likers: function() {
+        return this.type=='likers'
+      },
+
+      groupkey_0: function() {
+        if (this.type == 'ox_voters') {
+          return 'O'
+
+        } else if (this.type == 'ab_voters') {
+          return '위'
+        }
+      },
+
+      groupkey_1: function() {
+        if (this.type == 'ox_voters') {
+          return 'X'
+
+        } else if (this.type == 'ab_voters') {
+          return '아래'
+        }
+      },
+
+      title: function() {
+        if (this.is_followers) {
+          return '팔로워 리스트'
+
+        } else if (this.is_voters) {
+          return '투표 리스트'
+
+        } else if (this.is_likers) {
+          return '좋아요 리스트'
+        }
+      },
+
       boos: function() {
-        return this.session.page.network.boos
+        return this.boos_group[this.group]
       },
 
       boolist: function() {
@@ -141,30 +172,9 @@
     },
 
     methods: {
-      toggle_follow: function(boo) {
-        if (this.is_myboo(boo)) {
-          return
-        }
-
-        if (this.is_following(boo)) {
-          this.session.auth.unfollow(boo.id);
-          boo.nfollowers -= 1;
-
-        } else {
-          this.session.auth.follow(boo.id);
-          boo.nfollowers += 1;
-        }
-      },
-
-      is_following: function(boo) {
-        if (!this.is_myboo(boo) && this.session.auth) {
-          return this.session.auth.is_following(boo.id)
-        }
-      },
-
-      is_myboo: function(boo) {
-        return (this.session.auth && this.session.auth.boo.id==boo.id)
-      },
+      group_by: function(what) {
+        this.group = what;
+      }
     }
   });
 </script>

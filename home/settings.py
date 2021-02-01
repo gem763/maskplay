@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 
     # 'vote',
     'siteflags',
+    'notifications',
     # 'friendship',
 ]
 
@@ -144,6 +145,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 # ACCOUNT_UNIQUE_EMAIL = False
 
 
+# NOTIFICATIONS_NOTIFICATION_MODEL = 'getch.Notification'
 
 ROOT_URLCONF = 'home.urls'
 

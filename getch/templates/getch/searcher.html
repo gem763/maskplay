@@ -82,7 +82,7 @@
 
       <div class='contents'>
         <postlibrary
-          :postlist='postlist'
+          :postlist='postlist_rearranged'
           @open_posts='backto_posts($event)'
         ></postlibrary>
       </div>
@@ -153,7 +153,23 @@
 
       loader_width: function() {
         return document.querySelector('#window').clientWidth
-      }
+      },
+
+      postlist_rearranged: function() {
+        const _postlist = this.postlist
+        _postlist.sort((a,b) => a.order - b.order);
+
+        const _plist = _.groupBy(_postlist, post => post.type);
+        const _ab = _plist.postvoteab ? _plist.postvoteab : [];
+        const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
+        const _plist_qa = _plist.postqa ? _plist.postqa : [];
+        const _oxqa = _plist_ox.concat(_plist_qa).sort((a,b) => a.order - b.order);
+
+        const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
+        const plist_ab = _ab.map(_ => [_]);
+
+        return plist_ab.concat(plist_oxqa).sort((a,b) => a[0].order - b[0].order)
+      },
     },
 
     methods: {
@@ -165,7 +181,7 @@
         this.session.page.posts.univ.search = new SearchPosts(this.keywords);
       },
 
-      backto_posts: function(idx) {
+      backto_posts_old: function(idx) {
         this.session.page.posts.contents = this.searchposts;
         // this.session.page.posts.contents = this.session.page.posts.univ.history;
 
@@ -173,6 +189,13 @@
         // const where = this.session.page.posts.swiper.realIndex + 1;
         // this.session.page.posts.contents.list.splice(where, 0, selected);
         // this.session.page.posts.swiper.slideTo(where, 1, false);
+        this.session.page.posts.swiper.slideTo(idx, 1, false);
+        this.session.close_pages_all();
+      },
+
+      backto_posts: function(postid) {
+        this.session.page.posts.contents = this.searchposts;
+        const idx = _.findIndex(this.searchposts.list, ['id', postid]);
         this.session.page.posts.swiper.slideTo(idx, 1, false);
         this.session.close_pages_all();
       },

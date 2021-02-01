@@ -57,15 +57,24 @@
     /* pointer-events: none; */
   }
 
-  .pixloader .pix-clicker img {
+  .pixloader .pix-clicker > img {
     position: absolute;
-    top: 50%;
+    bottom: 50%;
     left: 50%;
     width: var(--w-8);
     height: var(--w-8);
     object-fit: contain;
-    transform: translate(-50%,-50%);
-    opacity: 0.5;
+    transform: translateX(-50%);
+    /* opacity: 0.5; */
+  }
+
+  .pixloader .pix-clicker > .guide {
+    position: absolute;
+    top: 53%;
+    left: 0;
+    width: 100%;
+    font-size: 12px;
+    /* background: lightblue; */
   }
 
   .pixloader .show-pix-clicker-enter-active,
@@ -89,6 +98,7 @@
       <transition name='show-pix-clicker'>
         <div class='pix-clicker' v-show='editable'>
           <img src='/static/materials/icons/edit.png'>
+          <div class='guide'>사진을 추가해주세요.</div>
         </div>
       </transition>
     </label>

@@ -4,29 +4,37 @@
   }
 
   .navigator.vcomp .page-body > .links {
-    margin-top: var(--w-20);
+    margin-top: var(--w-16);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     flex-wrap: wrap;
     font-size: 11px;
+    height: var(--w-12);
+    background: #fafafa;
+    padding-right: var(--w-2);
+  }
+
+  .navigator.vcomp .page-body > .links > span {
+    font-size: 13px;
+    margin-right: var(--w-2);
   }
 
   .navigator.vcomp .page-body > .links > .link {
-    width: var(--w-20);
-    height: var(--w-15);
-    margin: 5px;
+    width: var(--w-7);
+    height: var(--w-7);
+    /* margin: 5px; */
     /* background: lightpink; */
     position: relative;
   }
 
   .navigator.vcomp .page-body > .links > .link > img {
     position: absolute;
-    bottom: 40%;
+    top: 50%;
     left: 50%;
-    width: var(--w-7);
-    height: var(--w-7);
-    transform: translateX(-50%);
+    width: var(--w-5);
+    height: var(--w-5);
+    transform: translate(-50%, -50%);
     filter: invert(100%);
   }
 
@@ -42,7 +50,7 @@
 
   .navigator.vcomp .page-body > .groupers {
     background: none;
-    margin-top: var(--w-5);
+    margin-top: var(--w-1);
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -59,7 +67,7 @@
     align-items: center;
     justify-content: center;
     width: var(--w-25);
-    height: var(--w-6);
+    height: var(--w-8);
     font-size: 12px;
     border-bottom: 1px solid whitesmoke;
     color: lightgray;
@@ -67,7 +75,8 @@
 
   .navigator.vcomp .page-body > .groupers > .grouper.active {
     color: black;
-    border-bottom: 1px solid var(--color-dark);
+    border-bottom: 2px solid var(--color-dark);
+    font-weight: bold;
     /* background: var(--color-dark); */
     /* color: white; */
   }
@@ -114,7 +123,7 @@
   }
 
   .navigator.vcomp .headerbar-body-trans > .logo > img {
-    height: var(--w-5);
+    height: var(--w-4);
     width: auto;
   }
 
@@ -147,9 +156,9 @@
     transform: translateY(-50%);
   }
 
-  .navigator.vcomp .headerbar-body-default {
+  /* .navigator.vcomp .headerbar-body-default {
     background: #fafafa;
-  }
+  } */
 </style>
 
 <script type='text/x-template' id='navigator-template'>
@@ -181,20 +190,15 @@
 
     <template #page-body>
       <div class='links'>
+        <span>Contact us</span>
+
         <div class='link' @click='goto_fb'>
           <img src='/static/materials/icons/Facebook.png'>
-          <!-- <span><b>페이스북</b></span> -->
         </div>
 
         <div class='link' @click='goto_insta'>
           <img src='/static/materials/icons/Instagram.png'>
-          <!-- <span><b>인스타그램</b></span> -->
         </div>
-
-        <!-- <div class='link' @click='bookmark'>
-          <img src='/static/materials/icons/Tag.png'>
-          <span><b>즐겨찾기</b></span>
-        </div> -->
       </div>
 
       <div class='groupers'>
@@ -243,7 +247,8 @@
     },
 
     mounted: function() {
-      this.group_hot();
+      // this.group_hot();
+      this.group_history();
     },
 
     computed: {
@@ -337,20 +342,20 @@
       },
 
 
-      sorter_by: function(how, islist) {
-        if (how == 'history' && !islist) {
-          return (a,b) => b.id - a.id
-
-        } else if (how == 'history' && islist) {
-          return (a,b) => b[0].id - a[0].id
-
-        } else if (how == 'hot' && !islist) {
-          return (a,b) => b.nvotes_up + b.nvotes_down - a.nvotes_up - a.nvotes_down
-
-        } else if (how == 'hot' && islist) {
-          return (a,b) => b[0].nvotes_up + b[0].nvotes_down - a[0].nvotes_up - a[0].nvotes_down
-        }
-      },
+      // sorter_by: function(how, islist) {
+      //   if (how == 'history' && !islist) {
+      //     return (a,b) => b.id - a.id
+      //
+      //   } else if (how == 'history' && islist) {
+      //     return (a,b) => b[0].id - a[0].id
+      //
+      //   } else if (how == 'hot' && !islist) {
+      //     return (a,b) => b.nvotes_up + b.nvotes_down - a.nvotes_up - a.nvotes_down
+      //
+      //   } else if (how == 'hot' && islist) {
+      //     return (a,b) => b[0].nvotes_up + b[0].nvotes_down - a[0].nvotes_up - a[0].nvotes_down
+      //   }
+      // },
 
       postlist_rearranged: function(what) {
         if (!this.session.page.posts.univ[what]) {
@@ -358,18 +363,21 @@
         }
 
         const _postlist = this.session.page.posts.univ[what].list
-        _postlist.sort(this.sorter_by(what, false));
+        _postlist.sort((a,b) => a.order - b.order);
+        // _postlist.sort(this.sorter_by(what, false));
 
         const _plist = _.groupBy(_postlist, post => post.type);
         const _ab = _plist.postvoteab ? _plist.postvoteab : [];
         const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
         const _plist_qa = _plist.postqa ? _plist.postqa : [];
-        const _oxqa = _plist_ox.concat(_plist_qa).sort(this.sorter_by(what, false))
+        const _oxqa = _plist_ox.concat(_plist_qa).sort((a,b) => a.order - b.order);
+        // const _oxqa = _plist_ox.concat(_plist_qa).sort(this.sorter_by(what, false))
 
         const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
         const plist_ab = _ab.map(_ => [_]);
 
-        return plist_ab.concat(plist_oxqa).sort(this.sorter_by(what, true))
+        return plist_ab.concat(plist_oxqa).sort((a,b) => a[0].order - b[0].order)
+        // return plist_ab.concat(plist_oxqa).sort(this.sorter_by(what, true))
       },
 
       // postlist_rearranged_old: function(postlist, sorted) {

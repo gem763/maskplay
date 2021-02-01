@@ -1,0 +1,171 @@
+<style>
+  .network.vcomp .page-body {
+    background: white;
+  }
+
+  .network.vcomp .page-body > .content {
+    background: none;
+    margin-top: var(--w-16);
+    margin-bottom: var(--w-16);
+  }
+
+  /* .network.vcomp .page-body > .content > .boo {
+    background: none;
+    font-size: 12px;
+    margin-bottom: 5px;
+    padding: 10px;
+    padding-left: calc(var(--w-12) + 10px);
+    padding-right: var(--w-12);
+    position: relative;
+  }
+
+  .network.vcomp .page-body > .content > .boo > .profile {
+    position: absolute;
+    top: 50%;
+    left: var(--w-4);
+    width: var(--w-8);
+    height: var(--w-8);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid whitesmoke;
+    box-sizing: border-box;
+    transform: translateY(-50%);
+  }
+
+  .network.vcomp .page-body > .content > .boo > .profile > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .network.vcomp .page-body > .content > .boo > .follow {
+    position: absolute;
+    top: 50%;
+    right: var(--w-4);
+    width: var(--w-6);
+    height: var(--w-6);
+    transform: translateY(-50%);
+    background: none;
+  }
+
+  .network.vcomp .page-body > .content > .boo > .follow > img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .network.vcomp .page-body > .content > .boo > .follow > .nfollowers {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    font-size: 10px;
+    line-height: 10px;
+  } */
+</style>
+
+<script type='text/x-template' id='network-template'>
+  <page2
+    class='network vcomp'
+    :open='session.page.network.open'
+    :from='session.page.network.from'
+    :scrolload='scrolload'
+    :onloading='onloading'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='content'>
+        <boolist :session='session' :boos='boos'></boolist>
+        <!-- <div class='boo' v-for='b in boolist'>
+          <div class='profile' @click='session.open_boopage(b)'>
+            <img :src='b.profile.pix'>
+          </div>
+
+          <div class='follow' @click='toggle_follow(b)'>
+            <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following(b)'>
+            <img class='follow-off' src='/static/materials/icons/like.png' v-else>
+            <span class='nfollowers'>[[ b.nfollowers ]]</span>
+            // 좀전에 다른 화면에서 follow 한 경우, nfollower 숫자가 업데이트 안된다...
+          </div>
+
+          <span><b>[[b.nick]]</b></span><br>
+          <span>[[b.text ? b.text : "&nbsp;"]]</span>
+        </div> -->
+      </div>
+    </template>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('network', {
+    template: '#network-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      boos: function() {
+        return this.session.page.network.boos
+      },
+
+      // boolist: function() {
+      //   if (this.boos.list.length < 10) {
+      //     this.boos.load(10);
+      //   }
+      //   return this.boos.list
+      // },
+
+      scrolload: function() {
+        if (this.boos) {
+          return {
+            obj: this.boos,
+            n: 20
+          }
+        }
+      },
+
+      onloading: function() {
+        return this.boos.onloading
+      }
+    },
+
+    // methods: {
+    //   toggle_follow: function(boo) {
+    //     if (this.is_myboo(boo)) {
+    //       return
+    //     }
+    //
+    //     if (this.is_following(boo)) {
+    //       this.session.auth.unfollow(boo.id);
+    //       boo.nfollowers -= 1;
+    //
+    //     } else {
+    //       this.session.auth.follow(boo.id);
+    //       boo.nfollowers += 1;
+    //     }
+    //   },
+    //
+    //   is_following: function(boo) {
+    //     if (!this.is_myboo(boo) && this.session.auth) {
+    //       return this.session.auth.is_following(boo.id)
+    //     }
+    //   },
+    //
+    //   is_myboo: function(boo) {
+    //     return (this.session.auth && this.session.auth.boo.id==boo.id)
+    //   },
+    // }
+  });
+</script>

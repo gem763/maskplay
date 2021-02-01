@@ -56,7 +56,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(m.Boo)
 class BooAdmin(admin.ModelAdmin):
-    list_display = ['user', 'nick', 'selected', 'active', 'text', 'n_posts', 'n_comments', 'n_followers', 'n_followees', 'n_votes']
+    list_display = ['user', 'nick', 'selected', 'active', 'is_staff', 'text', 'nposts', 'ncomments', 'nfollowers', 'nfollowees', 'nvotes', 'nlikes_comment']
     list_display_links = ['user']
     list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
     list_editable = ['nick']
@@ -64,23 +64,27 @@ class BooAdmin(admin.ModelAdmin):
     def selected(self, obj):
         return obj.user.boo_selected == obj.id
 
+    def is_staff(self, obj):
+        return obj.user.is_staff
+
     selected.boolean = True
+    is_staff.boolean = True
 
-    def n_posts(self, obj):
-        return obj.post_set.count()
-
-    def n_comments(self, obj):
-        return obj.comment_set.count()
-
-    def n_followers(self, obj):
-        return obj.get_flags(status=m.FOLLOW).count()
-
-    def n_followees(self, obj):
-        return m.Flager.objects.filter(status=m.FOLLOW, user=obj).count()
-
-    def n_votes(self, obj):
-        q = Q(status=m.VOTE_UP) | Q(status=m.VOTE_DOWN)
-        return m.Flager.objects.filter(q, user=obj).count()
+    # def n_posts(self, obj):
+    #     return obj.post_set.count()
+    #
+    # def n_comments(self, obj):
+    #     return obj.comment_set.count()
+    #
+    # def n_followers(self, obj):
+    #     return obj.get_flags(status=m.FOLLOW).count()
+    #
+    # def n_followees(self, obj):
+    #     return m.Flager.objects.filter(status=m.FOLLOW, user=obj).count()
+    #
+    # def n_votes(self, obj):
+    #     q = Q(status=m.VOTE_UP) | Q(status=m.VOTE_DOWN)
+    #     return m.Flager.objects.filter(q, user=obj).count()
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -114,3 +118,7 @@ class PostpixAdmin(admin.ModelAdmin):
 @admin.register(m.Commentpix)
 class CommentpixAdmin(admin.ModelAdmin):
     list_display = ['comment', 'img']
+
+# @admin.register(m.Notif)
+# class NotifAdmin(admin.ModelAdmin):
+#     pass

@@ -6,9 +6,10 @@ from siteflags.models import ModelWithFlag, FlagBase
 from datetime import datetime
 from django.conf import settings
 from django_currentuser.middleware import get_current_user, get_current_authenticated_user
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.utils.decorators import classproperty
 # from notifications.base.models import AbstractNotification
 from notifications.signals import notify
 
@@ -22,6 +23,9 @@ import collections
 import random
 # from gensim.models import Doc2Vec
 
+
+# hidden_user = 34 # quantlab@kakao.com
+# hidden_boo_nick = '테스터'
 
 VOTE_UP = 0
 VOTE_DOWN = 1
@@ -174,6 +178,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
     # nfollowers = models.IntegerField(default=0)
 
     active = models.BooleanField(default=True)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.nick + ' | ' + self.user.email
@@ -272,7 +277,11 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=self)}
 
     def iposts(self, type):
-        if type=='own':
+        # if (self.user.id == hidden_user) and (self.nick == hidden_boo_nick):
+        if self.hidden:
+            return []
+
+        elif type=='own':
             return list(self.post_set.order_by('-id').values_list('id', flat=True))
 
         elif type=='follow':
@@ -366,6 +375,16 @@ class Post(BigIdAbstract, ModelWithFlag):
         # 아래 두줄의 순서가 중요할까?
         super().save(*args, **kwargs)
         self.boo.save()
+
+    @classmethod
+    def iposts(cls, type):
+        excl = Q(boo_id=BOO_DELETED) | Q(boo__hidden=True)
+
+        if type == 'history':
+            return Post.objects.exclude(excl).order_by('-created_at').values_list('id', flat=True)
+
+        elif type == 'hot':
+            return Post.objects.exclude(excl).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
 
     @property
     def type(self):

@@ -4,6 +4,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core import serializers
 from django.db.models import F
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 import getch.models as m
@@ -110,15 +111,18 @@ def get_user(request):
 
 
 def get_iposts(request, type):
-    if type == 'history':
-        _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED).order_by('-created_at').values_list('id', flat=True)
-        # print(_iposts)
-        # _iposts = m.Post.objects.all().order_by('-created_at').values_list('id', flat=True)
-
-    elif type == 'hot':
-        _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
-        # _iposts = m.Post.objects.annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
-
+    # excludes = Q(boo_id=m.BOO_DELETED) | (Q(boo__user_id=m.hidden_user) & Q(boo__nick=m.hidden_boo_nick))
+    #
+    # if type == 'history':
+    #     _iposts = m.Post.objects.exclude(excludes).order_by('-created_at').values_list('id', flat=True)
+    #     # _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED, boo__user__email=m.hidden_user_email).order_by('-created_at').values_list('id', flat=True)
+    #
+    # elif type == 'hot':
+    #     _iposts = m.Post.objects.exclude(excludes).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
+    #     # _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
+    #
+    # return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
+    _iposts = m.Post.iposts(type)
     return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
 
 

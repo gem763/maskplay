@@ -266,6 +266,37 @@
           }
         }
       });
+
+      history.pushState(null, null, document.URL);
+      window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+
+        const session = sideb.session;
+
+        try {
+          if ((session.mode.on == 'posts') && (!session.page.posts.swiper.isBeginning)) {
+            session.page.posts.swiper.slidePrev();
+
+          } else if ((session.mode.on == 'booposts') && (!session.page.booposts.swiper.isBeginning)) {
+            session.page.booposts.swiper.slidePrev();
+
+          } else if (session.mode.prev) {
+            session.close_page();
+
+          } else {
+            window.history.back();
+          }
+
+        } catch {  }
+
+
+        // if (session.mode.prev) {
+        //   session.close_page();
+        //
+        // } else {
+        //   window.history.back();
+        // }
+      });
     });
 
     sideb.session.req = {{req}};

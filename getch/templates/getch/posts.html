@@ -4,7 +4,9 @@
     :onloading='onloading'
     :open='session.page.posts.open'
     :hide_close='true'
+    :hide_headerbar='false'
     :trans_headerbar='true'>
+    <!-- :hide_headerbar='hide_headerbar' -->
 
     <template #headerbar-menu>
       <div class='item' v-if='cpost' @click='session.open_comments(cpost)'>댓글보기</div>
@@ -12,6 +14,20 @@
       <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.modify_this_post'>수정하기</div>
       <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.delete_this_post'>삭제</div>
       <div class='item report' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
+    </template>
+
+    <template #headerbar-body-default>
+      <!-- <div class='groupers'>
+        <span class='grouper blank'></span>
+        <span class='grouper' :class='active_grouper=="hot" ? "active" : ""' @click='group_hot'>인기</span>
+        <span class='grouper' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
+        <span class='grouper blank'></span>
+      </div>
+
+      <div class='voteonly-button' :class='vote_only ? "on" : ""' @click='toggle_vote_only'>
+        <img src='/static/materials/icons/voteonly_button.png'>
+        <span>투표만 보기</span>
+      </div> -->
     </template>
 
     <template #page-body>
@@ -27,11 +43,21 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return {}
+      return {
+        hide_headerbar: false
+      }
     },
 
     mounted: function() {
       this.session.page.posts.swiper = this.$refs.baseposts.swiper;
+
+      this.session.page.posts.swiper.on('slideNextTransitionStart', () => {
+        this.hide_headerbar = true;
+      });
+
+      this.session.page.posts.swiper.on('slidePrevTransitionStart', () => {
+        this.hide_headerbar = false;
+      });
     },
 
     computed: {
@@ -48,8 +74,8 @@
       },
 
       is_mypost: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo_selected == this.cpost.boo.id
+        if (this.session.user.auth) {
+          return this.session.user.auth.boo_selected == this.cpost.boo.id
         }
       },
 
@@ -64,10 +90,10 @@
           return []
         }
 
-        if (this.session.auth) {
+        if (this.session.user.auth) {
           this.session.page.posts.contents.list.forEach(post => {
-            if (post.boo.id in this.session.auth.boos) {
-              post.boo = this.session.auth.boos[post.boo.id];
+            if (post.boo.id in this.session.user.auth.boos) {
+              post.boo = this.session.user.auth.boos[post.boo.id];
             }
           });
         }

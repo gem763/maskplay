@@ -26,6 +26,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    pointer-events: none;
   }
 
   .boolist.vcomp > .boo > .follow {
@@ -36,6 +37,10 @@
     height: var(--w-6);
     transform: translateY(-50%);
     background: none;
+  }
+
+  .boolist.vcomp > .boo > .follow > * {
+    pointer-events: none;
   }
 
   .boolist.vcomp > .boo > .follow > img {
@@ -57,19 +62,19 @@
 
 <script type='text/x-template' id='boolist-template'>
   <div class='boolist vcomp'>
-    <div class='boo' v-for='b in boolist'>
+    <div class='boo' v-for='b in boolist_uniq'>
       <div class='profile' @click='session.open_boopage(b)'>
         <img :src='b.profile.pix'>
       </div>
 
       <div class='follow' @click='toggle_follow(b)'>
-        <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='is_following(b)'>
+        <img class='follow-on' src='/static/materials/icons/like_filled.png' v-if='session.user.is_following(b)'>
         <img class='follow-off' src='/static/materials/icons/like.png' v-else>
-        <span class='nfollowers'>[[ b.nfollowers ]]</span>
+        <span class='nfollowers' v-if='!is_guestboo(b)'>[[ b.nfollowers ]]</span>
         <!-- // 좀전에 다른 화면에서 follow 한 경우, nfollower 숫자가 업데이트 안된다...  -->
       </div>
 
-      <span><b>[[b.nick]]</b></span><br>
+      <span><b>[[b.nick]]</b></span><span v-if='is_guestboo(b)' style='margin-left:5px;'>[[n_guestboos]]</span><br>
       <span>[[b.text ? b.text : "&nbsp;"]]</span>
     </div>
   </div>
@@ -80,45 +85,53 @@
   Vue.component('boolist', {
     template: '#boolist-template',
     delimiters: ['[[', ']]'],
-    props: [ 'boolist', 'session' ],
+    props: [ 'boolist', 'session', 'n_guestboos' ],
     data: function() {
       return { }
     },
 
-    // computed: {
-    //   boolist: function() {
-    //     if (this.boos.list.length < 10) {
-    //       this.boos.load(10);
-    //     }
-    //     return this.boos.list
-    //   },
-    // },
-
     methods: {
       toggle_follow: function(boo) {
-        if (this.is_myboo(boo)) {
+        if (this.session.user.is_myboo(boo)) {
           return
         }
 
-        if (this.is_following(boo)) {
-          this.session.auth.unfollow(boo.id);
+        if (this.session.user.is_guest) {
+          return
+        }
+
+        if (this.session.user.is_following(boo)) {
+          this.session.user.unfollow(boo);
           boo.nfollowers -= 1;
 
         } else {
-          this.session.auth.follow(boo.id);
+          this.session.user.follow(boo);
           boo.nfollowers += 1;
         }
       },
 
-      is_following: function(boo) {
-        if (!this.is_myboo(boo) && this.session.auth) {
-          return this.session.auth.is_following(boo.id)
+      is_guestboo: function(b) {
+        if (this.session.user.guest) {
+          return this.session.user.guest.boo.id == b.id
         }
+      }
+    },
+
+    computed: {
+      boolist_uniq: function() {
+        return _.uniqBy(this.boolist, 'id')
       },
 
-      is_myboo: function(boo) {
-        return (this.session.auth && this.session.auth.boo.id==boo.id)
-      },
+      // n_guestboos: function() {
+      //   if (!this.session.user.guest) {
+      //     return
+      //   }
+      //
+      //   return _.sumBy(
+      //     this.boolist,
+      //     ({ id }) => Number(id == this.session.user.guest.boo.id)
+      //   );
+      // }
     }
   });
 </script>

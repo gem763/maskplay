@@ -1,7 +1,22 @@
 from django.contrib import admin
 import getch.models as m
 from django.db.models import Q
+# from django.contrib.sessions.models import Session
+# import pprint
 import os
+
+
+# @admin.register(Session)
+# class SessionAdmin(admin.ModelAdmin):
+#     def _session_data(self, obj):
+#         return pprint.pformat(obj.get_decoded()).replace('\n', '<br>\n')
+#
+#     _session_data.allow_tags=True
+#     list_display = ['session_key', '_session_data', 'expire_date']
+#     readonly_fields = ['_session_data']
+#     exclude = ['session_data']
+#     date_hierarchy='expire_date'
+
 
 
 @admin.register(m.Comment)
@@ -71,21 +86,12 @@ class BooAdmin(admin.ModelAdmin):
     selected.boolean = True
     is_staff.boolean = True
 
-    # def n_posts(self, obj):
-    #     return obj.post_set.count()
-    #
-    # def n_comments(self, obj):
-    #     return obj.comment_set.count()
-    #
-    # def n_followers(self, obj):
-    #     return obj.get_flags(status=m.FOLLOW).count()
-    #
-    # def n_followees(self, obj):
-    #     return m.Flager.objects.filter(status=m.FOLLOW, user=obj).count()
-    #
-    # def n_votes(self, obj):
-    #     q = Q(status=m.VOTE_UP) | Q(status=m.VOTE_DOWN)
-    #     return m.Flager.objects.filter(q, user=obj).count()
+
+# @admin.register(m.Guestboo)
+# class GuestbooAdmin(admin.ModelAdmin):
+#     list_display = ['nick', 'text', 'nposts', 'ncomments', 'nfollowers', 'nfollowees', 'nvotes', 'nlikes_comment']
+#     list_display_links = ['nick']
+#     exclude = ['user', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'active', 'hidden', 'links']
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -120,6 +126,10 @@ class PostpixAdmin(admin.ModelAdmin):
 class CommentpixAdmin(admin.ModelAdmin):
     list_display = ['comment', 'img']
 
-# @admin.register(m.Notif)
-# class NotifAdmin(admin.ModelAdmin):
-#     pass
+@admin.register(m.Link)
+class LinkAdmin(admin.ModelAdmin):
+    list_display = ['user', 'url']
+
+# @admin.register(m.Session)
+# class SessionAdmin(admin.ModelAdmin):
+#     list_display = ['sessionkey', 'user', 'view', 'checkin', 'checkout']    

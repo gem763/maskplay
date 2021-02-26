@@ -61,12 +61,12 @@
 
     <template #page-body>
       <div class='groupers'>
-        <span class='grouper' :class='group==0 ? "active": ""' @click='group_by(0)' v-if='is_voters'><b>[[groupkey_0]]</b></span>
-        <span class='grouper' :class='group==1 ? "active": ""' @click='group_by(1)' v-if='is_voters'><b>[[groupkey_1]]</b></span>
+        <span class='grouper up' :class='group==0 ? "active": ""' @click='group_by(0)' v-if='is_voters'><b>[[groupkey_0]]</b></span>
+        <span class='grouper down' :class='group==1 ? "active": ""' @click='group_by(1)' v-if='is_voters'><b>[[groupkey_1]]</b></span>
       </div>
 
       <div class='content'>
-        <boolist :session='session' :boolist='boolist'></boolist>
+        <boolist :session='session' :boolist='boolist' :n_guestboos='boos.n_guestboos'></boolist>
       </div>
     </template>
   </page2>
@@ -156,6 +156,14 @@
         }
         return this.boos.list
       },
+
+      // n_guestboos: function() {
+      //   if (this.session.user.guest) {
+      //     return this.boos.idlist.concat(_.map(this.boolist, 'id')).filter(i => i==this.session.user.guest.boo.id).length
+      //   } else {
+      //     return 0
+      //   }
+      // },
 
       scrolload: function() {
         if (this.boos) {

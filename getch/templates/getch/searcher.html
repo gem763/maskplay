@@ -23,10 +23,10 @@
   .searcher.vcomp > .top-header > .search-button {
     background: none;
     position: absolute;
-    top: var(--w-2);
-    height: var(--w-12);
-    width: var(--w-12);
-    right: var(--w-1);
+    top: 0;
+    height: 100%;
+    width: var(--w-10);
+    right: var(--w-2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -34,26 +34,28 @@
 
 
   .searcher.vcomp > .top-header > .search-button > img {
-    width: var(--w-5);
+    width: var(--w-4);
     /* height: var(--w-5); */
     height: auto;
   }
 
   .searcher.vcomp > .top-header > .searchbar {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: var(--w-70);
-    height: var(--w-10);
-    transform: translate(-50%,-50%);
+    top: 0;
+    left: 12%;
+    width: 76%;
+    height: 100%;
+    /* transform: translate(-50%,-50%); */
     font-size: 13px;
     font-weight: bold;
-    background: white;
+    /* background: lightblue; */
     /* padding: 5px; */
-    border-radius: 50px;
+    /* border-radius: 50px; */
     text-align: center;
-    border: none;
-    box-shadow: inset 0.5px 0.5px 2px rgba(0,0,0,0.1);
+    border: 0;
+    /* box-shadow: inset 0.5px 0.5px 2px rgb(0 0 0 / 10%); */
+    box-sizing: border-box;
+    padding: 0;
   }
 
   .searcher.vcomp > .top-header > .searchbar:focus {
@@ -62,6 +64,7 @@
 
   .searcher.vcomp > .top-header > .searchbar::placeholder {
     font-weight: normal;
+    color: lightgray;
   }
 
   .searcher.vcomp > .contents {
@@ -82,7 +85,8 @@
 
       <div class='contents'>
         <postlibrary
-          :postlist='postlist_rearranged'
+          :postlist='postlist'
+          type='grid'
           @open_posts='backto_posts($event)'
         ></postlibrary>
       </div>
@@ -135,7 +139,7 @@
 
       postlist: function() {
         if (this.searchposts) {
-          return this.searchposts.list
+          return this.searchposts.list.sort((a,b) => a.order - b.order)
 
         } else {
           return []
@@ -155,21 +159,21 @@
         return document.querySelector('#window').clientWidth
       },
 
-      postlist_rearranged: function() {
-        const _postlist = this.postlist
-        _postlist.sort((a,b) => a.order - b.order);
-
-        const _plist = _.groupBy(_postlist, post => post.type);
-        const _ab = _plist.postvoteab ? _plist.postvoteab : [];
-        const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
-        const _plist_qa = _plist.postqa ? _plist.postqa : [];
-        const _oxqa = _plist_ox.concat(_plist_qa).sort((a,b) => a.order - b.order);
-
-        const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
-        const plist_ab = _ab.map(_ => [_]);
-
-        return plist_ab.concat(plist_oxqa).sort((a,b) => a[0].order - b[0].order)
-      },
+      // postlist_rearranged: function() {
+      //   const _postlist = this.postlist
+      //   _postlist.sort((a,b) => a.order - b.order);
+      //
+      //   const _plist = _.groupBy(_postlist, post => post.type);
+      //   const _ab = _plist.postvoteab ? _plist.postvoteab : [];
+      //   const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
+      //   const _plist_qa = _plist.postqa ? _plist.postqa : [];
+      //   const _oxqa = _plist_ox.concat(_plist_qa).sort((a,b) => a.order - b.order);
+      //
+      //   const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
+      //   const plist_ab = _ab.map(_ => [_]);
+      //
+      //   return plist_ab.concat(plist_oxqa).sort((a,b) => a[0].order - b[0].order)
+      // },
     },
 
     methods: {
@@ -179,6 +183,10 @@
         }
 
         this.session.page.posts.univ.search = new SearchPosts(this.keywords);
+        dataLayer.push({
+          'event': 'search',
+          'keywords': this.keywords
+        });
       },
 
       backto_posts_old: function(idx) {

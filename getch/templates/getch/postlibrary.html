@@ -2,38 +2,81 @@
   .postlibrary.vcomp {
     position: relative;
     background: none;
+    box-sizing: border-box;
 
     /* minipost의 좌우여백을 동일하게 맞출수 없어서, booposts 자체의 너비를 여백만큼 줄였다
     minipost.html에 가보면, 오른쪽 border=0 으로 한것을 알 수 있다. */
     /* width: calc(100% - 1px); */
-    width: calc(100% - 3px);
-    /* height: 100%; */
+    /* width: calc(100% - 3px); */
+    width: 100%;
+  }
+
+  .postlibrary.vcomp.grid {
     display: flex;
     flex-wrap: wrap;
+    /* justify-content: space-evenly; */
     /* overflow: hidden; */
     /* 아래처럼 스크롤을 보이면, booposts 같은 뒤의 페이지에서 이 스크롤이 보인다ㅠ 뭐지.. */
     /* overflow-y: auto; */
     /* -ms-overflow-style: none; /* IE 11 */
     /* scrollbar-width: none; /* Firefox 64 */
     padding-bottom: var(--w-20);
+    padding-left: var(--minipost-margin);
   }
 
-  .postlibrary.vcomp.onloading {
-    opacity: 0.5;
-  }
-
-  .postlibrary.vcomp > .post {
+  .postlibrary.vcomp.grid > .post {
     position: relative;
-    width: 25%;
-    height: var(--w-50);
+    width: var(--minipost-width);
+    height: var(--minipost-width);
+    margin-right: var(--minipost-margin);
+    margin-top: var(--minipost-margin);
+  }
+
+  .postlibrary.vcomp.horizon {
+    overflow-x: auto;
+    background: none;
+    white-space: nowrap;
+  }
+
+  .postlibrary.vcomp.horizon > .post {
+    position: relative;
+    width: var(--w-30);
+    height: var(--w-30);
+    display: inline-block;
+    margin-left: var(--w-1);
+    /* margin-right: var(--minipost-margin);
+    margin-top: var(--minipost-margin); */
+  }
+
+  .postlibrary.vcomp.horizon > .post:first-child {
+    margin-left: var(--w-5);
   }
 </style>
 
 <script type='text/x-template' id='postlibrary-template'>
-  <div class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>
-    <div class='post' v-for='(post, idx) in postlist' :key='post_key(post, idx)'>
-      <minipost :post='post' @open_posts='$emit("open_posts", $event)'></minipost>
-    </div>
+  <div class='postlibrary vcomp' :class='type'>
+  <!-- <div class='postlibrary vcomp' :class='onloading ? "onloading" : ""'>   -->
+    <!-- <template v-for='(post, idx) in postlist' :key='post_key(post, idx)'> -->
+
+    <template v-for='post in postlist'>
+
+      <template v-if='post.type=="postvoteab"'>
+        <div class='post' @click='$emit("open_posts", post.id)'>
+          <minipost :pix='post.pix_a' v-if='post.pix_a'></minipost>
+        </div>
+        <div class='post' @click='$emit("open_posts", post.id)'>
+          <minipost :pix='post.pix_b' v-if='post.pix_b'></minipost>
+        </div>
+      </template>
+
+      <template v-else>
+        <div class='post' @click='$emit("open_posts", post.id)'>
+          <minipost :pix='post.pix' v-if='post.pix'></minipost>
+        </div>
+      </template>
+
+    </template>
+
   </div>
 </script>
 
@@ -42,24 +85,24 @@
   Vue.component('postlibrary', {
     template: '#postlibrary-template',
     delimiters: ['[[', ']]'],
-    props: [ 'postlist', 'onloading' ],
+    props: [ 'postlist', 'type' ], //'onloading' ],
     data: function() {
       return { }
     },
 
-    methods: {
-      // newpost를 저장한 경우, post.id가 undefined 일 때가 있어서
-      // post_key를 따로 지정한다
-      post_key: function(post, idx) {
-        // console.log(post)
-        if (post[0]) {
-          return post[0].id
-
-        } else {
-          return new Date().getTime() + idx
-          // return new Date().toISOString()
-        }
-      }
-    }
+    // methods: {
+    //   // newpost를 저장한 경우, post.id가 undefined 일 때가 있어서
+    //   // post_key를 따로 지정한다
+    //   post_key: function(post, idx) {
+    //     // console.log(post)
+    //     if (post[0]) {
+    //       return post[0].id
+    //
+    //     } else {
+    //       return new Date().getTime() + idx
+    //       // return new Date().toISOString()
+    //     }
+    //   }
+    // }
   });
 </script>

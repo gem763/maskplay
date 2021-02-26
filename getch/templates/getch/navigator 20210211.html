@@ -1,0 +1,339 @@
+<style>
+  .navigator.vcomp .page-body {
+    background: white;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .groupers {
+    background: none;
+    /* margin-top: var(--w-16); */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .groupers > .grouper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--w-20);
+    height: var(--w-16);
+    font-size: 16px;
+    border-top: 1px solid whitesmoke;
+    border-bottom: 1px solid whitesmoke;
+    color: lightgray;
+    box-sizing: border-box;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .groupers > .grouper.blank {
+    width: var(--w-30);
+  }
+
+  .navigator.vcomp .headerbar-body-default > .groupers > .grouper.active {
+    color: black;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid var(--color-dark);
+    font-weight: bold;
+  }
+
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button {
+    background: none;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: var(--w-16);
+    /* right: var(--w-2); */
+    right: 0;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    opacity: 0.3;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button.on {
+    opacity: 1;
+  }
+
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button > img {
+    /* width: var(--w-5); */
+    height: var(--w-5);
+    /* height: auto; */
+    width: auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 40%;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button > span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 70%;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+  }
+
+  .navigator.vcomp .page-body > .contents {
+    position: relative;
+    width: 100%;
+    background: none;
+    overflow: hidden;
+    margin-top: var(--w-16);
+  }
+
+  .navigator.vcomp .page-body > .contents > .sections {
+    position: relative;
+    width: 200%;
+    margin-left: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: row;
+    transition: margin-left 0.5s;
+  }
+
+  .navigator.vcomp .page-body > .contents > .sections.hot {
+    margin-left: 0;
+  }
+
+  .navigator.vcomp .page-body > .contents > .sections.history {
+    margin-left: -100%;
+  }
+
+  .navigator.vcomp .page-body > .contents > .sections > .section {
+    position: relative;
+    width: 50%;
+    background: none;
+  }
+
+  /* .navigator.vcomp .headerbar-body-trans > .logo {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navigator.vcomp .headerbar-body-trans > .logo > img {
+    height: var(--w-4);
+    width: auto;
+  } */
+
+  /* .navigator.vcomp .headerbar-body-default > .searchbar {
+    position: absolute;
+    box-sizing: border-box;
+    top: 50%;
+    left: 50%;
+    width: var(--w-70);
+    height: var(--w-10);
+    transform: translate(-50%,-50%);
+    font-size: 13px;
+    font-weight: bold;
+    background: white;
+    padding: 5px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0.5px 0.5px 2px rgba(0,0,0,0.1);
+  }
+
+  .navigator.vcomp .headerbar-body-default > .searchbar > img {
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: var(--w-4);
+    height: auto;
+    transform: translateY(-50%);
+  } */
+</style>
+
+<script type='text/x-template' id='navigator-template'>
+  <page2
+    class='navigator vcomp'
+    :open='session.page.navigator.open'
+    :from='session.page.navigator.from'
+    :scrolload='{ obj:the_posts, n:16 }'
+    :onloading='the_posts_onloading'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+      <div class='item' @click='landing'>서비스 소개</div>
+      <div class='item' @click='company'>팀 모이버</div>
+    </template>
+
+    <template #headerbar-body-trans>
+      <!-- <div class='logo'>
+        <img src='/static/materials/logos/moiber_logo.png'>
+      </div> -->
+    </template>
+
+    <template #headerbar-body-default>
+      <div class='groupers'>
+        <span class='grouper blank'></span>
+        <span class='grouper' :class='active_grouper=="hot" ? "active" : ""' @click='group_hot'>인기</span>
+        <span class='grouper' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
+        <span class='grouper blank'></span>
+      </div>
+
+      <div class='voteonly-button' :class='vote_only ? "on" : ""' @click='toggle_vote_only'>
+        <img src='/static/materials/icons/voteonly_button.png'>
+        <span>투표만 보기</span>
+      </div>
+    </template>
+
+    <template #page-body>
+      <div class='contents'>
+        <div class='sections' :class='active_grouper'>
+
+          <div class='section' :style='{ height: hot_section_height }' ref='section_hot'>
+            <postlibrary
+              :postlist='postlist_hot'
+              type='grid'
+              @open_posts='backto_posts($event)'
+            ></postlibrary>
+          </div>
+
+          <div class='section' :style='{ height: history_section_height }' ref='section_history'>
+            <postlibrary
+              :postlist='postlist_history'
+              type='grid'
+              @open_posts='backto_posts($event)'
+            ></postlibrary>
+          </div>
+
+        </div>
+      </div>
+
+    </template>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('navigator', {
+    template: '#navigator-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        active_grouper: 'hot',
+        history_section_height: 'auto',
+        hot_section_height: 'auto',
+        vote_only: false,
+      }
+    },
+
+    mounted: function() {
+      // this.group_hot();
+      this.group_history();
+    },
+
+    computed: {
+      the_posts: function() {
+        return this.session.page.posts.univ[this.active_grouper]
+      },
+
+      the_posts_onloading: function() {
+        if (this.the_posts) {
+          return this.the_posts.onloading
+        }
+      },
+
+      postlist_history: function() {
+        try {
+          let plist = this.session.page.posts.univ['history'].list;
+
+          if (this.vote_only) {
+            plist = plist.filter(p => p.type=='postvoteab' || p.type=='postvoteox');
+          }
+
+          return plist.sort((a,b) => a.order - b.order)
+          // return this.postlist_rearranged('history')
+        } catch(e) {
+          return []
+        }
+      },
+
+      postlist_hot: function() {
+        try {
+          let plist = this.session.page.posts.univ['hot'].list;
+
+          if (this.vote_only) {
+            plist = plist.filter(p => p.type=='postvoteab' || p.type=='postvoteox');
+          }
+
+          return plist.sort((a,b) => a.order - b.order)
+
+          // return this.session.page.posts.univ['hot'].list.sort((a,b) => a.order - b.order)
+          // return this.postlist_rearranged('hot')
+
+        } catch(e) {
+          return []
+        }
+      },
+
+      // loader_width: function() {
+      //   return document.querySelector('#window').clientWidth
+      // },
+
+      // sticky_trigger_margin: function() {
+      //   return this.loader_width * 10 / 100
+      // }
+    },
+
+    methods: {
+      toggle_vote_only: function() {
+        this.vote_only = !this.vote_only;
+      },
+
+      backto_posts: function(postid) {
+        this.session.page.posts.contents = this.the_posts;
+        const idx = _.findIndex(this.the_posts.list, ['id', postid]);
+        this.session.page.posts.swiper.slideTo(idx, 1, false);
+        this.session.close_page();
+      },
+
+      group_history: function() {
+        this.active_grouper = 'history';
+        // console.log(this.$refs.section_history.clientHeight);
+
+        // sections 엘리먼트가 relative로 되어있기 때문에,
+        // history와 hot 섹션 중 높이가 큰 쪽으로 sections 의 높이가 결정된다.
+        // 이러면 history-hot 무엇을 선택하든 스크롤 높이가 일정하다.
+        // history-hot 선택에 따라 sections의 높이가 다르게 하기 위해 다음을 설정한다
+        const baseh = this.$refs.section_history.clientHeight;
+        this.history_section_height = 'auto';
+        this.hot_section_height = Math.min(this.$refs.section_hot.clientHeight, baseh) + 'px';
+      },
+
+      group_hot: function() {
+        if (!this.session.page.posts.univ.hot) {
+          this.session.page.posts.univ.hot = new Posts('hot');
+        }
+
+        this.active_grouper = 'hot';
+
+        const baseh = this.$refs.section_hot.clientHeight;
+        this.hot_section_height = 'auto';
+        this.history_section_height = Math.min(this.$refs.section_history.clientHeight, baseh) + 'px';
+      },
+
+      group_custom: function() {
+        alert('맞춤순');
+      },
+
+      company: function() {
+        this.session.open_company('who');
+      },
+
+      landing: function() {
+        this.session.open_company('landing');
+      }
+    }
+  });
+</script>

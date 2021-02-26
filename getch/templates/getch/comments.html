@@ -1,5 +1,3 @@
-{% include "getch/scorekit.html" %}
-
 <style>
   .comments.vcomp {
     font-size: 13px;
@@ -70,6 +68,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    pointer-events: none;
   }
 
 
@@ -126,6 +125,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .comments.vcomp .page-body > .commenter > .attach > * {
+    pointer-events: none;
   }
 
   .comments.vcomp .page-body > .commenter > .attach > img {
@@ -291,6 +294,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    pointer-events: none;
   }
 </style>
 
@@ -458,9 +462,10 @@
       },
 
       myboo: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo
-        }
+        return this.session.user.boo
+        // if (this.session.user.auth) {
+        //   return this.session.user.auth.boo
+        // }
       },
 
       author: function() {
@@ -561,24 +566,25 @@
         this.begin_commenting();
       },
 
+      // is_liking_comment: function(comment_id) {
+      //   if (this.session.user.auth) {
+      //     return this.session.user.auth.has_liked_comment(comment_id)
+      //   }
+      // },
+
       is_liking_comment: function(comment_id) {
-        if (this.session.auth) {
-          return this.session.auth.has_liked_comment(comment_id)
-        }
+        return this.session.user.has_liked_comment(comment_id)
       },
 
       toggle_like_comment: function(comment_id) {
-        if (!this.session.auth)
-          return
-
         let how;
         if (this.is_liking_comment(comment_id)) {
           how = 'delike';
-          this.session.auth.delike_comment(comment_id);
+          this.session.user.delike_comment(comment_id);
 
         } else {
           how = 'like';
-          this.session.auth.like_comment(comment_id);
+          this.session.user.like_comment(comment_id);
         }
 
         fetch(`/comment/${comment_id}/${how}/`)
@@ -587,6 +593,27 @@
             console.log(js);
           })
       },
+
+      // toggle_like_comment: function(comment_id) {
+      //   if (!this.session.user.auth)
+      //     return
+      //
+      //   let how;
+      //   if (this.is_liking_comment(comment_id)) {
+      //     how = 'delike';
+      //     this.session.user.auth.delike_comment(comment_id);
+      //
+      //   } else {
+      //     how = 'like';
+      //     this.session.user.auth.like_comment(comment_id);
+      //   }
+      //
+      //   fetch(`/comment/${comment_id}/${how}/`)
+      //     .then(res => res.json())
+      //     .then(js => {
+      //       console.log(js);
+      //     })
+      // },
 
       load_pixeditor: function() {
         if (this.$refs) {

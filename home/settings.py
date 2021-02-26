@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'l9naapdhlj2wfi5e26u+urm_1sn28umx!0f3@v60hn_(33%)j+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,8 +91,12 @@ INTERNAL_IPS = ('127.0.0.1')
 #126234b4fe871fa3cd5ecabe9cce6001:k
 
 SITEFLAGS_FLAG_MODEL = 'getch.Flager'
-
 AUTH_USER_MODEL = 'getch.User'
+
+# 소셜로그인시 request.session.session_key가 바뀌는걸 방지하기 위해
+# 아래를 쓴다. 2021.02.15
+# https://stackoverflow.com/questions/13978828/django-session-key-changing-upon-authentication
+SESSION_ENGINE = 'getch.session_backend'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend', # Django 기본 유저모델
@@ -236,15 +240,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
+# LANGUAGE_CODE = 'en-us'
+# TIME_ZONE = 'UTC'
+# USE_I18N = True
+# USE_L10N = True
+# USE_TZ = True
+
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Seoul'
 USE_I18N = True
-
 USE_L10N = True
-
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

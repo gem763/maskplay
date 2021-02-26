@@ -3,28 +3,20 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.apps import apps
 from django.conf import settings
 from django.core import serializers
-from django.db.models import F
-from django.db.models import Q
+# from django.db.models import F
+# from django.db.models import Q
+from django.db.models import F, Q, Sum, Count, Case, When
 from django.template.loader import render_to_string
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 import getch.models as m
+from allauth.account.views import LoginView, LogoutView
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from notifications.signals import notify
 import os
 import json
-
-# styletags = {t.id:t.tag for t in m.Styletag.objects.all()}
-# fashiontems = {t.id:t.item for t in m.Fashiontem.objects.all()}
-
-# labels = {
-#     'gender': {l.id:{ 'key':l.key, 'label':l.label } for l in m.Genderlabel.objects.all()},
-#     'age': {l.id:{ 'key':l.key, 'label':l.label } for l in m.Agelabel.objects.all()},
-#     'body': {l.id:{ 'key':l.key, 'label':l.label } for l in m.Bodylabel.objects.all()},
-#     'style': {l.id:{ 'key':l.key, 'label':l.label } for l in m.Stylelabel.objects.all()},
-#     'item': {l.id:{ 'key':l.key, 'label':l.label } for l in m.Itemlabel.objects.all()}
-# }
+from datetime import datetime, date, timedelta
 
 labels = {
     'gender': list(m.Genderlabel.objects.order_by('key').values('id', 'label')),
@@ -41,9 +33,7 @@ labels = {
 # }
 
 # anonyboo = m.Boo.objects.get(pk=m.BOO_DELETED)
-# context = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems}#, 'anonyboo':anonyboo.serialized}
-context = { 'labels':labels } #, 'anonyboo':anonyboo.serialized}
-
+context = { 'labels':labels }
 
 def test(request):
     return render(request, 'getch/test.html')
@@ -58,16 +48,35 @@ def recruit(request):
     return render(request, 'getch/recruit.html')
 
 def load(request, ctx):
-    if request.user.is_staff:
-        ctx['utype'] = 'staff'
+    # 처음 로딩할때는 session 객체가 없어서,
+    # 이렇게 save()해주면 새로 생기면서 session_key가 만들어진다
+    # 즉 로그인 안했을때도 session_key를 쓸수 있다
+    # 이후 로그인하면 해당 session_key가 유지되도록 설정: setting에서 SESSION_ENGINE = 'getch.session_backend'
+    # 로그아웃 하면, 해당 session이 지워지고, 이 부분의 코드가 다시 실행되면서 새로운 session_key가 생성된다
+    # 2021.02.19
+    request.session.save()
+
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            ctx['utype'] = 'staff'
+        else:
+            ctx['utype'] = 'general'
 
     else:
-        ctx['utype'] = 'general'
+        ctx['utype'] = 'guest'
+
+    # print(m.Flager.objects.filter(status=0, user_id=59, object_id=0).values('user'))
 
     return render(request, 'getch/play.html', ctx)
 
 def play(request):
+    # hotboos_id = m.Flager.objects.filter(status=10).values('object_id').annotate(nfollowers=Count('object_id')).order_by('-nfollowers')[:5].values_list('id', flat=True)
     # notify.send(request.user, recipient=request.user, verb='you reached level 10')
+
+    # _iboos = m.Flager.objects.filter(status=m.FOLLOW).values('object_id').annotate(nfollowers=Count('object_id')).order_by('-nfollowers')[:10].values_list('object_id', flat=True)
+
+    # print(_flags)
+
     context['req'] = 0
     return load(request, context)
 
@@ -98,16 +107,18 @@ def testfeed(request):
 
 
 def get_user(request):
+    sessionkey = request.session.session_key
+
     if request.user.is_authenticated:
         if request.user.has_active_boo:
-            return JsonResponse({'success':True, 'user':request.user.serialized}, safe=False)
+            return JsonResponse({'success':True, 'user':request.user.serialized, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
         else:
             request.user.create_default_boo()
-            return JsonResponse({'success':True, 'user':request.user.serialized, 'first_visit':True}, safe=False)
+            return JsonResponse({'success':True, 'user':request.user.serialized, 'first_visit':True, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
 
-        # return JsonResponse({'success':True, 'user':request.user.serialized}, safe=False)
     else:
-        return JsonResponse({'success':False})
+        return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
+
 
 
 def get_iposts(request, type):
@@ -134,6 +145,18 @@ def get_post(request, post_id):
 
     except:
         return JsonResponse({'success':False}, safe=False)
+
+
+def get_iboos(request, type):
+    if type == 'hot':
+        # _iboos = m.Flager.objects.filter(status=m.FOLLOW).values('object_id').annotate(nfollowers=Count('object_id')).order_by('-nfollowers')[:10].values_list('object_id', flat=True)
+
+        ago_2w = datetime.now() - timedelta(days=7)
+        _iboos = m.Post.objects.filter(created_at__gte=ago_2w).values('boo').annotate(nposts=Count('boo')).order_by('-nposts')[:10].values_list('boo', flat=True)
+        return JsonResponse({'success':True, 'idlist':list(_iboos)}, safe=False)
+
+    else:
+        pass
 
 
 def get_ibooposts(request, boo_id, type):
@@ -196,21 +219,11 @@ def get_ivoters(request, post_id, act):
         return JsonResponse({'success':False}, safe=False)
 
 
-def get_voter(request, boo_id):
+def get_baseboo(request, boo_id):
     try:
-        _voter = m.Boo.objects.get(pk=boo_id)
-        _voter = m.BasebooSerializer(_voter).data
-        return JsonResponse({'success':True, 'content':_voter}, safe=False)
-
-    except:
-        return JsonResponse({'success':False}, safe=False)
-
-
-def get_follower(request, boo_id):
-    try:
-        _follower = m.Boo.objects.get(pk=boo_id)
-        _follower = m.BasebooSerializer(_follower).data
-        return JsonResponse({'success':True, 'content':_follower}, safe=False)
+        _baseboo = m.Boo.objects.get(pk=boo_id)
+        _baseboo = m.BasebooSerializer(_baseboo).data
+        return JsonResponse({'success':True, 'content':_baseboo}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)
@@ -272,14 +285,57 @@ def boo_save(request):
             return JsonResponse({'success':False, 'message':'something wrong while boo saving'}, safe=False)
 
 
+def link_add(request):
+    try:
+        _url = request.POST.get('url', None)
+        _link = m.Link.objects.create(user=request.user, url=_url)
+        return JsonResponse({'success':True, 'link_id':_link.id, 'message':'link added successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while link adding'}, safe=False)
+
+
+def link_edit(request):
+    try:
+        _url = request.POST.get('url', None)
+        _id = request.POST.get('id', None)
+        _link = m.Link.objects.get(id=_id)
+        _link.url = _url
+        _link.save()
+        return JsonResponse({'success':True, 'message':'link edited successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while link editing'}, safe=False)
+
+
+def link_delete(request, link_id):
+    try:
+        _link = m.Link.objects.get(id=link_id)
+        _link.delete()
+        return JsonResponse({'success':True, 'message':'link deleted successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while link deleting'}, safe=False)
+
 
 def vote(request, post_id):
     action = request.GET.get('action', None)
-    fit = request.user.boo.fit
+    # fit = session.fit #request.user.boo.fit
+    # fit = request.user.boo.fit
 
     if action:
         post = m.Post.objects.get(pk=post_id)
-        post.vote(int(action))
+
+        if request.user.is_authenticated:
+            fit = request.user.boo.fit
+            post.vote(int(action), request.user.boo)
+
+        else:
+            fit = []
+            post.vote(int(action), m.Boo.guestboo, note=request.session.session_key)
+
+        # post.vote(int(action), request.user.boo)
+        # session.vote(post_id, action)
         return JsonResponse({'success':True, 'action':action, 'fit':fit}, safe=False)
 
     else:
@@ -317,8 +373,13 @@ def unfollow(request, boo_id):
 def like_comment(request, comment_id):
     try:
         comment = m.Comment.objects.get(pk=comment_id)
-        # print(comment)
-        comment.like(request.user.boo)
+
+        if request.user.is_authenticated:
+            comment.like(request.user.boo)
+
+        else:
+            comment.like(m.Boo.guestboo, note=request.session.session_key)
+
         return JsonResponse({'success':True, 'message':'Comment liked successfully'}, safe=False)
 
     except:
@@ -328,7 +389,13 @@ def like_comment(request, comment_id):
 def delike_comment(request, comment_id):
     try:
         comment = m.Comment.objects.get(pk=comment_id)
-        comment.delike(request.user.boo)
+
+        if request.user.is_authenticated:
+            comment.delike(request.user.boo)
+
+        else:
+            comment.delike(m.Boo.guestboo, note=request.session.session_key)
+
         return JsonResponse({'success':True, 'message':'Comment deliked successfully'}, safe=False)
 
     except:
@@ -393,7 +460,10 @@ def comment_save(request):
                 comment.save()
 
             else:
-                comment = m.Comment(boo=request.user.boo, post_id=post_id)
+                if request.user.is_authenticated:
+                    comment = m.Comment(boo=request.user.boo, post_id=post_id)
+                else:
+                    comment = m.Comment(boo=m.Boo.guestboo, post_id=post_id)
 
                 if text:
                     comment.text = text
@@ -468,11 +538,6 @@ def network(request, boo_id):
     return JsonResponse({'success':True, 'network':boo.network}, safe=False)
 
 
-def boo_new(request):
-    boo = m.Boo.objects.create(user=request.user)
-    request.user.set_boo(boo.id) # 새로 생성한 부캐를 선택하는 것이 디폴트
-    return JsonResponse({'success':True, 'boo':boo.serialized}, safe=False)
-
 
 def search(request, keywords):
     n = 20
@@ -488,3 +553,18 @@ def search(request, keywords):
 
     except:
         return JsonResponse({'success':False, 'message':'something wrong while searching'}, safe=False)
+
+
+# def trace_view(request, postid):
+#     print(session.sessionkey)
+
+
+class Logout(LogoutView):
+    def logout(self):
+        super().logout()
+        # print('---------------------------------------------', session)
+
+# class Login(LoginView):
+#     def login(self):
+#         super().login()
+#         print(session)

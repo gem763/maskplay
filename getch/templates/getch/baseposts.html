@@ -82,6 +82,10 @@
     height: var(--w-3);
   }
 
+  .baseposts.vcomp > .remocon > .menu > .item {
+    pointer-events: none;
+  }
+
   .baseposts.vcomp > .remocon > .menu > .item > .icon {
     width: 100%;
   }
@@ -216,11 +220,24 @@
           mousewheel: {
             releaseOnEdges: true,
           },
+
+          // // Disable preloading of all images
+          // preloadImages: false,
+          // // Enable lazy loading
+          // lazy: {
+          //   // checkInView: true,
+          //   loadPrevNext: true,
+          //   // loadPrevNextAmount: 2,
+          // },
         },
       }
     },
 
     computed: {
+      // has_posts: function() {
+      //   return this.postlist.length > 0
+      // },
+
       cpost: function() {
         if (this.swiper && this.postlist) {
           return this.postlist[this.swiper.realIndex]
@@ -230,6 +247,14 @@
       cpost_id: function() {
         if (this.cpost) {
           return this.cpost.id
+        }
+      },
+
+      prevpost_id: function() {
+        if (this.cpost) {
+          if (this.swiper.readIndex!=0) {
+            return this.postlist[this.swiper.realIndex-1].id
+          }
         }
       },
 
@@ -268,16 +293,35 @@
       },
 
       onlike: function() {
-        if (this.session.auth && this.cpost) {
-          return this.session.auth.has_voted_as(this.cpost.id) == 0
+        if (this.cpost) {
+          return this.session.user.has_voted_as(this.cpost.id) == 0
         }
-      }
+      },
+
+      // onlike: function() {
+      //   if (this.session.user.auth && this.cpost) {
+      //     return this.session.user.auth.has_voted_as(this.cpost.id) == 0
+      //   }
+      // }
     },
 
 
     mounted: function() {
       // this.swiper = this.$refs.swiper.$swiper;
       this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+      this.swiper.on('slideChange', () => {
+        // if ((this.session.who.view.length==0) && (this.prevpost_id)) {
+        //   this.session.trace('view', this.prevpost_id)
+        // }
+
+        // this.session.trace('view', this.cpost_id)
+        dataLayer.push({
+          'event': 'feedview'
+        });
+      });
+
+      // console.log(this.swiper.lazy);
+      // this.swiper.lazy.load();
     },
 
     watch: {
@@ -294,30 +338,50 @@
           // booposts에서, 하나남은 포스트를 삭제했을때
           this.session.close_page();
         }
-      }
+      },
+
+      // has_posts: function(_new, _old) {
+      //   // this.$nextTick(() => {
+      //   //   this.swiper.lazy.load();
+      //   // });
+      //
+      //   setTimeout(() => { this.swiper.lazy.load(); }, 1000);
+      // }
     },
 
     methods: {
+      // like: function() {
+      //   if (!this.cpost) {
+      //     return
+      //   }
+      //
+      //   if (this.session.user.auth) {
+      //     if (this.onlike) {
+      //       this.cpost.nvotes_up -= 1;
+      //       this.session.user.auth.vote(this.cpost.id, -1);
+      //
+      //     } else {
+      //       this.cpost.nvotes_up += 1;
+      //       this.session.user.auth.vote(this.cpost.id, 0);
+      //     }
+      //
+      //   } else {
+      //     this.session.open_bridge('login_guide_for_mypage', 'bottom');
+      //   }
+      // },
+
       like: function() {
         if (!this.cpost) {
           return
         }
 
-        if (this.session.auth) {
-          if (this.onlike) {
-            this.cpost.nvotes_up -= 1;
-            this.session.auth.vote(this.cpost.id, -1);
-
-          } else {
-            this.cpost.nvotes_up += 1;
-            this.session.auth.vote(this.cpost.id, 0);
-          }
-
-        // } else if (this.session._auth) {
-        //   this.session.open_profiler('new');
+        if (this.onlike) {
+          this.cpost.nvotes_up -= 1;
+          this.session.user.vote(this.cpost.id, -1);
 
         } else {
-          this.session.open_bridge('login_guide_for_mypage', 'bottom');
+          this.cpost.nvotes_up += 1;
+          this.session.user.vote(this.cpost.id, 0);
         }
       },
 
@@ -326,19 +390,21 @@
           return
         }
 
-        let voted_to = -1;
+        // let voted_to = -1;
+        //
+        // if (this.session.user.auth) {
+        //   voted_to = this.session.user.auth.has_voted_as(this.cpost.id);
+        //
+        // // } else if (this.session._auth) {
+        // //   this.session.open_profiler('new');
+        // //   return
+        //
+        // } else {
+        //   // this.session.open_bridge('login_guide_for_mypage', 'bottom');
+        //   // return
+        // }
 
-        if (this.session.auth) {
-          voted_to = this.session.auth.has_voted_as(this.cpost.id);
-
-        // } else if (this.session._auth) {
-        //   this.session.open_profiler('new');
-        //   return
-
-        } else {
-          this.session.open_bridge('login_guide_for_mypage', 'bottom');
-          return
-        }
+        const voted_to = this.session.user.has_voted_as(this.cpost.id);
 
         if (!this.cpost.voters) {
           this.$set(this.cpost, 'voters', {

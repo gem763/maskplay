@@ -15,12 +15,14 @@ urlpatterns = [
     path('policy/', v.policy, name='policy'),
     path('recruit/', v.recruit, name='recruit'),
     path('accounts/', include('allauth.urls')),
+    # path('login/', v.Login.as_view(), name='login'),
+    path('logout/', v.Logout.as_view(), name='logout'),
     # path('authorpage/<int:boo_id>/', v.authorpage, name='authorpage'),
     # path('posts/', v.get_posts, name='get_posts'),
     # path('posts/ids/', v.get_iposts, name='get_iposts'),
     # path('posts/ids/', v.get_iposts, name='get_iposts'),
     # path('posts/iposts/', v.get_iposts, name='get_iposts'),
-    path('posts/iposts/<str:type>', v.get_iposts, name='get_iposts'),
+    path('posts/iposts/<str:type>/', v.get_iposts, name='get_iposts'),
     # path('posts/iposts/<int:boo_id>/', v.get_ibooposts, name='get_ibooposts'),
     path('post/<int:post_id>/', v.get_post, name='get_post'),
     path('post/<int:post_id>/boo/', v.get_boopost, name='get_boopost'),
@@ -35,6 +37,8 @@ urlpatterns = [
     path('comment/<int:comment_id>/like/', v.like_comment, name='like_comment'),
     path('comment/<int:comment_id>/delike/', v.delike_comment, name='delike_comment'),
     path('comment/save/', v.comment_save, name='comment_save'),
+
+    path('boos/iboos/<str:type>/', v.get_iboos, name='get_iboos'),
     path('boo/<int:boo_id>/follow/', v.follow, name='follow'),
     path('boo/<int:boo_id>/unfollow/', v.unfollow, name='unfollow'),
     path('boo/<int:boo_id>/set/', v.set_boo, name='set_boo'),
@@ -45,12 +49,13 @@ urlpatterns = [
     path('boo/<int:boo_id>/ifollowers/', v.get_ifollowers, name='get_ifollowers'),
 
     path('boo/<int:boo_id>/profile/pix/', v.boo_profilepix, name='boo_profilepix'),
-    path('boo/<int:boo_id>/voter/', v.get_voter, name='get_voter'),
-    path('boo/<int:boo_id>/follower/', v.get_follower, name='get_follower'),
+    path('boo/<int:boo_id>/baseboo/', v.get_baseboo, name='get_baseboo'),
+    # path('boo/<int:boo_id>/voter/', v.get_voter, name='get_voter'),
+    # path('boo/<int:boo_id>/follower/', v.get_follower, name='get_follower'),
     # path('boo/<int:boo_id>/moreinfo/', v.boo_moreinfo, name='boo_moreinfo'),
     # path('boo/profile/save/', v.profile_save, name='profile_save'),
     path('boo/profile/delete/', v.profile_delete, name='profile_delete'),
-    path('boo/new/', v.boo_new, name='boo_new'),
+    # path('boo/new/', v.boo_new, name='boo_new'),
     path('user/', v.get_user, name='get_user'),
     path('user/other_boos/', v.other_boos, name='other_boos'),
 
@@ -64,4 +69,10 @@ urlpatterns = [
     # path('boo/create/', v.boo_create, name='boo_create'),
 
     path('search/<str:keywords>/', v.search, name='search'),
+
+    path('link/add/', v.link_add, name='link_add'),
+    path('link/edit/', v.link_edit, name='link_edit'),
+    path('link/delete/<int:link_id>/', v.link_delete, name='link_delete'),
+
+    # path('trace/view/<int:postid>/', v.trace_view, name='trace_view'),
 ]

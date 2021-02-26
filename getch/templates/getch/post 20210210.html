@@ -1,0 +1,641 @@
+<style>
+  .post {
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .post .backbone {
+    border-collapse: collapse;
+    width: 100%;
+    height: 100%;
+  }
+
+  .post .backbone > tbody > tr > td {
+    position: relative;
+    padding: 0;
+    box-sizing: border-box;
+    text-align: center;
+    width: 100%;
+  }
+
+
+  .post.postvoteab .backbone > tbody > tr > td.top {
+    height: 50%;
+    border-bottom: 1px solid var(--color-dark);
+  }
+
+  .post.postvoteab .backbone > tbody > tr > td.bottom {
+    height: 50%;
+  }
+
+  .post.postvoteox .backbone > tbody > tr > td.top {
+    height: calc(100% - var(--w-52));
+  }
+
+  .post.postvoteox .backbone > tbody > tr > td.bottom {
+    height: var(--w-52);
+  }
+
+  .post.postqa .backbone > tbody > tr > td {
+    height: 100%;
+  }
+
+  .post .description {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-height: var(--w-8);
+    text-align: left;
+    background: rgba(255,255,255,0.6);
+    padding-left: var(--w-18);
+    padding-top: var(--w-4);
+    /* padding-bottom: var(--w-4); */
+    /* padding-right: var(--w-32); */
+    padding-right: var(--w-12);
+  }
+
+  .post .backbone .pixlabel {
+    position: absolute;
+    background: rgba(255,255,255,0.6);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    border-radius: 10px;
+  }
+
+  .post .backbone .pixlabel.active {
+    opacity: 0.3;
+  }
+
+  .post .backbone tr:first-child .pixlabel {
+    bottom: var(--w-5);
+  }
+
+  .post .backbone tr:last-child .pixlabel {
+    top: var(--w-5);
+  }
+
+  .post > .description > .styletags {
+    margin-top: 10px;
+    margin-bottom:5px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap
+  }
+
+  .post span.tag {
+    font-size: 11px;
+    /* background: var(--color-dark); */
+    background: white;
+    /* color: red; */
+    padding: 7px;
+    border-radius: 20px;
+    margin: 2px;
+    height: 25px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid black;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
+  }
+
+  .post > .scorebutton {
+    position: absolute;
+    top: var(--w-4);
+    left: var(--w-4);
+    width: var(--w-11);
+    height: var(--w-11)
+  }
+
+  .post > .like {
+    position: absolute;
+    top: var(--w-4);
+    right: var(--w-14);
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+    border-radius: 50%;
+    box-sizing: border-box;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .post > .like > img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+  }
+
+  .post > .reply {
+    position: absolute;
+    top: var(--w-4);
+    right: var(--w-22);
+    width: var(--w-8);
+    height: var(--w-8);
+    background: none;
+  }
+
+  .post > .reply > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .post > .reply > span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: white;
+    font-size: var(--w-3);
+  }
+
+  .post > .remocon {
+    position: absolute;
+    top: 50%;
+    right: var(--w-3);
+    width: var(--w-16);
+    border-radius: var(--w-8);
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 11px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+
+  .post > .remocon > .menu {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .post > .remocon > .comments.menu {
+    height: var(--w-16);
+  }
+
+  .post > .remocon > .voters.menu {
+    height: var(--w-16);
+  }
+
+  .post > .remocon > .upward.menu,
+  .post > .remocon > .downward.menu {
+    height: var(--w-8);
+  }
+
+  .post > .remocon > .edge.menu {
+    height: var(--w-4);
+  }
+
+  .post > .remocon > .menu > .item > .icon {
+    width: 100%;
+  }
+
+  .post > .remocon > .menu > .item > .count {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .post > .remocon > .menu > .item > .title {
+    width: 100%;
+  }
+
+  .post > .remocon > .menu > .item > .icon > img {
+    width: var(--w-5);
+    height: var(--w-5);
+    object-fit: contain;
+  }
+
+  .post > .remocon > .upward.menu > .item > .icon > img {
+    transform: rotate(270deg) translateX(var(--w-2));
+  }
+
+  .post > .remocon > .downward.menu > .item > .icon > img {
+    transform: rotate(90deg) translateX(var(--w-2));
+  }
+</style>
+
+
+<script type='text/x-template' id='post-template'>
+  <div class='post' :class='post_type' ref='post'>
+
+    <table v-if='is_postvoteox' class='backbone'>
+      <tbody>
+        <tr>
+          <td class='top'>
+            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='editable' where='top'></pixloader>
+          </td>
+        </tr>
+
+        <tr>
+          <td class='bottom'>
+            <oxcard :rawkeys='oxkeys'>
+              <template #O='sprops'>
+                <oxer
+                  @click.native='toggle_vote(0)'
+                  :keyvalue='sprops.keyvalue'
+                  :act='0'
+                  :vote_state='vote_state'
+                  :score='post_nvotes_up'
+                  :is_active='is_active'
+                ></oxer>
+              </template>
+
+              <template #X='sprops'>
+                <oxer
+                  @click.native='toggle_vote(1)'
+                  :keyvalue='sprops.keyvalue'
+                  :act='1'
+                  :vote_state='vote_state'
+                  :score='post_nvotes_down'
+                  :is_active='is_active'
+                ></oxer>
+              </template>
+            </oxcard>
+
+            <!-- <div class='v-divider'></div> -->
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table v-if='is_postvoteab' class='backbone'>
+      <tbody>
+        <tr>
+          <td class='top'>
+            <aber
+              @click.native='toggle_vote(0)'
+              ref='post_pix_a'
+              :pix='post_pix_a'
+              :editable='editable'
+              :act='0'
+              :vote_state='vote_state'
+              :score='post_nvotes_up'
+              :is_active='is_active'
+              :session='session'
+            ></aber>
+
+            <div class='pixlabel' v-if='post_pixlabel_a || editable'>
+              <editext ref='post_pixlabel_a' :rawtext='post_pixlabel_a' :editable='editable' placeholder='제목을 적어주세요' type='in-post'></editext>
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td class='bottom'>
+            <aber
+              @click.native='toggle_vote(1)'
+              ref='post_pix_b'
+              :pix='post_pix_b'
+              :editable='editable'
+              :act='1'
+              :vote_state='vote_state'
+              :score='post_nvotes_down'
+              :is_active='is_active'
+              :session='session'
+            ></aber>
+
+            <div class='pixlabel' v-if='post_pixlabel_b || editable'>
+              <editext ref='post_pixlabel_b' :rawtext='post_pixlabel_b' :editable='editable' placeholder='제목을 적어주세요' type='in-post'></editext>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table v-if='is_postqa' class='backbone'>
+      <tbody>
+        <tr>
+          <td>
+            <pixloader ref='post_pix' :pix='post_pix' :session='session' :editable='editable' where='full'></pixloader>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <div class='description'>
+      <editext
+        ref='post_text'
+        @click.native='toggle_squeeze'
+        :rawtext='post_text'
+        :header='post_boo_nick'
+        :date='post_date'
+        :editable='editable'
+        placeholder='질문을 입력해주세요'
+        type='in-post'
+        :freeze='!editable'
+        :squeeze='squeezed'>
+      </editext>
+
+      <!-- <div class='styletags' v-show='post && !squeezed'>
+        <span class='tag' v-for='l in mylabels("gender")'>[[ l.label ]]</span>
+        <span class='tag' v-for='l in mylabels("age")'>[[ l.label ]]</span>
+        <span class='tag' v-for='l in mylabels("body")'>[[ l.label ]]</span>
+        <span class='tag' v-for='l in mylabels("style")'>[[ l.label ]]</span>
+        <span class='tag' v-for='l in mylabels("item")'>[[ l.label ]]</span>
+      </div> -->
+    </div>
+
+    <scorebutton
+      :session='session'
+      :boo='post_boo'
+      v-if='post_boo'
+      @click.native='session.open_boopage(post_boo)'
+    ></scorebutton>
+
+    <!-- <template v-if='!editable'>
+      <div class='like' @click='session.open_comments(post)'>
+        <img src='/static/materials/icons/like.png'>
+      </div>
+
+      <div class='reply' @click='session.open_comments(post)'>
+        <img src='/static/materials/icons/button_reply.png'>
+        <span>[[post_ncomments==0 ? "-" : post_ncomments]]</span>
+      </div>
+    </template> -->
+
+
+
+    <!-- <div class='remocon'>
+      <div class='menu edge'></div>
+
+      <div class='menu upward' v-if='!swiper.isBeginning' @click='swiper.slidePrev()'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+        </div>
+      </div>
+
+      <div class='menu comments' @click='session.open_comments(post)'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/comment.png'></div>
+          <div class='count'><b>[[post_ncomments]]</b></div>
+          <div class='title'>댓글</div>
+        </div>
+      </div>
+
+      <div class='menu voters' v-if='!is_postqa' @click='show_voters'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/voters.png'></div>
+          <div class='count'><b>[[post_nvotes]]</b></div>
+          <div class='title'>투표자</div>
+        </div>
+      </div>
+
+      <div class='menu downward' v-if='!swiper.isEnd' @click='swiper.slideNext()'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div>
+        </div>
+      </div>
+
+      <div class='menu edge'></div>
+    </div> -->
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('post', {
+    template: '#post-template',
+    delimiters: ['[[', ']]'],
+    props: ['post', 'session', 'type', 'editable'],
+
+    data: function() {
+      return {
+        squeezed: true,
+      }
+    },
+
+    computed: {
+      swiper: function() {
+        return this.session.page.posts.swiper
+      },
+
+      post_type: function() {
+        if (this.post) {
+          return this.post.type
+        } else {
+          return this.type
+        }
+      },
+
+      is_postvoteox: function() {
+        return (this.post_type == 'postvoteox')
+      },
+
+      is_postvoteab: function() {
+        return (this.post_type == 'postvoteab')
+      },
+
+      is_postqa: function() {
+        return (this.post_type == 'postqa')
+      },
+
+      post_pix: function() {
+        try { return this.post.pix }
+        catch(e) { return '' }
+      },
+
+      post_pix_a: function() {
+        try { return this.post.pix_a }
+        catch(e) { return '' }
+      },
+
+      post_pix_b: function() {
+        try { return this.post.pix_b }
+        catch(e) { return '' }
+      },
+
+      post_pixlabel_a: function() {
+        try { return this.post.pixlabel_a }
+        catch(e) { return '' }
+      },
+
+      post_pixlabel_b: function() {
+        try { return this.post.pixlabel_b }
+        catch(e) { return '' }
+      },
+
+      post_boo: function() {
+        if (this.post) {
+          return this.post.boo
+        } else {
+          return this.session.user.auth.boo
+        }
+      },
+
+      post_boo_profile_pix: function() {
+        return this.post_boo.profile.pix
+      },
+
+      post_boo_nick: function() {
+        return this.post_boo.nick
+      },
+
+      // post_boo_styletags: function() {
+      //   return this.post_boo.styletags
+      // },
+
+      post_text: function() {
+        if (this.post) {
+          return this.post.text
+        } else {
+          return ''
+        }
+      },
+
+      post_date: function() {
+        if (this.post) {
+          return this.relative_date(this.post.created_at)
+        }
+      },
+
+      post_nvotes_up: function() {
+        if (this.post) {
+          return this.post.nvotes_up ? this.post.nvotes_up : 0
+        } else {
+          return 0
+        }
+      },
+
+      post_nvotes_down: function() {
+        if (this.post) {
+          return this.post.nvotes_down ? this.post.nvotes_down : 0
+        } else {
+          return 0
+        }
+      },
+
+      post_nvotes: function() {
+        return this.post_nvotes_up + this.post_nvotes_down
+      },
+
+      post_ncomments: function() {
+        if (this.post) {
+          return this.post.ncomments
+        }
+      },
+
+      oxkeys: function() {
+        if (this.post) {
+          return this.post.keys
+        }
+      },
+
+      vote_state: function() {
+        if (this.post) {
+          return this.session.user.has_voted_as(this.post.id)
+        } else {
+          return -1
+        }
+      },
+
+      // vote_state: function() {
+      //   if (this.session.user.auth && this.post) {
+      //     return this.session.user.auth.has_voted_as(this.post.id)
+      //   } else {
+      //     return -1
+      //   }
+      // },
+
+      is_active: function() {
+        return !this.editable && (this.vote_state != -1)
+      },
+    },
+
+
+    methods: {
+      // show_voters: function() {
+      //   if (!this.post.voters) {
+      //     this.$set(this.post, 'voters', {
+      //       0: new Voters(this.post, 0),
+      //       1: new Voters(this.post, 1),
+      //     });
+      //   }
+      //
+      //   this.session.open_network(this.post.voters[Math.max(0, this.vote_state)]);
+      // },
+
+      relative_date: function(date) {
+        moment.locale('ko');
+        return moment(date).fromNow()
+      },
+
+      mylabels: function(type) {
+        return this.session.labels[type].filter(l => {
+          return this.post_boo[type + 'labels'].includes(l.id)
+        })
+      },
+
+      toggle_squeeze: function() {
+        this.squeezed = !this.squeezed;
+      },
+
+      // toggle_vote: function(act) {
+      //   if (this.session.user.auth && !this.editable && (this.session.mode.on=='posts' || this.session.mode.on=='booposts')) {
+      //     if (this.vote_state==act) {
+      //       this.rescore(act, -1);
+      //       this.session.user.auth.vote(this.post.id, -1);
+      //
+      //     } else {
+      //       this.rescore(this.vote_state, act);
+      //       this.session.user.auth.vote(this.post.id, act);
+      //     }
+      //
+      //   } else if (!this.session.user.auth) {
+      //     this.session.open_bridge('login_guide_for_mypage', 'bottom');
+      //   }
+      // },
+
+      toggle_vote: function(act) {
+        if (!this.editable && (this.session.mode.on=='posts' || this.session.mode.on=='booposts')) {
+          if (this.vote_state==act) {
+            this.rescore(act, -1);
+            this.session.user.vote(this.post.id, -1);
+
+          } else {
+            this.rescore(this.vote_state, act);
+            this.session.user.vote(this.post.id, act);
+          }
+
+        }
+      },
+
+      rescore: function(_old, _new) {
+        if (_old==-1 && _new==0) {
+          this.post.nvotes_up += 1;
+
+        } else if (_old==-1 && _new==1) {
+          this.post.nvotes_down += 1;
+
+        } else if (_old==0 && _new==-1) {
+          this.post.nvotes_up -= 1;
+
+        } else if (_old==1 && _new==-1) {
+          this.post.nvotes_down -= 1;
+
+        } else if (_old==0 && _new==1) {
+          this.post.nvotes_up -= 1;
+          this.post.nvotes_down += 1;
+
+        } else if (_old==1 && _new==0) {
+          this.post.nvotes_up += 1;
+          this.post.nvotes_down -= 1;
+        }
+      }
+
+    }
+  });
+</script>

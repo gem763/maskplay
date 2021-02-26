@@ -1,0 +1,450 @@
+<style>
+  .baseposts.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .baseposts.vcomp > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .baseposts.vcomp > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .baseposts.vcomp > .remocon {
+    position: absolute;
+    top: 50%;
+    right: var(--w-3);
+    width: var(--w-16);
+    border-radius: var(--w-8);
+    background: rgba(255, 255, 255, 0.7);
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 11px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  }
+
+  .baseposts.vcomp > .remocon > .menu {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .baseposts.vcomp > .remocon > .comments.menu,
+  .baseposts.vcomp > .remocon > .voters.menu,
+  .baseposts.vcomp > .remocon > .like.menu {
+    height: var(--w-16);
+  }
+
+  /* .baseposts.vcomp > .remocon > .voters.menu {
+    height: var(--w-16);
+  } */
+
+  .baseposts.vcomp > .remocon > .upward.menu {
+    height: var(--w-8);
+    align-items: flex-start;
+  }
+
+  .baseposts.vcomp > .remocon > .upward.menu.upmost {
+    opacity: 0.3;
+  }
+
+  .baseposts.vcomp > .remocon > .downward.menu {
+    height: var(--w-8);
+    align-items: flex-end;
+  }
+
+  .baseposts.vcomp > .remocon > .comments.menu {
+    align-items: flex-start;
+  }
+
+  .baseposts.vcomp > .remocon > .voters.menu,
+  .baseposts.vcomp > .remocon > .like.menu {
+    align-items: flex-end;
+  }
+
+  .baseposts.vcomp > .remocon > .edge.menu {
+    height: var(--w-4);
+  }
+
+  .baseposts.vcomp > .remocon > .mid.menu {
+    height: var(--w-3);
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .icon {
+    width: 100%;
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .count {
+    width: 100%;
+    font-size: 13px;
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .title {
+    width: 100%;
+  }
+
+  .baseposts.vcomp > .remocon > .menu > .item > .icon > img {
+    width: var(--w-6);
+    height: auto;
+    /* height: var(--w-5); */
+    object-fit: contain;
+  }
+
+  .baseposts.vcomp > .remocon > .voters.menu > .item > .icon > img {
+    width: var(--w-8);
+    height: auto;
+  }
+
+  .baseposts.vcomp > .remocon > .upward.menu > .item > .icon > img {
+    width: auto;
+    height: var(--w-3);
+    /* transform: rotate(270deg) translateX(var(--w-2)); */
+  }
+
+  .baseposts.vcomp > .remocon > .downward.menu > .item > .icon > img {
+    width: auto;
+    height: var(--w-3);
+    transform: rotate(180deg);
+    /* transform: rotate(90deg) translateX(var(--w-2)); */
+  }
+</style>
+
+
+<script type='text/x-template' id='baseposts-template'>
+  <div class='baseposts vcomp'>
+    <div class='swiper-container' ref='swiper'>
+      <div class='swiper-wrapper'>
+        <div class="swiper-slide" v-for='post in postlist' :key='post.id'>
+          <post :post='post' :session='session'></post>
+        </div>
+      </div>
+    </div>
+
+    <!-- 아래의 방식으로 했더니, 첫 슬라이드에서 터치이벤트가 잘 안되었다.
+    vue-awesome-swiper 라이브러리의 내부적인 문제인것 같다
+    2021.01.31 -->
+    <!-- <swiper ref='swiper' :options='swiper_options'>
+      <swiper-slide v-for='post in postlist' :key='post.id'>
+        <post :post='post' :session='session'></post>
+      </swiper-slide>
+    </swiper> -->
+
+    <div class='remocon'>
+      <div class='menu edge'></div>
+
+
+      <!-- <div class='menu upward' v-if='!is_beginning' @click='goto_prev'> -->
+      <div class='menu upward' :class='is_beginning ? "upmost": ""' @click='goto_prev'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/backicon.png'></div>
+          <!-- <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div> -->
+        </div>
+      </div>
+
+      <div class='menu comments' @click='session.open_comments(cpost)'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/comment.png'></div>
+          <div class='count'><b>[[ncomments]]</b></div>
+          <div class='title'>댓글</div>
+        </div>
+      </div>
+
+      <div class='menu mid'></div>
+
+      <div class='menu like' v-if='is_postqa' @click='like'>
+        <div class='item'>
+          <div class='icon'>
+            <img src='/static/materials/icons/like_filled.png' v-if='onlike'>
+            <img src='/static/materials/icons/like.png' v-else>
+          </div>
+          <div class='count'><b>[[nvotes]]</b></div>
+          <div class='title'>좋아요</div>
+        </div>
+      </div>
+
+      <div class='menu voters' v-else @click='show_voters'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/voters.png'></div>
+          <div class='count'><b>[[nvotes]]</b></div>
+          <div class='title'>투표자</div>
+        </div>
+      </div>
+
+      <div class='menu downward' v-if='!is_end' @click='goto_next'>
+        <div class='item'>
+          <div class='icon'><img src='/static/materials/icons/backicon.png'></div>
+          <!-- <div class='icon'><img src='/static/materials/icons/right-chevron.png'></div> -->
+        </div>
+      </div>
+
+      <div class='menu edge'></div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  // Vue.use(VueAwesomeSwiper);
+
+  Vue.component('baseposts', {
+    template: '#baseposts-template',
+    delimiters: ['[[', ']]'],
+    props: ['postlist', 'session', 'posts'],
+
+    data: function() {
+      return {
+        // more: false,
+        swiper: undefined,
+        swiper_options: {
+          direction: 'vertical',
+          simulateTouch: true,
+          // loop: true,
+          observer: true,
+          observeParents: true,
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+        },
+      }
+    },
+
+    computed: {
+      cpost: function() {
+        if (this.swiper && this.postlist) {
+          return this.postlist[this.swiper.realIndex]
+        }
+      },
+
+      cpost_id: function() {
+        if (this.cpost) {
+          return this.cpost.id
+        }
+      },
+
+      prevpost_id: function() {
+        if (this.cpost) {
+          if (this.swiper.readIndex!=0) {
+            return this.postlist[this.swiper.realIndex-1].id
+          }
+        }
+      },
+
+      // loader_width: function() {
+      //   return document.querySelector('#window').clientWidth
+      // }
+
+      is_beginning: function() {
+        if (this.swiper) {
+          return this.swiper.isBeginning
+        }
+      },
+
+      is_end: function() {
+        if (this.swiper) {
+          return this.swiper.isEnd
+        }
+      },
+
+      is_postqa: function() {
+        if (this.cpost) {
+          return this.cpost.type == 'postqa'
+        }
+      },
+
+      ncomments: function() {
+        if (this.cpost) {
+          return this.cpost.ncomments
+        }
+      },
+
+      nvotes: function() {
+        if (this.cpost) {
+          return (this.cpost.nvotes_up ? this.cpost.nvotes_up : 0) + (this.cpost.nvotes_down ? this.cpost.nvotes_down : 0)
+        }
+      },
+
+      onlike: function() {
+        if (this.cpost) {
+          return this.session.user.has_voted_as(this.cpost.id) == 0
+        }
+      },
+
+      // onlike: function() {
+      //   if (this.session.user.auth && this.cpost) {
+      //     return this.session.user.auth.has_voted_as(this.cpost.id) == 0
+      //   }
+      // }
+    },
+
+
+    mounted: function() {
+      // this.swiper = this.$refs.swiper.$swiper;
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+      this.swiper.on('slideChange', () => {
+        // if ((this.session.who.view.length==0) && (this.prevpost_id)) {
+        //   this.session.trace('view', this.prevpost_id)
+        // }
+
+        // this.session.trace('view', this.cpost_id)
+        dataLayer.push({
+          'event': 'feedview'
+        });
+      })
+    },
+
+    watch: {
+      cpost_id: function(_new, _old) {
+        if (this.postlist.length > 1) {
+          if (this.postlist.length-this.swiper.realIndex < 5) {
+            this.posts.load(3);
+          }
+        }
+      },
+
+      'postlist.length': function(_new, _old) {
+        if (_new == 0) {
+          // booposts에서, 하나남은 포스트를 삭제했을때
+          this.session.close_page();
+        }
+      }
+    },
+
+    methods: {
+      like: function() {
+        if (!this.cpost) {
+          return
+        }
+
+        if (this.session.user.auth) {
+          if (this.onlike) {
+            this.cpost.nvotes_up -= 1;
+            this.session.user.auth.vote(this.cpost.id, -1);
+
+          } else {
+            this.cpost.nvotes_up += 1;
+            this.session.user.auth.vote(this.cpost.id, 0);
+          }
+
+        // } else if (this.session._auth) {
+        //   this.session.open_profiler('new');
+
+        } else {
+          this.session.open_bridge('login_guide_for_mypage', 'bottom');
+        }
+      },
+
+      show_voters: function() {
+        if (!this.cpost) {
+          return
+        }
+
+        // let voted_to = -1;
+        //
+        // if (this.session.user.auth) {
+        //   voted_to = this.session.user.auth.has_voted_as(this.cpost.id);
+        //
+        // // } else if (this.session._auth) {
+        // //   this.session.open_profiler('new');
+        // //   return
+        //
+        // } else {
+        //   // this.session.open_bridge('login_guide_for_mypage', 'bottom');
+        //   // return
+        // }
+
+        const voted_to = this.session.user.has_voted_as(this.cpost.id);
+
+        if (!this.cpost.voters) {
+          this.$set(this.cpost, 'voters', {
+            0: new Voters(this.cpost, 0),
+            1: new Voters(this.cpost, 1),
+            default: Math.max(0, voted_to)
+          });
+
+        } else {
+          this.cpost.voters.default = Math.max(0, voted_to);
+        }
+
+        let network_type;
+        if (this.cpost.type == 'postvoteox') {
+          network_type = 'ox_voters';
+
+        } else if (this.cpost.type == 'postvoteab') {
+          network_type = 'ab_voters';
+        }
+
+        this.session.open_network(network_type, this.cpost.voters);
+        // this.session.open_network(network_type, [ this.cpost.voters[0], this.cpost.voters[1] ]);
+
+        // this.session.open_network(this.cpost.voters[0]);
+      },
+
+      goto_prev: function() {
+        if (this.swiper) {
+          this.swiper.slidePrev();
+        }
+      },
+
+      goto_next: function() {
+        if (this.swiper) {
+          this.swiper.slideNext();
+        }
+      },
+
+      report_this_post: function() {
+        window.open('mailto:contact@moiber.com');
+      },
+
+      modify_this_post: function() {
+        this.session.open_editpost(this.cpost);
+      },
+
+      delete_this_post: function() {
+        this.session.open_bridge('delpost_guide', 'top', () => {
+          fetch(`/post/${this.cpost_id}/delete`).then(res => res.json()).then(console.log);
+          this.cpost_listout();
+        });
+      },
+
+      cpost_listout: function() {
+        if (this.swiper) {
+          const cpost = this.cpost; // 아래에서 swiper로 이동할거기때문에, cpost를 고정
+          let where = this.swiper.realIndex;
+          this.swiper.slideTo(where - 1);
+
+          this.listout_from(cpost.id, this.session.page.posts.univ.history);
+          this.listout_from(cpost.id, this.session.page.posts.univ.hot);
+          this.listout_from(cpost.id, this.session.page.posts.univ.custom);
+          this.listout_from(cpost.id, this.session.page.posts.univ.search);
+
+          this.listout_from(cpost.id, cpost.boo.posts.univ.own);
+          // this.listout_from(cpost.id, cpost.boo.posts.univ.following);
+          this.listout_from(cpost.id, cpost.boo.posts.univ.attend);
+        }
+      },
+
+      listout_from: function(post_id, from) {
+        if (from) {
+          where = _.findIndex(from.list, ['id', post_id]);
+
+          if (where != -1) {
+            from.list.splice(where, 1);
+          }
+        }
+      }
+
+    }
+  });
+</script>

@@ -29,6 +29,10 @@
     justify-content: center;
   }
 
+  .posting.vcomp > .actions > .action > * {
+    pointer-events: none;
+  }
+
   .posting.vcomp > .actions > .cancel.action {
     color: gray;
   }
@@ -90,7 +94,7 @@
       },
 
       the_boo: function() {
-        return this.session.auth.boo
+        return this.session.user.boo
       },
 
       swiper: function() {

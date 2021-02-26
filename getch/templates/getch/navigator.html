@@ -3,82 +3,81 @@
     background: white;
   }
 
-  .navigator.vcomp .page-body > .links {
-    margin-top: var(--w-16);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    font-size: 11px;
-    height: var(--w-12);
-    background: #fafafa;
-    padding-right: var(--w-2);
-  }
-
-  .navigator.vcomp .page-body > .links > span {
-    font-size: 13px;
-    margin-right: var(--w-2);
-  }
-
-  .navigator.vcomp .page-body > .links > .link {
-    width: var(--w-7);
-    height: var(--w-7);
-    /* margin: 5px; */
-    /* background: lightpink; */
-    position: relative;
-  }
-
-  .navigator.vcomp .page-body > .links > .link > img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: var(--w-5);
-    height: var(--w-5);
-    transform: translate(-50%, -50%);
-    filter: invert(100%);
-  }
-
-  .navigator.vcomp .page-body > .links > .link > span {
-    position: absolute;
-    top: calc(60% + 7px);
-    left: 50%;
-    width: 100%;
-    transform: translateX(-50%);
-    /* background: orange; */
-    text-align: center;
-  }
-
-  .navigator.vcomp .page-body > .groupers {
+  .navigator.vcomp .headerbar-body-default > .groupers {
     background: none;
-    margin-top: var(--w-1);
+    /* margin-top: var(--w-16); */
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    /* padding: 10px; */
   }
 
-  .navigator.vcomp .page-body > .groupers > .grouper {
-    /* font-size: 15px; */
-    /* margin-left: 5px; */
-    /* margin-right: 5px; */
-    /* padding: 10px; */
-    /* border-radius: 50px; */
+  .navigator.vcomp .headerbar-body-default > .groupers > .grouper {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: var(--w-25);
-    height: var(--w-8);
-    font-size: 12px;
+    width: var(--w-20);
+    height: var(--w-16);
+    font-size: 16px;
+    border-top: 1px solid whitesmoke;
     border-bottom: 1px solid whitesmoke;
     color: lightgray;
+    box-sizing: border-box;
   }
 
-  .navigator.vcomp .page-body > .groupers > .grouper.active {
+  .navigator.vcomp .headerbar-body-default > .groupers > .grouper.blank {
+    width: var(--w-30);
+  }
+
+  .navigator.vcomp .headerbar-body-default > .groupers > .grouper.active {
     color: black;
+    border-top: 2px solid transparent;
     border-bottom: 2px solid var(--color-dark);
     font-weight: bold;
-    /* background: var(--color-dark); */
-    /* color: white; */
+  }
+
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button {
+    background: none;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: var(--w-16);
+    /* right: var(--w-2); */
+    right: 0;
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    opacity: 0.3;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button > * {
+    pointer-events: none;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button.on {
+    opacity: 1;
+  }
+
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button > img {
+    /* width: var(--w-5); */
+    height: var(--w-5);
+    /* height: auto; */
+    width: auto;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 40%;
+  }
+
+  .navigator.vcomp .headerbar-body-default > .voteonly-button > span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 70%;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
   }
 
   .navigator.vcomp .page-body > .contents {
@@ -86,6 +85,7 @@
     width: 100%;
     background: none;
     overflow: hidden;
+    margin-top: var(--w-16);
   }
 
   .navigator.vcomp .page-body > .contents > .sections {
@@ -112,53 +112,6 @@
     width: 50%;
     background: none;
   }
-
-  .navigator.vcomp .headerbar-body-trans > .logo {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* pointer-events: none; */
-  }
-
-  .navigator.vcomp .headerbar-body-trans > .logo > img {
-    height: var(--w-4);
-    width: auto;
-  }
-
-  .navigator.vcomp .headerbar-body-default > .searchbar {
-    position: absolute;
-    box-sizing: border-box;
-    top: 50%;
-    left: 50%;
-    width: var(--w-70);
-    height: var(--w-10);
-    transform: translate(-50%,-50%);
-    font-size: 13px;
-    font-weight: bold;
-    background: white;
-    padding: 5px;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0.5px 0.5px 2px rgba(0,0,0,0.1);
-  }
-
-  .navigator.vcomp .headerbar-body-default > .searchbar > img {
-    position: absolute;
-    top: 50%;
-    left: 5%;
-    width: var(--w-4);
-    height: auto;
-    /* height: var(--w-6); */
-    transform: translateY(-50%);
-  }
-
-  /* .navigator.vcomp .headerbar-body-default {
-    background: #fafafa;
-  } */
 </style>
 
 <script type='text/x-template' id='navigator-template'>
@@ -167,53 +120,37 @@
     :open='session.page.navigator.open'
     :from='session.page.navigator.from'
     :scrolload='{ obj:the_posts, n:16 }'
-    :sticky_trigger_margin='sticky_trigger_margin'
     :onloading='the_posts_onloading'
+    :hide_menu='true'
     @close='session.close_page()'>
 
-    <template #headerbar-menu>
+    <!-- <template #headerbar-menu>
       <div class='item' @click='landing'>서비스 소개</div>
       <div class='item' @click='company'>팀 모이버</div>
-    </template>
-
-    <template #headerbar-body-trans>
-      <div class='logo'>
-        <img src='/static/materials/logos/moiber_logo.png'>
-      </div>
-    </template>
+    </template> -->
 
     <template #headerbar-body-default>
-      <div class='searchbar' @click='session.open_searcher()'>
-        <img src='/static/materials/icons/search.png'>
+      <div class='groupers'>
+        <span class='grouper blank'></span>
+        <span class='grouper hot' :class='active_grouper=="hot" ? "active" : ""' @click='group_hot'>인기</span>
+        <span class='grouper history' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
+        <span class='grouper blank'></span>
+      </div>
+
+      <div class='voteonly-button' :class='vote_only ? "on" : ""' @click='toggle_vote_only'>
+        <img src='/static/materials/icons/voteonly_button.png'>
+        <span>투표만 보기</span>
       </div>
     </template>
 
     <template #page-body>
-      <div class='links'>
-        <span>Contact us</span>
-
-        <div class='link' @click='goto_fb'>
-          <img src='/static/materials/icons/Facebook.png'>
-        </div>
-
-        <div class='link' @click='goto_insta'>
-          <img src='/static/materials/icons/Instagram.png'>
-        </div>
-      </div>
-
-      <div class='groupers'>
-        <span class='grouper' :class='active_grouper=="hot" ? "active" : ""' @click='group_hot'>인기</span>
-        <span class='grouper' :class='active_grouper=="history" ? "active" : ""' @click='group_history'>최신</span>
-        <span class='grouper'></span>
-        <span class='grouper'></span>
-      </div>
-
       <div class='contents'>
         <div class='sections' :class='active_grouper'>
 
           <div class='section' :style='{ height: hot_section_height }' ref='section_hot'>
             <postlibrary
               :postlist='postlist_hot'
+              type='grid'
               @open_posts='backto_posts($event)'
             ></postlibrary>
           </div>
@@ -221,6 +158,7 @@
           <div class='section' :style='{ height: history_section_height }' ref='section_history'>
             <postlibrary
               :postlist='postlist_history'
+              type='grid'
               @open_posts='backto_posts($event)'
             ></postlibrary>
           </div>
@@ -243,6 +181,7 @@
         active_grouper: 'hot',
         history_section_height: 'auto',
         hot_section_height: 'auto',
+        vote_only: false,
       }
     },
 
@@ -263,146 +202,51 @@
       },
 
       postlist_history: function() {
-        return this.postlist_rearranged('history')
+        try {
+          let plist = this.session.page.posts.univ['history'].list;
+
+          if (this.vote_only) {
+            plist = plist.filter(p => p.type=='postvoteab' || p.type=='postvoteox');
+          }
+
+          return plist.sort((a,b) => a.order - b.order)
+          // return this.postlist_rearranged('history')
+        } catch(e) {
+          return []
+        }
       },
 
       postlist_hot: function() {
-        return this.postlist_rearranged('hot')
+        try {
+          let plist = this.session.page.posts.univ['hot'].list;
+
+          if (this.vote_only) {
+            plist = plist.filter(p => p.type=='postvoteab' || p.type=='postvoteox');
+          }
+
+          return plist.sort((a,b) => a.order - b.order)
+
+          // return this.session.page.posts.univ['hot'].list.sort((a,b) => a.order - b.order)
+          // return this.postlist_rearranged('hot')
+
+        } catch(e) {
+          return []
+        }
       },
 
-      // postlist_history_old: function() {
-      //   if (this.session.page.posts.univ.history) {
-      //     return this.session.page.posts.univ.history.list.sort((a,b) => b.id - a.id )
-      //   }
-      // },
-      //
-      // postlist_hot_old: function() {
-      //   if (this.session.page.posts.univ.hot) {
-      //     return this.session.page.posts.univ.hot.list
-      //   }
+      // loader_width: function() {
+      //   return document.querySelector('#window').clientWidth
       // },
 
-      loader_width: function() {
-        return document.querySelector('#window').clientWidth
-      },
-
-      sticky_trigger_margin: function() {
-        return this.loader_width * 10 / 100
-      }
+      // sticky_trigger_margin: function() {
+      //   return this.loader_width * 10 / 100
+      // }
     },
 
     methods: {
-      goto_fb: function() {
-        window.open('https://www.facebook.com/moiber.official');
+      toggle_vote_only: function() {
+        this.vote_only = !this.vote_only;
       },
-
-      goto_insta: function() {
-        window.open('https://www.instagram.com/moiber_official');
-      },
-
-      // onCreated: function(node) {
-      //   console.log(node);
-      // },
-
-      bookmark: function() {
-        var createBookmark = browser.bookmarks.create({
-          title: "bookmarks.create() on MDN",
-          url: "https://developer.mozilla.org/Add-ons/WebExtensions/API/bookmarks/create"
-        });
-
-        createBookmark.then(onCreated);
-
-        // var bookmarkURL = 'https://moiber.com';
-        // var bookmarkTitle = '모이버';
-        // var triggerDefault = false;
-        //
-        // if (window.sidebar && window.sidebar.addPanel) {
-        //   // Firefox version < 23
-        //   window.sidebar.addPanel(bookmarkTitle, bookmarkURL, '');
-        //
-        // } else if ((window.sidebar && (navigator.userAgent.toLowerCase().indexOf('firefox') > -1)) || (window.opera && window.print)) {
-        //   // Firefox version >= 23 and Opera Hotlist
-        //   var $this = $(this);
-        //   $this.attr('href', bookmarkURL);
-        //   $this.attr('title', bookmarkTitle);
-        //   $this.attr('rel', 'sidebar');
-        //   $this.off(e);
-        //   triggerDefault = true;
-        //
-        // } else if (window.external && ('AddFavorite' in window.external)) {
-        //   // IE Favorite
-        //   window.external.AddFavorite(bookmarkURL, bookmarkTitle);
-        //
-        // } else {
-        //   // WebKit - Safari/Chrome
-        //   alert((navigator.userAgent.toLowerCase().indexOf('mac') != -1 ? 'Cmd' : 'Ctrl') + '+D 키를 눌러 즐겨찾기에 등록하실 수 있습니다.');
-        // }
-        //
-        // return triggerDefault;
-      },
-
-
-      // sorter_by: function(how, islist) {
-      //   if (how == 'history' && !islist) {
-      //     return (a,b) => b.id - a.id
-      //
-      //   } else if (how == 'history' && islist) {
-      //     return (a,b) => b[0].id - a[0].id
-      //
-      //   } else if (how == 'hot' && !islist) {
-      //     return (a,b) => b.nvotes_up + b.nvotes_down - a.nvotes_up - a.nvotes_down
-      //
-      //   } else if (how == 'hot' && islist) {
-      //     return (a,b) => b[0].nvotes_up + b[0].nvotes_down - a[0].nvotes_up - a[0].nvotes_down
-      //   }
-      // },
-
-      postlist_rearranged: function(what) {
-        if (!this.session.page.posts.univ[what]) {
-          return
-        }
-
-        const _postlist = this.session.page.posts.univ[what].list
-        _postlist.sort((a,b) => a.order - b.order);
-        // _postlist.sort(this.sorter_by(what, false));
-
-        const _plist = _.groupBy(_postlist, post => post.type);
-        const _ab = _plist.postvoteab ? _plist.postvoteab : [];
-        const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
-        const _plist_qa = _plist.postqa ? _plist.postqa : [];
-        const _oxqa = _plist_ox.concat(_plist_qa).sort((a,b) => a.order - b.order);
-        // const _oxqa = _plist_ox.concat(_plist_qa).sort(this.sorter_by(what, false))
-
-        const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
-        const plist_ab = _ab.map(_ => [_]);
-
-        return plist_ab.concat(plist_oxqa).sort((a,b) => a[0].order - b[0].order)
-        // return plist_ab.concat(plist_oxqa).sort(this.sorter_by(what, true))
-      },
-
-      // postlist_rearranged_old: function(postlist, sorted) {
-      //   const _plist = _.groupBy(postlist, post => post.type);
-      //   const _ab = _plist.postvoteab ? _plist.postvoteab : [];
-      //   const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
-      //   const _plist_qa = _plist.postqa ? _plist.postqa : [];
-      //   let _oxqa = _plist_ox.concat(_plist_qa)
-      //
-      //   if (sorted) {
-      //     _oxqa = _oxqa.sort((a,b) => b.id - a.id );
-      //   }
-      //
-      //   const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
-      //   const plist_ab = _ab.map(_ => [_]);
-      //
-      //   const result = plist_ab.concat(plist_oxqa);
-      //
-      //   if (sorted) {
-      //     return result.sort((a,b) => b[0].id - a[0].id )
-      //
-      //   } else {
-      //     return result
-      //   }
-      // },
 
       backto_posts: function(postid) {
         this.session.page.posts.contents = this.the_posts;
@@ -425,6 +269,10 @@
       },
 
       group_hot: function() {
+        if (!this.session.page.posts.univ.hot) {
+          this.session.page.posts.univ.hot = new Posts('hot');
+        }
+
         this.active_grouper = 'hot';
 
         const baseh = this.$refs.section_hot.clientHeight;
@@ -436,13 +284,13 @@
         alert('맞춤순');
       },
 
-      company: function() {
-        this.session.open_company('who');
-      },
-
-      landing: function() {
-        this.session.open_company('landing');
-      }
+      // company: function() {
+      //   this.session.open_company('who');
+      // },
+      //
+      // landing: function() {
+      //   this.session.open_company('landing');
+      // }
     }
   });
 </script>

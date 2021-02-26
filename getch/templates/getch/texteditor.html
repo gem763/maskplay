@@ -6,6 +6,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: row;
+    /* font-size: 25px; */
   }
 
   .texteditor.vcomp > .input {
@@ -57,6 +59,7 @@
 <script type='text/x-template' id='texteditor-template'>
   <page :open='session.page.texteditor.open' :hide_close='true'>
     <div class='texteditor vcomp'>
+      <!-- <span class='default'>https://</span> -->
       <textarea class='input' v-model.trim='texted' :placeholder='placeholder' ref='input' @input='texting' @keydown='linecheck'></textarea>
       <!-- <input v-model.trim='texted' :placeholder='placeholder' ref='input'> -->
 

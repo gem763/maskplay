@@ -74,6 +74,10 @@
     /* height: var(--w-8); */
   }
 
+  .aboutboo.vcomp > .profiles > .profile > .follow > * {
+    pointer-events: none;
+  }
+
   .aboutboo.vcomp > .profiles > .profile > .follow > img.on {
     background: red;
   }
@@ -113,8 +117,8 @@
     text-align: center;
   }
 
-  /* .aboutboo.vcomp > .profiles > .styletags,
-  .aboutboo.vcomp > .profiles > .fashiontems, */
+
+  .aboutboo.vcomp > .profiles > .links,
   .aboutboo.vcomp > .profiles > .labels {
     /* margin-top: 10px; */
     width: var(--w-80);
@@ -122,6 +126,34 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
+  }
+
+  .aboutboo.vcomp > .profiles > .links > .link {
+    margin: 5px;
+    margin-bottom: 10px;
+  }
+
+  .aboutboo.vcomp > .profiles > .links > .link > img {
+    filter:invert(100%);
+    width: 25px;
+    height: auto;
+    display: block;
+  }
+
+  .aboutboo.vcomp > .profiles > .links > .link > .label {
+    font-size: 11px;
+    padding: 9px;
+    border-radius: 20px;
+    margin: 2px;
+    border: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 23px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
+    background: var(--color-dark);
+    color: white;
   }
 
   .aboutboo.vcomp > .profiles > .labels > .label {
@@ -173,6 +205,10 @@
     justify-content: center;
     transition: all 0.5s;
     position: relative;
+  }
+
+  .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > * {
+    pointer-events: none;
   }
 
   .aboutboo.vcomp > .profiles > .boochooser > .boo-candidate > img {
@@ -297,13 +333,19 @@
       </p>
 
 
-      <div class='labels'>
-        <span class='label' v-for='l in mylabels("gender")'>[[ l.label ]]</span>
-        <span class='label' v-for='l in mylabels("age")'>[[ l.label ]]</span>
+      <div class='links'>
+        <div class='link' v-for='url in links' @click='link_to(url)'>
+          <!-- <img :src='sns_icon(url)' v-if='is_sns_link(url)'>
+          <div class='label' v-else>
+            [[short_url(url)]]
+          </div> -->
+          <div class='label'>[[short_url(url)]]</div>
+        </div>
       </div>
 
       <div class='labels'>
-        <span class='label' v-for='l in mylabels("body")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("gender")'>[[ l.label ]]</span>
+        <span class='label' v-for='l in mylabels("age")'>[[ l.label ]]</span>
       </div>
 
       <div class='labels'>
@@ -314,12 +356,16 @@
         <span class='label' v-for='l in mylabels("item")'>[[ l.label ]]</span>
       </div>
 
+      <div class='labels'>
+        <span class='label' v-for='l in mylabels("body")'>[[ l.label ]]</span>
+      </div>
+
       <div class='boochooser' v-if='is_myboo'>
         <div class='boo-candidate' :style='boo_candidate_style' v-for='b in myboos' @click='choose_this_boo(b)'>
           <img :src='b.profile.pix'>
         </div>
 
-        <div class='boo-candidate' :style='boo_candidate_style' v-if='!myboos_maxed' @click='session.open_profiler("new")'>
+        <div class='boo-candidate add' :style='boo_candidate_style' v-if='!myboos_maxed' @click='session.open_profiler("new")'>
           <img class='add' src='/static/materials/icons/plus.png'>
           <div class='circle'></div>
         </div>
@@ -331,13 +377,13 @@
     <div class='contents'>
       <div class='groupers'>
         <template v-if='is_myboo'>
-          <span class='grouper' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>내 피드</span>
-          <span class='grouper' :class='active_grouper=="attend" ? "active" : ""' @click='group_attend'>참여중</span>
-          <span class='grouper' :class='active_grouper=="follow" ? "active" : ""' @click='group_follow'>팔로우</span>
+          <span class='grouper own' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>내 피드</span>
+          <span class='grouper attend' :class='active_grouper=="attend" ? "active" : ""' @click='group_attend'>참여중</span>
+          <span class='grouper follow' :class='active_grouper=="follow" ? "active" : ""' @click='group_follow'>팔로우</span>
           <span class='grouper'></span>
         </template>
         <template v-else>
-          <span class='grouper' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>피드</span>
+          <span class='grouper own' :class='active_grouper=="own" ? "active" : ""' @click='group_own'>피드</span>
         </template>
       </div>
 
@@ -346,6 +392,7 @@
           <div class='section' :style='{ height: own_section_height }' ref='section_own'>
             <postlibrary
               :postlist='postlist_own'
+              type='grid'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
@@ -353,6 +400,7 @@
           <div class='section' :style='{ height: attend_section_height }' ref='section_attend'>
             <postlibrary
               :postlist='postlist_attend'
+              type='grid'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
@@ -360,6 +408,7 @@
           <div class='section' :style='{ height: follow_section_height }' ref='section_follow'>
             <postlibrary
               :postlist='postlist_follow'
+              type='grid'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
@@ -369,6 +418,7 @@
           <div class='section' :style='{ height: own_section_height }' ref='section_own'>
             <postlibrary
               :postlist='postlist_own'
+              type='grid'
               @open_posts='open_posts($event)'
             ></postlibrary>
           </div>
@@ -431,38 +481,28 @@
       },
 
       is_following: function() {
-        if (!this.is_myboo && this.session.auth) {
-          return this.session.auth.is_following(this.boo.id)
+        if (!this.is_myboo && this.session.user.auth) {
+          return this.session.user.auth.is_following(this.boo.id)
         }
       },
 
       is_myboo: function() {
-        return (this.session.auth && this.session.auth.boo.id==this.boo.id)
+        return (this.session.user.auth && this.session.user.auth.boo.id==this.boo.id)
       },
 
-      // mytags: function() {
-      //   return this.boo.styletags
-      // },
-      //
-      // myitems: function() {
-      //   return this.boo.fashiontems
-      // },
-
-      // my_genderlabels: function() {
-      //   return this.session.labels.gender.filter(l => {
-      //     return this.boo.genderlabels.includes(l.id)
-      //   })
-      // },
+      in_myboos: function() {
+        return (this.session.user.auth && this.boo.id in this.session.user.auth.boos)
+      },
 
       myboos: function() {
         if (this.is_myboo) {
-          return this.session.auth.boos
+          return this.session.user.auth.boos
         }
       },
 
       myboos_maxed: function() {
         if (this.is_myboo) {
-          return Object.keys(this.session.auth.boos).length >= this.n_boos_max
+          return Object.keys(this.session.user.auth.boos).length >= this.n_boos_max
         }
       },
 
@@ -490,19 +530,60 @@
         // :postlist='postlist_rearranged("own")' 이라고 바로 하면
         // 이상하게 infinite loop 에러가 뜬다
         // 2021.01.26
-        return this.postlist_rearranged('own')
+        // return this.postlist_rearranged('own')
+        return this.postlist('own').sort((a,b) => a.order - b.order)
       },
 
       postlist_attend: function() {
-        return this.postlist_rearranged('attend')
+        return this.postlist('attend').sort((a,b) => a.order - b.order)
       },
 
       postlist_follow: function() {
-        return this.postlist_rearranged('follow')
+        return this.postlist('follow').sort((a,b) => a.order - b.order)
       },
+
+      links: function() {
+        let _links = this.boo.links;
+
+        // if (this.is_myboo) {
+        if (this.in_myboos) {
+          _links = _links.map(i => _.find(this.session.user.auth.links, ['id', i]).url)
+        }
+
+        return _links//.sort((a,b) => this.is_sns_link(b) - this.is_sns_link(a))
+      }
     },
 
     methods: {
+      // is_insta_link: function(url) {
+      //   return url.includes('instagram')
+      // },
+      //
+      // is_fb_link: function(url) {
+      //   return url.includes('facebook')
+      // },
+      //
+      // is_sns_link: function(url) {
+      //   return this.is_insta_link(url) || this.is_fb_link(url)
+      // },
+      //
+      // sns_icon: function(url) {
+      //   if (this.is_insta_link(url)) {
+      //     return '/static/materials/icons/insta_inverted.png'
+      //
+      //   } else if (this.is_fb_link(url)) {
+      //     return '/static/materials/icons/fb_inverted.png'
+      //   }
+      // },
+
+      link_to: function(url) {
+        window.open(url);
+      },
+
+      short_url: function(url) {
+        return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
+      },
+
       mylabels: function(type) {
         return this.session.labels[type].filter(l => {
           return this.boo[type + 'labels'].includes(l.id)
@@ -510,7 +591,7 @@
       },
 
       choose_this_boo: function(boo) {
-        this.session.auth.boo = boo.id;
+        this.session.user.auth.boo = boo.id;
       },
 
       toggle_changeboo: function() {
@@ -533,7 +614,7 @@
       },
 
       toggle_follow: function() {
-        if (!this.session.auth) {
+        if (!this.session.user.auth) {
           this.session.open_bridge('login_guide_for_mypage', 'bottom');
           return
         }
@@ -549,11 +630,11 @@
         }
 
         if (this.is_following) {
-          this.session.auth.unfollow(this.boo.id);
+          this.session.user.auth.unfollow(this.boo.id);
           this.boo.nfollowers -= 1;
 
         } else {
-          this.session.auth.follow(this.boo.id);
+          this.session.user.auth.follow(this.boo.id);
           this.boo.nfollowers += 1;
         }
       },
@@ -612,38 +693,7 @@
         } else {
           return this.boo.posts.univ[grouper].list
         }
-      },
-
-      sorter_by: function(how, islist) {
-        if (how == 'history' && !islist) {
-          return (a,b) => b.id - a.id
-
-        } else if (how == 'history' && islist) {
-          return (a,b) => b[0].id - a[0].id
-
-        } else if (how == 'hot' && !islist) {
-          return (a,b) => b.nvotes_up + b.nvotes_down - a.nvotes_up - a.nvotes_down
-
-        } else if (how == 'hot' && islist) {
-          return (a,b) => b[0].nvotes_up + b[0].nvotes_down - a[0].nvotes_up - a[0].nvotes_down
-        }
-      },
-
-      postlist_rearranged: function(what) {
-        const _postlist = this.postlist(what);
-        _postlist.sort(this.sorter_by('history', false));
-
-        const _plist = _.groupBy(_postlist, post => post.type);
-        const _ab = _plist.postvoteab ? _plist.postvoteab : [];
-        const _plist_ox = _plist.postvoteox ? _plist.postvoteox : [];
-        const _plist_qa = _plist.postqa ? _plist.postqa : [];
-        const _oxqa = _plist_ox.concat(_plist_qa).sort(this.sorter_by('history', false))
-
-        const plist_oxqa = new Array(Math.ceil(_oxqa.length / 2)).fill().map(_ => _oxqa.splice(0, 2));
-        const plist_ab = _ab.map(_ => [_]);
-
-        return plist_ab.concat(plist_oxqa).sort(this.sorter_by('history', true))
-      },
+      }
     }
   });
 </script>

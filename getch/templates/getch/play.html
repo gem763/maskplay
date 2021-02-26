@@ -3,25 +3,35 @@
 
 {% load static %}
 <head>
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5PVVB55');
+  </script>
+  <!-- End Google Tag Manager -->
+
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VR4NJXTXV4"></script>
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-VR4NJXTXV4"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'G-VR4NJXTXV4');
-  </script>
+  </script> -->
 
 
   <title>MOIBER</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1, user-scalable=no">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Monoton&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,500&display=swap&subset=korean">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@600&display=swap"> -->
   <link rel="stylesheet" href='/static/swiper/swiper-bundle.css'>
   <!-- <link rel="stylesheet" href='/static/swiper/swiper.min.css'> -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -61,6 +71,7 @@
       --w-14: calc(var(--width-unit) * 14);
       --w-15: calc(var(--width-unit) * 15);
       --w-16: calc(var(--width-unit) * 16);
+      --w-17: calc(var(--width-unit) * 17);
       --w-18: calc(var(--width-unit) * 18);
       --w-20: calc(var(--width-unit) * 20);
       --w-21: calc(var(--width-unit) * 21);
@@ -81,6 +92,9 @@
       --w-88: calc(var(--width-unit) * 88);
       --w-90: calc(var(--width-unit) * 90);
       --w-92: calc(var(--width-unit) * 92);
+
+      --minipost-margin: var(--w-1);
+      --minipost-width: calc((var(--width) - var(--minipost-margin) * 4) / 3);
 
       /* --t-0: 100vw;
       --t-1: calc(var(--t-0) * 352 / 572);
@@ -144,6 +158,12 @@
 
 
 <body style='background:white;margin:0;'>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5PVVB55" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <div id='window'>
     <!-- <posts :session='session'></posts> -->
     <pages :session='session'></pages>
@@ -178,10 +198,12 @@
   <!-- <script src="https://cdn.jsdelivr.net/npm/deep-object-diff@1.1.0/dist/index.js"></script> -->
   <script src="/static/merge-images/merge-images.js"></script>
   <script src="/static/cropperjs/cropper.min.js"></script>
+  <!-- <script src="https://unpkg.com/vue-lazyload/vue-lazyload.js"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js "></script> -->
 
 
   {% include "getch/postlibrary.html" %}
+  {% include "getch/boolibrary.html" %}
   <!-- {% include "getch/posts.html" %} -->
   {% include "getch/pages.html" %}
   {% include "getch/page.html" %}
@@ -214,8 +236,14 @@
         this.session = new Session();
         this.req = {{req}};
 
-        if (this.req==3) {
-          setTimeout(()=> { this.session.open_company('landing'); }, 100);
+        if (this.req==0) {
+          setTimeout(()=> { this.session.open_home(); }, 100);
+
+        } else if (this.req==3) {
+          setTimeout(()=> {
+            this.session.open_home();
+            this.session.open_landing();
+          }, 100);
 
         } else if (this.req==1) {
           setTimeout(()=> { this.session.open_company('who'); }, 100);
@@ -227,8 +255,10 @@
 
       computed: {
         introing: function() {
-          // return true
           if (this.session.page.posts.contents.list.length==0) {
+            return true
+
+          } else if (this.session.page.posts.contents.list[0].order!=0) {
             return true
           }
         }
@@ -302,6 +332,7 @@
     sideb.session.req = {{req}};
     sideb.session.labels = {{labels|safe}};
     sideb.session.utype = '{{utype|safe}}';
+    // sideb.session.hotboos = {{hotboos|safe}};
   </script>
 
 </body>

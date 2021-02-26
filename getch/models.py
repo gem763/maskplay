@@ -3,13 +3,14 @@ from custom_user.models import AbstractEmailUser
 from model_utils.managers import InheritanceManager
 # from vote.models import VoteModel
 from siteflags.models import ModelWithFlag, FlagBase
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from django.conf import settings
 from django_currentuser.middleware import get_current_user, get_current_authenticated_user
-from django.db.models import Q, F
+from django.db.models import F, Q, Sum, Count, Case, When
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from django.utils.decorators import classproperty
+from django.utils.functional import classproperty
+from django.contrib.contenttypes.models import ContentType
 # from notifications.base.models import AbstractNotification
 from notifications.signals import notify
 
@@ -21,11 +22,9 @@ import os
 import re
 import collections
 import random
+
 # from gensim.models import Doc2Vec
 
-
-# hidden_user = 34 # quantlab@kakao.com
-# hidden_boo_nick = '테스터'
 
 VOTE_UP = 0
 VOTE_DOWN = 1
@@ -33,7 +32,7 @@ FOLLOW = 10
 LIKE_COMMENT = 100
 
 BOO_DELETED = 97
-
+GUESTBOO = 363
 
 # model_path = os.path.join(settings.BASE_DIR, 'data', 'doc2vec.model')
 # d2v = Doc2Vec.load(model_path)
@@ -53,6 +52,65 @@ class BigIdAbstract(models.Model):
 
 class Flager(FlagBase):
     user = models.ForeignKey('Boo', related_name='%(class)s_users', verbose_name='Boo', on_delete=models.CASCADE)
+
+    class Meta(FlagBase.Meta):
+        # note까지 같아야 같은 걸로 취급.
+        # guest 사용자들이 하나의 부캐로 여러번 보팅할수 있도록
+        # 2021.02.16
+        unique_together = (
+            'content_type',
+            'object_id',
+            'user',
+            'status',
+            'note'
+        )
+
+    @classmethod
+    def vote_on(cls, obj, boo, status, note):
+        try:
+            cls.objects.create(linked_object=obj, user=boo, status=status, note=note)
+        except:
+            pass
+
+    @classmethod
+    def vote_off(cls, obj, boo, status, note):
+        ctype = ContentType.objects.get_for_model(obj)
+
+        try:
+            cls.objects.get(content_type=ctype, object_id=obj.id, user=boo, status=status, note=note).delete()
+        except:
+            pass
+
+    @classmethod
+    def vote_up(cls, obj, boo, note):
+        cls.vote_on(obj, boo, VOTE_UP, note)
+        cls.vote_off(obj, boo, VOTE_DOWN, note)
+
+    @classmethod
+    def vote_down(cls, obj, boo, note):
+        cls.vote_off(obj, boo, VOTE_UP, note)
+        cls.vote_on(obj, boo, VOTE_DOWN, note)
+
+    @classmethod
+    def vote_clear(cls, obj, boo, note):
+        cls.vote_off(obj, boo, VOTE_UP, note)
+        cls.vote_off(obj, boo, VOTE_DOWN, note)
+
+    @classmethod
+    def like_comment(cls, obj, boo, note):
+        try:
+            cls.objects.create(linked_object=obj, user=boo, status=LIKE_COMMENT, note=note)
+        except:
+            pass
+
+    @classmethod
+    def delike_comment(cls, obj, boo, note):
+        ctype = ContentType.objects.get_for_model(obj)
+
+        try:
+            cls.objects.get(content_type=ctype, object_id=obj.id, user=boo, status=LIKE_COMMENT, note=note).delete()
+        except:
+            pass
 
 
 class Label(BigIdAbstract):
@@ -83,6 +141,10 @@ class Itemlabel(Label):
 
 class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
+
+    @classmethod
+    def guest(cls):
+        return cls.objects.get(email=GUEST)
 
     @property
     def has_active_boo(self):
@@ -137,6 +199,61 @@ class User(AbstractEmailUser):
         self.set_boo(max(boos_id))
 
 
+# class Session(BigIdAbstract):
+#     sessionkey = models.CharField(max_length=200, blank=False, null=False)
+#     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
+#     checkin = models.DateTimeField(auto_now_add=True)
+#     checkout = models.DateTimeField(default=timezone.now, null=False)
+#
+#     # https://stackoverflow.com/questions/42239818/how-to-set-the-default-of-a-jsonfield-to-empty-list-in-django-and-django-jsonfie
+#     view = models.JSONField(null=True, default=list)
+#
+#     def __str__(self):
+#         return self.sessionkey + ' | ' + str(self.checkin)
+#
+#     @classmethod
+#     def call(cls, request):
+#         try:
+#             session = cls.objects.get(sessionkey=request.session.session_key)
+#             # session.checkout = datetime.now()
+#             # session.save()
+#
+#         except:
+#             request.session.create()
+#             session = cls.objects.create(sessionkey=request.session.session_key)
+#
+#         # if request.user.is_authenticated:
+#         #     session.user = request.user
+#         #     session.save()
+#         #
+#         # else:
+#         #     session.user = None
+#         #     session.save()
+#
+#         return session
+#
+#
+#     # @property
+#     # def guest(self):
+#     #     return {
+#     #         'sessionkey': self.sessionkey,
+#     #         'view': self.view
+#     #     }
+#
+#     def vote(self, post_id, action):
+#         _post = Post.objects.get(pk=post_id)
+#
+#         if self.user:
+#             _post.vote(int(action), self.user.boo)
+#
+#         else:
+#             _post.vote(int(action), Boo.guestboo, note=self.sessionkey)
+#
+#     @property
+#     def fit(self):
+#         return []
+
+
 def _profilepix_path(instance, fname):
     try:
         user = instance.boo.user.email
@@ -160,13 +277,21 @@ class Profile(BigIdAbstract):
         super().save(*args, **kwargs)
 
 
+class Link(BigIdAbstract):
+    url = models.URLField(max_length=200, blank=False, null=False)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    # public = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.url
+
+
 class Boo(BigIdAbstract, ModelWithFlag):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nick = models.CharField(max_length=100, blank=True, null=True)
     text = models.TextField(max_length=200, blank=True, null=True)
     profile = models.OneToOneField(Profile, null=True, blank=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True)
-    # key = models.IntegerField(default=0)
 
     genderlabels = models.ManyToManyField(Genderlabel, blank=True)
     agelabels = models.ManyToManyField(Agelabel, blank=True)
@@ -174,14 +299,37 @@ class Boo(BigIdAbstract, ModelWithFlag):
     stylelabels = models.ManyToManyField(Stylelabel, blank=True)
     itemlabels = models.ManyToManyField(Itemlabel, blank=True)
 
-    # nposts = models.IntegerField(default=0)
-    # nfollowers = models.IntegerField(default=0)
-
     active = models.BooleanField(default=True)
     hidden = models.BooleanField(default=False)
 
+    links = models.ManyToManyField(Link, blank=True)
+
+
     def __str__(self):
         return self.nick + ' | ' + self.user.email
+
+    # @property
+    # def links_list(self):
+    #     return []
+        # if self.links:
+        #     _links = self.links.split(',')
+        #     return [int(i) for i in _links]
+        #
+        # else:
+        #     return []
+
+    @classproperty
+    def guestboo(cls):
+        return cls.objects.get(id=GUESTBOO)
+
+    @classmethod
+    def guestboo_serialized(cls, sessionkey):
+        _guestboo = GuestbooSerializer(cls.guestboo, context={'sessionkey':sessionkey}).data
+        return json.dumps(_guestboo)
+
+    @property
+    def is_guestboo(self):
+        return self.id == GUESTBOO
 
     @property
     def selected(self):
@@ -237,13 +385,13 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def follow(self, boo_id, note=None):
         boo = Boo.objects.get(pk=boo_id)
         boo.set_flag(self, note=note, status=FOLLOW)
-        notify.send(self, recipient=boo.user, verb='follow')
+        # notify.send(self, recipient=boo.user, verb='follow')
         boo.save()
 
     def unfollow(self, boo_id):
         boo = Boo.objects.get(pk=boo_id)
         boo.remove_flag(self, status=FOLLOW)
-        notify.send(self, recipient=boo.user, verb='unfollow')
+        # notify.send(self, recipient=boo.user, verb='unfollow')
         boo.save()
 
     def is_following(self, boo_id):
@@ -358,6 +506,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
         # return {'likes':like_tokens, 'dislikes':dislike_tokens, 'yourbrands':yourbrands}
 
 
+
 class Post(BigIdAbstract, ModelWithFlag):
     boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_DEFAULT, default=BOO_DELETED)
     text = models.TextField(max_length=500, blank=True, null=True)
@@ -384,7 +533,10 @@ class Post(BigIdAbstract, ModelWithFlag):
             return Post.objects.exclude(excl).order_by('-created_at').values_list('id', flat=True)
 
         elif type == 'hot':
-            return Post.objects.exclude(excl).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
+            q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+            ago_2w = datetime.now() - timedelta(days=7)
+            return Flager.objects.filter(q, time_created__gte=ago_2w).values('object_id').annotate(nvotes=Count('object_id')).order_by('-nvotes').values_list('object_id', flat=True)
+            # return Post.objects.exclude(excl).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
 
     @property
     def type(self):
@@ -404,24 +556,19 @@ class Post(BigIdAbstract, ModelWithFlag):
         return self
 
 
-    def vote(self, action, boo=None):
-        if boo is None:
-            boo = get_current_user().boo
-
+    # def vote(self, action, boo=None):
+    def vote(self, action, boo, note=''):
         # up
         if action==VOTE_UP:
-            self.set_flag(boo, status=VOTE_UP)
-            self.remove_flag(boo, status=VOTE_DOWN)
+            Flager.vote_up(self, boo, note)
 
         # down
         elif action==VOTE_DOWN:
-            self.remove_flag(boo, status=VOTE_UP)
-            self.set_flag(boo, status=VOTE_DOWN)
+            Flager.vote_down(self, boo, note)
 
         # clear
         else:
-            self.remove_flag(boo, status=VOTE_UP)
-            self.remove_flag(boo, status=VOTE_DOWN)
+            Flager.vote_clear(self, boo, note)
 
         self.nvotes_up = self._nvotes_up
         self.nvotes_down = self._nvotes_down
@@ -447,9 +594,9 @@ class Post(BigIdAbstract, ModelWithFlag):
     def ncomments(self):
         return self.comment_set.filter(boo__isnull=False).count()
 
-    @property
-    def popularity(self):
-        return self.nvotes_up + self.nvotes_down + self.ncomments
+    # @property
+    # def popularity(self):
+    #     return self.nvotes_up + self.nvotes_down + self.ncomments
 
 
 def _postpix_path(instance, fname):
@@ -520,11 +667,13 @@ class Comment(BigIdAbstract, ModelWithFlag):
     mention = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL, related_name='mentioned_comment_set')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def like(self, boo, note=None):
-        self.set_flag(boo, note=note, status=LIKE_COMMENT)
+    def like(self, boo, note=''):
+        Flager.like_comment(self, boo, note)
+        # self.set_flag(boo, note=note, status=LIKE_COMMENT)
 
-    def delike(self, boo):
-        self.remove_flag(boo, status=LIKE_COMMENT)
+    def delike(self, boo, note=''):
+        Flager.delike_comment(self, boo, note)
+        # self.remove_flag(boo, status=LIKE_COMMENT)
 
     def __str__(self):
         return str(self.created_at) + ' | ' +  self.text + ((' | ' + str(self.boo)) if self.boo else '')
@@ -585,41 +734,69 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 
+class LinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Link
+        fields = ['id', 'url']
+        read_only_fields = fields
+
+
 # https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
 class BasebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
+    links = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels']
+        fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
 
-    # def get_styletags(self, obj):
-    #     return list(obj.styletags.values_list('id', flat=True))
-    #
-    # def get_fashiontems(self, obj):
-    #     return list(obj.fashiontems.values_list('id', flat=True))
+    def get_links(self, obj):
+        return list(obj.links.filter(user_id=obj.user.id).values_list('url', flat=True))
+        # return list(obj.user.link_set.filter(id__in=obj.links_list).values_list('url', flat=True))
 
+
+class GuestbooSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+    voting_record = serializers.SerializerMethodField()
+    ilikes_comment = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Boo
+        fields = ['id', 'nick', 'text', 'profile', 'voting_record', 'ilikes_comment']
+        read_only_fields = fields
+
+    def get_profile(self, obj):
+        return {'pix': obj.profile.pix.url}
+
+    def get_voting_record(self, obj):
+        q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+        return {f.object_id:f.status for f in Flager.objects.filter(q, user=obj, note=self.context.get('sessionkey'))}
+
+    def get_ilikes_comment(self, obj):
+        return list(Flager.objects.filter(status=LIKE_COMMENT, user=obj, note=self.context.get('sessionkey')).values_list('object_id', flat=True))
 
 
 class BooSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
-    # styletags = serializers.SerializerMethodField()
-    # fashiontems = serializers.SerializerMethodField()
+    # links = serializers.SerializerMethodField()
+    # links = LinkSerializer(source='link_set', required=False, many=True)
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels']
-        read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit']
+        fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']
+        read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'links']
 
-    # def get_styletags(self, obj):
-    #     return list(obj.styletags.values_list('id', flat=True))
-    #
-    # def get_fashiontems(self, obj):
-    #     return list(obj.fashiontems.values_list('id', flat=True))
+    # def get_links(self, obj):
+    #     return obj.links_list
+        # if obj.links:
+        #     ilinks = obj.links.split(',')
+        #     return [int(i) for i in ilinks]
+        # else:
+        #     return []
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)
@@ -642,10 +819,11 @@ class BooSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     boo = BooSerializer()
+    links = LinkSerializer(source='link_set', required=False, many=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'boo_selected', 'boo']
+        fields = ['id', 'email', 'boo_selected', 'boo', 'links']
         read_only_fields = fields
 
 

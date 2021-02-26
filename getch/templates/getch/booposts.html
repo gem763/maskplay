@@ -17,8 +17,6 @@
   .booposts.vcomp .page-body > .goback > img {
     width: var(--w-5);
     height: auto;
-    /* height: var(--w-5); */
-    /* transform: rotate(180deg); */
     transform: rotate(270deg) translate(0,-15%)
   }
 </style>
@@ -31,7 +29,9 @@
     :trans_headerbar='true'
     :from='session.page.booposts.from'
     :hide_close='true'
+    :hide_headerbar='false'
     @close='session.close_page()'>
+    <!-- :hide_headerbar='hide_headerbar' -->
 
     <template #headerbar-menu>
       <div class='item' v-if='cpost' @click='session.open_comments(cpost)'>댓글보기</div>
@@ -40,6 +40,10 @@
       <div class='item' v-if='is_mypost && cpost.id' @click='$refs.baseposts.delete_this_post'>삭제</div>
       <div class='item' v-if='!is_mypost' @click='$refs.baseposts.report_this_post'>신고하기</div>
     </template>
+
+    <!-- <template #headerbar-body-default>
+      <b>헤더2</b>
+    </template> -->
 
     <template #page-body>
       <baseposts :session='session' :postlist='postlist' :posts='session.booposts' ref='baseposts'></baseposts>
@@ -58,11 +62,22 @@
     delimiters: ['[[', ']]'],
     props: ['session'],
     data: function() {
-      return {}
+      return {
+        hide_headerbar: false
+      }
     },
 
     mounted: function() {
       this.session.page.booposts.swiper = this.$refs.baseposts.swiper;
+
+      this.session.page.booposts.swiper.on('slideNextTransitionStart', () => {
+        this.hide_headerbar = true;
+        console.log(1234);
+      });
+
+      this.session.page.booposts.swiper.on('slidePrevTransitionStart', () => {
+        this.hide_headerbar = false;
+      });
     },
 
     computed: {
@@ -83,8 +98,8 @@
       },
 
       is_mypost: function() {
-        if (this.session.auth) {
-          return this.session.auth.boo_selected == this.cpost.boo.id
+        if (this.session.user.auth) {
+          return this.session.user.auth.boo_selected == this.cpost.boo.id
         }
       },
 
@@ -112,21 +127,10 @@
           }
         });
 
-        // if (this.session.auth && this.session.booposts.boo.id in this.session.auth.boos) {
-        //   _postlist.forEach(post => {
-        //     post.boo = this.session.auth.boos[this.session.booposts.boo.id];
-        //   });
-        //
-        // } else {
-        //   _postlist.forEach(post => {
-        //     post.boo = this.session.booposts.boo;
-        //   });
-        // }
-
-        if (this.session.auth) {
+        if (this.session.user.auth) {
           _postlist.forEach(post => {
-            if (post.boo.id in this.session.auth.boos) {
-              post.boo = this.session.auth.boos[post.boo.id];
+            if (post.boo.id in this.session.user.auth.boos) {
+              post.boo = this.session.user.auth.boos[post.boo.id];
             }
           });
         }

@@ -1,0 +1,69 @@
+<style>
+  .boolibrary.vcomp {
+    position: relative;
+    background: none;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .boolibrary.vcomp.horizon {
+    overflow-x: auto;
+    background: none;
+    white-space: nowrap;
+  }
+
+  .boolibrary.vcomp.horizon > .boo {
+    position: relative;
+    width: var(--w-17);
+    height: var(--w-17);
+    display: inline-block;
+    margin-left: var(--w-3);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
+    overflow: hidden;
+  }
+
+  .boolibrary.vcomp.horizon > .boo:first-child {
+    margin-left: var(--w-5);
+  }
+
+  .boolibrary.vcomp.horizon > .boo > img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 2s;
+    pointer-events: none;
+    /* filter: brightness(97%); */
+  }
+</style>
+
+<script type='text/x-template' id='boolibrary-template'>
+  <div class='boolibrary vcomp' :class='type'>
+
+    <template v-for='boo in boolist'>
+      <div class='boo' @click='$emit("visit_boo", boo)'>
+        <img :src='boo.profile.pix' @load='imgloaded'>
+      </div>
+    </template>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('boolibrary', {
+    template: '#boolibrary-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'boolist', 'type' ],
+    data: function() {
+      return { }
+    },
+
+    methods: {
+      imgloaded: function(event) {
+        event.target.style.opacity = 1;
+      }
+    }
+  });
+</script>

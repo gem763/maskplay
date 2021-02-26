@@ -33,6 +33,10 @@
     /* overflow: hidden; */
   }
 
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > * {
+    pointer-events: none;
+  }
+
   .profiler.vcomp .page-body > .profiler-body > .profiles > .profile.new {
     background: var(--color-dark);
   }
@@ -62,6 +66,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* pointer-events: auto; */
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > .profilepix-editor > img.icon {
@@ -97,6 +102,7 @@
     height: auto;
     /* height: 11px; */
     margin-left: 5px;
+    pointer-events: none;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .nick > span.tmp,
@@ -110,6 +116,10 @@
     font-size: 13px;
     text-align: center;
     width: 100%;
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels-shower > * {
+    pointer-events: none;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .labels-shower > img {
@@ -136,7 +146,6 @@
     font-size: 15px;
     margin-top: 20px;
     margin-bottom: 5px;
-
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .labels-guide {
@@ -145,15 +154,12 @@
     margin-top: 10px;
   }
 
-  /* .profiler.vcomp .page-body > .profiler-body > .profiles > .styletags > .tag,
-  .profiler.vcomp .page-body > .profiler-body > .profiles > .fashiontems > .item, */
-  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label {
     font-size: 13px;
     padding: 7px;
     border-radius: 20px;
     margin: 2px;
-    /* padding-top: 2px; */
-    /* padding-bottom: 2px; */
     border: 2px solid lightgray;
 
     display: flex;
@@ -161,17 +167,50 @@
     justify-content: center;
     height: 30px;
     box-sizing: border-box;
+    position: relative;
   }
 
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label > .action {
+    position: absolute;
+    top: 50%;
+    width: 25px;
+    height: 25px;
+    transform: translateY(-50%);
+    /* background: lightpink; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.selected {
-    /* background: var(--color-dark); */
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label > .action.edit {
+    left: 105%;
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label > .action.delete {
+    left: calc(105% + 25px);
+    opacity: 1;
+  }
+
+  /* .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label > .action.delete.active {
+    opacity: 1;
+  } */
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label > .action > img.icon {
+    width: 50%;
+    height: auto;
+    pointer-events: none;
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.selected,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label.selected {
     color: red;
     border: 2px solid red;
     box-shadow: 0 2px 4px rgba(70, 71, 105, 0.2);
   }
 
-  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.more {
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.more,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label.del,
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link > .label.add {
     border: none;
   }
 
@@ -191,6 +230,29 @@
     margin: 0;
     border: 0;
   }
+
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links {
+    /* background: lightpink; */
+    margin-top: 10px;
+    width: var(--w-90);
+    text-align: center;
+    /* height: 100px; */
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profiler.vcomp .page-body > .profiler-body > .profiles > .links > .title {
+    font-size: 15px;
+    margin-top: 20px;
+    margin-bottom: 5px;
+  }
+
 
   .profiler.vcomp .page-body > .profiler-body > .actions {
     position: fixed;
@@ -288,26 +350,8 @@
 
 
           <div class='labels-shower' v-if='!show_labels' @click='show_labels=true'>
-            <span>체형/스타일/관심아이템 입력하기</span><br>
+            <span>스타일/관심아이템/체형 입력하기</span><br>
             <img src='/static/materials/icons/backicon.png'>
-          </div>
-
-          <div class='body labels' v-if='show_labels'>
-            <div class='title'><b>체형 유형</b></div>
-            <hr class='labels_divider'>
-
-            <span class='label' v-for='l in bodylabels' :class='select_class(l.id, my_bodylabels)' @click='toggle_select(l.id, my_bodylabels)'>[[ l.label ]]</span>
-            <span class='label more' @click='toggle_more("body")'>[[ more_display("body") ]]</span>
-
-            <template v-if='more_bodylabels'>
-              <hr class='labels_divider'>
-              <span class='label' v-for='l in bodylabels_more' :class='select_class(l.id, my_bodylabels)' @click='toggle_select(l.id, my_bodylabels)'>[[ l.label ]]</span>
-            </template>
-
-            <hr class='labels_divider'>
-            <div class='labels-guide'>
-              체형 정보가 솔직할 수록 패션 조언이 정확해 집니다.
-            </div>
           </div>
 
           <div class='style labels' v-if='show_labels'>
@@ -345,6 +389,46 @@
               관심 아이템을 선택하면 관련 콘텐츠를 노출해 드립니다.
             </div>
           </div>
+
+          <div class='body labels' v-if='show_labels'>
+            <div class='title'><b>체형 유형</b></div>
+            <hr class='labels_divider'>
+
+            <span class='label' v-for='l in bodylabels' :class='select_class(l.id, my_bodylabels)' @click='toggle_select(l.id, my_bodylabels)'>[[ l.label ]]</span>
+            <span class='label more' @click='toggle_more("body")'>[[ more_display("body") ]]</span>
+
+            <template v-if='more_bodylabels'>
+              <hr class='labels_divider'>
+              <span class='label' v-for='l in bodylabels_more' :class='select_class(l.id, my_bodylabels)' @click='toggle_select(l.id, my_bodylabels)'>[[ l.label ]]</span>
+            </template>
+
+            <hr class='labels_divider'>
+            <div class='labels-guide'>
+              체형 정보가 솔직할 수록 패션 조언이 정확해 집니다.
+            </div>
+          </div>
+
+          <div class='links' v-if='show_labels'>
+            <div class='title'><b>SNS</b></div>
+            <div class='link' v-for='l in links_all'>
+              <!-- <span class='label' :class='link_public_class(l.id)'>[[short_url(l.url)]]</span> -->
+              <span class='label' :class='select_class(l.id, boo.links)' @click='toggle_select(l.id, boo.links)'>
+                [[short_url(l.url)]]
+                <span class='action edit' @click.stop='edit_link(l)'>
+                  <img class='icon' src='/static/materials/icons/edit.png'>
+                </span>
+
+                <span class='action delete' @click.stop='delete_link(l)' v-if='session.user.auth.boos_fully_loaded'>
+                  <img class='icon' src='/static/materials/icons/delete.png'>
+                </span>
+              </span>
+              <!-- <span class='label del'>삭제</span> -->
+            </div>
+
+            <div class='link'>
+              <span class='label add' @click='add_link'>+추가하기</span>
+            </div>
+          </div>
         </div>
 
 
@@ -371,7 +455,8 @@
         more_stylelabels: false,
         more_itemlabels: false,
         show_labels: true,
-        basket: {}
+        basket: {},
+        // links_new: [],
       }
     },
 
@@ -404,11 +489,14 @@
                 bodylabels: [],
                 stylelabels: [],
                 itemlabels: [],
+                links: [],
 
                 fit: {},
                 ilikes_comment: [],
                 active: true
-              }
+              };
+
+              // this.links_new = [];
 
               const profilepix = '/static/materials/characters/ghost_' + _.sample(['b', 'm', 'p', 'y']) + '.png';
 
@@ -422,7 +510,12 @@
 
 
             } else {
-              this.boo = _.cloneDeep(this.session.auth.boo);
+              this.boo = _.cloneDeep(this.session.user.auth.boo);
+
+              // 새로운 boo가 복사되면서, 기존 boo서 post loading 하던 것들이 사라진다.
+              // 이 부분을 해결하기 위해 아래처럼 기존 boo의 posts를 복사한다
+              // 2021.02.09
+              this.boo.posts = this.session.user.auth.boo.posts;
               this.reset_basket();
             }
           }
@@ -445,19 +538,96 @@
         });
       },
 
-      tags_to_update: function(what) {
-        if (this.making_new) {
-          return {
-            add: this.boo[what],
-            remove: []
+      add_link: function() {
+        this.session.open_texteditor('', 'SNS 주소를 입력해주세요', 1, txt_done => {
+          this.on_creating = true;
+
+          const url = (txt_done.indexOf('://') === -1) ? 'https://' + txt_done : txt_done;
+          const formdata = new FormData();
+          formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+          formdata.append('url', url);
+
+          fetch('/link/add/', { method: 'POST', body: formdata })
+            .then(x => x.json())
+            .then(js => {
+              console.log(js);
+
+              if (js.success) {
+                this.session.user.auth.links.push({ id:js.link_id, url:url });
+                this.boo.links.push(js.link_id);
+              }
+
+              this.on_creating = false;
+              this.reset_basket();
+            })
+        });
+      },
+
+      edit_link: function(link) {
+        this.session.open_texteditor(link.url, '', 1, txt_done => {
+          this.on_creating = true;
+
+          const url = (txt_done.indexOf('://') === -1) ? 'https://' + txt_done : txt_done;
+          const formdata = new FormData();
+          formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+          formdata.append('url', url);
+          formdata.append('id', link.id);
+
+          fetch('/link/edit/', { method: 'POST', body: formdata })
+            .then(x => x.json())
+            .then(js => {
+              console.log(js);
+
+              if (js.success) {
+                link.url = url;
+              }
+
+              this.on_creating = false;
+              this.reset_basket();
+            })
+        });
+      },
+
+      delete_link: function(link) {
+        const shared_with = {};
+
+        Object.values(this.session.user.auth.boos).forEach(b => {
+          if ((b.links.includes(link.id)) && (this.boo.id!=b.id)) {
+            // shared_with.push('[' + b.nick + ']');
+            shared_with[b.id] = '[' + b.nick + ']';
+          }
+        });
+
+        // console.log(shared_with);
+
+        this.session.open_bridge('delink_guide', 'top', () => {
+          // 우선 다른 부캐에서 링크 지우기
+          Object.keys(shared_with).forEach(i => {
+            const _boo_links = this.session.user.auth.boos[i].links;
+            const where = _boo_links.indexOf(link.id);
+            _boo_links.splice(where, 1);
+          });
+
+          // 현재부캐의 원본에 해당 링크가 있다면, 지우기
+          if (this.session.user.auth.boo.links.includes(link.id)) {
+            const where = this.session.user.auth.boo.links.indexOf(link.id);
+            this.session.user.auth.boo.links.splice(where, 1);
           }
 
-        } else {
-          return {
-            add: _.difference(this.boo[what], this.session.auth.boo[what]),
-            remove: _.difference(this.session.auth.boo[what], this.boo[what])
+          // 현재부캐의 사본에 해당 링크가 있다면, 지우기
+          if (this.boo.links.includes(link.id)) {
+            const where = this.boo.links.indexOf(link.id);
+            this.boo.links.splice(where, 1);
           }
-        }
+
+          // session.user.auth의 link 리스트에서 지우기
+          this.session.user.auth.links = _.reject(this.session.user.auth.links, ['id', link.id]);
+
+          fetch('/link/delete/' + link.id)
+            .then(x => x.json())
+            .then(js => { console.log(js); });
+
+        }, Object.values(shared_with).join(', '));
       },
 
       labels_to_update: function(what) {
@@ -469,8 +639,8 @@
           remove = []
 
         } else {
-          add = _.difference(this.boo[what], this.session.auth.boo[what]);
-          remove = _.difference(this.session.auth.boo[what], this.boo[what]);
+          add = _.difference(this.boo[what], this.session.user.auth.boo[what]);
+          remove = _.difference(this.session.user.auth.boo[what], this.boo[what]);
         }
 
         // 빈 배열인지 확인해야한다
@@ -498,6 +668,7 @@
         const bodylabels = this.labels_to_update('bodylabels');
         const stylelabels = this.labels_to_update('stylelabels');
         const itemlabels = this.labels_to_update('itemlabels');
+        const links = this.labels_to_update('links');
 
         if (this._is_not_empty_obj(genderlabels)) {
           labels.genderlabels = genderlabels;
@@ -519,88 +690,37 @@
           labels.itemlabels = itemlabels;
         }
 
+        if (this._is_not_empty_obj(links)) {
+          labels.links = links;
+          // this.basket.links = links;
+        }
+
         if (this._is_not_empty_obj(labels)) {
           this.basket.labels = labels;
         }
 
 
-        if ((this.making_new && this.boo.nick!='') || (!this.making_new && this.boo.nick!=this.session.auth.boo.nick)) {
+        // if (this.links_new.length > 0) {
+        //   this.basket.links_new = this.links_new;
+        // }
+
+        if ((this.making_new && this.boo.nick!='') || (!this.making_new && this.boo.nick!=this.session.user.auth.boo.nick)) {
           this.basket.boo_nick = this.boo.nick;
         }
 
-        if ((this.making_new && this.boo.text!='') || (!this.making_new && this.boo.text!=this.session.auth.boo.text)) {
+        if ((this.making_new && this.boo.text!='') || (!this.making_new && this.boo.text!=this.session.user.auth.boo.text)) {
           this.basket.boo_text = this.boo.text;
         }
 
-        if ((this.making_new && this.boo.profile.pix) || (!this.making_new && this.boo.profile.pix!=this.session.auth.boo.profile.pix)) {
+        if ((this.making_new && this.boo.profile.pix) || (!this.making_new && this.boo.profile.pix!=this.session.user.auth.boo.profile.pix)) {
           this.basket.profilepix = this.boo.profile.pixblob;
         }
       },
 
       action_done: function() {
-        // if (this.boo.nick == '') {
-        //   alert('부캐이름은 반드시 입력해주세요');
-        //   return;
-        // }
-
-        // if (!this.boo.profile.pix) {
-        //   alert('프로필사진은 반드시 입력해주세요');
-        //   return;
-        // }
-
         if (this.on_creating || !this.ready_to_save) {
           return
         }
-
-        // let n_updates = 0;
-        // const labels = {};
-        // const genderlabels = this.labels_to_update('genderlabels');
-        // const agelabels = this.labels_to_update('agelabels');
-        // const bodylabels = this.labels_to_update('bodylabels');
-        // const stylelabels = this.labels_to_update('stylelabels');
-        // const itemlabels = this.labels_to_update('itemlabels');
-        //
-        // if (this._is_not_empty_obj(genderlabels)) {
-        //   labels.genderlabels = genderlabels
-        // }
-        //
-        // if (this._is_not_empty_obj(agelabels)) {
-        //   labels.agelabels = agelabels
-        // }
-        //
-        // if (this._is_not_empty_obj(bodylabels)) {
-        //   labels.bodylabels = bodylabels
-        // }
-        //
-        // if (this._is_not_empty_obj(stylelabels)) {
-        //   labels.stylelabels = stylelabels
-        // }
-        //
-        // if (this._is_not_empty_obj(itemlabels)) {
-        //   labels.itemlabels = itemlabels
-        // }
-        //
-        // if (this._is_not_empty_obj(labels)) {
-        //   formdata.append('labels', JSON.stringify(labels));
-        //   n_updates += 1;
-        // }
-        //
-        // if ((this.making_new && this.boo.nick!='') || (!this.making_new && this.boo.nick!=this.session.auth.boo.nick)) {
-        //   formdata.append('boo_nick', this.boo.nick);
-        //   n_updates += 1;
-        // }
-        //
-        // if ((this.making_new && this.boo.text!='') || (!this.making_new && this.boo.text!=this.session.auth.boo.text)) {
-        //   formdata.append('boo_text', this.boo.text);
-        //   n_updates += 1;
-        // }
-        //
-        // if ((this.making_new && this.boo.profile.pix) || (!this.making_new && this.boo.profile.pix!=this.session.auth.boo.profile.pix)) {
-        //   const pixname = new Date().getTime() + '__profilepix.png';
-        //   formdata.append('profilepix', this.boo.profile.pixblob, pixname);
-        //   n_updates += 1;
-        // }
-
 
         const formdata = new FormData();
         formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
@@ -622,7 +742,6 @@
           formdata.append('labels', JSON.stringify(this.basket.labels));
         }
 
-
         if (this.making_new) {
           this.boo_create(formdata);
 
@@ -630,24 +749,8 @@
           this.boo_update(formdata);
         }
 
-        this.session.auth.first_visit = false;
+        this.session.user.auth.first_visit = false;
       },
-
-      // boo_create: function(formdata) {
-      //   this.on_creating = true;
-      //   formdata.append('on_creating', true);
-      //
-      //   fetch('/boo/save/', { method: 'POST', body: formdata })
-      //     .then(res => res.json())
-      //     .then(js => {
-      //       console.log(js);
-      //       this.on_creating = false;
-      //       this.boo.id = js.boo_id;
-      //       this.$set(this.session._auth.boos, this.boo.id, this.boo);
-      //       this.session._auth.boo = this.boo.id;
-      //       this.session.close_page();
-      //     });
-      // },
 
       boo_create: function(formdata) {
         this.on_creating = true;
@@ -659,8 +762,8 @@
             console.log(js);
             this.on_creating = false;
             this.boo.id = js.boo_id;
-            this.$set(this.session.auth.boos, this.boo.id, this.boo);
-            this.session.auth.boo = this.boo.id;
+            this.$set(this.session.user.auth.boos, this.boo.id, this.boo);
+            this.session.user.auth.boo = this.boo.id;
             // this.$set(this.session._auth.boos, this.boo.id, this.boo);
             // this.session._auth.boo = this.boo.id;
             this.session.close_page();
@@ -678,7 +781,7 @@
             this.boo.id = boo_id;
           });
 
-        this.session.auth.boos[boo_id] = this.boo;
+        this.session.user.auth.boos[boo_id] = this.boo;
         // this.session._auth.boos[boo_id] = this.boo;
         // this.$set(this.session._auth.boos, this.boo.id, this.boo);
         this.session.close_page();
@@ -734,14 +837,16 @@
         // what = !what;
       },
 
+      // link_public_class: function(link_id) {
+      //   return {
+      //     public: _.findIndex(this.boo.links, {'id':link_id, 'public':true}) > -1
+      //   }
+      // },
+
       more_display: function(what) {
         const target = 'more_' + what + 'labels';
         return this[target] ? "덜보기" : "더보기"
       },
-
-      // _fetch: function(url) {
-      //   fetch(url).then(x => x.json()).then(console.log);
-      // },
 
       load_pixeditor: function() {
         if (this.$refs) {
@@ -772,8 +877,8 @@
 
       delboo: function() {
         this.session.open_bridge('delboo_guide', 'top', () => {
-          const boos = this.session.auth.boos;
-          const cboo_id = this.session.auth.boo_selected;
+          const boos = this.session.user.auth.boos;
+          const cboo_id = this.session.user.auth.boo_selected;
 
           fetch('/boo/profile/delete/')
             .then(x => x.json())
@@ -783,10 +888,14 @@
             .filter(x => x !== String(cboo_id) )
             .sort((a,b) => Number(b) - Number(a) )[0];
 
-          this.session.auth.boo = Number(_boo_id);
+          this.session.user.auth.boo = Number(_boo_id);
           this.session.close_page();
           this.$delete(boos, cboo_id);
         });
+      },
+
+      short_url: function(url) {
+        return url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
       },
     },
 
@@ -833,8 +942,8 @@
       },
 
       is_first_profiling: function() {
-        return this.session.auth.first_visit
-        // return this.session.auth ? false : true
+        return this.session.user.auth.first_visit
+        // return this.session.user.auth ? false : true
       },
 
       my_genderlabels: function() {
@@ -898,8 +1007,14 @@
       },
 
       deletable: function() {
-        return (this.session.page.profiler.type!="new") && (Object.keys(this.session.auth.boos).length>1)
+        return (this.session.page.profiler.type!="new") && (Object.keys(this.session.user.auth.boos).length>1)
         // return (this.session.page.profiler.type!="new") && (Object.keys(this.session._auth.boos).length>1)
+      },
+
+      links_all: function() {
+        return this.session.user.auth.links
+        // const _links = _.flatten(Object.values(this.session.user.auth.boos).map(b => b.links));
+        // return _.uniqBy(_links, 'id').map(l => _.pick(l, ['id', 'url']))
       }
     }
   });

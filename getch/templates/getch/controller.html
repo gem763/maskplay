@@ -36,7 +36,8 @@
   }
 
   .controller.vcomp > ._oi {
-    left: calc(var(--width-unit) * 29.5);
+    /* left: calc(var(--width-unit) * 29.5); */
+    left: calc(var(--width-unit) * 30.5);
     transform: translate(-50%,-50%);
     /* opacity: 0.1; */
   }
@@ -47,9 +48,10 @@
   }
 
   .controller.vcomp > ._e {
-    right: calc(var(--width-unit) * 29.5);
+    /* right: calc(var(--width-unit) * 29.5); */
+    right: calc(var(--width-unit) * 30.5);
     transform: translate(50%,-50%);
-    /* opacity: 0.1; */
+    opacity: 0.1;
   }
 
   .controller.vcomp > ._r {
@@ -67,6 +69,15 @@
     bottom: 40%;
     left: 50%;
     transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .controller.vcomp > ._b > img.profilepix {
+    height: var(--w-10);
+    border-radius: 50%;
+    border: 1px solid whitesmoke;
+    bottom: 50%;
+    transform: translate(-50%, 50%);
   }
 
   .controller.vcomp > .btn > .title {
@@ -77,33 +88,37 @@
     width: 100%;
     transform: translateX(-50%);
     text-align: center;
+    pointer-events: none;
   }
 </style>
 
 <script type='text/x-template' id='controller-template'>
   <div class='controller vcomp' :class='controller_class'>
     <div class='_m btn' @click='open_navigator'>
-      <img src='/static/materials/icons/m.png'>
+      <img src='/static/materials/icons/collection_button.png'>
       <span class='title'>모아보기</span>
     </div>
 
-    <div class='_oi btn'>
-      <img src='/static/materials/icons/oi.png'>
+    <div class='_oi btn' @click='open_home'>
+      <img src='/static/materials/icons/search.png'>
+      <span class='title'>검색 및 추천</span>
     </div>
 
     <div class='_b btn' @click='open_mypage'>
-      <img src='/static/materials/icons/b.png'>
-      <span class='title'>내 페이지</span>
+      <img class='profilepix' v-if='boo' :src='boo.profile.pix'>
+      <img v-else src='/static/materials/icons/mypage_button.png'>
+      <span class='title' v-if='!boo'>내 페이지</span>
     </div>
 
     <div class='_e btn'>
-      <img src='/static/materials/icons/e.png'>
+      <img src='/static/materials/icons/notification_button.png'>
+      <span class='title'>알림</span>
     </div>
 
     <!-- <div class='_r btn' @click='session.open_posting()'> -->
     <!-- <div class='_r btn' @click='session.open_posting_guide()'> -->
     <div class='_r btn' @click='open_posting_guide'>
-      <img src='/static/materials/icons/r.png'>
+      <img src='/static/materials/icons/newfeed_button.png'>
       <span class='title'>새 피드</span>
     </div>
   </div>
@@ -120,6 +135,12 @@
     },
 
     computed: {
+      boo: function() {
+        if (this.session.user.auth) {
+          return this.session.user.auth.boo
+        }
+      },
+
       controller_class: function() {
         if (this.on('posts') || this.on('booposts')) {
           return 'semi-trans'
@@ -146,6 +167,15 @@
 
         } else {
           this.session.open_navigator();
+        }
+      },
+
+      open_home: function() {
+        if (this.on('home')) {
+          this.session.close_page();
+
+        } else {
+          this.session.open_home();
         }
       },
 

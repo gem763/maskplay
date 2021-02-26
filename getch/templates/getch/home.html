@@ -1,0 +1,185 @@
+<style>
+  .home.vcomp .headerbar-body-default > .searchbar {
+    position: absolute;
+    width: 76%;
+    height: 100%;
+    /* background: lightblue; */
+    font-size: 13px;
+    color: lightgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .home.vcomp .headerbar-body-default > .searchbar > .btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--w-10);
+    height: 100%;
+    /* background: lightpink; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .home.vcomp .headerbar-body-default > .searchbar > .btn > img {
+    width: var(--w-4);
+    height: auto;
+  }
+
+  .home.vcomp .page-body > .main {
+    background: white;
+    padding-top: var(--w-16);
+    padding-bottom: var(--w-20);
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .home.vcomp .page-body > .main > .section {
+    width: 100%;
+    /* height: 100px; */
+    background: none;
+  }
+
+  .home.vcomp .page-body > .main > .section > .title {
+    font-size: 14px;
+    width: 100%;
+    background: none;
+    padding: var(--w-5);
+    padding-bottom: var(--w-3);
+    box-sizing: border-box;
+  }
+
+  .home.vcomp .page-body > .main > .section.banner > img {
+    width: 100%;
+  }
+</style>
+
+<script type='text/x-template' id='home-template'>
+  <page2
+    class='home vcomp'
+    :open='session.page.home.open'
+    :from='session.page.home.from'
+    :onloading='false'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+      <div class='item' @click='landing'>서비스 소개</div>
+      <div class='item' @click='company'>팀 모이버</div>
+    </template>
+
+    <template #headerbar-body-trans>
+      <!-- <div class='logo'>
+        <img src='/static/materials/logos/moiber_logo.png'>
+      </div> -->
+    </template>
+
+    <template #headerbar-body-default>
+      <div class='searchbar' @click='session.open_searcher()'>
+        <span>검색어를 입력하세요</span>
+        <div class='btn'>
+          <img src='/static/materials/icons/search.png'>
+        </div>
+      </div>
+    </template>
+
+    <template #page-body>
+      <div class='main'>
+
+        <div class='banner section'>
+          <img src='/static/materials/imgs/banner@4x.png'>
+        </div>
+
+        <div class='foryou feeds section'>
+          <div class='title'>
+            <span v-if='boo'><b>[[boo.nick]]</b>님이 좋아할 피드</span>
+            <span v-else>당신이 좋아할 피드</span>
+          </div>
+
+          <postlibrary
+            :postlist='postlist_foryou'
+            type='horizon'
+            @open_posts='backto_posts($event)'
+          ></postlibrary>
+        </div>
+
+
+        <div class='hot boos section'>
+          <div class='title'>
+            <b>이번주 인기</b> 유저
+          </div>
+
+          <boolibrary
+            :boolist='boolist_hot'
+            type='horizon'
+            @visit_boo='visit_boo($event)'
+          ></boolibrary>
+        </div>
+
+        <!-- <iframe src="https://assets.pinterest.com/ext/embed.html?id=750834569115175502" height="445" width="345" frameborder="0" scrolling="no" ></iframe> -->
+
+      </div>
+    </template>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('home', {
+    template: '#home-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {  }
+    },
+
+    computed: {
+      boo: function() {
+        if (this.session.user.auth) {
+          return this.session.user.auth.boo
+        }
+      },
+
+      postlist_foryou: function() {
+        if (this.session.page.posts.univ.hot) {
+          return this.session.page.posts.univ.hot.list//.sort((a,b) => a.order - b.order);
+
+        } else {
+          return []
+        }
+      },
+
+      boolist_hot: function() {
+        if (this.session.page.home.hotboos) {
+          return this.session.page.home.hotboos.list
+
+        } else {
+          return []
+        }
+      }
+    },
+
+    methods: {
+      backto_posts: function(postid) {
+        this.session.page.posts.contents = this.session.page.posts.univ.hot;
+        const idx = _.findIndex(this.session.page.posts.univ.hot.list, ['id', postid]);
+        this.session.page.posts.swiper.slideTo(idx, 1, false);
+        this.session.close_page();
+      },
+
+      visit_boo: function(boo) {
+        this.session.open_boopage(boo);
+      },
+
+      company: function() {
+        this.session.open_company('who');
+      },
+
+      landing: function() {
+        this.session.open_landing();
+      }
+    }
+  });
+</script>

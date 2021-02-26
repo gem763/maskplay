@@ -1,0 +1,351 @@
+<style>
+  .company.vcomp .page-body {
+    background: white;
+  }
+
+  .company.vcomp .page-body > .container {
+    width: 100%;
+    /* height: 200px; */
+    margin-top: var(--w-16);
+    /* margin-bottom: var(--w-20); */
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    box-sizing: border-box;
+  }
+
+
+  .company.vcomp .page-body > .container > .section > img {
+    width: 100%;
+    height: auto;
+  }
+
+  .company.vcomp .page-body > .container > .section > .journey {
+    background: var(--color-dark);
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    /* border-radius: 50px; */
+    font-size: 12px;
+    width: 200px;
+  }
+
+  .company.vcomp .page-body > .container > .section > .tail {
+    width: 100%;
+    background: none;
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+    margin-bottom: 100px;
+  }
+
+  .company.vcomp .page-body > .container > .section > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing {
+    margin-left: calc((-1) * var(--w-6));
+    margin-right: calc((-1) * var(--w-6));
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover {
+    width: 100%;
+    position: relative;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .journey {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-dark);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    width: var(--w-30);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .journey.top {
+    top: var(--w-50);
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .journey.bottom {
+    /* bottom: var(--w-20); */
+    bottom: calc(var(--w-10) + var(--w-60));
+  }
+
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .contactus {
+    position: absolute;
+    width: 100%;
+    bottom: calc(var(--w-10) + var(--w-50));
+    /* background: orange; */
+    text-align: center;
+    font-size: 15px;
+    color: white;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links {
+    position: absolute;
+    width: 100%;
+    bottom: calc(var(--w-10) + var(--w-40));
+    /* height: 50px; */
+    /* background: lightblue; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 11px;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link {
+    width: var(--w-10);
+    height: var(--w-10);
+    /* margin: 5px; */
+    /* background: lightpink; */
+    position: relative;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link > img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--w-7);
+    height: var(--w-7);
+    transform: translate(-50%,-50%);
+    /* filter: invert(100%); */
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .links > .link > span {
+    position: absolute;
+    top: calc(60% + 7px);
+    left: 50%;
+    width: 100%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+  }
+
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .tail {
+    position: absolute;
+    left: 0;
+    bottom: var(--w-10);
+    /* bottom: 30px; */
+    width: 100%;
+    background: none;
+    font-size: 11px;
+    /* color: #CCCCCC; */
+    color: white;
+    text-align: center;
+  }
+
+  .company.vcomp .page-body > .container > .section.landing > .cover > .tail > .item {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+</style>
+
+<script type='text/x-template' id='company-template'>
+  <page2
+    class='company vcomp'
+    :open='session.page.company.open'
+    :from='session.page.company.from'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+      <div class='item' @click='open_who'>회사소개</div>
+      <div class='item' @click='open_recruit'>채용정보</div>
+      <div class='item' @click='privacy'>개인정보보호</div>
+      <div class='item' @click='policy'>약관보기</div>
+      <div class='item' @click='suggest'>건의하기</div>
+    </template>
+
+    <template #page-body>
+      <div class='container'>
+        <div ref='upmost'></div>
+
+        <div class='section who' v-show='is_who'>
+          <img src='/static/materials/pages/moiber_corporate_header.png'>
+          <img src='/static/materials/pages/moiber_corporate_header2.png'>
+          <img src='/static/materials/pages/moiber_corporate_header3.png'>
+          <img src='/static/materials/pages/moiber_corporate_header4.png'>
+          <br><br>
+          <hr style='border-top:1px solid black;border-bottom:none;'>
+          <p style='font-size:11px;margin-bottom: 50px;'>주식회사 모이버 | 주소 : 서울시 마포구 양화로 147, 4층 | 사업자 등록 번호 : 707-87-01867 | 인터넷 정보 매개업</p>
+        </div>
+
+        <div class='section recruit' v-show='is_recruit'>
+          <img src='/static/materials/pages/moiber_recruit_header.png'>
+
+          <br><br>
+          <p style='font-size:20px;font-weight:bold'>모이버 채용정보</p>
+          <p @click='goto_recruit("designer_intern_0")' style='font-size:14px'>디자인 및 사용자경험 직무<br><strong>주니어 컨텐츠 디자이너(계약직, 인턴)</strong> 서울 마포구<br><span style='font-size:12px;color:lightgray'>자세히 보기</span></p>
+          <p @click='goto_recruit("marketer_intern_0")' style='font-size:14px'>세일즈 및 마케팅 직무<br><strong>주니어 마케터(계약직, 인턴)</strong> 서울 마포구<br><span style='font-size:12px;color:lightgray'>자세히 보기</span></p>
+        </div>
+
+        <div class='section landing' v-show='is_landing'>
+          <div class='cover'>
+            <img src='/static/materials/pages/landing0.gif'>
+          </div>
+
+          <div class='cover'>
+            <img src='/static/materials/pages/landing1@2x.png'>
+            <div class='journey top' @click='session.close_page()'>시작하기</div>
+          </div>
+
+          <div class='cover'>
+            <img src='/static/materials/pages/landing2@2x.png'>
+          </div>
+
+          <div class='cover'>
+            <img src='/static/materials/pages/landing3@2x.png'>
+          </div>
+
+          <div class='cover'>
+            <img src='/static/materials/pages/landing4@2x.png'>
+          </div>
+
+          <div class='cover'>
+            <img src='/static/materials/pages/landing5@2x.png'>
+            <div class='journey bottom' @click='session.close_page()'>시작하기</div>
+
+            <div class='contactus'>
+              Contact us
+            </div>
+
+            <div class='links'>
+              <div class='link' @click='goto_fb'>
+                <img src='/static/materials/icons/fb_inverted.png'>
+                <!-- <span><b>페이스북</b></span> -->
+              </div>
+
+              <div class='link' @click='goto_insta'>
+                <img src='/static/materials/icons/insta_inverted.png'>
+                <!-- <span><b>인스타그램</b></span> -->
+              </div>
+            </div>
+
+            <div class='tail'>
+              <span class='item' @click='open_who'>소개</span>
+              <span class='item' @click='open_recruit'>채용</span>
+              <span class='item' @click='policy'>약관</span>
+              <span class='item' @click='privacy'>개인정보보호</span>
+              <span class='item' @click='suggest'>컨텍트</span>
+            </div>
+          </div>
+          <!-- <img src='/static/materials/pages/landing1.gif'>
+
+          <div class='journey' @click='session.close_page()'>둘러보기</div>
+
+          <img src='/static/materials/pages/landing2.png'>
+          <img src='/static/materials/pages/landing3.png'>
+          <img src='/static/materials/pages/landing4.png'>
+          <img src='/static/materials/pages/landing5.png'>
+          <br><br><br>
+
+          <div class='journey' @click='session.close_page()'>시작하기</div>
+
+          <div class='tail'>
+            <span class='item' @click='open_who'>소개</span>
+            <span class='item' @click='open_recruit'>채용</span>
+            <span class='item' @click='policy'>약관</span>
+            <span class='item' @click='privacy'>개인정보보호</span>
+            <span class='item' @click='suggest'>컨텍트</span>
+          </div> -->
+        </div>
+      </div>
+    </template>
+
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('company', {
+    template: '#company-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    watch: {
+      'session.page.company.section': function() {
+        this.goto_upmost();
+      }
+    },
+
+    computed: {
+      is_who: function() {
+        return this.session.page.company.section == 'who'
+      },
+
+      is_recruit: function() {
+        return this.session.page.company.section == 'recruit'
+      },
+
+      is_landing: function() {
+        return this.session.page.company.section == 'landing'
+      }
+    },
+
+    methods: {
+      open_who: function() {
+        this.session.page.company.section = 'who';
+      },
+
+      open_recruit: function() {
+        this.session.page.company.section = 'recruit';
+      },
+
+      policy: function() {
+        window.open('/policy');
+      },
+
+      privacy: function() {
+        window.open('/privacy');
+      },
+
+      suggest: function() {
+        window.open('mailto:contact@moiber.com');
+      },
+
+      goto_upmost: function() {
+        if (this.$refs) {
+          this.$refs.upmost.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        }
+      },
+
+      goto_recruit: function(position) {
+        // window.open(`/recruit/#${position}`);
+        this.session.open_infoboard(position);
+      },
+
+      journey: function() {
+        console.log(1);
+      },
+
+      goto_fb: function() {
+        window.open('https://www.facebook.com/moiber.official');
+      },
+
+      goto_insta: function() {
+        window.open('https://www.instagram.com/moiber_official');
+      },
+    }
+  });
+</script>

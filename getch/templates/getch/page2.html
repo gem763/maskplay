@@ -75,10 +75,11 @@
   .page > .content > .close {
     background: none;
     position: absolute;
-    top: var(--w-2);
-    left: var(--w-1);
-    width: var(--w-12);
-    height: var(--w-12);
+    /* top: var(--w-2); */
+    top: 0;
+    left: var(--w-2);
+    width: var(--w-10);
+    height: var(--w-16);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -89,6 +90,7 @@
     height: auto;
     /* height: var(--w-6); */
     transform: rotate(180deg);
+    pointer-events: none;
   }
 
   .page > .content > .headerbar {
@@ -98,7 +100,6 @@
     width: 100%;
     height: var(--w-16);
     background: white;
-    /* background: rgba(255,165,0,0.5); */
   }
 
   .page > .content > .headerbar.transparent {
@@ -108,17 +109,22 @@
 
   .page > .content > .headerbar > .hamburger {
     position: absolute;
-    top: var(--w-6);
-    right: var(--w-4);
-    width: var(--w-4);
-    height: var(--w-4);
+    top: 0;
+    right: var(--w-2);
+    width: var(--w-10);
+    height: 100%;
     pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .page > .content > .headerbar > .hamburger > img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+    /* width: 100%;
+    height: 100%; */
+    width: var(--w-4);
+    height: auto;
+    /* object-fit: contain; */
   }
 
   .page > .content > .headerbar > .headerbar-body-default,
@@ -259,6 +265,18 @@
     position: fixed;
     bottom: var(--w-16);
   }
+
+  .page .show-headerbar-enter-active,
+  .page .show-headerbar-leave-active {
+    transition: all 0.3s;
+  }
+
+  .page .show-headerbar-enter,
+  .page .show-headerbar-leave-to {
+    /* opacity: 0; */
+    /* top: calc((-1) * var(--w-16)); */
+    transform: translateY(-100%);
+  }
 </style>
 
 
@@ -276,27 +294,29 @@
           <slot name='page-body'></slot>
         </div>
 
-        <div class='headerbar' :class='headerbar_class' v-if='!hide_headerbar'>
-          <div class='headerbar-body-trans' @click='goto_upmost'>
-            <slot name='headerbar-body-trans'></slot>
-          </div>
+        <transition name='show-headerbar'>
+          <div class='headerbar' :class='headerbar_class' v-if='!hide_headerbar'>
+            <div class='headerbar-body-trans' @click='goto_upmost'>
+              <slot name='headerbar-body-trans'></slot>
+            </div>
 
-          <div class='headerbar-body-default'>
-            <slot name='headerbar-body-default'></slot>
-          </div>
+            <div class='headerbar-body-default'>
+              <slot name='headerbar-body-default'></slot>
+            </div>
 
-          <div class='hamburger' @click.stop='toggle_menu' v-if='!hide_menu'>
-            <img src='/static/materials/icons/moreinfo.png'>
+            <div class='hamburger' @click.stop='toggle_menu' v-if='!hide_menu'>
+              <img src='/static/materials/icons/moreinfo.png'>
 
-            <transition name='show-menu'>
-              <div class='headerbar-menu' v-if='on_menu'>
-                <slot name='headerbar-menu'>
-                  <!-- <div class='item'>메뉴</div> -->
-                </slot>
-              </div>
-            </transition>
+              <transition name='show-menu'>
+                <div class='headerbar-menu' v-if='on_menu'>
+                  <slot name='headerbar-menu'>
+                    <!-- <div class='item'>메뉴</div> -->
+                  </slot>
+                </div>
+              </transition>
+            </div>
           </div>
-        </div>
+        </transition>
 
         <div class='page-tail' :class='tailout ? "hidden" : ""' v-if='!no_tail'>
           <slot name='page-tail'></slot>

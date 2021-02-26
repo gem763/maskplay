@@ -30,9 +30,7 @@
       <div class='item' @click='session.open_profiler()'>부캐 편집</div>
       <div class='item' @click='$refs.aboutboo.toggle_changeboo' v-if='!$refs.aboutboo.on_changeboo'>부캐 변경</div>
       <div class='item' @click='see_followers'>팔로워 보기</div>
-      <!-- <div class='item' @click='delboo'>부캐 삭제</div> -->
-      <div class='item' @click='logout'>로그아웃</div>
-      <!-- <div class='item' @click='see_more'>더보기</div> -->
+      <div class='item' @click='session.logout()'>로그아웃</div>
     </template>
 
     <template #headerbar-body-trans>
@@ -62,24 +60,19 @@
 
     computed: {
       boo: function() {
-        // if (this.session.auth.boo) {
-          if (!this.session.auth.boo.posts) {
-            this.$set(this.session.auth.boo, 'posts', {
-              contents: undefined,
-              univ: {
-                own: new Booposts(this.session.auth.boo, 'own'),
-                follow: new Booposts(this.session.auth.boo, 'follow'),
-                attend: new Booposts(this.session.auth.boo, 'attend')
-              }
-            });
-            this.session.auth.boo.posts.contents = this.session.auth.boo.posts.univ.own;
-          }
+        if (!this.session.user.auth.boo.posts) {
+          this.$set(this.session.user.auth.boo, 'posts', {
+            contents: undefined,
+            univ: {
+              own: new Booposts(this.session.user.auth.boo, 'own'),
+              follow: new Booposts(this.session.user.auth.boo, 'follow'),
+              attend: new Booposts(this.session.user.auth.boo, 'attend')
+            }
+          });
+          this.session.user.auth.boo.posts.contents = this.session.user.auth.boo.posts.univ.own;
+        }
 
-          return this.session.auth.boo
-        //
-        // } else {
-        //   this.session.open_profiler('new');
-        // }
+        return this.session.user.auth.boo
       },
 
       scrolload: function() {
@@ -97,12 +90,7 @@
 
       onloading: function() {
         if (this.boo) {
-          if (this.boo.posts.contents) {
-            return this.boo.posts.contents.onloading || !this.boo.id
-
-          } else {
-            return false
-          }
+          return this.boo.posts.contents.onloading || !this.boo.id || !this.session.user.auth.boos_fully_loaded
 
         } else {
           return false
@@ -111,51 +99,11 @@
     },
 
     methods: {
-      // delboo: function() {
-      //   this.session.open_bridge('delboo_guide', 'top', () => {
-      //     const boos = this.session.auth.boos;
-      //     const cboo_id = this.session.auth.boo_selected;
-      //
-      //     fetch('/boo/profile/delete/')
-      //       .then(x => x.json())
-      //       .then(j => { console.log(j) });
-      //
-      //     const _boo_id = Object.keys(boos)
-      //       .filter(x => x !== String(cboo_id) )
-      //       .sort((a,b) => Number(b) - Number(a) )[0];
-      //
-      //     this.session.auth.boo = Number(_boo_id);
-      //     this.$delete(boos, cboo_id);
-      //   });
-      // },
-
-      logout: function() {
-        this.session.open_bridge('logout_guide', 'top', () => {
-          // window.location.assign('/accounts/logout/');
-
-          fetch('/accounts/logout/')
-            .then(x => {
-              if (x.ok) {
-                console.log('successfully logged out');
-              }
-            });
-
-          this.session.close_page();
-          this.session.auth = undefined;
-          // this.session._auth = undefined;
-        });
-      },
-
-      see_more: function() {
-        alert('더보기')
-      },
-
       see_followers: function() {
         if (!this.boo.followers) {
           this.$set(this.boo, 'followers', new Followers(this.boo));
         }
 
-        // this.session.open_network(this.boo.followers);
         this.session.open_network('followers', {0:this.boo.followers});
       }
     }

@@ -171,6 +171,10 @@
     overflow: hidden;
   }
 
+  .bridge.vcomp .page-body > .section > table.type-selector .postype > * {
+    pointer-events: none;
+  }
+
   .bridge.vcomp .page-body > .section > table.type-selector .postype > .motiv {
     width: 100%;
     height: 35%;
@@ -208,120 +212,6 @@
   .bridge.vcomp .page-body > .section > table.type-selector .postype.postqa > .icons > img {
     height: 40%;
   }
-
-  /* .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table {
-    position: relative;
-    border-collapse: collapse;
-    width: 100%;
-    height: 100%;
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > table {
-    height: 100%;
-    width: 100%
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table {
-    height: 35%;
-    width: 80%;
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postqa > .icons > table {
-    height: 40%;
-    width: 80%;
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table td {
-    width: 50%;
-    height: 50%;
-    position: relative;
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table td:first-child {
-    border-right: 1px solid var(--color-inactive);
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype > .icons > table td > img {
-    position: absolute;
-    object-fit: contain;
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > table tr:first-child > td > img {
-    bottom: 10%;
-    left: 50%;
-    width: 100%;
-    height: 60%;
-    transform: translateX(-50%);
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteab > .icons > table tr:last-child > td > img {
-    top: 10%;
-    left: 50%;
-    width: 100%;
-    height: 60%;
-    transform: translateX(-50%);
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table td:first-child > img {
-    top: 50%;
-    right: 10%;
-    width: 100%;
-    height: 100%;
-    transform: translateY(-50%);
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postvoteox > .icons > table td:last-child > img {
-    top: 50%;
-    left: 10%;
-    width: 100%;
-    height: 100%;
-    transform: translateY(-50%);
-  }
-
-  .bridge.vcomp .page-body > .section > table.type-selector .postype.postqa > .icons > table td > img {
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translate(-50%, -50%);
-  } */
-
-
-  /* .bridge.vcomp .page-body > .section.bottom > .postypes {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    text-align: center;
-  }
-
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype:first-child {
-    margin-right: var(--w-6);
-  }
-
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype:last-child {
-    margin-left: var(--w-6);
-  }
-
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table {
-    border-collapse: collapse;
-  }
-
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td {
-    border: 1px solid var(--color-dark);
-    height: var(--w-12);
-    width: var(--w-12);
-  }
-
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td.borderless {
-    border: none;
-  }
-
-  .bridge.vcomp .page-body > .section.bottom > .postypes > .postype > table td > img {
-    width: 70%;
-    height: 70%;
-    vertical-align: middle;
-  } */
 
   .bridge.vcomp.posting_guide .page-body > .section.bottom > span.title {
     position: absolute;
@@ -366,6 +256,7 @@
 
   .bridge.vcomp.posting_guide .page-body > .section.bottom,
   .bridge.vcomp.delpost_guide .page-body > .section.top,
+  .bridge.vcomp.delink_guide .page-body > .section.top,
   .bridge.vcomp.delboo_guide .page-body > .section.top,
   .bridge.vcomp.logout_guide .page-body > .section.top,
   .bridge.vcomp.browser_guide .page-body > .section.top {
@@ -374,6 +265,7 @@
 
   .bridge.vcomp.posting_guide .page-body > .section.top,
   .bridge.vcomp.delpost_guide .page-body > .section.bottom,
+  .bridge.vcomp.delink_guide .page-body > .section.bottom,
   .bridge.vcomp.delboo_guide .page-body > .section.bottom,
   .bridge.vcomp.logout_guide .page-body > .section.bottom,
   .bridge.vcomp.browser_guide .page-body > .section.bottom {
@@ -467,12 +359,6 @@
                     <div class='motiv'><b>이거 저거?<br>고민이라면?</b></div>
                     <div class='icons'>
                       <img src='/static/materials/icons/ab.png'>
-                      <!-- <table>
-                        <tbody>
-                          <tr><td><img src='/static/materials/icons/moiber_letter_a.png'></td></tr>
-                          <tr><td><img src='/static/materials/icons/moiber_letter_b.png'></td></tr>
-                        </tbody>
-                      </table> -->
                     </div>
                   </div>
                 </td>
@@ -481,14 +367,6 @@
                     <div class='motiv'><b>살까 말까?<br>고민이라면?</b></div>
                     <div class='icons'>
                       <img src='/static/materials/icons/ox.png'>
-                      <!-- <table>
-                        <tbody>
-                          <tr>
-                            <td><img src='/static/materials/icons/moiber_letter_o.png'></td>
-                            <td><img src='/static/materials/icons/moiber_letter_x.png'></td>
-                          </tr>
-                        </tbody>
-                      </table> -->
                     </div>
                   </div>
                 </td>
@@ -497,11 +375,6 @@
                     <div class='motiv'><b>추천해줘!<br>정보 알려줘!</b></div>
                     <div class='icons'>
                       <img src='/static/materials/icons/qa.png'>
-                      <!-- <table>
-                        <tbody>
-                          <tr><td><img src='/static/materials/icons/qa.png'></td></tr>
-                        </tbody>
-                      </table> -->
                     </div>
                   </div>
                 </td>
@@ -518,6 +391,32 @@
 
           <div class='group'>
             <span class='title'>등록하신 글이 삭제됩니다.<br>계속 진행 하시겠습니까?</span>
+            <div class='sub'>
+              <div class='button' @click='action_callback'>
+                <img src='/static/materials/icons/moiber_letter_o.png'>
+              </div>
+              <div class='button' @click='action_cancel'>
+                <img src='/static/materials/icons/moiber_letter_x.png'>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class='section bottom' @click='session.close_page()'></div>
+      </template>
+
+
+      <template v-else-if='is_delink_guide'>
+        <div class='section top'>
+
+          <div class='group'>
+            <span class='title'>
+              <span>등록하신 SNS주소가 삭제됩니다.</span><br>
+              <span v-if='args' style='color:red;'>[[args]]가 이 주소를 공유하고 있습니다.</span><br>
+              <span>계속 진행 하시겠습니까?</span>
+            </span>
+
             <div class='sub'>
               <div class='button' @click='action_callback'>
                 <img src='/static/materials/icons/moiber_letter_o.png'>
@@ -611,6 +510,10 @@
     },
 
     computed: {
+      args: function() {
+        return this.session.page.bridge.args
+      },
+
       bridge_type: function() {
         return this.session.page.bridge.type
       },
@@ -631,6 +534,10 @@
         return this.bridge_type == 'delpost_guide'
       },
 
+      is_delink_guide: function() {
+        return this.bridge_type == 'delink_guide'
+      },
+
       is_delboo_guide: function() {
         return this.bridge_type == 'delboo_guide'
       },
@@ -644,11 +551,11 @@
       },
 
       hide_close: function() {
-        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delink_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
       },
 
       hide_dimmer: function() {
-        return this.is_posting_guide || this.is_delpost_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
+        return this.is_posting_guide || this.is_delpost_guide || this.is_delink_guide || this.is_delboo_guide || this.is_logout_guide || this.is_browser_guide
       }
     },
 

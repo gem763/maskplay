@@ -1,9 +1,12 @@
+const guestboo = 363;
+
 class Session {
   constructor() {
     this.page = {
+      home:       { open: false, from: 'left', hotboos: new Boos('hot') },
       // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
       // posts:      { contents: undefined, univ: { history: new Posts('hot', 4), hot: undefined, custom: undefined, search: undefined }, swiper: undefined },
-      posts:      { open: true, contents: undefined, univ: { history: new Posts('history'), hot: new Posts('hot'), custom: undefined, search: undefined }, swiper: undefined },
+      posts:      { open: true, contents: undefined, univ: { hot: new Posts('hot'), history: new Posts('history'), custom: undefined, search: undefined }, swiper: undefined },
       mypage:     { open: false, from: 'left' },
       loginpage:  { open: false, from: 'bottom' },
       navigator:  { open: false, from: 'left' },
@@ -15,84 +18,63 @@ class Session {
       booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
       pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
       texteditor: { open: false, basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
-      bridge:     { open: false, from: undefined, type: undefined, callback: undefined },
+      bridge:     { open: false, from: undefined, type: undefined, callback: undefined, args: undefined },
       searcher:   { open: false, from: 'right' },
       company:    { open: false, from: 'right', section: 'who' },
+      landing:    { open: false, from: 'right' },
       infoboard:  { open: false, from: 'right', contents: undefined },
     };
 
     this.mode = { on: 'posts', order: 0, prev: undefined };
-    this.auth = undefined;
+    // this.auth = undefined;
+    // this.guest = undefined;
     this.booposts = undefined;
     this.page.posts.contents = this.page.posts.univ.history;
-    // this.hammer = this.get_hammer();
-    this.fetch_user();
+
+    // this.fetch_user();
+    this.user = new User(this);
   }
 
-  // get auth() {
-  //   if (this._auth) {
-  //     if (this._auth.boo) {
-  //       return this._auth
-  //     }
-  //   }
+  // fetch_user() {
+  //   fetch('/user')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         this.auth = new Auth(JSON.parse(js.user));
+  //
+  //         if (js.first_visit) {
+  //           this.auth.first_visit = js.first_visit;
+  //           this.open_profiler();
+  //         }
+  //
+  //       } else {
+  //         this.guest = {
+  //           boo: JSON.parse(js.guestboo)
+  //         };
+  //       }
+  //     });
   // }
 
+  logout() {
+    this.open_bridge('logout_guide', 'top', () => {
+      this.close_page();
+      this.expire();
 
-  fetch_user() {
-    fetch('/user')
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          this.auth = new Auth(JSON.parse(js.user));
-
-          if (js.first_visit) {
-            this.auth.first_visit = js.first_visit;
-            this.open_profiler();
+      fetch('/logout/')
+        .then(x => {
+          if (x.ok) {
+            console.log('successfully logged out');
+            // this.user = new User(this);
           }
-
-          // if (!this._auth.boo) {
-          //   this.open_profiler('new');
-          // }
-        }
-      });
+        });
+    });
   }
 
-
-  // get_hammer() {
-  //   const self = this;
-  //   const hammer = new Hammer(document);
-  //
-  //   function getStartX(e) {
-  //     const delta_x = e.deltaX;
-  //     const final_x = e.srcEvent.pageX || e.srcEvent.screenX || 0;
-  //     const canvas_w = document.querySelector('#window').offsetWidth;
-  //     return (final_x - delta_x) / canvas_w;
-  //   }
-  //
-  //   hammer.on('swiperight swipeleft', function (e) {
-  //     e.preventDefault();
-  //     const x = getStartX(e);
-  //
-  //     if (self.mode.on == 'journey') {
-  //       if (e.type=='swiperight') {
-  //         self.open_boochooser();
-  //
-  //       } else if (e.type=='swipeleft') {
-  //         self.open_boopage(self.cpost.boo);
-  //       }
-  //
-  //     } else {
-  //       if (e.type=='swiperight' && self.page[self.mode.on].from=='right') {
-  //         self.close_page();
-  //
-  //       } else if (e.type=='swipeleft' && self.page[self.mode.on].from=='left') {
-  //         self.close_page();
-  //       }
-  //     }
-  //   });
-  //
-  //   return hammer
-  // }
+  expire() {
+    // auth만 제거하고, guest는 상주하게 한다
+    this.user.auth = undefined;
+    // this.user.guest = undefined;
+  }
 
   close_page() {
     this.page[this.mode.on].open = false;
@@ -117,22 +99,19 @@ class Session {
   open_mypage() {
     this.close_pages_all();
 
-    if (this.auth) {
+    if (this.user.auth) {
       this.open_page('mypage');
-
-    // } else if (this._auth) {
-    //   this.open_profiler('new');
 
     } else {
       this.open_bridge('login_guide_for_mypage', 'bottom');
-      // this.open_loginpage();
     }
   }
 
-  open_bridge(type, from, callback) {
+  open_bridge(type, from, callback, args) {
     this.page.bridge.type = type;
     this.page.bridge.from = from;
     this.page.bridge.callback = callback;
+    this.page.bridge.args = args;
     this.open_page('bridge');
   }
 
@@ -141,7 +120,6 @@ class Session {
   }
 
   open_profiler(type) {
-    // this.page.profiler.key = undefined;
     if (type) {
       this.page.profiler.type = type;
 
@@ -152,50 +130,31 @@ class Session {
     this.open_page('profiler');
   }
 
-  // open_newprofiler(bookey) {
-  //   this.page.profiler.key = bookey;
-  //   this.open_page('profiler');
-  // }
-
   open_comments(post) {
     this.page.comments.post = post;
 
     // 코멘트창이 최초로 열릴때 post정보를 업데이트하는 시간때문에 약간의 딜레이를 준다
     setTimeout(() => { this.open_page('comments'); }, 100);
-    // this.open_page('comments');
   }
 
-  // open_booposts(posts, where) {
   open_booposts() {
-    // this.booposts = posts;
-    // this.page.booposts.open_at = where;
-    // this.page.booposts.swiper.slideTo(where, 1, false);
     this.open_page('booposts');
   }
 
-  // open_posting() {
   open_posting_guide() {
-    // this.close_pages_all();
-
-    if (this.auth) {
+    if (this.user.auth) {
       this.open_bridge('posting_guide', 'bottom');
-      // this.open_page('posting');
-
-    // } else if (this._auth) {
-    //   this.open_profiler('new');
 
     } else {
       this.open_bridge('login_guide_for_posting', 'bottom');
     }
   }
 
-  // open_posting(type) {
   open_newpost(type) {
     this.close_pages_all();
     this.page.posting.post = undefined;
     this.page.posting.type = type;
     this.open_page('posting');
-
   }
 
   open_editpost(post) {
@@ -212,8 +171,13 @@ class Session {
       this.page.company.section = 'who';
     }
 
-    this.close_pages_all();
+    // this.close_pages_all();
     this.open_page('company');
+  }
+
+  open_landing() {
+    // this.close_pages_all();
+    this.open_page('landing');
   }
 
   open_infoboard(position) {
@@ -221,31 +185,25 @@ class Session {
     this.open_page('infoboard');
   }
 
-  // open_posting(mother) {
-  //   if (this.auth) {
-  //     this.page.posting.mother = mother;
-  //     this.open_page('posting');
-  //   } else {
-  //     this.open_loginpage();
-  //   }
-  // }
-
 
   open_boopage(boo) {
     if (this.mode.on=='posting') {
       return
 
-    } else if (this.auth && this.auth.boo_selected==boo.id) {
+    // } else if (this.auth && this.auth.boo_selected==boo.id) {
+    } else if (this.user.is_myboo(boo)) {
       this.open_mypage();
 
     } else if (this.mode.on=='booposts') {
       this.close_page();
 
-    // } else if (this.anonyboo.id==boo.id) {
-    //   alert('삭제된 사용자입니다');
+    } else if (this.user.guest.boo.id==boo.id) {
+      alert('익명사용자입니다');
+      return
 
     } else if (!boo.active) {
       alert('삭제된 사용자입니다');
+      return
 
     } else {
       if (!this.page.boopage.boo || this.page.boopage.boo.id!=boo.id) {
@@ -277,6 +235,11 @@ class Session {
     this.open_page('navigator');
   }
 
+  open_home() {
+    this.close_pages_all();
+    this.open_page('home');
+  }
+
   open_searcher() {
     this.open_page('searcher');
   }
@@ -305,56 +268,6 @@ class Session {
     }
   }
 
-
-  // pscore(boo) {
-  //   return (1*boo.nfollowers + 0.2*boo.nposts) + 10
-  // }
-  //
-  // get total_pscore() {
-  //   return (1*this.stats.total_nfollowers + 0.2*this.stats.total_nposts) + 10*this.stats.total_nboos
-  // }
-  //
-  // level(boo) {
-  //   const scaler = 0.1;
-  //   const unit = 0.15 * scaler;
-  //   const _ps = this.pscore(boo) / this.total_pscore;
-  //
-  //   switch (true) {
-  //     case (0 <= _ps && _ps < unit):
-  //       return 0
-  //     case (unit <= _ps && _ps < 2*unit):
-  //       return 1
-  //     case (2*unit <= _ps && _ps < 3*unit):
-  //       return 2
-  //     case (3*unit <= _ps && _ps < 4*unit):
-  //       return 3
-  //     case (4*unit <= _ps && _ps < 5*unit):
-  //       return 4
-  //     case (5*unit <= _ps):
-  //       return 5
-  //   }
-  // }
-
-  // barcode(boo) {
-  //   return `/static/materials/icons/barcode_${this.level(boo)}.png`
-  // }
-  //
-  // levelcolor(boo) {
-  //   switch (this.level(boo)) {
-  //     case (0):
-  //       return 'black'
-  //     case (1):
-  //       return 'rgba(0, 176, 240, 1)'
-  //     case (2):
-  //       return 'rgba(33, 170, 74, 1)'
-  //     case (3):
-  //       return 'rgba(247, 232, 3, 1)'
-  //     case (4):
-  //       return 'rgba(247, 123, 37, 1)'
-  //     case (5):
-  //       return 'rgba(255, 0, 0, 1)'
-  //   }
-  // }
 }
 
 
@@ -395,7 +308,10 @@ class ContentLoader {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          // console.log(js);
+          if (this.constructor.name == 'Voters') {
+            this.n_guestboos = js.idlist.filter(i => i==guestboo).length;
+          }
+
           this.idlist = js.idlist;
           this.load(this.nloads_init);
         }
@@ -415,33 +331,11 @@ class ContentLoader {
 }
 
 
-// class Baseposts extends ContentLoader {
-//   load_idlist() {
-//     fetch(this.idlist_url)
-//       .then(x => x.json())
-//       .then(js => {
-//         if (js.success) {
-//           this.idlist = js.iposts;
-//           this.load(this.nloads_init);
-//         }
-//       });
-//   }
-//
-//   load_by_id(id) {
-//     return fetch(this.post_url(id))
-//             .then(x => x.json())
-//             .then(js => {
-//               this.list.push(js.post);
-//             })
-//   }
-// }
-
-
 class Posts extends ContentLoader {
   constructor(type, ninit) {
     super();
-    this.nloads_init = (ninit ? ninit : 24);
-    // this.nloads_init = (ninit ? ninit : 12);
+    // this.nloads_init = (ninit ? ninit : 24);
+    this.nloads_init = (ninit ? ninit : 12);
     // this.nloads_init = (ninit ? ninit : 4);
     this.idlist_url = `/posts/iposts/${type}`;
     this.content_url = (id) => `/post/${id}`;
@@ -453,7 +347,7 @@ class Posts extends ContentLoader {
 class SearchPosts extends ContentLoader {
   constructor(keywords) {
     super();
-    this.nloads_init = 20;
+    this.nloads_init = 15;
     this.idlist_url = `/search/${keywords}`;
     this.content_url = (id) => `/post/${id}`;
     this.load_idlist();
@@ -465,7 +359,8 @@ class Booposts extends ContentLoader {
   constructor(boo, type) {
     super();
     this.boo = boo;
-    this.nloads_init = 16;
+    this.nloads_init = 6;
+    // this.nloads_init = 16;
     this.idlist_url = `/boo/${boo.id}/iposts/${type}`;
     // this.idlist_url = `/posts/iposts/${boo.id}`;
     this.content_url = (id) => `/post/${id}/boo`;
@@ -487,8 +382,10 @@ class Voters extends ContentLoader {
   constructor(post, act) {
     super();
     this.nloads_init = 5;
+    this.n_guestboos = 0;
     this.idlist_url = `/post/${post.id}/ivoters/${act}`;
-    this.content_url = (id) => `/boo/${id}/voter`;
+    this.content_url = (id) => `/boo/${id}/baseboo`;
+    // this.content_url = (id) => `/boo/${id}/voter`;
     this.load_idlist();
   }
 }
@@ -498,11 +395,150 @@ class Followers extends ContentLoader {
     super();
     this.nloads_init = 10;
     this.idlist_url = `/boo/${boo.id}/ifollowers`;
-    this.content_url = (id) => `/boo/${id}/follower`;
+    this.content_url = (id) => `/boo/${id}/baseboo`;
+    // this.content_url = (id) => `/boo/${id}/follower`;
     this.load_idlist();
   }
 }
 
+class Boos extends ContentLoader {
+  constructor(type) {
+    super();
+    this.nloads_init = 10;
+    this.idlist_url = `/boos/iboos/${type}`;
+    this.content_url = (id) => `/boo/${id}/baseboo`;
+    this.load_idlist();
+  }
+}
+
+
+
+class User {
+  constructor(session) {
+    this.auth = undefined;
+    this.guest = undefined;
+    this.onloading = true;
+    this.session = session;
+    this.load();
+  }
+
+  load() {
+    fetch('/user')
+      .then(x => x.json())
+      .then(js => {
+        // console.log(js);
+
+        if (js.success) {
+          this.auth = new Auth(JSON.parse(js.user));
+
+          if (js.first_visit) {
+            this.auth.first_visit = js.first_visit;
+            this.session.open_profiler();
+          }
+        }
+
+        // } else {
+        this.guest = { boo: JSON.parse(js.guestboo) };
+        // }
+
+        this.onloading = false;
+      });
+  }
+
+  get has_auth() {
+    return this.auth ? true : false
+  }
+
+  get is_guest() {
+    return this.guest ? true : false
+  }
+
+  get boo() {
+    if (this.has_auth) {
+      return this.auth.boo
+
+    } else if (this.is_guest){
+      return this.guest.boo
+    }
+  }
+
+  is_myboo(boo) {
+    if (this.has_auth) {
+      return this.auth.is_myboo(boo)
+    }
+  }
+
+  is_following(boo) {
+    return this.has_auth && !this.is_myboo(boo) && this.auth.is_following(boo.id)
+  }
+
+  follow(boo) {
+    if (this.has_auth) {
+      this.auth.follow(boo.id)
+    }
+  }
+
+  unfollow(boo) {
+    if (this.has_auth) {
+      this.auth.unfollow(boo.id)
+    }
+  }
+
+  get boos_fully_loaded() {
+    if (this.has_auth) {
+      return this.auth.boos_fully_loaded
+
+    } else {
+      return true
+    }
+  }
+
+  vote(post_id, action) {
+    if (!this.boo) {
+      return
+    }
+
+    const feed_act = {};
+    feed_act[post_id] = action;
+    this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+
+    fetch(`/post/${post_id}/vote?action=${action}`)
+      .then(x => x.json())
+      .then(js => {
+        console.log(js);
+        this.boo.fit = js.fit;
+      });
+  }
+
+  has_voted_as(post_id) {
+    if (!this.boo)
+      return
+
+    if (post_id in this.boo.voting_record) {
+      return this.boo.voting_record[post_id]
+
+    } else {
+      return -1
+    }
+  }
+
+  has_liked_comment(comment_id) {
+    if (this.boo)
+      return this.boo.ilikes_comment.includes(comment_id)
+  }
+
+  like_comment(comment_id) {
+    if (this.boo)
+      this.boo.ilikes_comment.push(comment_id)
+  }
+
+  delike_comment(comment_id) {
+    if (this.boo) {
+      const where = this.boo.ilikes_comment.indexOf(comment_id);
+      this.boo.ilikes_comment.splice(where, 1);
+    }
+  }
+}
 
 
 class Auth {
@@ -512,10 +548,14 @@ class Auth {
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = cuser.boo ? {[cuser.boo_selected]: cuser.boo} : {};
     this.boos_fully_loaded = false;
+    this.links = cuser.links;
     this.first_visit = false;
     this.load_other_boos();
   }
 
+  is_myboo(boo) {
+    return boo.id == this.boo_selected
+  }
 
   api_get(url) {
     fetch(url)
@@ -552,22 +592,12 @@ class Auth {
     return this.boos[this.boo_selected];
   }
 
-  // get nfollowers() {
-  //   return this.boo.followers_id.length;//size;
-  // }
-  //
-  // get nfollowees() {
-  //   return this.boo.followees_id.length;//size;
-  // }
-
   is_following(author_id) {
     return this.boo.followees_id.includes(author_id);
-    // return this.boo.followees_id.has(author_id);
   }
 
   unfollow(author_id) {
     this.api_get(`/boo/${author_id}/unfollow`);
-    // this.boo.followees_id.delete(author_id);
 
     const where = this.boo.followees_id.indexOf(author_id);
     this.boo.followees_id.splice(where, 1);
@@ -576,60 +606,40 @@ class Auth {
   follow(author_id) {
     this.api_get(`/boo/${author_id}/follow`);
     this.boo.followees_id.push(author_id);
-    // this.boo.followees_id.add(author_id);
   }
 
-  // has_voted_to(post_id) {
-  //   return (post_id in this.boo.voting_record)
+  // has_voted_as(post_id) {
+  //   if (post_id in this.boo.voting_record) {
+  //     return this.boo.voting_record[post_id]
+  //
+  //   } else {
+  //     return -1
+  //   }
   // }
 
-  has_voted_as(post_id) {
-    if (post_id in this.boo.voting_record) {
-      return this.boo.voting_record[post_id]
+  // has_liked_comment(comment_id) {
+  //   return this.boo.ilikes_comment.includes(comment_id)
+  // }
+  //
+  // like_comment(comment_id) {
+  //   this.boo.ilikes_comment.push(comment_id)
+  // }
+  //
+  // delike_comment(comment_id) {
+  //   const where = this.boo.ilikes_comment.indexOf(comment_id);
+  //   this.boo.ilikes_comment.splice(where, 1);
+  // }
 
-    } else {
-      return -1
-    }
-  }
-
-  has_liked_comment(comment_id) {
-    return this.boo.ilikes_comment.includes(comment_id)
-  }
-
-  like_comment(comment_id) {
-    this.boo.ilikes_comment.push(comment_id)
-  }
-
-  delike_comment(comment_id) {
-    const where = this.boo.ilikes_comment.indexOf(comment_id);
-    this.boo.ilikes_comment.splice(where, 1);
-  }
-
-  vote(post_id, action) {
-    const feed_act = {};
-    feed_act[post_id] = action;
-    this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
-
-    // this.api_get(`/post/${post_id}/vote?action=${action}`);
-
-    fetch(`/post/${post_id}/vote?action=${action}`)
-      .then(x => x.json())
-      .then(js => {
-        console.log(js);
-        this.boo.fit = js.fit;
-      });
-  }
-
-  // new_boo() {
-  //   const self = this;
-  //   return fetch('boo/new/')
-  //     .then(res => res.json())
+  // vote(post_id, action) {
+  //   const feed_act = {};
+  //   feed_act[post_id] = action;
+  //   this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+  //
+  //   fetch(`/post/${post_id}/vote?action=${action}`)
+  //     .then(x => x.json())
   //     .then(js => {
-  //       if (js.success) {
-  //         const boo = JSON.parse(js.boo);
-  //         self.boos[boo.id] = boo;
-  //         self.boo_selected = boo.id;
-  //       }
-  //     })
+  //       console.log(js);
+  //       this.boo.fit = js.fit;
+  //     });
   // }
 }

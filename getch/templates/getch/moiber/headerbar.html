@@ -1,0 +1,152 @@
+<style>
+  .headerbar.vcomp {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--headerbar-height);
+    /* background: orange; */
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .headerbar.vcomp.hidden {
+    top: calc((-1) * var(--headerbar-height));
+  }
+
+  .headerbar.vcomp > .container {
+    height: 100%;
+    width: var(--width);
+    /* background: rgba(255,255,255,0.9); */
+    background: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .headerbar.vcomp > .container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .headerbar.vcomp > .container > .keyword {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: var(--discover-img-interval);
+    background: white;
+    /* background: var(--color-dark); */
+    color: #333333;
+    border-radius: var(--w-5);
+    font-size: 15px;
+    height: var(--w-10);
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgb(0,0,0,0.07);
+  }
+
+  .headerbar.vcomp > .container > .keyword > * {
+    pointer-events: none;
+  }
+
+  .headerbar.vcomp > .container > .keyword.selected {
+    background: var(--color-point);
+    color: white;
+    font-weight: bold;
+  }
+
+  .headerbar.vcomp > .container > .keyword.logo {
+    width: var(--w-12);
+    height: var(--w-12);
+    box-shadow: none;
+    background: none;
+  }
+
+  .headerbar.vcomp > .container > .keyword > img {
+    width: var(--w-10);
+    height: auto;
+  }
+</style>
+
+<script type='text/x-template' id='headerbar-template'>
+  <div class='headerbar vcomp' :class='status'>
+    <div class='container'>
+      <span class='keyword logo' @click='session.refresh()'>
+        <img src='/static/materials/logos/moiber-logo.png'>
+      </span>
+
+      <span class='keyword' :class='{ selected: idx==selected }' v-for='(keyword, idx) in suggest' @click='search_keyword(keyword, idx)'>[[keyword]]</span>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('headerbar', {
+    template: '#headerbar-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        match: {
+          '꾸안꾸':	'꾸안꾸 원피스 무채색 스푸닝 트렌디어패럴 드라이로즈',
+          '봄코디':	'봄코디 봄옷코디짤털이 트렌치코트 원피스 트위드 블라우스 셔츠 가디건 단가라 비비드 티셔츠',
+          '홈웨어':	'홈웨어 트레이닝 조거팬츠 스웻셔츠 후드티 맨투맨 티셔츠',
+          '무채색':	'무채색 인더클로젯 므넴 논코드 블랙 오운 송지오',
+          '헬린이':	'헬린이 트레이닝 조거팬츠 스웻셔츠 스웻팬츠 압박 맨투맨 에슬레저 운동화',
+          '힙스터':	'힙스터 street_hound ah houyhnhnm 힙 니더스 블랑코브 포터 i4p',
+          '간절기':	'간절기 트렌치코트 자켓 바람막이 후드집업 가디건 코트 야상 아노락 피시테일',
+          '꽃샘추위':	'꽃샘추위 트렌치코트 코트 숏패딩 아우터 가디건',
+        },
+
+        keyset: [
+          '꾸안꾸 맨투맨 봄코디 원피스 홈웨어 가디건 아더에러 트위드 스투시 블라우스',
+          '자켓 무채색 바람막이 힙스터 레이어드 셔츠 니더스 헬린이 에브리웨어 뉴발란스',
+          '트렌치코트 후드 간절기 나이키 꽃샘추위 스니커즈 조거팬츠 미스치프 셋업 그래픽',
+        ],
+
+        selected: -1
+      }
+    },
+
+    watch: {
+      'session.ikeyset': function(_new, _old) {
+        this.selected = -1;
+      }
+    },
+
+    computed: {
+      suggest: function() {
+        return this.keyset[this.session.ikeyset].split(' ')
+      },
+
+      status: function() {
+        return {
+          hidden: (this.session.scroll_direction == 'down') || (this.session.pixtory.length > 1)
+        }
+      }
+    },
+
+    methods: {
+      search_keyword: function(keyword, idx) {
+        this.selected = idx;
+
+        if (keyword in this.match) {
+          console.log(this.match[keyword])
+          this.session.keywording(this.match[keyword]);
+
+        } else {
+          this.session.keywording(keyword);
+        }
+      }
+    }
+  });
+</script>

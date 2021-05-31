@@ -62,7 +62,7 @@
 
     <div class='oxkey' :class='phase'>
       <img :src='ox_src'>
-      <div class='score' v-if='is_active'><b>[[ score ]]</b></div>
+      <div class='score' v-if='is_active'><b>[[ score_display ]]</b></div>
     </div>
 
   </div>
@@ -73,7 +73,7 @@
   Vue.component('oxer', {
     template: '#oxer-template',
     delimiters: ['[[', ']]'],
-    props: [ 'act', 'vote_state', 'score', 'is_active', 'keyvalue' ],
+    props: [ 'act', 'vote_state', 'score', 'is_active', 'keyvalue', 'session' ],
     data: function() {
       return {}
     },
@@ -101,6 +101,18 @@
 
         } else if (this.keyvalue=='B') {
           return '/static/materials/icons/moiber_letter_b.png'
+        }
+      },
+
+      score_display: function() {
+        if (this.session.mode.on=='mbti') {
+          if (this.phase=='voted')
+            return ''
+          else
+            return ''
+
+        } else {
+          return this.score
         }
       }
     }

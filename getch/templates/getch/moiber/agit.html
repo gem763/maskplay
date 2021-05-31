@@ -1,0 +1,144 @@
+<style>
+  .agit.vcomp .page-body {
+    background: var(--color-backgray);
+    color: var(--color-dark);
+  }
+
+  .agit.vcomp .page-body > .header {
+    height: var(--w-14);
+    background: white;
+  }
+
+  .agit.vcomp .page-body > .profile {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: var(--w-10);
+  }
+
+  .agit.vcomp .page-body > .profile > .profilepix {
+    position: relative;
+    /* background: var(--color-backgray); */
+    background: rgba(0, 0, 0, 0.07);
+    width: var(--w-30);
+    height: var(--w-30);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+    overflow: hidden;
+  }
+
+  .agit.vcomp .page-body > .profile > .profilepix > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 0.5s;
+    filter: brightness(95%);
+    border-radius: 50%;
+  }
+
+  .agit.vcomp .page-body > .profile > .nick {
+    margin-top: 10px;
+    font-size: 18px;
+  }
+
+  .agit.vcomp .page-body > .container {
+    width: 100%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .agit.vcomp .headerbar-menu > .item.logout {
+    color: var(--color-message);
+  }
+</style>
+
+<script type='text/x-template' id='agit-template'>
+  <page
+    v-if='boo'
+    class='agit vcomp'
+    :open='session.page.agit.open'
+    :from='session.page.agit.from'
+    :hide_close='false'
+    :trans_headerbar='false'
+    :hide_menu='!is_myboo'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+      <div class='item' @click='go_profiler'>내 프로필 편집</div>
+      <div class='item' @click='$refs.colib.make_collection()'>옷장 만들기</div>
+      <div class='item' @click='session.open_landing()'>서비스 소개</div>
+      <div class='item' @click='session.open_about()'>팀 모이버</div>
+      <div class='item logout' @click='session.logout()'>로그아웃</div>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='header'></div>
+
+      <div class='profile' @click='go_profiler'>
+        <div class='profilepix'>
+          <i class="fa fa-spinner fa-spin"></i>
+          <img :src='boo.profile.pix' v-if='boo.profile && boo.id' @load='pixloaded'>
+        </div>
+        <div class='nick'><b>[[boo.nick]]</b></div>
+      </div>
+
+      <div class='container'>
+        <colib :boo='boo' :session='session' ref='colib'></colib>
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('agit', {
+    template: '#agit-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      boo: function() {
+        return this.session.page.agit.boo
+      },
+
+      is_myboo: function() {
+        if (this.boo) {
+          return this.session.user.is_myboo(this.boo)
+        }
+      }
+    },
+
+    methods: {
+      pixloaded: function(event) {
+        event.target.style.opacity = 1;
+      },
+
+      go_profiler: function() {
+        if (this.is_myboo && this.boo.profile && this.boo.id)
+          this.session.open_profiler();
+      }
+    }
+  });
+</script>

@@ -1,0 +1,164 @@
+<style>
+  .colib.vcomp {
+    position: relative;
+    background: none;
+    width: 100%;
+    margin: var(--discover-col-padding);
+    margin-bottom: var(--w-20);
+  }
+
+  .colib.vcomp .masonry-item {
+    background: none;
+    padding: var(--discover-col-padding);
+  }
+
+  .colib.vcomp .masonry-item > .info {
+    width: 100%;
+    position: relative;
+    height: var(--w-10);
+    /* background: orange; */
+    color: var(--color-dark);
+  }
+
+  .colib.vcomp .masonry-item > .info > span {
+    position: absolute;
+    top: 40%;
+    right: var(--discover-col-interval);
+    transform: translateY(-50%);
+    font-size: 12px;
+  }
+
+  .colib.vcomp .masonry-item > .adder {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: white;
+    border-radius: var(--w-3);
+  }
+
+  .colib.vcomp .masonry-item > .adder > .adder-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    /* transform: translate(-50%, -50%); */
+  }
+
+  .colib.vcomp .masonry-item > .adder > .adder-message > img {
+    width: 15%;
+    height: auto;
+  }
+
+  .colib.vcomp .masonry-item > .adder > .adder-message > span {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+
+  .colib.vcomp .masonry-item > .adder > .adder-message > * {
+    pointer-events: none;
+  }
+</style>
+
+<script type='text/x-template' id='colib-template'>
+  <div class='colib vcomp'>
+    <masonry :cols="2" :gutter="0">
+      <div class='masonry-item' @click='make_collection' v-if='is_myboo || on_saving'>
+        <div class='adder'>
+          <div class='adder-message'>
+            <img src='/static/materials/icons/plus.png'>
+            <span>옷장을 만들어보세요</span>
+          </div>
+        </div>
+      </div>
+
+      <div class='masonry-item' v-for="(col, idx) in cols" :key="idx" @click='go_collection(col)'>
+        <minicol :collection='col'></minicol>
+        <div class='info' v-if='session.mode.on=="finder"'>
+          <span @click.stop='go_agit(col)' v-if='col.owner'><span style='font-size:10px'>by </span><b>[[col.owner.nick]]</b></span>
+        </div>
+      </div>
+    </masonry>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('colib', {
+    template: '#colib-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'boo', 'collections', 'session' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      cols: function() {
+        if (this.boo) {
+          return this.boo.collections
+
+        } else if (this.collections) {
+          return this.collections
+
+        } else {
+          return []
+        }
+      },
+
+      is_myboo: function() {
+        if (this.boo) {
+          return this.session.user.is_myboo(this.boo)
+        }
+      },
+
+      on_saving: function() {
+        if (this.boo) {
+          return !this.boo.id
+        }
+      }
+    },
+
+    methods: {
+      go_agit: function(collection) {
+        collection.load_owner();
+        this.session.open_agit(collection.owner);
+      },
+
+      go_collection: function(col) {
+        col.picks.load(10);
+        this.session.pixtory.push({
+          picks: col.picks,
+          collection: col
+        });
+
+        this.session.close_pages_all();
+      },
+
+      make_collection: function() {
+        this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
+          const col = {
+            id: undefined,
+            name: txt_done,
+            picks: new Picks(this.session.store),
+            pixids: []
+          }
+
+          this.cols.unshift(col);
+          fetch(`/collection/create/${col.name}`)
+            .then(x => x.json())
+            .then(js => {
+              if (js.success) {
+                col.id = js.collection_id;
+              }
+            })
+        });
+      }
+    },
+  });
+</script>

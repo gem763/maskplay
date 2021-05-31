@@ -1,0 +1,340 @@
+<style>
+  .page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+  }
+
+  .page > .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    pointer-events: auto;
+  }
+
+  .page > .dimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+  }
+
+  .page .show-content-enter-active,
+  .page .show-content-leave-active,
+  .page .show-content-from-right-enter-active,
+  .page .show-content-from-right-leave-active,
+  .page .show-content-from-left-enter-active,
+  .page .show-content-from-left-leave-active,
+  .page .show-content-from-top-enter-active,
+  .page .show-content-from-top-leave-active,
+  .page .show-content-from-bottom-enter-active,
+  .page .show-content-from-bottom-leave-active,
+  .page .show-dimmer-enter-active,
+  .page .show-dimmer-leave-active {
+    transition: all .3s;
+    /* transition-delay: .3s; */
+  }
+
+  .page .show-content-enter,
+  .page .show-content-leave-to {
+    opacity: 0;
+  }
+
+  .page .show-content-from-right-enter,
+  .page .show-content-from-right-leave-to {
+    left: 100%;
+  }
+
+  .page .show-content-from-left-enter,
+  .page .show-content-from-left-leave-to {
+    left: -100%;
+  }
+
+  .page .show-content-from-bottom-enter,
+  .page .show-content-from-bottom-leave-to {
+    top: 100%;
+  }
+
+  .page .show-content-from-top-enter,
+  .page .show-content-from-top-leave-to {
+    top: -100%;
+  }
+
+  .page .show-dimmer-enter,
+  .page .show-dimmer-leave-to {
+    background: rgba(0,0,0,0);
+  }
+
+  .page > .content > .close {
+    position: absolute;
+    top: var(--w-2);
+    left: var(--w-2);
+    width: var(--w-10);
+    height: var(--w-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .page > .content > .close img {
+    width: 50%;
+    height: auto;
+    transform: rotate(270deg) translateY(-10%);
+    pointer-events: none;
+  }
+
+  .page > .content > .headerbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--w-14);
+    background: white;
+  }
+
+  .page > .content > .headerbar.transparent {
+    background: none;
+    pointer-events: none;
+  }
+
+  .page > .content > .headerbar > .hamburger {
+    position: absolute;
+    top: var(--w-2);
+    right: var(--w-2);
+    width: var(--w-10);
+    height: var(--w-10);
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page > .content > .headerbar > .hamburger > img {
+    width: 50%;
+    height: auto;
+  }
+
+  .page > .content > .headerbar > .headerbar-body-default,
+  .page > .content > .headerbar > .headerbar-body-trans {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.5s;
+  }
+
+  .page > .content > .headerbar > .headerbar-body-default {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .page > .content > .headerbar > .headerbar-body-trans {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .page > .content > .headerbar.transparent > .headerbar-body-default,
+  .page > .content > .headerbar.transparent > .headerbar-body-trans {
+    pointer-events: none;
+  }
+
+  .page > .content > .page-body {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none; /*IE 11*/
+    scrollbar-width: none; /*Firefox 64*/
+  }
+
+  .page > .content > .page-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    width: var(--w-24);
+    border-radius: 9px;
+    overflow: hidden;
+    font-size: 12px;
+    box-shadow: 0px 2px 6px rgb(70, 71, 105, 0.3);
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu > .item {
+    background: none;
+    height: var(--w-9);
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu > .item.report {
+    color: #808080;
+  }
+
+  .page > .content > .headerbar > .hamburger > .headerbar-menu > .item:last-child {
+    border-bottom: none;
+  }
+
+  .page > .content > .headerbar > .hamburger .show-menu-enter-active,
+  .page > .content > .headerbar > .hamburger .show-menu-leave-active {
+    transition: all 0.2s;
+  }
+
+  .page > .content > .headerbar > .hamburger .show-menu-enter,
+  .page > .content > .headerbar > .hamburger .show-menu-leave-to {
+    opacity: 0;
+  }
+
+  .page .show-headerbar-enter-active,
+  .page .show-headerbar-leave-active {
+    transition: all 0.3s;
+  }
+
+  .page .show-headerbar-enter,
+  .page .show-headerbar-leave-to {
+    transform: translateY(-100%);
+  }
+</style>
+
+
+<script type='text/x-template' id='page-template'>
+  <div class='page' @click='close_menu'>
+    <transition name='show-dimmer'>
+      <div class='dimmer' v-show='open && !hide_dimmer'></div>
+    </transition>
+
+    <transition :name='show_content_type'>
+      <div class='content' v-show='open'>
+        <div class='page-body' @scroll='scroll'>
+          <slot name='page-body'></slot>
+        </div>
+
+        <transition name='show-headerbar'>
+          <div class='headerbar' :class='headerbar_class' v-if='!hide_headerbar'>
+            <div class='headerbar-body-trans'>
+              <slot name='headerbar-body-trans'></slot>
+            </div>
+
+            <div class='headerbar-body-default'>
+              <slot name='headerbar-body-default'></slot>
+            </div>
+
+            <div class='hamburger' @click.stop='toggle_menu' v-if='!hide_menu'>
+              <img src='/static/materials/icons/setting_line.png'>
+
+              <transition name='show-menu'>
+                <div class='headerbar-menu' v-if='on_menu'>
+                  <slot name='headerbar-menu'></slot>
+                </div>
+              </transition>
+            </div>
+          </div>
+        </transition>
+
+        <div class='close' @click='$emit("close")' v-show='!hide_close'>
+          <img src='/static/materials/icons/backicon.png'>
+        </div>
+      </div>
+    </transition>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('page', {
+    template: '#page-template',
+    delimiters: ['[[', ']]'],
+    props: ['open', 'from', 'hide_close', 'hide_headerbar', 'hide_menu', 'hide_dimmer', 'trans_headerbar'],
+    data: function() {
+      return {
+        on_menu: false,
+      }
+    },
+
+    watch: {
+      open: function(_new, _old) {
+        if (_new) {
+          this.on_menu = false;
+        }
+      }
+    },
+
+    computed: {
+      show_content_type: function() {
+        if (this.from) {
+          return 'show-content-from-' + this.from
+
+        } else {
+          return 'show-content'
+        }
+      },
+
+      headerbar_class: function() {
+        if (this.trans_headerbar) {
+          return 'transparent'
+
+        } else {
+          return ''
+        }
+      }
+    },
+
+    methods: {
+      toggle_menu: function() {
+        this.on_menu = !this.on_menu;
+      },
+
+      close_menu: function() {
+        this.on_menu = false;
+      },
+
+      // scroll_directize: function(scrollTop, clientHeight) {
+      //   if ((scrollTop <= this.scrollTop) || (scrollTop < clientHeight*0.3)) {
+      //     this.session.scroll_direction = 'up';
+      //   } else {
+      //     this.session.scroll_direction = 'down';
+      //   }
+      // },
+
+      scroll: function(event) {
+        // https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_sticky_header
+        const h0 = event.target.clientHeight;
+        const h1 = event.target.scrollHeight;
+        const scrollTop = event.target.scrollTop;
+        const gap = h1 - scrollTop - h0;
+        const triggered = (gap < h0/2);// && (this.session.scroll_direction=='down');
+
+        // this.scroll_directize(scrollTop, h0);
+        // this.scrollTop = scrollTop;
+        this.$emit('scroll', triggered);
+        // if ((gap < h0/2) && (this.session.scroll_direction=='down')) {
+        //   if (this.pixs && this.pixs.list_onloading.every(p => p.onloading==false)) {
+        //     this.pixs.load(6);
+        //
+        //   } else if (this.picks && this.picks.list_onloading.every(p => p.onloading==false)) {
+        //     this.picks.load(6);
+        //   }
+        // }
+        //
+      }
+    }
+  });
+</script>

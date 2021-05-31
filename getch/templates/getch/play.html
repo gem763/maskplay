@@ -73,6 +73,7 @@
       --w-16: calc(var(--width-unit) * 16);
       --w-17: calc(var(--width-unit) * 17);
       --w-18: calc(var(--width-unit) * 18);
+      --w-19: calc(var(--width-unit) * 19);
       --w-20: calc(var(--width-unit) * 20);
       --w-21: calc(var(--width-unit) * 21);
       --w-22: calc(var(--width-unit) * 22);
@@ -237,7 +238,10 @@
         this.req = {{req}};
 
         if (this.req==0) {
-          setTimeout(()=> { this.session.open_home(); }, 100);
+          setTimeout(()=> {
+            // this.session.open_mbtiresult('여의도', '남');
+            this.session.open_home();
+          }, 100);
 
         } else if (this.req==3) {
           setTimeout(()=> {

@@ -3,7 +3,8 @@ from django.conf.urls import include
 from . import views as v
 
 urlpatterns = [
-    path('', v.play, name='play'),
+    path('mvp1', v.play, name='play'),
+    path('', v.discover, name='discover'),
     # path('profiler', v.profiler, name='profiler'),
     path('company/', v.company, name='company'),
     path('company/recruit/', v.company_recruit, name='company_recruit'),
@@ -69,10 +70,31 @@ urlpatterns = [
     # path('boo/create/', v.boo_create, name='boo_create'),
 
     path('search/<str:keywords>/', v.search, name='search'),
+    path('search/pix/<int:pix_id>/', v.search_by_pix, name='search_by_pix'),
+    path('search/keyword/<str:keyword>/', v.search_by_keyword, name='search_by_keyword'),
+    path('search/collection/<int:collection_id>/', v.search_by_collection, name='search_by_collection'),
 
     path('link/add/', v.link_add, name='link_add'),
     path('link/edit/', v.link_edit, name='link_edit'),
     path('link/delete/<int:link_id>/', v.link_delete, name='link_delete'),
 
-    # path('trace/view/<int:postid>/', v.trace_view, name='trace_view'),
+    path('mbti/<str:type>/iposts/', v.get_mbti_iposts, name='get_mbti_iposts'),
+    # path('mbti/<str:type>/result/base/', v.mbtiresult_base, name='mbtiresult_base'),
+
+    path('pix/ipixs/', v.get_ipixs, name='get_ipixs'),
+    path('pix/<int:pix_id>/', v.get_pix, name='get_pix'),
+
+    path('collection/icols/', v.get_icols, name='get_icols'),
+    path('collection/create/<str:name>/', v.create_collection, name='create_collection'),
+    path('collection/<int:collection_id>/', v.get_collection, name='get_collection'),
+    path('collection/<int:collection_id>/base/', v.get_collection_base, name='get_collection_base'),
+    path('collection/<int:collection_id>/ipixs/', v.get_collection_ipixs, name='get_collection_ipixs'),
+    path('collection/<int:collection_id>/ipicks/', v.get_ipicks, name='get_ipicks'),
+    path('collection/<int:collection_id>/collect/<int:pix_id>/', v.collect_pix, name='collect_pix'),
+    path('collection/<int:collection_id>/delpicks/<str:pick_ids>/', v.remove_picks, name='remove_picks'),
+
+    path('pick/<int:pick_id>/', v.get_pick, name='get_pick'),
+
+    path('user2/', v.get_user2, name='get_user2'),
+    path('user2/other_boos/', v.other_boos2, name='other_boos2'),
 ]

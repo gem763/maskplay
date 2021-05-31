@@ -1,0 +1,387 @@
+<style>
+  .mbtiresult .page-body {
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .mbtiresult .page-body > .main {
+    width: 100%;
+    /* height: 100%; */
+    background: rgba(0, 0, 0, 0.05);
+    /* text-align: center; */
+    /* padding-bottom: 300px; */
+    padding-bottom: var(--w-20);
+  }
+
+  .mbtiresult .page-body > .main > .header {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .mbtiresult .page-body > .main > .header > img.background {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .mbtiresult .page-body > .main > .header > img.profilepix {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto;
+    height: 60%;
+  }
+
+  .mbtiresult .page-body > .main > .header > .title {
+    position: absolute;
+    top: 85%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+  }
+
+  .mbtiresult .page-body > .main > .details {
+    background: none;
+    padding: var(--w-5);
+    font-size: 13px;
+    text-align: center;
+    margin-top: var(--w-10);
+    margin-bottom: var(--w-30);
+    white-space: pre;
+  }
+
+  .mbtiresult .page-body > .main > .match {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .mbtiresult .page-body > .main > .match td {
+    width: 50%;
+    box-sizing: border-box;
+    position: relative;
+    text-align: center;
+    padding: 0;
+  }
+
+  .mbtiresult .page-body > .main > .match td:first-child {
+    border-right: 1px solid lightgray;
+  }
+
+  .mbtiresult .page-body > .main > .match td > img.match-img {
+    width: 100%;
+    height: auto;
+    margin-top: 5px;
+    margin-bottom: 20px;
+  }
+
+  .mbtiresult .page-body > .main > .match td > img.matchead {
+    width: 100%;
+    height: auto;
+    /* height: var(--w-20); */
+    /* object-fit: contain; */
+    position: absolute;
+    bottom: 95%;
+  }
+
+  .mbtiresult .page-body > .main > .journey {
+    margin-top: 200px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .mbtiresult .page-body > .main > .retry {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .mbtiresult .page-body > .main > .action > .btn {
+    background: var(--color-dark);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    width: var(--w-30);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .mbtiresult .page-body > .main > .tail {
+    width: 100%;
+    background: none;
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .mbtiresult .page-body > .main > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+</style>
+
+
+<script type='text/x-template' id='mbtiresult-template'>
+  <page2
+    class='mbtiresult vcomp'
+    :open='session.page.mbtiresult.open'
+    :hide_headerbar='false'
+    :trans_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='main'>
+        <!-- <div ref='upmost'></div> -->
+
+        <div class='header' ref='upmost'>
+          <img class='background' src='/static/materials/mbti/dongne/headerback.png'>
+          <img class='profilepix' :src='imgsrc(type)'>
+          <span class='title'>당신은 <b>[[style]]</b> 스타일!</span>
+        </div>
+
+        <div class='details'>
+          <div class='phrase'>[[phrase]]</div>
+          <div class='desc'>[[desc]]</div>
+        </div>
+
+        <table class='match'>
+          <tbody>
+            <tr>
+              <td>
+                <img class='matchead best' src='/static/materials/mbti/dongne/best.png'>
+                <img class='match-img' :src='imgsrc(bestmatch)'>
+                <span><b>[[bestmatch_style]]</b> 스타일!</span>
+              </td>
+              <td>
+                <img class='matchead worst' src='/static/materials/mbti/dongne/worst.png'>
+                <img class='match-img' :src='imgsrc(worstmatch)'>
+                <span><b>[[worstmatch_style]]</b> 스타일!</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class='journey action'>
+          <span><b>"나, 뭐입어?"</b> 고민될 때,</span><br>
+          <span>인공지능 스타일리스트 <b>모이버!</b></span>
+          <div class='btn' @click='session.open_home()'>모이버 둘러보기</div>
+        </div>
+
+        <div class='retry action'>
+          <div class='btn' @click='open_mbti'>다시 해보기</div>
+        </div>
+
+        <div class='tail'>
+          <span class='item' @click='open_who'>소개</span>
+          <span class='item' @click='open_recruit'>채용</span>
+          <span class='item' @click='policy'>약관</span>
+          <span class='item' @click='privacy'>개인정보보호</span>
+          <span class='item' @click='suggest'>컨텍트</span>
+        </div>
+      </div>
+    </template>
+  </page2>
+</script>
+
+
+<script>
+  Vue.component('mbtiresult', {
+    template: '#mbtiresult-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    watch: {
+      'session.page.mbtiresult.open': function(_new, _old) {
+        if (_new) {
+          this.$nextTick(() => {
+            this.goto_upmost();
+          })
+          // if (this.$refs.upmost) {
+          //   this.$refs.upmost.scrollIntoView(true);
+          // }
+
+          // fetch('/mbti/dongne/result/base').then(x => x.text()).then(html => {
+          //   this.$refs.frame.innerHTML = html;
+          // });
+        }
+      }
+    },
+
+    computed: {
+      type: function() {
+        return this.session.page.mbtiresult.result
+      },
+
+      gender: function() {
+        return this.session.page.mbtiresult.gender
+      },
+
+      style: function() {
+        if (!this.type) return
+        return this.profiles(this.type).style
+      },
+
+      phrase: function() {
+        if (!this.type) return
+        return this.profiles(this.type).phrase
+      },
+
+      desc: function() {
+        if (!this.type) return
+        return this.profiles(this.type).desc
+      },
+
+      bestmatch: function() {
+        if (!this.type) return
+        return this.profiles(this.type).bestmatch
+      },
+
+      worstmatch: function() {
+        if (!this.type) return
+        return this.profiles(this.type).worstmatch
+      },
+
+      bestmatch_style: function() {
+        if (!this.bestmatch) return
+        return this.profiles(this.bestmatch).style
+      },
+
+      worstmatch_style: function() {
+        if (!this.worstmatch) return
+        return this.profiles(this.worstmatch).style
+      }
+    },
+
+    methods: {
+      imgsrc: function(type) {
+        if (type && this.gender)
+          return `/static/materials/mbti/dongne/profiles/${type}_${this.gender}.png`
+        else
+          return ''
+      },
+
+      profiles: function(type) {
+        switch(type) {
+          case 'gangnam':
+            return {
+              style: '강남',
+              bestmatch: 'jeju',
+              worstmatch: 'teheran',
+              phrase: '이렇게 멋진 날 봐! 짜릿해! 늘 새로워!',
+              desc: '멀리서도 한 눈에 들어오는 당신은 강남스타일!\n 주목받는 것을 좋아하고 화려한 옷을 선호하는 당신은\n 기본템을 사더라도 비비드한 컬러를 선택하는 편이네요.\n 에너지 넘치는 당신은 멋쟁이 패셔니스타!'
+            }
+
+          case 'etaewon':
+            return {
+              style: '이태원',
+              bestmatch: 'chungdam',
+              worstmatch: 'gangnam',
+              phrase: '유행을 쫓는 건 NO!',
+              desc: '확고한 나만의 스타일을 쫓는 당신은 이태원스타일!\n 취향에 맞춰 자유자재로 멋을 부릴 줄 아는 당신은\n 새로운 트렌드를 이끄는 멋쟁이군요.\n 개성파 패셔니스타인 당신은 개척자 스타일!'
+            }
+
+          case 'chungdam':
+            return {
+              style: '청담',
+              bestmatch: 'teheran',
+              worstmatch: 'noryang',
+              phrase: '럭셔리의 중심!',
+              desc: '세련미 넘치는 스타일을 좋아하는 당신은 청담스타일!\n 품위있는 차림에도 앞선 감각의 개성과 패션 위트를 잃지 않는 당신은\n 새로운 트렌드에 언제나 민감하게 반응하는 패셔니스타이군요.\n 기품 있는 이미지를 뽐내는 당신은 하이앤드 스타일!'
+            }
+
+          case 'noryang':
+            return {
+              style: '노량진',
+              bestmatch: 'yeoui',
+              worstmatch: 'jeju',
+              phrase: '유행? 그게 뭐야?',
+              desc: '패션에 별 관심이 없는 당신은 노량진스타일!\n 다른 것에 신경쓰느라 패션 스타일은 뒷전이 되는 경우가 많은 당신은\n 항상 같은 패션을 고수해도 별로 신경쓰지 않습니다.\n 아직 패린이에 머물고 있는 당신은 논 패션 스타일!'
+            }
+
+          case 'jeju':
+            return {
+              style: '제주도',
+              bestmatch: 'pangyo',
+              worstmatch: 'yeoui',
+              phrase: '샤랄랄라랄랄라~~~',
+              desc: '언제 어디서든 여행을 떠날 수 있을 것 같은 당신은 제주도스타일!\n 꾸안꾸가 유행할 때도 꿋꿋하게 ‘꾸꾸꾸’를 추구하는 당신은\n 뛰어난 패션센스로 중무장한 멋쟁이군요.\n 화려한 옷차림을 선호하는 당신은 휴양지 스타일!'
+            }
+
+          case 'teheran':
+            return {
+              style: '테헤란',
+              bestmatch: 'etaewon',
+              worstmatch: 'pangyo',
+              phrase: '깔끔! 세련! 시크!',
+              desc: '멋지게 차려입는 당신은 테헤란스타일!\n 깔끔하고 단정한 옷차림으로 시크하고 세련된 분위기를 내는 당신은\n 영화 <킹스맨>을 떠올리게 하는 멋쟁이군요.\n 지적인 이미지를 봄내는 당신은 시크댄디 스타일!'
+            }
+
+          case 'yeoui':
+            return {
+              style: '여의도',
+              bestmatch: 'gangnam',
+              worstmatch: 'etaewon',
+              phrase: '깔끔! 단정!',
+              desc: '지적이고 세련된 분위기를 좋아하는 당신은 여의도스타일!\n 직장환경에 따라 딱딱해 보이는 모습을 보일 때도 있는 당신은\n 개별 상황에 맞춰 단정하게 입는 것을 선호하는군요.\n 화려함보다는 품위있는 차림을 선호하는 당신은 도시적인 스타일!'
+            }
+
+          case 'pangyo':
+            return {
+              style: '판교',
+              bestmatch: 'noryang',
+              worstmatch: 'chungdam',
+              phrase: 'Simple is the Best!',
+              desc: '미니멀룩을 추구하는 당신은 판교스타일!\n 심플하고 편안한 스타일을 좋아하는 당신은\n 꾸밈없이 멋을 낼 줄 아는 사람이군요.\n 있는 그대로의 모습을 보여주는 당신은 미니멀리스트 스타일!'
+            }
+        }
+      },
+
+      open_who: function() {
+        this.session.open_company('who');
+      },
+
+      open_recruit: function() {
+        this.session.open_company('recruit');
+      },
+
+      policy: function() {
+        window.open('/policy');
+      },
+
+      privacy: function() {
+        window.open('/privacy');
+      },
+
+      suggest: function() {
+        window.open('mailto:contact@moiber.com');
+      },
+
+      open_mbti: function() {
+        this.session.close_pages_all();
+        this.$nextTick(() => { this.session.open_mbti(); })
+      },
+
+      goto_upmost: function() {
+        if (this.$refs) {
+          if (this.$refs.upmost)
+            this.$refs.upmost.scrollIntoView(true);
+        }
+      }
+    }
+  });
+</script>

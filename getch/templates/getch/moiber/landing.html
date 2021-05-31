@@ -1,0 +1,276 @@
+<style>
+  .landing.vcomp .page-body {
+    background: white;
+  }
+
+  .landing.vcomp .page-body > .container {
+    background: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow: hidden;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > img {
+    width: 100%;
+    height: auto;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .slogan {
+    position: absolute;
+    bottom: var(--w-90);
+    width: 100%;
+    /* background: orange; */
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .btn {
+    background: var(--color-dark);
+    width: var(--w-33);
+    height: var(--w-12);
+    border-radius: var(--w-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: white;
+    position: absolute;
+    bottom: var(--w-60);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .btn > span {
+    pointer-events: none;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .contactus {
+    position: absolute;
+    bottom: var(--w-40);
+    width: 100%;
+    /* background: orange; */
+    font-size: 15px;
+    text-align: center;
+    color: var(--color-inactive);
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .links {
+    position: absolute;
+    width: 100%;
+    /* background: orange; */
+    bottom: var(--w-30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .links > .link {
+    width: var(--w-10);
+    height: var(--w-10);
+    /* background: lightblue; */
+    position: relative;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .links > .link > img {
+    width: 60%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    background: gray;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    background: white;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-pagination > .swiper-pagination-bullet:last-child.swiper-pagination-bullet-active {
+    background: black;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .tail {
+    position: absolute;
+    bottom: var(--w-20);
+    width: 100%;
+    /* background: orange; */
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+  }
+
+  .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+</style>
+
+
+<script type='text/x-template' id='landing-template'>
+  <page
+    class='landing vcomp'
+    :open='session.page.landing.open'
+    :from='session.page.landing.from'
+    :hide_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+      <!-- <div class='item' @click='open_who'>회사소개</div>
+      <div class='item' @click='open_recruit'>채용정보</div>
+      <div class='item' @click='privacy'>개인정보보호</div>
+      <div class='item' @click='policy'>약관보기</div>
+      <div class='item' @click='suggest'>건의하기</div> -->
+    </template>
+
+    <template #page-body>
+      <div class='container'>
+
+        <div class='swiper-container' ref='swiper'>
+          <div class='swiper-wrapper'>
+            <div class="swiper-slide">
+              <img src='/static/materials/pages/X - 1.png'>
+            </div>
+
+            <div class="swiper-slide">
+              <img src='/static/materials/pages/X - 2.png'>
+            </div>
+
+            <div class="swiper-slide">
+              <img src='/static/materials/pages/X - 3.png'>
+            </div>
+
+            <div class="swiper-slide">
+              <img src='/static/materials/pages/X - 4.png'>
+            </div>
+
+            <div class="swiper-slide">
+              <img src='/static/materials/pages/X - 5.png'>
+
+              <!-- <div class='slogan'>
+                <div><b>"나, 뭐입어?"</b> 고민될 때?</div>
+                <div>인공지능 스타일리스트 <b>모이버!</b></div>
+              </div> -->
+
+              <div class='btn start' @click='session.close_page()'>
+                <span><b>시작하기</b></span>
+              </div>
+
+              <div class='contactus'>
+                Contact us
+              </div>
+
+              <div class='links'>
+                <div class='link' @click='goto_fb'>
+                  <img src='/static/materials/icons/f_icon.png'>
+                </div>
+
+                <div class='link' @click='goto_insta'>
+                  <img src='/static/materials/icons/insta_icon.png'>
+                </div>
+              </div>
+
+              <div class='tail'>
+                <span class='item' @click='open_who'>소개</span>
+                <span class='item' @click='open_recruit'>채용</span>
+                <span class='item' @click='policy'>약관</span>
+                <span class='item' @click='privacy'>개인정보보호</span>
+                <span class='item' @click='suggest'>컨텍트</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('landing', {
+    template: '#landing-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        swiper: undefined,
+        swiper_options: {
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          },
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    methods: {
+      open_who: function() {
+        this.session.open_about('who');
+      },
+
+      open_recruit: function() {
+        this.session.open_about('recruit');
+      },
+
+      policy: function() {
+        window.open('/policy');
+      },
+
+      privacy: function() {
+        window.open('/privacy');
+      },
+
+      suggest: function() {
+        window.open('mailto:contact@moiber.com');
+      },
+
+      goto_fb: function() {
+        window.open('https://www.facebook.com/moiber.official');
+      },
+
+      goto_insta: function() {
+        window.open('https://www.instagram.com/moiber_official');
+      },
+    }
+  });
+</script>

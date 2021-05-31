@@ -1,0 +1,486 @@
+<style>
+  .finder.vcomp .page-body {
+    background: white;
+    /* display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column; */
+  }
+
+  .finder.vcomp .page-body > .searcher {
+    height: var(--w-17);
+    /* background: lightpink; */
+    width: 100%;
+    position: relative;
+    /* position: absolute; */
+    /* top: 0;
+    left: 0; */
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .finder.vcomp .page-body > .searcher > .search-bar {
+    position: relative;
+    width: 90%;
+    height: var(--w-12);
+    /* background: orange; */
+  }
+
+  .finder.vcomp .page-body > .searcher > .search-bar > input {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid var(--color-dark);
+    border-radius: var(--w-4);
+    box-sizing: border-box;
+    padding-left: var(--w-5);
+    padding-right: var(--w-12);
+    color: var(--color-dark);
+  }
+
+  .finder.vcomp .page-body > .searcher > .search-bar > input:focus {
+    outline: none;
+  }
+
+  .finder.vcomp .page-body > .searcher > .search-bar > input::placeholder {
+    padding-left: var(--w-7);
+    text-align: center;
+    font-weight: normal;
+    color: var(--color-message);
+  }
+
+  .finder.vcomp .page-body > .searcher > .search-bar > .button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--w-12);
+    height: 100%;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .finder.vcomp .page-body > .searcher > .search-bar > .button > img {
+    width: 60%;
+    height: auto;
+  }
+
+  .finder.vcomp .page-body > .section {
+    width: 100%;
+    position: relative;
+    margin-bottom: 35px;
+  }
+
+  .finder.vcomp .page-body > .section.banner {
+    padding-top: var(--w-5);
+    margin-bottom: 25px;
+  }
+
+  .finder.vcomp .page-body > .section.banner > img {
+    width: 100%;
+  }
+
+  .finder.vcomp .page-body > .section.collections > .container {
+    width: 100%;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container {
+    width: 100%;
+    z-index: 0;
+    /* overflow: visible; */
+    /* overflow-y: visible; */
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow: hidden;
+    padding-bottom: 5%;
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-wrapper > .swiper-slide > img {
+    width: 100%;
+    height: auto;
+    pointer-events: auto;
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-pagination {
+    top: 90%;
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    background: gray;
+  }
+
+  .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    background: var(--color-dark);
+  }
+
+  /* .finder.vcomp .page-body > .section.searchkeys {
+    background: none;
+  } */
+
+  .finder.vcomp .page-body > .section:last-child {
+    margin-bottom: var(--w-20);
+  }
+
+  .finder.vcomp .page-body > .section > .title {
+    padding-left: calc(1.5 * var(--discover-col-interval));
+    color: var(--color-dark);
+    font-size: 16px;
+    /* padding-bottom: 0; */
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents {
+    margin: var(--discover-col-padding);
+    position: relative;
+    font-size: 18px;
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents > .more {
+    position: absolute;
+    top: 100%;
+    right: var(--discover-col-padding);
+    color: var(--color-message);
+    text-align: right;
+    font-size: 13px;
+    box-sizing: border-box;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: lightblue; */
+    padding: 5px;
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents > .more::before {
+    content: '더보기'
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents.all > .more::before {
+    content: '숨기기'
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents .searchkey {
+    position: relative;
+    padding: var(--discover-col-padding);
+    transition: all 2s;
+    height: var(--w-17);
+    transition: all 0.3s ease-out;
+    opacity: 1;
+    /* background: lightpink; */
+    overflow: hidden;
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents .searchkey.hidden {
+    height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents.all .searchkey.hidden {
+    height: var(--w-17);
+    padding: var(--discover-col-padding);
+    opacity: 1;
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents .searchkey > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--w-3);
+    filter: brightness(60%);
+  }
+
+  .finder.vcomp .page-body > .section.searchkeys > .contents .searchkey > .name {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-50%);
+    color: white;
+  }
+</style>
+
+<script type='text/x-template' id='finder-template'>
+  <page
+    class='finder vcomp'
+    :open='session.page.finder.open'
+    :from='session.page.finder.from'
+    :hide_close='true'
+    :hide_headerbar='true'
+    @scroll='scroll'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='searcher'>
+        <div class='search-bar'>
+          <input v-model.trim='keywords' @keyup.enter='run_search' placeholder='스타일을 검색해보세요' spellcheck="false" ref='input'>
+
+          <div class='button' @click='run_search'>
+            <img src='/static/materials/icons/search_bar.png'>
+          </div>
+        </div>
+      </div>
+
+      <div class='section banner'>
+        <div class='swiper-container' ref='swiper'>
+          <div class='swiper-wrapper'>
+            <div class="swiper-slide">
+              <img src='/static/materials/pages/moiber_banner.png' @click='session.open_landing()'>
+            </div>
+
+            <div class="swiper-slide">
+              <img src='/static/materials/mbti/dongne/banner.png' @click='session.open_mbti()'>
+            </div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+
+      <div class='section searchkeys'>
+        <div class='title'><b>일상 둘러보기</b></div>
+        <div class='contents'>
+          <div class='more' @click='show_more'></div>
+
+          <masonry :cols="2" :gutter="0">
+            <div class='searchkey' @click='run_searchkeys("데일리아웃핏")'>
+              <img src='/static/materials/imgs/keywords/dailyoutfit.jpg'>
+              <div class='name'><b>데일리아웃핏</b></div>
+            </div>
+
+            <div class='searchkey' @click='run_searchkeys("캠퍼스")'>
+              <img src='/static/materials/imgs/keywords/campus.jpg'>
+              <div class='name'><b>캠퍼스</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("출근룩")'>
+              <img src='/static/materials/imgs/keywords/office.jpg'>
+              <div class='name'><b>출근룩</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("미니멀")'>
+              <img src='/static/materials/imgs/keywords/minimal.jpg'>
+              <div class='name'><b>미니멀</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("레이어드")'>
+              <img src='/static/materials/imgs/keywords/layered.jpg'>
+              <div class='name'><b>레이어드</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("무채색")'>
+              <img src='/static/materials/imgs/keywords/mono.jpg'>
+              <div class='name'><b>무채색</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("운동")'>
+              <img src='/static/materials/imgs/keywords/sports.jpg'>
+              <div class='name'><b>운동</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("비비드")'>
+              <img src='/static/materials/imgs/keywords/vivid.jpg'>
+              <div class='name'><b>비비드</b></div>
+            </div>
+          </masonry>
+        </div>
+      </div>
+
+      <div class='section searchkeys'>
+        <div class='title'><b>봄의 주말</b></div>
+        <div class='contents'>
+          <div class='more' @click='show_more'></div>
+
+          <masonry :cols="2" :gutter="0">
+            <div class='searchkey' @click='run_searchkeys("꽃놀이")'>
+              <img src='/static/materials/imgs/keywords/flower.jpg'>
+              <div class='name'><b>꽃놀이</b></div>
+            </div>
+
+            <div class='searchkey' @click='run_searchkeys("차박")'>
+              <img src='/static/materials/imgs/keywords/car.jpg'>
+              <div class='name'><b>차박</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("비오는날")'>
+              <img src='/static/materials/imgs/keywords/rain.jpg'>
+              <div class='name'><b>비오는날</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("원피스")'>
+              <img src='/static/materials/imgs/keywords/onepiece.jpg'>
+              <div class='name'><b>원피스</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("스니커즈")'>
+              <img src='/static/materials/imgs/keywords/sneakers.jpg'>
+              <div class='name'><b>스니커즈</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("집콕")'>
+              <img src='/static/materials/imgs/keywords/home.jpg'>
+              <div class='name'><b>집콕</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("커플")'>
+              <img src='/static/materials/imgs/keywords/couple.jpg'>
+              <div class='name'><b>커플</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("남친룩")'>
+              <img src='/static/materials/imgs/keywords/boylook.jpg'>
+              <div class='name'><b>남친룩</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("여친룩")'>
+              <img src='/static/materials/imgs/keywords/girllook.jpg'>
+              <div class='name'><b>여친룩</b></div>
+            </div>
+
+            <div class='searchkey hidden' @click='run_searchkeys("스커트")'>
+              <img src='/static/materials/imgs/keywords/skirt.jpg'>
+              <div class='name'><b>스커트</b></div>
+            </div>
+          </masonry>
+        </div>
+      </div>
+
+      <div class='section collections'>
+        <div class='title'><b>다른 옷장 둘러보기</b></div>
+        <div class='container'>
+          <colib :collections='collections' :session='session' ref='colib'></colib>
+        </div>
+      </div>
+
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('finder', {
+    template: '#finder-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        keywords: '',
+        random_collections: undefined,
+        swiper: undefined,
+        swiper_options: {
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          // loop: true, 이걸쓰면 슬라이드가 클릭이 안되는듯
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          },
+          autoplay: {
+           delay: 5000,
+         },
+        }
+      }
+    },
+
+    created: function() {
+      this.random_collections = new Collections(this.session.store);
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    watch: {
+      'session.page.finder.open': function(_new, _old) {
+        if (_new) {
+          if (this.$refs.input) {
+            this.fix_window_width();
+            // this.$nextTick(() => this.$refs.input.focus());
+          }
+
+        } else {
+          setTimeout(() => { this.release_window_width(); }, 500);
+        }
+      }
+    },
+
+    computed: {
+      collections: function() {
+        if (this.random_collections)
+          return this.random_collections.list
+      }
+    },
+
+    methods: {
+      show_more: function(event) {
+        event.target.parentElement.classList.toggle('all');
+      },
+
+      run_search: function() {
+        if (this.keywords=='')
+          return
+
+        if (this.$refs) {
+          this.$refs.input.blur();
+        }
+
+        this.session.keyset_sampling();
+        this.session.keywording(this.keywords);
+        this.session.close_page();
+      },
+
+      run_searchkeys: function(what) {
+        console.log(what);
+        this.session.keyset_sampling();
+        this.session.keywording(what);
+        this.session.close_page();
+      },
+
+      fix_window_width: function() {
+        const w = document.querySelector('#window').clientWidth;
+        document.documentElement.style.setProperty('--width', w + 'px');
+      },
+
+      release_window_width: function() {
+        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+      },
+
+      scroll: function(triggered) {
+        if (triggered) {
+          this.random_collections.load(4);
+        }
+      },
+    }
+  });
+</script>

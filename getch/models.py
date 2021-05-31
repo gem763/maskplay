@@ -11,8 +11,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.utils.functional import classproperty
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import ArrayField
 # from notifications.base.models import AbstractNotification
 from notifications.signals import notify
+from ordered_model.models import OrderedModel
 
 from IPython.core.debugger import set_trace
 from rest_framework import serializers
@@ -153,21 +155,6 @@ class User(AbstractEmailUser):
     @property
     def boo(self):
         return self.boo_set.get(pk=self.boo_selected)
-        # try:
-        #     return self.boo_set.get(pk=self.boo_selected)
-        #
-        # except:
-        #     active_boos = self.boo_set.filter(active=True)
-        #
-        #     if active_boos.count() > 0:
-        #         self.set_boo(max(active_boos.values_list('id', flat=True)))
-        #
-        #     else:
-        #         boo = Boo.objects.create(user=self)
-        #         self.set_boo(boo.id)
-        #
-        #     return self.boo_set.get(pk=self.boo_selected)
-
 
     @property
     def other_boos(self):
@@ -177,9 +164,30 @@ class User(AbstractEmailUser):
         return json.dumps(_boos)
 
     @property
+    def other_boos2(self):
+        _boos = self.boo_set.filter(active=True).exclude(pk=self.boo_selected)
+        _boos = { boo.id:{'id':boo.id, 'nick':boo.nick, 'collections':boo.collections } for boo in _boos }
+        return _boos
+        # return json.dumps(_boos)
+
+
+    @property
     def serialized(self):
         _user = UserSerializer(self).data
         return json.dumps(_user)
+
+    @property
+    def serialized2(self):
+        # _user = UserSerializer2(self).data
+        _user = {
+            'id': self.id,
+            'email': self.email,
+            'boo_selected': self.boo_selected,
+            'boo': {'id':self.boo.id, 'nick':self.boo.nick, 'collections':self.boo.collections }
+        }
+
+        return _user
+        # return json.dumps(_user)
 
     def create_default_boo(self):
         boo = Boo.objects.create(user=self)
@@ -197,61 +205,6 @@ class User(AbstractEmailUser):
         boos_id = self.boo_set.filter(active=True).values_list('id', flat=True)
         # boos_id = Boo.objects.filter(user=self, active=True).values_list('id', flat=True)
         self.set_boo(max(boos_id))
-
-
-# class Session(BigIdAbstract):
-#     sessionkey = models.CharField(max_length=200, blank=False, null=False)
-#     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-#     checkin = models.DateTimeField(auto_now_add=True)
-#     checkout = models.DateTimeField(default=timezone.now, null=False)
-#
-#     # https://stackoverflow.com/questions/42239818/how-to-set-the-default-of-a-jsonfield-to-empty-list-in-django-and-django-jsonfie
-#     view = models.JSONField(null=True, default=list)
-#
-#     def __str__(self):
-#         return self.sessionkey + ' | ' + str(self.checkin)
-#
-#     @classmethod
-#     def call(cls, request):
-#         try:
-#             session = cls.objects.get(sessionkey=request.session.session_key)
-#             # session.checkout = datetime.now()
-#             # session.save()
-#
-#         except:
-#             request.session.create()
-#             session = cls.objects.create(sessionkey=request.session.session_key)
-#
-#         # if request.user.is_authenticated:
-#         #     session.user = request.user
-#         #     session.save()
-#         #
-#         # else:
-#         #     session.user = None
-#         #     session.save()
-#
-#         return session
-#
-#
-#     # @property
-#     # def guest(self):
-#     #     return {
-#     #         'sessionkey': self.sessionkey,
-#     #         'view': self.view
-#     #     }
-#
-#     def vote(self, post_id, action):
-#         _post = Post.objects.get(pk=post_id)
-#
-#         if self.user:
-#             _post.vote(int(action), self.user.boo)
-#
-#         else:
-#             _post.vote(int(action), Boo.guestboo, note=self.sessionkey)
-#
-#     @property
-#     def fit(self):
-#         return []
 
 
 def _profilepix_path(instance, fname):
@@ -308,16 +261,6 @@ class Boo(BigIdAbstract, ModelWithFlag):
     def __str__(self):
         return self.nick + ' | ' + self.user.email
 
-    # @property
-    # def links_list(self):
-    #     return []
-        # if self.links:
-        #     _links = self.links.split(',')
-        #     return [int(i) for i in _links]
-        #
-        # else:
-        #     return []
-
     @classproperty
     def guestboo(cls):
         return cls.objects.get(id=GUESTBOO)
@@ -330,6 +273,14 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def is_guestboo(self):
         return self.id == GUESTBOO
+
+    @property
+    def collections(self):
+        return list(self.collection_set.order_by('-order').values('id', 'name'))
+
+    @property
+    def ncollections(self):
+        return self.collection_set.count()
 
     @property
     def selected(self):
@@ -378,7 +329,6 @@ class Boo(BigIdAbstract, ModelWithFlag):
 
     @property
     def serialized(self):
-        # _boo = BooSerializer([self], many=True).data[0]
         _boo = BooSerializer(self).data
         return json.dumps(_boo)
 
@@ -511,11 +461,10 @@ class Post(BigIdAbstract, ModelWithFlag):
     boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_DEFAULT, default=BOO_DELETED)
     text = models.TextField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now, null=False)
+    group = models.TextField(max_length=200, blank=True, null=True)
     # created_at = models.DateTimeField(auto_now_add=True)
     objects = InheritanceManager()
 
-    nvotes_up = models.IntegerField(default=0)
-    nvotes_down = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.created_at) + ((' | ' + str(self.boo)) if self.boo else '')
@@ -527,16 +476,23 @@ class Post(BigIdAbstract, ModelWithFlag):
 
     @classmethod
     def iposts(cls, type):
-        excl = Q(boo_id=BOO_DELETED) | Q(boo__hidden=True)
-
         if type == 'history':
+            excl = Q(boo_id=BOO_DELETED) | Q(boo__hidden=True)
             return Post.objects.exclude(excl).order_by('-created_at').values_list('id', flat=True)
 
         elif type == 'hot':
             q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+            excl = Q(boo_id=BOO_DELETED) | Q(boo__hidden=True)
+            iposts_excl = Post.objects.filter(excl).values_list('id', flat=True)
             ago_2w = datetime.now() - timedelta(days=7)
-            return Flager.objects.filter(q, time_created__gte=ago_2w).values('object_id').annotate(nvotes=Count('object_id')).order_by('-nvotes').values_list('object_id', flat=True)
+            return Flager.objects.filter(q, time_created__gte=ago_2w).exclude(object_id__in=iposts_excl).values('object_id').annotate(nvotes=Count('object_id')).order_by('-nvotes').values_list('object_id', flat=True)
             # return Post.objects.exclude(excl).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
+
+    @classmethod
+    def mbti_iposts(cls, type):
+        excl = Q(boo_id=BOO_DELETED)
+        return Post.objects.filter(group__startswith='mbti-'+type).exclude(excl).order_by('id').values_list('id', flat=True)
+
 
     @property
     def type(self):
@@ -570,10 +526,6 @@ class Post(BigIdAbstract, ModelWithFlag):
         else:
             Flager.vote_clear(self, boo, note)
 
-        self.nvotes_up = self._nvotes_up
-        self.nvotes_down = self._nvotes_down
-        self.save()
-
 
     @property
     def ivoters(self):
@@ -582,21 +534,17 @@ class Post(BigIdAbstract, ModelWithFlag):
 
 
     @property
-    def _nvotes_up(self):
+    def nvotes_up(self):
         return Flager.objects.filter(status=VOTE_UP, object_id=self.id).count()
 
     @property
-    def _nvotes_down(self):
+    def nvotes_down(self):
         return Flager.objects.filter(status=VOTE_DOWN, object_id=self.id).count()
 
 
     @property
     def ncomments(self):
         return self.comment_set.filter(boo__isnull=False).count()
-
-    # @property
-    # def popularity(self):
-    #     return self.nvotes_up + self.nvotes_down + self.ncomments
 
 
 def _postpix_path(instance, fname):
@@ -610,6 +558,7 @@ def _postpix_path(instance, fname):
     fmt = 'post/{year}/{month}/{day}/{user}/{fname}'
     return fmt.format(year=now.year, month=now.month, day=now.day, user=user, fname=fname)
 
+
 def _postpix_path2(instance, fname):
     try:
         user = instance.post.boo.user.email
@@ -620,6 +569,7 @@ def _postpix_path2(instance, fname):
     fname = str(now) + '__' + fname
     fmt = 'post/{year}/{month}/{day}/{user}/{fname}'
     return fmt.format(year=now.year, month=now.month, day=now.day, user=user, fname=fname)
+
 
 def _commentpix_path(instance, fname):
     try:
@@ -696,6 +646,142 @@ class Postpix(BigIdAbstract):
         return self.post.boo.nick if self.post is not None else None
 
 
+def _pixpath(instance, fname):
+    try:
+        user = instance.owner.user.email
+    except:
+        user = 'anonymous'
+
+    now = datetime.now()
+    fname = str(now) + '__' + fname
+    # fmt = 'pix/{year}/{month}/{day}/{user}/{fname}'
+    fmt = 'user/{user}/pix/{fname}'
+    return fmt.format(user=user, fname=fname)
+
+
+class Pix(BigIdAbstract):
+    owner = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    src = models.ImageField(upload_to=_pixpath, max_length=500, null=False, blank=False)
+    desc = models.TextField(max_length=200, blank=True, null=False, default='')
+    tokens = models.TextField(max_length=1000, blank=True, null=False, default='')
+    outlink = models.URLField(max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def ipixs(cls):
+        excl = Q(owner__hidden=True)
+        return Pix.objects.exclude(excl).values_list('id', flat=True)
+        # return Pix.objects.exclude(excl).order_by('-created_at').values_list('id', flat=True)
+
+    def __str__(self):
+        return self.desc
+
+
+class PixSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Pix
+        fields = ['id', 'owner', 'src', 'desc', 'outlink']
+        read_only_fields = fields
+
+    def get_owner(self, obj):
+        return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
+
+
+class Collection(OrderedModel):
+    owner = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    name = models.TextField(max_length=200, blank=False, null=False, default='옷장이름')
+    desc = models.TextField(max_length=200, blank=True, null=False, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    order_with_respect_to = 'owner'
+
+    class Meta(OrderedModel.Meta):
+        pass
+
+    def __str__(self):
+        return self.name + (' | ' + str(self.owner)) if self.owner else ''
+
+    @classmethod
+    def icols(cls):
+        _icols = Pick.objects.filter(collection__isnull=False).exclude(collection__name__contains='님의 옷장').values_list('collection_id', flat=True)
+        return list(set(_icols))
+        # return Collection.objects.exclude(name__contains='님의 옷장').order_by('?').values_list('id', flat=True)
+
+    @property
+    def npicks(self):
+        return self.pick_set.count()
+
+    @property
+    def ipicks(self):
+        return list(self.pick_set.order_by('-order').values_list('id', flat=True))
+
+    @property
+    def serialized(self):
+        _pixids = Pix.objects.filter(pick__collection_id=self.id)
+        _pixids = _pixids.values_list('id', flat=True)
+        _serialized = self.serialized_base
+        _serialized['pixids'] = list(_pixids)
+        return _serialized
+
+        # return {
+        #     'id': self.id,
+        #     'name': self.name,
+        #     'pixids': list(_pixids)
+        # }
+
+    @property
+    def serialized_base(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'owner': {'id':self.owner.id, 'nick':self.owner.nick, 'collections':self.owner.collections }
+            }
+
+    # @property
+    # def first_pick(self):
+    #     return self.pick_set.first()
+    #
+    # @property
+    # def first_pick_serialized(self):
+    #     return PickSerializer(self.first_pick).data
+
+
+class Pick(OrderedModel):
+    pix = models.ForeignKey(Pix, null=False, on_delete=models.CASCADE)
+    collection = models.ForeignKey(Collection, null=True, on_delete=models.SET_NULL)
+    created_at = models.DateTimeField(auto_now_add=True) #
+    order_with_respect_to = 'collection'
+
+    class Meta(OrderedModel.Meta):
+        pass
+
+    def __str__(self):
+        return str(self.collection) + ' | ' + str(self.pix)
+
+    @property
+    def serialized(self):
+        return PickSerializer(self).data
+
+
+class PickSerializer(serializers.ModelSerializer):
+    pix = PixSerializer(required=False)
+
+    class Meta:
+        model = Pick
+        fields = ['id', 'pix']
+        read_only_fields = fields
+
+
+# class CollectionSerializer(serializers.ModelSerializer):
+#     picks = PickSerializer(source='pick_set', required=False, many=True)
+#
+#     class Meta:
+#         model = Collection
+#         fields = ['id', 'name', 'picks']
+#         read_only_fields = fields
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
@@ -748,7 +834,7 @@ class BasebooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']
+        fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']#, 'collections']
         read_only_fields = fields
 
     def get_profile(self, obj):
@@ -756,7 +842,6 @@ class BasebooSerializer(serializers.ModelSerializer):
 
     def get_links(self, obj):
         return list(obj.links.filter(user_id=obj.user.id).values_list('url', flat=True))
-        # return list(obj.user.link_set.filter(id__in=obj.links_list).values_list('url', flat=True))
 
 
 class GuestbooSerializer(serializers.ModelSerializer):
@@ -782,21 +867,16 @@ class GuestbooSerializer(serializers.ModelSerializer):
 
 class BooSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
-    # links = serializers.SerializerMethodField()
-    # links = LinkSerializer(source='link_set', required=False, many=True)
+    # collections = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
         fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']
         read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'links']
 
-    # def get_links(self, obj):
-    #     return obj.links_list
-        # if obj.links:
-        #     ilinks = obj.links.split(',')
-        #     return [int(i) for i in ilinks]
-        # else:
-        #     return []
+    # def get_collections(self, obj):
+    #     return list(obj.collection_set.order_by('-order').values('id', 'name'))
+
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)
@@ -815,6 +895,18 @@ class BooSerializer(serializers.ModelSerializer):
                 print('something wrong when updating profile data')
 
         return instance
+
+
+# class UserSerializer2(serializers.ModelSerializer):
+#     boo = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = User
+#         fields = ['id', 'email', 'boo_selected', 'boo']
+#         read_only_fields = fields
+#
+#     def get_boo(self, obj):
+#         return {'id': obj.boo.id, 'nick': obj.boo.nick, 'collections': list(obj.boo.collection_set.order_by('-order').values('id', 'name'))}
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -843,41 +935,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_attached(self, obj):
         try:
-            # print(obj.commentpix_set.all())
-            # print(list(ob.commentpix_set.all())[0])
             return { 'img': obj.commentpix_set.first().img.url }
-            # return obj.commentpix_set.values('img')[0]
         except:
             pass
-        # if commentpixes.count() > 0:
-        #     return commentpixes[0]
-
-
-class BoopostVoteOXSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostVoteOX
-        fields = ['id', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
-        read_only_fields = fields
-
-
-class BoopostVoteABSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostVoteAB
-        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
-        read_only_fields = fields
-
-
-class BoopostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = '__all__'
-
-    def to_representation(self, instance):
-        if isinstance(instance, PostVoteOX):
-            return {'type':'postvoteox', **BoopostVoteOXSerializer(instance=instance).data}
-
-        elif isinstance(instance, PostVoteAB):
-            return {'type':'postvoteab', **BoopostVoteABSerializer(instance=instance).data}
 
 
 class PostVoteOXSerializer(serializers.ModelSerializer):
@@ -885,7 +945,7 @@ class PostVoteOXSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteOX
-        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
+        fields = ['id', 'boo', 'text', 'pix', 'keys', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at', 'group']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -894,7 +954,7 @@ class PostVoteABSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostVoteAB
-        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
+        fields = ['id', 'boo', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at', 'group']
         read_only_fields = ['id', 'nvotes_up', 'nvotes_down']
 
 
@@ -903,7 +963,7 @@ class PostQASerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PostQA
-        fields = ['id', 'boo', 'text', 'pix', 'nvotes_up', 'ncomments', 'created_at']
+        fields = ['id', 'boo', 'text', 'pix', 'nvotes_up', 'ncomments', 'created_at', 'group']
         read_only_fields = ['id']
 
 

@@ -1,0 +1,159 @@
+<style>
+  .minicol.vcomp {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: var(--w-3);
+    overflow: hidden;
+  }
+
+  .minicol.vcomp > * {
+    pointer-events: none;
+  }
+
+  .minicol.vcomp > .spinner {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: white;
+  }
+
+  .minicol.vcomp > .spinner.hidden {
+    opacity: 0;
+  }
+
+  .minicol.vcomp > .name {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    text-align: center; */
+    font-size: 24px;
+    color: white;
+    /* opacity: 0; */
+    transition: all 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    text-align: center;
+  }
+
+  .minicol.vcomp > .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(80%);
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .minicol.vcomp > .cover.default {
+    opacity: 1;
+    background: white;
+    /* opacity: 0.3; */
+  }
+
+  /* .minicol.vcomp > .name.blank {
+    color: black;
+    background: white;
+  } */
+
+  .minicol.vcomp > .cover.loaded {
+    opacity: 1;
+  }
+
+  .minicol.vcomp > .name > .message {
+    position: absolute;
+    top: 60%;
+    left: 0;
+    width: 100%;
+    font-size: 13px;
+    opacity: 0;
+    text-align: center;
+    color: white;
+    /* color: var(--color-message); */
+  }
+
+  .minicol.vcomp > .name > .message.empty {
+    opacity: 1;
+  }
+
+  /* .minicol.vcomp > .name.blank > .message {
+    opacity: 1;
+  } */
+</style>
+
+<script type='text/x-template' id='minicol-template'>
+  <div class='minicol vcomp'>
+    <img class='cover' :class='{ loaded: is_loaded }' :src='coverpix' v-if='coverpix' @load='pixloaded'>
+    <div class='cover default' v-else></div>
+    <!-- <img class='cover default' v-else src='/static/materials/characters/moiber_profile.png'></img> -->
+
+    <!-- <div class='name' :class='{ blank: is_empty }'> -->
+    <div class='name'>
+      <b>[[collection.name]]</b>
+      <div class='message' :class='{ empty: is_empty }'>옷장을 채워보세요</div>
+    </div>
+
+    <div class='spinner' :class='{ hidden: is_empty || is_loaded }'>
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('minicol', {
+    template: '#minicol-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'collection' ],
+    data: function() {
+      return {
+        is_loaded: false
+      }
+    },
+
+    watch: {
+      'collection.id': function(_new, _old) {
+        this.is_loaded = false;
+      }
+    },
+
+    computed: {
+      pick_0: function() {
+        if (this.collection.picks.list) {
+          // console.log(this.collection.picks.list[0])
+          return this.collection.picks.list[0]
+        }
+      },
+
+      coverpix: function() {
+        if (this.pick_0 && this.pick_0.pix) {
+          return this.pick_0.pix.src
+        }
+      },
+
+      is_empty: function() {
+        return (!this.collection.picks.onloading && (this.collection.picks.list.length == 0)) && this.collection.id
+      }
+    },
+
+    methods: {
+      pixloaded: function(event) {
+        this.is_loaded = true;
+        // event.target.style.opacity = 1;
+      }
+    }
+  });
+</script>

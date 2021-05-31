@@ -3,6 +3,10 @@ const guestboo = 363;
 class Session {
   constructor() {
     this.page = {
+      my:           { open: false },
+      finder:       { open: false },
+      collector:    { open: false, from: 'bottom' },
+      
       home:       { open: false, from: 'left', hotboos: new Boos('hot') },
       // posts:      { contents: new Posts(), univ: { history: new Posts(), hot: undefined, custom: undefined }, swiper: undefined },
       // posts:      { contents: undefined, univ: { history: new Posts('hot', 4), hot: undefined, custom: undefined, search: undefined }, swiper: undefined },
@@ -22,6 +26,8 @@ class Session {
       searcher:   { open: false, from: 'right' },
       company:    { open: false, from: 'right', section: 'who' },
       landing:    { open: false, from: 'right' },
+      mbti:       { open: false, from: 'right', contents: new Mbti('dongne') },
+      mbtiresult: { open: false, from: 'right', result: undefined, gender: undefined },
       infoboard:  { open: false, from: 'right', contents: undefined },
     };
 
@@ -178,6 +184,21 @@ class Session {
   open_landing() {
     // this.close_pages_all();
     this.open_page('landing');
+  }
+
+  open_mbti() {
+    if (!this.page.mbti.contents) {
+      this.page.mbti.contents = new Mbti('dongne');
+    }
+
+    this.close_pages_all();
+    this.open_page('mbti');
+  }
+
+  open_mbtiresult(result, gender) {
+    this.page.mbtiresult.result = result;
+    this.page.mbtiresult.gender = gender;
+    this.open_page('mbtiresult');
   }
 
   open_infoboard(position) {
@@ -368,6 +389,16 @@ class Booposts extends ContentLoader {
   }
 }
 
+class Mbti extends ContentLoader {
+  constructor(type) {
+    super();
+    this.nloads_init = 20;
+    this.idlist_url = `/mbti/${type}/iposts`;
+    this.content_url = (id) => `/post/${id}`;
+    this.load_idlist();
+  }
+}
+
 class Comments extends ContentLoader {
   constructor(post) {
     super();
@@ -407,6 +438,16 @@ class Boos extends ContentLoader {
     this.nloads_init = 10;
     this.idlist_url = `/boos/iboos/${type}`;
     this.content_url = (id) => `/boo/${id}/baseboo`;
+    this.load_idlist();
+  }
+}
+
+class Pixs extends ContentLoader {
+  constructor() {
+    super();
+    this.nloads_init = 10;
+    this.idlist_url = `/pix/ipixs`;
+    this.content_url = (id) => `/pix/${id}`;
     this.load_idlist();
   }
 }

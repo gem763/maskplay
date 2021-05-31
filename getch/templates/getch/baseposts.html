@@ -250,13 +250,13 @@
         }
       },
 
-      prevpost_id: function() {
-        if (this.cpost) {
-          if (this.swiper.readIndex!=0) {
-            return this.postlist[this.swiper.realIndex-1].id
-          }
-        }
-      },
+      // prevpost_id: function() {
+      //   if (this.cpost) {
+      //     if (this.swiper.readIndex!=0) {
+      //       return this.postlist[this.swiper.realIndex-1].id
+      //     }
+      //   }
+      // },
 
       // loader_width: function() {
       //   return document.querySelector('#window').clientWidth
@@ -326,7 +326,7 @@
 
     watch: {
       cpost_id: function(_new, _old) {
-        if (this.postlist.length > 1) {
+        if (this.posts && this.postlist.length > 1) {
           if (this.postlist.length-this.swiper.realIndex < 5) {
             this.posts.load(3);
           }

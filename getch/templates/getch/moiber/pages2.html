@@ -1,0 +1,50 @@
+{% include "getch/moiber/page3.html" %}
+{% include "getch/moiber/finder.html" %}
+<!-- {% include "getch/moiber/my.html" %} -->
+{% include "getch/moiber/collector.html" %}
+{% include "getch/moiber/agit.html" %}
+{% include "getch/moiber/login.html" %}
+{% include "getch/moiber/about.html" %}
+{% include "getch/moiber/texteditor.html" %}
+{% include "getch/moiber/pixeditor.html" %}
+{% include "getch/moiber/mbti.html" %}
+{% include "getch/moiber/mbtiresult.html" %}
+{% include "getch/moiber/landing.html" %}
+{% include "getch/moiber/profiler.html" %}
+
+<style>
+  .pages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: none;
+    pointer-events: none;
+    overflow: hidden;
+  }
+</style>
+
+<script type='text/x-template' id='pages-template'>
+  <div class='pages'>
+    <finder :session='session'></finder>
+    <agit :session='session'></agit>
+    <profiler :session='session' v-if='session.user.has_auth'></profiler>
+    <mbti :session='session' v-if='session.page.mbti.contents'></mbti>
+    <mbtiresult :session='session'></mbtiresult>
+    <collector :session='session'></collector>
+    <pixeditor :session='session'></pixeditor>
+    <texteditor :session='session'></texteditor>
+    <login :session='session'></login>
+    <about v-if='session.page.about.open' :session='session'></about>
+    <landing :session='session'></landing>
+  </div>
+</script>
+
+<script>
+  Vue.component('pages', {
+    template: '#pages-template',
+    delimiters: ['[[', ']]'],
+    props: ['session']
+  });
+</script>

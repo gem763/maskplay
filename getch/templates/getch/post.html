@@ -60,6 +60,17 @@
     padding-right: var(--w-12);
   }
 
+  .post .pagination {
+    background: white;
+    position: absolute;
+    font-size: 13px;
+    padding: 5px;
+    border-radius: 10px;
+    bottom: var(--w-18);
+    right: var(--w-8);
+    box-shadow: 0px 2px 6px rgb(70, 71, 105, 0.3);
+  }
+
   .post .backbone .pixlabel {
     position: absolute;
     background: rgba(255,255,255,0.6);
@@ -138,6 +149,7 @@
                   :vote_state='vote_state'
                   :score='post_nvotes_up'
                   :is_active='is_active'
+                  :session='session'
                 ></oxer>
               </template>
 
@@ -149,6 +161,7 @@
                   :vote_state='vote_state'
                   :score='post_nvotes_down'
                   :is_active='is_active'
+                  :session='session'
                 ></oxer>
               </template>
             </oxcard>
@@ -213,6 +226,8 @@
       </tbody>
     </table>
 
+    <div class='pagination' v-if='pagination'>[[ pagination ]]</div>
+
 
     <div class='description'>
       <editext
@@ -241,7 +256,7 @@
       :session='session'
       :boo='post_boo'
       v-if='post_boo'
-      @click.native='session.open_boopage(post_boo)'
+      @click.native='open_boopage(post_boo)'
     ></scorebutton>
   </div>
 </script>
@@ -251,18 +266,38 @@
   Vue.component('post', {
     template: '#post-template',
     delimiters: ['[[', ']]'],
-    props: ['post', 'session', 'type', 'editable'],
+    props: ['post', 'session', 'type', 'editable', 'swiper'],
 
     data: function() {
       return {
-        squeezed: true,
+        squeeze_toggled: true,
       }
     },
 
+    // mounted: function() {
+    //   if (this.session.mode.on=='mbti')
+    //    this.squeezed = false;
+    // },
+
     computed: {
-      swiper: function() {
-        return this.session.page.posts.swiper
+      squeezed: function() {
+        if (this.session.mode.on=='mbti') {
+          return false
+
+        } else {
+          return this.squeeze_toggled
+        }
       },
+
+      pagination: function() {
+        if (this.post) {
+          return this.post.pagination
+        }
+      },
+
+      // swiper: function() {
+      //   return this.session.page.posts.swiper
+      // },
 
       post_type: function() {
         if (this.post) {
@@ -390,6 +425,13 @@
 
 
     methods: {
+      open_boopage: function(boo) {
+        if (this.session.mode.on=='mbti')
+          return
+
+        this.session.open_boopage(boo);
+      },
+
       relative_date: function(date) {
         moment.locale('ko');
         return moment(date).fromNow()
@@ -402,11 +444,11 @@
       },
 
       toggle_squeeze: function() {
-        this.squeezed = !this.squeezed;
+        this.squeeze_toggled = !this.squeeze_toggled;
       },
 
       toggle_vote: function(act) {
-        if (!this.editable && (this.session.mode.on=='posts' || this.session.mode.on=='booposts')) {
+        if (!this.editable && (this.session.mode.on=='posts' || this.session.mode.on=='booposts' || this.session.mode.on=='mbti')) {
           if (this.vote_state==act) {
             this.rescore(act, -1);
             this.session.user.vote(this.post.id, -1);
@@ -415,7 +457,10 @@
             this.rescore(this.vote_state, act);
             this.session.user.vote(this.post.id, act);
           }
+        }
 
+        if (this.swiper && this.session.mode.on=='mbti') {
+          setTimeout(() => { this.swiper.slideNext(); }, 500);
         }
       },
 

@@ -7,13 +7,14 @@ from django.core import serializers
 # from django.db.models import Q
 from django.db.models import F, Q, Sum, Count, Case, When
 from django.template.loader import render_to_string
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 import getch.models as m
 from allauth.account.views import LoginView, LogoutView
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from notifications.signals import notify
+import random
 import os
 import json
 from datetime import datetime, date, timedelta
@@ -37,6 +38,14 @@ context = { 'labels':labels }
 
 def test(request):
     return render(request, 'getch/test.html')
+
+def discover(request):
+    request.session.save()
+    context['entry'] = request.GET.get('entry', None)
+    context['dongne'] = request.GET.get('dongne', None)
+    context['gender'] = request.GET.get('gender', None)
+    return render(request, 'getch/moiber/discover.html', context)
+
 
 def policy(request):
     return render(request, 'getch/policy.html')
@@ -101,9 +110,6 @@ def testfeed(request):
     context['req'] = 6
     return load(request, context)
 
-# def memb(request):
-#     ctx = {'stats':stats, 'labels':labels, 'styletags':styletags, 'fashiontems':fashiontems, 'anonyboo':anonyboo.serialized, 'req':6}
-#     return render(request, 'getch/play.html', ctx)
 
 
 def get_user(request):
@@ -120,26 +126,126 @@ def get_user(request):
         return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
 
 
+def get_user2(request):
+    sessionkey = request.session.session_key
+
+    if request.user.is_authenticated:
+        if not request.user.has_active_boo:
+            request.user.create_default_boo()
+
+        return JsonResponse({'success':True, 'user':request.user.serialized2, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
+        # return JsonResponse({'success':True, 'user':request.user.serialized2, 'first_visit':True, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
+
+    else:
+        return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
+
+
+def get_ipixs(request):
+    _ipixs = list(m.Pix.ipixs())
+    random.shuffle(_ipixs)
+    return JsonResponse({'success':True, 'ids':_ipixs}, safe=False)
+
+
+def get_icols(request):
+    _icols = m.Collection.icols()
+    random.shuffle(_icols)
+    return JsonResponse({'success':True, 'ids':_icols}, safe=False)
+
+
+def get_pix(request, pix_id):
+    try:
+        _pix = m.Pix.objects.get(pk=pix_id)
+        _pix = m.PixSerializer(_pix).data
+        return JsonResponse({'success':True, 'content':_pix}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def collect_pix(request, collection_id, pix_id):
+    try:
+        pick = m.Pick.objects.create(collection_id=collection_id, pix_id=pix_id)
+        return JsonResponse({'success':True, 'pick_id':pick.id, 'message':'pix collected successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while collecting pix'}, safe=False)
+
+
+def get_ipicks(request, collection_id):
+    _ipicks = m.Collection.objects.get(pk=collection_id).ipicks
+    return JsonResponse({'success':True, 'ids':_ipicks}, safe=False)
+
+
+def get_collection(request, collection_id):
+    _col = m.Collection.objects.get(id=collection_id)
+    return JsonResponse({'success':True, 'content':_col.serialized}, safe=False)
+
+
+def get_collection_base(request, collection_id):
+    _col = m.Collection.objects.get(id=collection_id)
+    return JsonResponse({'success':True, 'content':_col.serialized_base}, safe=False)
+
+
+def get_collection_ipixs(request, collection_id):
+    _ipixs = m.Pix.objects.filter(pick__collection_id=collection_id)
+    _ipixs = _ipixs.values_list('id', flat=True)
+    return JsonResponse({'success':True, 'ids':list(_ipixs)}, safe=False)
+
+
+def get_pick(request, pick_id):
+    try:
+        _pick = m.Pick.objects.get(pk=pick_id)
+        return JsonResponse({'success':True, 'content':_pick.serialized}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def remove_picks(request, collection_id, pick_ids):
+    try:
+        _pids = pick_ids.split(',')
+        _picks = m.Pick.objects.filter(collection_id=collection_id, id__in=_pids)
+        _picks.delete()
+        return JsonResponse({'success':True, 'message':'picks removed successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while removing picks'}, safe=False)
+
+# def get_collection_seed(request, col_id):
+#     try:
+#         _col = m.Collection.objects.get(pk=col_id)
+#         return JsonResponse({'success':True, 'content':_col.first_pick_serialized}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False}, safe=False)
+
 
 def get_iposts(request, type):
-    # excludes = Q(boo_id=m.BOO_DELETED) | (Q(boo__user_id=m.hidden_user) & Q(boo__nick=m.hidden_boo_nick))
-    #
-    # if type == 'history':
-    #     _iposts = m.Post.objects.exclude(excludes).order_by('-created_at').values_list('id', flat=True)
-    #     # _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED, boo__user__email=m.hidden_user_email).order_by('-created_at').values_list('id', flat=True)
-    #
-    # elif type == 'hot':
-    #     _iposts = m.Post.objects.exclude(excludes).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
-    #     # _iposts = m.Post.objects.exclude(boo_id=m.BOO_DELETED).annotate(ordering=F('nvotes_up') + F('nvotes_down')).order_by('-ordering').values_list('id', flat=True)
-    #
-    # return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
     _iposts = m.Post.iposts(type)
     return JsonResponse({'success':True, 'idlist':list(_iposts)}, safe=False)
+
+
+def get_mbti_iposts(request, type):
+    _iposts = list(m.Post.mbti_iposts(type))
+    # moiber.js와 sideb.js 둘다 사용하고 있어서,
+    # idlist, ids 전부 보냈다
+    return JsonResponse({'success':True, 'idlist':_iposts, 'ids':_iposts}, safe=False)
+
+
+def mbtiresult_base(request, type):
+    return render(request, 'getch/mbtiresult_base.html')
 
 
 def get_post(request, post_id):
     try:
         _post = m.Post.objects.get_subclass(pk=post_id)
+
+        # if _post.boo.hidden:
+        #     print(_post.text)
+        #     return JsonResponse({'success':False}, safe=False)
+
+        # else:
+        # print(_post.boo.hidden, '**********************************')
         _post = m.PostSerializer(_post).data
         return JsonResponse({'success':True, 'content':_post}, safe=False)
 
@@ -222,7 +328,13 @@ def get_ivoters(request, post_id, act):
 def get_baseboo(request, boo_id):
     try:
         _baseboo = m.Boo.objects.get(pk=boo_id)
-        _baseboo = m.BasebooSerializer(_baseboo).data
+
+        if request.user.is_authenticated and request.user.boo_set.filter(id=boo_id).exists():
+            _baseboo = m.BooSerializer(_baseboo).data
+
+        else:
+            _baseboo = m.BasebooSerializer(_baseboo).data
+
         return JsonResponse({'success':True, 'content':_baseboo}, safe=False)
 
     except:
@@ -231,6 +343,10 @@ def get_baseboo(request, boo_id):
 
 def other_boos(request):
     return JsonResponse({'success':True, 'other_boos':request.user.other_boos}, safe=False)
+
+
+def other_boos2(request):
+    return JsonResponse({'success':True, 'other_boos':request.user.other_boos2}, safe=False)
 
 
 def _labels_update(boo, labels):
@@ -341,6 +457,14 @@ def vote(request, post_id):
     else:
         return JsonResponse({'success':False}, safe=False)
 
+
+def create_collection(request, name):
+    try:
+        col = m.Collection.objects.create(owner=request.user.boo, name=name)
+        return JsonResponse({'success':True, 'collection_id':col.id, 'message':'collection created successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while creating collection'}, safe=False)
 
 
 def set_boo(request, boo_id):
@@ -546,7 +670,9 @@ def search(request, keywords):
     try:
         vector = SearchVector('text', 'boo__nick', 'boo__text')
         query = SearchQuery(keywords)
-        _searched = m.Post.objects.exclude(boo_id=m.BOO_DELETED).annotate(rank=SearchRank(vector, query)).order_by('-rank')[:n]
+        excl = Q(boo_id=m.BOO_DELETED) | Q(boo__hidden=True)
+        _searched = m.Post.objects.exclude(excl).annotate(rank=SearchRank(vector, query)).order_by('-rank')[:n]
+        # _searched = m.Post.objects.exclude(boo_id=m.BOO_DELETED).annotate(rank=SearchRank(vector, query)).order_by('-rank')[:n]
         # print(_searched)
         _searched = _searched.values_list('id', flat=True)
         return JsonResponse({'success':True, 'idlist':list(_searched), 'message':'searched successfully'}, safe=False)
@@ -555,8 +681,69 @@ def search(request, keywords):
         return JsonResponse({'success':False, 'message':'something wrong while searching'}, safe=False)
 
 
-# def trace_view(request, postid):
-#     print(session.sessionkey)
+def search_by_pix(request, pix_id):
+    # n = 50
+
+    try:
+        pix = m.Pix.objects.get(pk=pix_id)
+
+        # _searched = m.Pix.objects.annotate(similarity=TrigramSimilarity('tokens', '나이키')).order_by('-similarity')
+        # print(_searched, '**********************')
+        vector = SearchVector('tokens')
+        query = SearchQuery(pix.tokens)
+        _searched = m.Pix.objects.exclude(id=pix.id).annotate(rank=SearchRank(vector, query)).exclude(rank=0).order_by('-rank')
+        print(_searched.values('id','rank'))
+        _searched = _searched.values_list('id', flat=True)
+        return JsonResponse({'success':True, 'ids':list(_searched), 'message':'searched successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while searching'}, safe=False)
+
+
+def search_by_collection(request, collection_id):
+    # n = 50
+
+    try:
+        pixs = m.Pix.objects.filter(pick__collection_id=collection_id).order_by('?')[:5]
+        tokens = ' '.join(pixs.values_list('tokens', flat=True))
+        # print(tokens)
+        # return
+
+        vector = SearchVector('tokens')
+        query = SearchQuery(tokens)
+        _searched = m.Pix.objects.exclude(pick__collection_id=collection_id).annotate(rank=SearchRank(vector, query)).exclude(rank=0).order_by('-rank')
+        print(_searched.values('id','rank'))
+        _searched = _searched.values_list('id', flat=True)
+
+        _append = list(m.Pix.ipixs())
+        random.shuffle(_append)
+        _searched = list(_searched) + _append
+        return JsonResponse({'success':True, 'ids':_searched, 'message':'searched successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while searching'}, safe=False)
+
+
+def search_by_keyword(request, keyword):
+    try:
+        _keyword = keyword
+        vector = SearchVector('tokens', 'pick__collection__name', 'owner__nick')
+        query = SearchQuery(_keyword)
+
+        _searched = m.Pix.objects.annotate(rank=SearchRank(vector, query)).exclude(rank=0).order_by('-rank')#[:n]
+        # print(_searched.values('id','rank'))
+        _searched = _searched.values_list('id', flat=True)
+        # print(_searched.values('id').distinct())
+
+        _append = list(m.Pix.ipixs())
+        random.shuffle(_append)
+        _searched = list(_searched) + _append
+        # _searched = _searched.union(_append)
+
+        return JsonResponse({'success':True, 'ids':_searched, 'message':'searched successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while searching'}, safe=False)
 
 
 class Logout(LogoutView):

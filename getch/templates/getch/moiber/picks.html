@@ -1,0 +1,250 @@
+<style>
+  .picks.vcomp {
+  }
+
+  .picks.vcomp .pick {
+    position: relative;
+    padding: var(--discover-img-padding);
+    opacity: 0;
+    transition: all 2s;
+  }
+
+  .picks.vcomp .pick > img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: var(--w-3);
+    filter: brightness(95%);
+  }
+
+  .picks.vcomp .pick > img.inactive {
+    opacity: 0.1;
+  }
+
+  .picks.vcomp.square .pick {
+    position: relative;
+    padding-top: 100%;
+  }
+
+  .picks.vcomp .pick.empty {
+    position: relative;
+    padding-top: 100%;
+    /* background: lightblue; */
+    opacity: 1;
+  }
+
+  .picks.vcomp .pick.empty > .adder {
+    position: absolute;
+    top: var(--discover-img-padding);
+    left: var(--discover-img-padding);
+    width: calc(100% - 2*var(--discover-img-padding));
+    height: calc(100% - 2*var(--discover-img-padding));
+    border-radius: var(--w-3);
+    background: var(--color-backgray);
+  }
+
+  .picks.vcomp.square .pick > img {
+    position: absolute;
+    top: var(--discover-img-padding);
+    left: var(--discover-img-padding);
+    width: calc(100% - 2*var(--discover-img-padding));
+    height: calc(100% - 2*var(--discover-img-padding));
+    object-fit: cover;
+  }
+
+  .picks.vcomp .pick > .info {
+    position: relative;
+    height: var(--w-10);
+    background: none;
+    color: var(--color-dark);
+  }
+
+  .picks.vcomp .pick > .info.inactive {
+    opacity: 0.1;
+    /* pointer-events: none; */
+  }
+
+  .picks.vcomp .pick > .info > span {
+    position: absolute;
+    top: 40%;
+    right: var(--discover-img-interval);
+    transform: translateY(-50%);
+    font-size: 12px;
+  }
+
+  .picks.vcomp .pick > .info > .collector {
+    position: absolute;
+    top: 40%;
+    left: var(--discover-img-interval);
+    width: var(--w-5);
+    height: var(--w-5);
+    transform: translateY(-50%);
+    background: var(--color-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .picks.vcomp .pick > .info > .collector.owned {
+    background: var(--color-point);
+  }
+
+  .picks.vcomp .pick > .info > .collector > img {
+    width: 80%;
+    height: 80%;
+    transform: translateY(-5%);
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .picks.vcomp .pick > .info > span > * {
+    pointer-events: none;
+  }
+
+  .picks.vcomp .pick.empty > .adder > .adder-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    /* transform: translate(-50%, -50%); */
+  }
+
+  .picks.vcomp .pick.empty > .adder > .adder-message > img {
+    width: 15%;
+    height: auto;
+  }
+
+  .picks.vcomp .pick.empty > .adder > .adder-message > span {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+</style>
+
+<script type='text/x-template' id='picks-template'>
+  <div class='picks vcomp' :class='{ square: square }'>
+    <masonry :cols='ncol' :gutter="0">
+      <div class='pick empty' @click='go_home' v-if='picklist.length==0 && session.mode.on=="home"'>
+        <div class='adder'>
+          <div class='adder-message'>
+            <img src='/static/materials/icons/plus.png'>
+            <span>옷장을 채워보세요</span>
+          </div>
+        </div>
+      </div>
+
+      <div class='pick' v-for="(pick, idx) in picklist" :key="idx" @click='choose(pick)'>
+        <template v-if='pick.pix'>
+          <img :src='pick.pix.src' @load='pixloaded' :class='{ inactive: is_inactive(pick) }'>
+          <!-- <img :src='pick.pix.src' @load='pixloaded' :class='{ inactive: on_edit && !selected.includes(pick.id) }'> -->
+
+          <div class='info' v-if='pick.pix.owner && !hide_info' :class='{ inactive: is_inactive(pick) }'>
+            <span @click.stop='go_agit(pick.pix)'><span style='font-size:10px'>by</span> <b>[[pick.pix.owner.nick]]</b></span>
+
+            <div class='collector' @click.stop='go_collector(pick.pix)' :class='{ owned: is_owned(pick.pix) }'>
+              <img src='/static/materials/icons/hanger_white.png'>
+            </div>
+          </div>
+        </template>
+      </div>
+    </masonry>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('picks', {
+    template: '#picks-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'picks', 'session', 'limit', 'ncol', 'hide_info', 'square' ],
+    data: function() {
+      return { }
+    },
+
+    watch: {
+      on_edit: function(_new, _old) {
+        if (_new) {
+          this.session.editing.selected = [];
+        }
+      }
+    },
+
+    computed: {
+      on_edit: function() {
+        return this.session.editing.on
+      },
+
+      selected: function() {
+        return this.session.editing.selected
+      },
+
+      picklist: function() {
+        if (this.limit) {
+          return this.picks.list.slice(0, this.limit)
+
+        } else {
+          return this.picks.list
+        }
+      }
+    },
+
+    methods: {
+      is_inactive: function(pick) {
+        return this.on_edit && !this.selected.includes(pick.id)
+      },
+
+      is_owned: function(pix) {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo.has_pix(pix.id)
+        }
+      },
+
+      choose: function(pick) {
+        if (this.on_edit) {
+          if (this.selected.includes(pick.id)) {
+            const where = this.selected.indexOf(pick.id);
+            this.selected.splice(where, 1);
+
+          } else {
+            this.selected.push(pick.id);
+          }
+
+        } else {
+          this.$emit('choose', pick.pix);
+        }
+      },
+
+      pixloaded: function(event) {
+        event.target.parentElement.style.opacity = 1;
+      },
+
+      go_home: function() {
+        this.session.refresh();
+      },
+
+      go_agit: function(pix) {
+        if (this.on_edit)
+          return
+
+        pix.load_owner();
+        this.session.open_agit(pix.owner);
+      },
+
+      go_collector: function(pix) {
+        if (this.on_edit)
+          return
+        // if (!this.is_owned(pix)) {
+          this.session.open_collector(pix);
+        // }
+      },
+    }
+  });
+</script>

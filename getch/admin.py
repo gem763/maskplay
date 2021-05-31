@@ -1,4 +1,5 @@
 from django.contrib import admin
+from ordered_model.admin import OrderedModelAdmin
 import getch.models as m
 from django.db.models import Q
 # from django.contrib.sessions.models import Session
@@ -26,7 +27,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(m.Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['type', 'boo', 'text', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
+    list_display = ['type', 'boo', 'text', 'group', 'nvotes_up', 'nvotes_down', 'ncomments', 'created_at']
 
     def type(self, obj):
         return obj.cast.type
@@ -71,7 +72,8 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(m.Boo)
 class BooAdmin(admin.ModelAdmin):
-    list_display = ['user', 'nick', 'selected', 'active', 'hidden', 'is_staff', 'text', 'nposts', 'ncomments', 'nfollowers', 'nfollowees', 'nvotes', 'nlikes_comment']
+    # list_display = ['user', 'nick', 'selected', 'active', 'hidden', 'is_staff', 'text', 'nposts', 'ncomments', 'nfollowers', 'nfollowees', 'nvotes', 'nlikes_comment']
+    list_display = ['user', 'nick', 'selected', 'active', 'hidden', 'is_staff', 'text', 'nposts', 'ncomments', 'nfollowers', 'nfollowees', 'nvotes', 'nlikes_comment', 'ncollections']
     list_display_links = ['user']
     list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
     list_editable = ['nick']
@@ -122,6 +124,22 @@ class ItemlabelAdmin(LabelAdmin):
 class PostpixAdmin(admin.ModelAdmin):
     list_display = ['key', 'owner', 'post', 'img', 'desc', 'tokens']
 
+
+@admin.register(m.Pix)
+class PixAdmin(admin.ModelAdmin):
+    list_display = ['owner', 'desc', 'tokens', 'outlink']
+
+@admin.register(m.Collection)
+class CollectionAdmin(OrderedModelAdmin):
+    list_display = ['name', 'owner', 'desc', 'npicks', 'move_up_down_links']
+    # list_filter = ['owner']
+
+@admin.register(m.Pick)
+class PickAdmin(OrderedModelAdmin):
+    list_display = ['id', 'collection', 'pix', 'move_up_down_links']
+    # list_filter = ['collection']
+
+
 @admin.register(m.Commentpix)
 class CommentpixAdmin(admin.ModelAdmin):
     list_display = ['comment', 'img']
@@ -132,4 +150,4 @@ class LinkAdmin(admin.ModelAdmin):
 
 # @admin.register(m.Session)
 # class SessionAdmin(admin.ModelAdmin):
-#     list_display = ['sessionkey', 'user', 'view', 'checkin', 'checkout']    
+#     list_display = ['sessionkey', 'user', 'view', 'checkin', 'checkout']

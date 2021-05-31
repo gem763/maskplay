@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5PVVB55');
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <title>MOIBER</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1, user-scalable=no">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://moiber.com">
+  <meta property="og:title" content="모이버">
+  <meta property="og:description" content="인공지능 스타일리스트">
+  <meta property="og:image" content="/static/materials/imgs/katalk_share.png">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href='/static/jquery-ui/jquery-ui.min.css'>
+  <link rel="stylesheet" href='/static/cropperjs/cropper.min.css'>
+  <link rel="stylesheet" href='/static/swiper/swiper-bundle.css'>
+
+  <!-- favicon.ico 404 Not found error -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+  <style>
+    :root {
+      --color-point: #F81059;
+      --color-backgray: #F9F9F9;
+      --color-message: #CCCCCC;
+      --color-pos: rgb(241,20,15);
+      --color-neg: #0095F6;
+      /* --color-dark: #302E2F; */
+      --color-dark: #333333;
+      --color-inactive: #CBCAC9;
+      --s-menu: 50px;
+
+      --width: min(100vw, calc(100vh * 11 / 16));
+      --width-unit: calc(var(--width) / 100);
+
+      --w-1: calc(var(--width-unit) * 1);
+      --w-2: calc(var(--width-unit) * 2);
+      --w-3: calc(var(--width-unit) * 3);
+      --w-4: calc(var(--width-unit) * 4);
+      --w-5: calc(var(--width-unit) * 5);
+      --w-6: calc(var(--width-unit) * 6);
+      --w-7: calc(var(--width-unit) * 7);
+      --w-8: calc(var(--width-unit) * 8);
+      --w-9: calc(var(--width-unit) * 9);
+      --w-10: calc(var(--width-unit) * 10);
+      --w-11: calc(var(--width-unit) * 11);
+      --w-12: calc(var(--width-unit) * 12);
+      --w-13: calc(var(--width-unit) * 13);
+      --w-14: calc(var(--width-unit) * 14);
+      --w-15: calc(var(--width-unit) * 15);
+      --w-16: calc(var(--width-unit) * 16);
+      --w-17: calc(var(--width-unit) * 17);
+      --w-18: calc(var(--width-unit) * 18);
+      --w-19: calc(var(--width-unit) * 19);
+      --w-20: calc(var(--width-unit) * 20);
+      --w-21: calc(var(--width-unit) * 21);
+      --w-22: calc(var(--width-unit) * 22);
+      --w-24: calc(var(--width-unit) * 24);
+      --w-25: calc(var(--width-unit) * 25);
+      --w-30: calc(var(--width-unit) * 30);
+      --w-32: calc(var(--width-unit) * 32);
+      --w-33: calc(var(--width-unit) * 33);
+      --w-40: calc(var(--width-unit) * 40);
+      --w-45: calc(var(--width-unit) * 45);
+      --w-46: calc(var(--width-unit) * 46);
+      --w-47: calc(var(--width-unit) * 47);
+      --w-48: calc(var(--width-unit) * 48);
+      --w-50: calc(var(--width-unit) * 50);
+      --w-52: calc(var(--width-unit) * 52);
+      --w-60: calc(var(--width-unit) * 60);
+      --w-70: calc(var(--width-unit) * 70);
+      --w-75: calc(var(--width-unit) * 75);
+      --w-80: calc(var(--width-unit) * 80);
+      --w-85: calc(var(--width-unit) * 85);
+      --w-86: calc(var(--width-unit) * 86);
+      --w-88: calc(var(--width-unit) * 88);
+      --w-90: calc(var(--width-unit) * 90);
+      --w-91: calc(var(--width-unit) * 91);
+      --w-92: calc(var(--width-unit) * 92);
+      --w-98: calc(var(--width-unit) * 98);
+      --w-99: calc(var(--width-unit) * 99);
+
+      --discover-img-width: var(--w-47);
+      --discover-img-interval: calc((var(--width) - 2 * var(--discover-img-width)) / 3);
+      --discover-img-padding: calc(var(--discover-img-interval) / 2);
+
+      --discover-col-width: var(--w-46);
+      --discover-col-interval: calc((var(--width) - 2 * var(--discover-col-width)) / 3);
+      --discover-col-padding: calc(var(--discover-col-interval) / 2);
+
+      --headerbar-height: var(--w-15);
+
+      --minipost-margin: var(--w-1);
+      --minipost-width: calc((var(--width) - var(--minipost-margin) * 4) / 3);
+    }
+
+    @font-face {
+      font-family: 'AppleSDGothicNeo';
+      src: url('/static/font/AppleSDGothicNeoR00-01.otf') format('opentype');
+      font-weight: normal;
+    }
+
+    @font-face {
+      font-family: 'AppleSDGothicNeo';
+      src: url('/static/font/AppleSDGothicNeoB00-07.otf') format('opentype');
+      font-weight: bold;
+    }
+
+    @font-face {
+      font-family: 'Equilibrium';
+      src: url('/static/font/Equilibrium.ttf') format('truetype');
+      font-weight: normal;
+    }
+
+    @font-face {
+      font-family: 'Equilibrium';
+      src: url('/static/font/Equilibrium_Bold.ttf') format('truetype');
+      font-weight: bold;
+    }
+
+    html, body {
+      /* 모바일브라우저 검색바를 고정하기 위함
+      https://stackoverflow.com/questions/18061308/prevent-address-bar-hiding-in-mobile-browsers */
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    * {
+      font-family: 'AppleSDGothicNeo';
+      /* color: var(--color-dark); */
+    }
+
+    #window {
+      width: var(--width);
+      height: 100%;
+      background: white;
+      position: relative;
+      margin: auto;
+      box-shadow: 0 0 10px 1px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+
+
+<body style='background:white;margin:0;'>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5PVVB55" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+
+  <div id='window'>
+    <homepixs :session='session'></homepixs>
+    <headerbar :session='session'></headerbar>
+    <pages :session='session'></pages>
+    <joystick :session='session'></joystick>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/static/jquery-ui/jquery-ui.min.js"></script>
+  <script src="/static/jquery-ui/jquery.ui.touch-punch.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+  <script src="/static/vue/vue.2.6.11.js"></script>
+  <script src="/static/sideb/moiber.js"></script>
+  <!-- <script src="/static/sideb/sideb.js"></script> -->
+
+  <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
+  <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+  <script src="https://unpkg.com/@saeris/vue-spinners"></script>
+  <script src="/static/merge-images/merge-images.js"></script>
+  <script src="/static/cropperjs/cropper.min.js"></script>
+  <script src="https://unpkg.com/vue-masonry-css"></script>
+  <script src="/static/swiper/swiper-bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+  {% include "getch/moiber/pages2.html" %}
+  {% include "getch/moiber/homepixs.html" %}
+  {% include "getch/moiber/joystick.html" %}
+  {% include "getch/moiber/headerbar.html" %}
+  {% include "getch/moiber/colib.html" %}
+  {% include "getch/moiber/minicol.html" %}
+  {% include "getch/moiber/pixs.html" %}
+  {% include "getch/moiber/picks.html" %}
+
+  {% include "getch/post.html" %}
+  {% include "getch/pixloader.html" %}
+  {% include "getch/editext.html" %}
+  {% include "getch/aber.html" %}
+  {% include "getch/oxer.html" %}
+  {% include "getch/oxcard.html" %}
+  {% include "getch/scorebutton.html" %}
+
+  <script>
+    const moiber = new Vue({
+      el: '#window',
+      delimiters: ['[[', ']]'],
+      data: {
+        session: undefined,
+        entry: undefined
+      },
+
+      created: function() {
+        this.session = new Session();
+        this.session.labels = {{labels|safe}};
+        this.entry = '{{entry}}';
+
+        switch (this.entry) {
+          case 'landing':
+            this.session.open_landing();
+            break;
+
+          case 'about':
+            this.session.open_about();
+            break;
+
+          case 'mbti-dongne':
+            this.session.open_mbti();
+            break;
+
+          case 'mbti-dongne-result':
+            const dongne = '{{dongne}}';
+            const gender = '{{gender}}';
+            this.session.open_mbtiresult(dongne, gender, 'share');
+            break;
+        }
+      }
+    });
+
+
+    function csrfSafeMethod(method) {
+      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $(document).ready(function(){
+      var csrftoken = Cookies.get('csrftoken');
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+        }
+      });
+
+      // history.pushState(null, null, document.URL);
+      // window.addEventListener('popstate', function () {
+      //   history.pushState(null, null, document.URL);
+      //
+      //   const session = sideb.session;
+      //
+      //   try {
+      //     if ((session.mode.on == 'posts') && (!session.page.posts.swiper.isBeginning)) {
+      //       session.page.posts.swiper.slidePrev();
+      //
+      //     } else if ((session.mode.on == 'booposts') && (!session.page.booposts.swiper.isBeginning)) {
+      //       session.page.booposts.swiper.slidePrev();
+      //
+      //     } else if (session.mode.prev) {
+      //       session.close_page();
+      //
+      //     } else {
+      //       window.history.back();
+      //     }
+      //
+      //   } catch {  }
+      // });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,498 @@
+<style>
+  .collector.vcomp .page-body {
+    color: var(--color-dark);
+  }
+
+  .collector.vcomp .page-body > .blank {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: none;
+  }
+
+  .collector.vcomp .page-body > .container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: var(--w-3) var(--w-3) 0 0;
+  }
+
+  .collector.vcomp .page-body > .container-shadow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: rgba(255,255,255,0.8);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .collector.vcomp .page-body > .container-shadow.show {
+    animation: fadeOut 1s forwards;
+  }
+
+  .collector.vcomp .page-body > .collect-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--w-40);
+    height: var(--w-40);
+    transform: translate(-50%, -50%);
+    background: var(--color-point);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @keyframes fadeOut {
+    0% {opacity: 1;}
+    30% {opacity: 1;}
+    100% {opacity: 0;}
+  }
+
+  .collector.vcomp .page-body > .collect-message.show {
+    animation: fadeOut 1s forwards;
+  }
+
+  .collector.vcomp .page-body > .collect-message > img {
+    width: 50%;
+    height: auto;
+  }
+
+  .collector.vcomp .page-body > .collect-message > span {
+    transform: translateY(-30%);
+  }
+
+  .collector.vcomp .page-body > .container > .section {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .collector.vcomp .page-body > .container > .section.title {
+    height: var(--w-15);
+    /* background: white; */
+    font-size: 16px;
+  }
+
+  .collector.vcomp .page-body > .container > .section.title > .close {
+    position: absolute;
+    top: 50%;
+    right: var(--w-2);
+    width: var(--w-10);
+    height: var(--w-10);
+    /* background: lightblue; */
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .collector.vcomp .page-body > .container > .section.title > .close > img {
+    width: 50%;
+    height: auto;
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar {
+    height: calc(var(--w-10) + var(--discover-img-padding));
+    /* background: lightpink; */
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks {
+    /* background: lightgreen; */
+    /* flex-grow: 1; */
+    display: block;
+    height: calc(100% - var(--w-40) - var(--discover-img-padding));
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collector.vcomp .page-body > .container > .section.actions {
+    height: var(--w-15);
+    /* background: orange; */
+    justify-content: flex-end;
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .collections {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: calc(var(--w-91) - 2* var(--discover-img-interval));
+    height: var(--w-10);
+    /* background: gray; */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .collections::-webkit-scrollbar {
+    display: none;
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .collections > .collection {
+    padding-left: 12px;
+    padding-right: 12px;
+    height: var(--w-9);
+    margin-right: var(--discover-img-interval);
+    color: var(--color-dark);
+    border-radius: var(--w-5);
+    font-size: 14px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* background: rgba(0,0,0,0.02); */
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .collections > .collection > i.fa-spinner {
+    font-size: 0px;
+    margin-right: 0px;
+    transition: all 0.3s;
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .collections > .collection.onloading > i.fa-spinner {
+    font-size: 13px;
+    margin-right: 5px;
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .collections > .collection.active {
+    background: var(--color-dark);
+    color: white;
+    font-weight: bold;
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .adder {
+    position: absolute;
+    top: calc(var(--w-1) / 2);
+    left: var(--discover-img-interval);
+    width: var(--w-9);
+    height: var(--w-9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid var(--color-dark); */
+    border-radius: 50%;
+    box-sizing: border-box;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .collector.vcomp .page-body > .container > .section.collections-bar > .adder > img {
+    width: 40%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+  }
+
+  .collector.vcomp .page-body > .container > .section.actions > .action {
+    width: var(--w-20);
+    height: var(--w-10);
+    border-radius: var(--w-5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-right: var(--w-2);
+    box-sizing: border-box;
+  }
+
+  .collector.vcomp .page-body > .container > .section.actions > .action.collect {
+    background: var(--color-message);
+    border: 2px solid var(--color-message);
+    color: white;
+  }
+
+  .collector.vcomp .page-body > .container > .section.actions > .action.collect.active {
+    background: var(--color-point);
+    border: 2px solid var(--color-point);
+  }
+
+  .collector.vcomp .page-body > .container > .section.actions > .action.collect > img {
+    height: 70%;
+    width: auto;
+    margin-right: 5%;
+    transform: translateY(-10%);
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks > .picks-container {
+    margin: var(--discover-img-padding);
+    margin-top: 0;
+    height: 100%;
+    position: relative;
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks > .picks-container > .empty {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    text-align: center;
+    color: var(--color-message);
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks > .picks-container > .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: var(--color-message);
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks > .login-guide {
+    background: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 13px;
+    color: var(--color-message);
+  }
+
+  .collector.vcomp .page-body > .container > .section.picks > .login-guide > .login {
+    background: var(--color-point);
+    width: var(--w-30);
+    height: var(--w-10);
+    border-radius: var(--w-5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    /* margin-right: var(--w-2); */
+    box-sizing: border-box;
+    margin: 15px;
+    color: white;
+  }
+</style>
+
+<script type='text/x-template' id='collector-template'>
+  <page
+    class='collector vcomp'
+    :open='session.page.collector.open'
+    :from='session.page.collector.from'
+    :hide_close='true'
+    :hide_headerbar='true'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='blank' @click='session.close_page()'></div>
+
+      <div class='container'>
+        <div class='section title'>
+          <span><b>내 옷장에 넣기</b></span>
+          <div class='close' @click='session.close_page()'>
+            <img src='/static/materials/icons/close.png'>
+          </div>
+        </div>
+
+        <div class='section collections-bar'>
+          <div class='collections' v-if='myboo && collections'>
+            <span class='collection' :class='{ active: idx==icol, onloading: !col.id }' v-for='(col, idx) in collections' @click='choose(idx)'>
+              <i class="fa fa-spinner fa-spin"></i>
+              [[col.name]]
+            </span>
+          </div>
+
+          <div class='adder' v-if='myboo' @click='make_collection'>
+            <img src='/static/materials/icons/plus.png'>
+          </div>
+        </div>
+
+        <div class='section picks'>
+          <div class='picks-container' v-if='picks'>
+            <div class='empty' v-if='is_empty && !picks.onloading'>옷장이 비었습니다</div>
+
+            <div class='spinner' v-if='picks.onloading'>
+              <i class="fa fa-spinner fa-spin"></i>
+            </div>
+
+            <picks :picks='picks' :session='session' :ncol='3' :hide_info='true' :limit='6' :square='true'></picks>
+          </div>
+
+          <div class='login-guide' v-if='!myboo'>
+            <div>로그인이 필요합니다</div>
+            <div class='login' @click='go_login'>
+              <b>로그인하기</b>
+            </div>
+          </div>
+        </div>
+
+        <div class='section actions'>
+          <span class='action collect' v-if='myboo' @click='collect' :class='{ active: !has_pix }'>
+            <img src='/static/materials/icons/hanger_white.png'>
+            <b>넣기</b>
+          </span>
+        </div>
+      </div>
+
+      <div class='container-shadow' :class='{ show: show_collect }'></div>
+
+      <div class='collect-message' :class='{ show: show_collect }'>
+        <img src='/static/materials/icons/hanger_white.png'>
+        <span><b>옷장에 넣었어요!</b></span>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('collector', {
+    template: '#collector-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session'],
+    data: function() {
+      return {
+        icol: 0,
+        show_collect: false
+      }
+    },
+
+    watch: {
+      icol: function(_new, _old) {
+
+      }
+    },
+
+    computed: {
+      has_pix: function() {
+        if (this.pix && this.myboo && this.collection) {
+          return this.myboo.has_pix(this.pix.id, this.collection)
+        }
+      },
+
+      pix: function() {
+        return this.session.page.collector.pix
+      },
+
+      has_auth: function() {
+        return this.session.user.has_auth
+      },
+
+      myboo: function() {
+        if (this.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      collections: function() {
+        if (this.myboo) {
+          return this.myboo.collections
+        }
+      },
+
+      collection: function() {
+        if (this.collections) {
+          return this.collections[this.icol]
+        }
+      },
+
+      picks: function() {
+        if (this.collection && this.collection.picks) {
+          return this.collection.picks
+        }
+      },
+
+      is_empty: function() {
+        return this.picks && this.picks.list.length==0
+      }
+    },
+
+    methods: {
+      go_login: function() {
+        this.session.close_pages_all();
+        this.session.open_login();
+      },
+
+      choose: function(idx) {
+        this.icol = idx;
+      },
+
+      collect: function() {
+        if (this.has_pix) {
+          return
+        }
+
+        if (this.collection && this.collection.picks) {
+          this.show_collect = true;
+          setTimeout(() => { this.show_collect = false; }, 1000);
+
+          this.collection.pixids.unshift(this.pix.id);
+          const pick = { id: undefined, pix: this.pix };
+
+          this.collection.picks.list.unshift(pick);
+          fetch(`/collection/${this.collection.id}/collect/${this.pix.id}`)
+            .then(x => x.json())
+            .then(js => {
+              console.log(js);
+              if (js.success) {
+                pick.id = js.pick_id;
+              }
+            })
+        }
+      },
+
+      make_collection: function() {
+        this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
+          const col = {
+            id: undefined,
+            name: txt_done,
+            picks: new Picks(this.session.store),
+            pixids: []
+          }
+
+          this.collections.unshift(col);
+          this.icol = 0;
+
+          fetch(`/collection/create/${col.name}`)
+            .then(x => x.json())
+            .then(js => {
+              if (js.success) {
+                col.id = js.collection_id;
+              }
+            });
+        });
+      }
+    }
+  });
+</script>

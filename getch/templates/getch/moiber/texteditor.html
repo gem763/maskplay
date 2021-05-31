@@ -1,0 +1,163 @@
+<style>
+  .texteditor.vcomp .page-body {
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .texteditor.vcomp .page-body > .input {
+    border: none;
+    text-align: center;
+    font-size: 25px;
+    width: 70%;
+    resize: none;
+    overflow: hidden;
+    color: var(--color-dark);
+  }
+
+  .texteditor.vcomp .page-body > .input:focus {
+    outline: none;
+  }
+
+  .texteditor.vcomp .page-body > .actions {
+    position: fixed;
+    bottom: 0;
+    /* left: 0; */
+    width: var(--width);
+    height: var(--w-16);
+    background: white;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .texteditor.vcomp .page-body > .actions > .action {
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .texteditor.vcomp .page-body > .actions > .cancel.action {
+    color: gray;
+  }
+
+  .texteditor.vcomp .page-body > .actions > .done.action {
+    color: var(--color-point);
+  }
+</style>
+
+<script type='text/x-template' id='texteditor-template'>
+  <page
+    class='texteditor vcomp'
+    :open='session.page.texteditor.open'
+    :from='session.page.texteditor.from'
+    :hide_headerbar='true'
+    :hide_close='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <!-- <div class='texteditor vcomp'> -->
+        <textarea class='input' v-model.trim='texted' :placeholder='placeholder' ref='input' @input='texting' @keydown='linecheck'></textarea>
+
+        <div class='actions'>
+          <div class='action cancel' @click='session.close_page()'>취소</div>
+          <div class='action done' @click='action_done'>완료</div>
+        </div>
+      <!-- </div> -->
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('texteditor', {
+    template: '#texteditor-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        texted: ''
+      }
+    },
+
+    watch: {
+      'session.page.texteditor.open': function(_new, _old) {
+        if (_new) {
+          if (this.session.page.texteditor.basetext) {
+            this.texted = this.session.page.texteditor.basetext;
+
+          } else {
+            this.texted = '';
+          }
+
+          if (this.$refs) {
+            this.fix_window_width();
+            this.$nextTick(() => this.$refs.input.focus());
+          }
+
+        } else {
+          if (this.$refs) {
+            setTimeout(() => { this.release_window_width(); }, 500);
+          }
+        }
+      }
+    },
+
+    computed: {
+      placeholder: function() {
+        return this.session.page.texteditor.placeholder
+      },
+
+      maxlines: function() {
+        return this.session.page.texteditor.maxlines
+      }
+    },
+
+    methods: {
+      texting: function() {
+        this.$refs.input.style.height = "5px";
+        this.$refs.input.style.height = (this.$refs.input.scrollHeight)+"px";
+      },
+
+      linecheck: function(e) {
+        if (e.keyCode==13 && this.texted.split('\n').length >= this.maxlines) {
+          e.preventDefault();
+          return
+        }
+      },
+
+      fix_window_width: function() {
+        const w = document.querySelector('#window').clientWidth;
+        document.documentElement.style.setProperty('--width', w + 'px');
+      },
+
+      release_window_width: function() {
+        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+      },
+
+      action_done: function() {
+        this.session.page.texteditor.setter(this.texted);
+        this.session.close_page();
+      }
+    }
+  });
+</script>

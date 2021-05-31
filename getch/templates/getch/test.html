@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="ko">
 
-{% load static %}
 <head>
   <title>GET.CH</title>
   <meta charset="utf-8">
@@ -14,15 +13,43 @@
 </head>
 
 <body style='margin:0;background:white;'>
-  ABCD
-
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- Load TensorFlow.js. This is required to use coco-ssd model. -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script>
+  <!-- Load the coco-ssd model. -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"> </script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+
+
+  <img id='img' src='/static/materials/imgs/adidas_shoe.jpg'>
+
   <script>
-    setTimeout(function(){
-    	// Hide the address bar!
-    	window.scrollTo(0, 1);
-    }, 20);
+    const img = document.getElementById('img');
+
+    // // Load the model.
+    // cocoSsd.load().then(model => {
+    //   // detect objects in the image.
+    //   model.detect(img).then(predictions => {
+    //     console.log('Predictions: ', predictions);
+    //   });
+    // });
+
+
+    // Load the model.
+    mobilenet.load().then(model => {
+      // Classify the image.
+      model.classify(img, 5).then(predictions => {
+        console.log('Predictions: ');
+        console.log(predictions);
+      });
+
+      model.infer(img).then(predictions => {
+        console.log('Predictions: ');
+        console.log(predictions);
+      });
+    });
   </script>
 
 </body>
+
 </html>

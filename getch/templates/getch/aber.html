@@ -72,7 +72,7 @@
     <pixloader :pix='pix' :editable='editable' :session='session' ref='pixloader' :where='act==0 ? "top" : "bottom"'></pixloader>
 
     <transition name='show-score'>
-      <div class='score' :class='act_class' v-if='is_active'><b>[[ score ]]</b></div>
+      <div class='score' :class='act_class' v-if='is_active'><b>[[ score_display ]]</b></div>
     </transition>
   </div>
 </script>
@@ -100,6 +100,18 @@
 
       act_class: function() {
         return 'act-' + this.act
+      },
+
+      score_display: function() {
+        if (this.session.mode.on=='mbti') {
+          if (this.phase=='voted')
+            return 'V'
+          else
+            return ''
+
+        } else {
+          return this.score
+        }
       }
     },
 

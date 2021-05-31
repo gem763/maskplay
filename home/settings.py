@@ -23,9 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'l9naapdhlj2wfi5e26u+urm_1sn28umx!0f3@v60hn_(33%)j+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+APP = 'getch'
 
 # Application definition
 
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     # 'vote',
     'siteflags',
     'notifications',
+    'ordered_model',
     # 'friendship',
 ]
 
@@ -90,13 +92,13 @@ INTERNAL_IPS = ('127.0.0.1')
 #671339125678-c9in180buoiu79t797tppifmm8qk24ja.apps.googleusercontent.com:JPgwwfpI5lnlC4M7IgqFaUpTg
 #126234b4fe871fa3cd5ecabe9cce6001:k
 
-SITEFLAGS_FLAG_MODEL = 'getch.Flager'
-AUTH_USER_MODEL = 'getch.User'
+SITEFLAGS_FLAG_MODEL = APP + '.Flager' #'getch.Flager'
+AUTH_USER_MODEL = APP + '.User' #'getch.User'
 
 # 소셜로그인시 request.session.session_key가 바뀌는걸 방지하기 위해
 # 아래를 쓴다. 2021.02.15
 # https://stackoverflow.com/questions/13978828/django-session-key-changing-upon-authentication
-SESSION_ENGINE = 'getch.session_backend'
+SESSION_ENGINE = APP + '.session_backend' #'getch.session_backend'
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend', # Django 기본 유저모델
@@ -135,7 +137,7 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = False
-LOGIN_REDIRECT_URL = 'play'
+LOGIN_REDIRECT_URL = 'discover'
 # SIGNUP_REDIRECT_URL = 'profiler'
 # ACCOUNT_LOGOUT_REDIRECT_URL = 'play'
 ACCOUNT_LOGOUT_ON_GET = True

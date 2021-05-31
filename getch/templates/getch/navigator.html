@@ -195,6 +195,10 @@
         return this.session.page.posts.univ[this.active_grouper]
       },
 
+      the_postlist: function() {
+        return this['postlist_' + this.active_grouper]
+      },
+
       the_posts_onloading: function() {
         if (this.the_posts) {
           return this.the_posts.onloading
@@ -208,6 +212,10 @@
           if (this.vote_only) {
             plist = plist.filter(p => p.type=='postvoteab' || p.type=='postvoteox');
           }
+
+          // if (plist.length < 12) {
+          //   this.the_posts.load(12);
+          // }
 
           return plist.sort((a,b) => a.order - b.order)
           // return this.postlist_rearranged('history')
@@ -223,6 +231,10 @@
           if (this.vote_only) {
             plist = plist.filter(p => p.type=='postvoteab' || p.type=='postvoteox');
           }
+
+          // if (plist.length < 12) {
+          //   this.the_posts.load(12);
+          // }
 
           return plist.sort((a,b) => a.order - b.order)
 
@@ -246,6 +258,10 @@
     methods: {
       toggle_vote_only: function() {
         this.vote_only = !this.vote_only;
+
+        if (this.the_postlist.length < 12) {
+          this.the_posts.load(12);
+        }
       },
 
       backto_posts: function(postid) {

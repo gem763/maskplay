@@ -16,7 +16,8 @@
 {% include "getch/landing.html" %}
 {% include "getch/infoboard.html" %}
 {% include "getch/home.html" %}
-
+{% include "getch/mbti.html" %}
+{% include "getch/mbtiresult.html" %}
 
 <style>
   .pages {
@@ -33,7 +34,6 @@
 
 <script type='text/x-template' id='pages-template'>
   <div class='pages'>
-
     <posts :session='session'></posts>
 
     <home :session='session'></home>
@@ -60,16 +60,19 @@
 
     <texteditor :session='session'></texteditor>
 
-    <bridge :session='session'></bridge>
-
-    <loginpage v-if='!session.user.auth' :session='session'></loginpage>
-
-    <company v-if='session.page.company.open' :session='session'></company>
-
     <infoboard :session='session'></infoboard>
 
     <landing :session='session'></landing>
 
+    <mbti v-if='session.page.mbti.contents' :session='session'></mbti>
+
+    <mbtiresult :session='session'></mbtiresult>
+
+    <bridge :session='session'></bridge>
+
+    <company v-if='session.page.company.open' :session='session'></company>
+
+    <loginpage v-if='!session.user.auth' :session='session'></loginpage>
   </div>
 </script>
 

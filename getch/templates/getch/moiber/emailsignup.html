@@ -1,0 +1,525 @@
+<style>
+  .emailsignup.vcomp .page-body {
+    width: 100%;
+    height: 100%;
+    background: white;
+    font-size: 12px;
+  }
+
+  .emailsignup.vcomp .page-body > .section {
+    position: relative;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .emailsignup.vcomp .page-body > .section.top {
+    height: 20%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle {
+    height: 60%;
+    background: white;
+  }
+
+  .emailsignup.vcomp .page-body > .section.bottom {
+    height: 20%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    transition: left 0.2s;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps.email {
+    left: 0;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps.pw {
+    left: -100%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps.pwre {
+    left: -200%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step.email {
+    left: 0;
+    /* background: lightpink; */
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step.pw {
+    left: 100%;
+    /* background: orange; */
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step.pwre {
+    left: 200%;
+    /* background: lightblue; */
+  }
+
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action {
+    position: relative;
+    width: var(--w-50);
+    height: var(--w-10);
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* cursor: pointer; */
+    position: relative;
+    margin-bottom: 4%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns {
+    margin-bottom: 0;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border-radius: var(--w-3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn.full {
+    width: 100%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn.half {
+    width: 48%;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn.prev {
+    left: 0;
+    background: darkgray;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn.next {
+    right: 0;
+    background: var(--color-dark);
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn.signup {
+    background: var(--color-point);
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action.btns > .btn.next.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action > input {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: var(--w-3);
+    box-sizing: border-box;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: var(--color-dark);
+    border-style: solid;
+    text-align: center;
+    /* background: lightblue; */
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action > input.highlighten {
+    border: 1px solid var(--color-point);
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action > input:focus {
+    outline: none;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .action > input::placeholder {
+    text-align: center;
+    font-weight: normal;
+    color: rgba(0,0,0,0.2);
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .desc {
+    width: 100%;
+    text-align: center;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .title.desc {
+    margin-bottom: 5%;
+    font-size: 20px;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .alert.desc {
+    margin-bottom: 5%;
+    color: var(--color-point);
+    height: 12px;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step > .agree.desc {
+    margin-top: 10%;
+    color: #CCCCCC;
+    opacity: 0;
+  }
+
+  .emailsignup.vcomp .page-body > .section.middle > .steps > .step.pwre > .agree.desc {
+    opacity: 1;
+  }
+
+  .emailsignup.vcomp .page-body > .section.bottom > .tail {
+    width: 100%;
+    background: none;
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+  }
+
+  .emailsignup.vcomp .page-body > .section.bottom > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+
+  .emailsignup.vcomp .page-body > .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+</style>
+
+
+<script type='text/x-template' id='emailsignup-template'>
+  <page
+    class='emailsignup vcomp'
+    :order='session.page.emailsignup.order'
+    :open='session.page.emailsignup.open'
+    :from='session.page.emailsignup.from'
+    :hide_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='section top'></div>
+
+      <div class='section middle'>
+        <div class='steps' :class='{ email:step==0, pw:step==1, pwre:step==2 }'>
+          <div class='step email'>
+            <div class='desc title'><b>이메일을 입력해주세요</b></div>
+            <div class='desc alert'>[[ email_alert ]]</div>
+
+            <div class='action email'>
+              <input type='email' :class='{ highlighten: email_highlighten }' placeholder='이메일주소' spellcheck='false' v-model.trim='session.page.emailsignup.email'>
+            </div>
+
+            <div class='action btns'>
+              <div class='btn full next' :class='{ active: email_next_available }' @click='email_next'>다음</div>
+            </div>
+
+            <div class='desc agree'>약관에 동의하고 가입합니다.</div>
+          </div>
+
+
+          <div class='step pw'>
+            <div class='desc title'><b>비밀번호를 정해주세요</b></div>
+            <div class='desc alert'>[[ pw_alert ]]</div>
+
+            <div class='action pw'>
+              <input type='password' :class='{ highlighten: pw_highlighten }' placeholder='비밀번호' spellcheck='false' v-model.trim='pw'>
+            </div>
+
+            <div class='action btns'>
+              <div class='btn half prev' @click='prev'>이전</div>
+              <div class='btn half next' :class='{ active: pw_next_available }' @click='pw_next'>다음</div>
+            </div>
+
+            <div class='desc agree'>약관에 동의하고 가입합니다.</div>
+          </div>
+
+
+          <div class='step pwre'>
+            <div class='desc title'><b>다시한번 입력해주세요</b></div>
+            <div class='desc alert'>[[ pwre_alert ]]</div>
+
+            <div class='action pwre'>
+              <input type='password' :class='{ highlighten: pwre_highlighten }' placeholder='비밀번호' spellcheck='false' v-model.trim='pwre'>
+            </div>
+
+            <div class='action btns'>
+              <div class='btn half prev' @click='prev'>이전</div>
+              <div class='btn half next signup' :class='{ active: pwre_next_available }' @click='pwre_next'>가입</div>
+            </div>
+
+            <div class='desc agree'>약관에 동의하고 가입합니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class='section bottom'>
+        <div class='tail'>
+          <span class='item' @click='session.open_about()'>회사소개</span>
+          <span class='item' @click='session.open_landing()'>서비스소개</span>
+          <span class='item' @click='session.open_recruit()'>채용</span>
+          <span class='item' @click='session.open_policy()'>약관</span>
+          <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+          <span class='item' @click='session.contact()'>문의</span>
+        </div>
+      </div>
+
+      <div class='cover' v-if='nexting'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('emailsignup', {
+    template: '#emailsignup-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        step: 0,
+        pw: undefined,
+        pwre: undefined,
+        email_alert_mode: undefined,
+        pw_alert_mode: undefined,
+        pwre_alert_mode: undefined,
+        nexting: false,
+      }
+    },
+
+    watch: {
+      'session.page.emailsignup.open': function(_new, _old) {
+        if (_new) {
+          this.step = 0;
+        }
+      },
+
+      email: function(_new, _old) {
+        this.email_check();
+      },
+
+      pw: function(_new, _old) {
+        this.pw_check();
+      },
+
+      pwre: function(_new, _old) {
+        this.pwre_check();
+      }
+    },
+
+    computed: {
+      email: function() {
+        return this.session.page.emailsignup.email
+      },
+
+      email_next_available: function() {
+        return (this.email_alert_mode == undefined) && (this.email != undefined)
+      },
+
+      pw_next_available: function() {
+        return (this.pw_alert_mode == undefined) && (this.pw != undefined)
+      },
+
+      pwre_next_available: function() {
+        return (this.pwre_alert_mode == undefined) && (this.pwre != undefined)
+      },
+
+      email_alert: function() {
+        switch (this.email_alert_mode) {
+          case 'keep_email_format':
+            return '올바른 형식으로 입력해주세요'
+
+          case 'something_wrong':
+            return '오류가 발생했어요'
+
+          default:
+            return ''
+        }
+      },
+
+      pw_alert: function() {
+        switch (this.pw_alert_mode) {
+          case 'limit_length':
+            return '8~20자 이내로 입력해주세요'
+
+          case 'no_whitespace':
+            return '공백을 제거해주세요'
+
+          case 'english_and_number':
+            return '영문과 숫자를 혼합해주세요'
+
+          default:
+            return ''
+        }
+      },
+
+      pwre_alert: function() {
+        switch (this.pwre_alert_mode) {
+          case 'pwre_not_matching':
+            return '정확히 동일하게 입력해주세요'
+
+          case 'something_wrong':
+            return '오류가 발생했어요'
+
+          default:
+            return ''
+        }
+      },
+
+      email_highlighten: function() {
+        return this.email_alert_mode != undefined
+      },
+
+      pw_highlighten: function() {
+        return this.pw_alert_mode != undefined
+      },
+
+      pwre_highlighten: function() {
+        return this.pwre_alert_mode != undefined
+      }
+    },
+
+    methods: {
+      email_check: function() {
+        const reg = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+
+        if (!reg.test(this.email)) {
+          this.email_alert_mode = 'keep_email_format';
+
+        } else {
+          this.email_alert_mode = undefined;
+        }
+      },
+
+      pw_check: function() {
+        // https://java119.tistory.com/71
+        const num = this.pw.search(/[0-9]/g);
+        const eng = this.pw.search(/[a-z]/ig);
+        // var spe = pw.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+
+        if (this.pw.length < 8 || this.pw.length > 20) {
+          this.pw_alert_mode = 'limit_length';
+
+        } else if (this.pw.search(/\s/) != -1) {
+          this.pw_alert_mode = 'no_whitespace';
+
+        } else if (num < 0 || eng < 0) {
+          this.pw_alert_mode = 'english_and_number';
+
+        } else {
+          this.pw_alert_mode = undefined;
+        }
+      },
+
+      pwre_check: function() {
+        if (this.pwre != this.pw) {
+          this.pwre_alert_mode = 'pwre_not_matching';
+
+        } else {
+          this.pwre_alert_mode = undefined;
+        }
+      },
+
+      prev: function() {
+        this.step -= 1;
+      },
+
+      email_next: function() {
+        this.nexting = true;
+
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('email', this.email);
+
+        fetch('/signup/email/check/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+            this.nexting = false;
+
+            switch (js.code) {
+              // 해당 이메일을 사용할수 있는 경우
+              case 0:
+                this.step += 1;
+                // this.session.open_signup_pw(this.email);
+                break;
+
+              case 1:
+                // 해당 이메일이 이미 존재하는 경우
+                this.session.open_accountcheck(js.existing);
+                break;
+
+              default:
+                // 이메일 확인 과정에 문제가 발생한 경우
+                this.alert_mode = 'something_wrong';
+                break;
+            }
+          });
+      },
+
+      pw_next: function() {
+        this.step += 1;
+      },
+
+      pwre_next: function() {
+        this.nexting = true;
+
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('email', this.email);
+        formdata.append('pw', this.pw);
+
+        fetch('/signup/email/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+            this.nexting = false;
+
+            if (js.success) {
+              location.reload();
+              // this.session.user = new User(this.session);
+              // this.session.close_pages_all();
+
+            } else {
+              this.pwre_alert_mode = 'something_wrong';
+            }
+          });
+      }
+    }
+  });
+</script>

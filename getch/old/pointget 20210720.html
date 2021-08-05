@@ -1,0 +1,308 @@
+<style>
+  .pointget.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: all 0.2s;
+    /* background: lightblue; */
+  }
+
+  .pointget.vcomp.menu {
+    transform: translateX(0);
+  }
+
+  .pointget.vcomp.content {
+    transform: translateX(-100%);
+  }
+
+  .pointget.vcomp > .section {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 45px;
+    box-sizing: border-box;
+  }
+
+  .pointget.vcomp > .section.menu {
+    left: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    /* background: lightblue; */
+  }
+
+  .pointget.vcomp > .section.content {
+    left: 100%;
+    /* background: lightpink; */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .pointget.vcomp > .section.menu > .item {
+    position: relative;
+    width: calc((100% - 2 * 8px) / 3);
+    padding-top: calc((100% - 2 * 8px) / 3);
+    background: orange;
+    border-radius: var(--w-3);
+    overflow: hidden;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .pointget.vcomp > .section.menu > .item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(80%);
+  }
+
+  .pointget.vcomp > .section.menu > .item > .title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .pointget.vcomp > .section.content > .goback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pointget.vcomp > .section.content > .goback > img {
+    width: 30%;
+    height: auto;
+    transform: rotate(270deg);
+  }
+
+  .pointget.vcomp > .section.content > .explain {
+    position: relative;
+    /* background: lightblue; */
+    /* height: 100px; */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 12px;
+    color: var(--color-dark);
+  }
+
+  .pointget.vcomp > .section.content > .explain > .title {
+    margin-top: 5px;
+  }
+
+  .pointget.vcomp > .section.content > .explain > .subtitle {
+    margin-top: 5px;
+  }
+
+  .pointget.vcomp > .section.content > .explain > .desc {
+    margin-top: 10px;
+  }
+
+  .pointget.vcomp > .section.content > .illust {
+    position: relative;
+    /* background: lightyellow; */
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pointget.vcomp > .section.content > .illust > img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 90%;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+  }
+</style>
+
+<script type='text/x-template' id='pointget-template'>
+  <div class='pointget vcomp' :class='phase'>
+    <div class='section menu'>
+      <div class='item' @click='go_content(0)'>
+        <img src='/static/materials/imgs/menu/pointget_checkin_balancegame.png'>
+        <div class='title'>
+          <span>출석체크</span>
+          <span>밸런스게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(1)'>
+        <img src='/static/materials/imgs/menu/pointget_daybonus_balancegame.png'>
+        <div class='title'>
+          <span>매일보너스</span>
+          <span>밸런스게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(2)'>
+        <img src='/static/materials/imgs/menu/pointget_daybonus_collection.png'>
+        <div class='title'>
+          <span>매일보너스</span>
+          <span>옷장넣기</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(3)'>
+        <img src='/static/materials/imgs/menu/pointget_badge.png'>
+        <div class='title'>
+          <span>스타일유형</span>
+          <span>뱃지</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(4)'>
+        <img src='/static/materials/imgs/menu/pointget_brandresearch.png'>
+        <div class='title'>
+          <span>브랜드리서치</span>
+          <span>참여</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(5)'>
+        <img src='/static/materials/imgs/menu/pointget_interview.png'>
+        <div class='title'>
+          <span>인터뷰</span>
+          <span>참여</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class='section content'>
+      <div class='goback' @click='go_menu'>
+        <img src='/static/materials/icons/backicon.png'>
+      </div>
+
+      <template v-if='content==0'>
+        <div class='explain'>
+          <span class='title'><b>밸런스게임 참여</b>로 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
+          <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
+          <span class='desc'>위 혹은 아래? 맘에 드는 스타일을 골라 클릭할 때 마다 1P 지급!</span>
+        </div>
+
+        <div class='illust'>
+          <img src='/static/materials/imgs/illust_balancegame.jpg'>
+        </div>
+      </template>
+
+      <template v-else-if='content==1'>
+        <div class='explain'>
+          <span class='title'><b>옷장넣기</b>를 통해서도 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
+          <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
+          <span class='desc'>관심가는 스타일을 즐겨찾기처럼 옷장에 넣을 때 마다 1P 지급!</span>
+        </div>
+
+        <div class='illust'>
+          <img src='/static/materials/imgs/illust_balancegame.jpg'>
+        </div>
+      </template>
+
+      <template v-else-if='content==2'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          매일보너스 옷장넣기
+        </div>
+      </template>
+
+      <template v-else-if='content==3'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          스타일유형 뱃지
+        </div>
+      </template>
+
+      <template v-else-if='content==4'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          브랜드리서치 참여
+        </div>
+      </template>
+
+      <template v-else-if='content==5'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          인터뷰 참여
+        </div>
+      </template>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('pointget', {
+    template: '#pointget-template',
+    delimiters: ['[[', ']]'],
+    props: [ ],
+    data: function() {
+      return {
+        phase: 'menu',
+        content: undefined,
+      }
+    },
+
+    computed: {},
+
+    methods: {
+      go_menu: function() {
+        this.phase = 'menu';
+      },
+
+      go_content: function(what) {
+        this.phase = 'content';
+        this.content = what;
+      }
+    }
+  });
+</script>

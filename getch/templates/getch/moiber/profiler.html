@@ -28,6 +28,7 @@
     transition: all 0.5s;
     position: relative;
     box-sizing: border-box;
+    cursor: pointer;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .profile > * {
@@ -70,6 +71,7 @@
     font-size: 18px;
     margin-top: 20px;
     position: relative;
+    cursor: pointer;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .text {
@@ -78,6 +80,7 @@
     white-space: pre-line;
     text-align: center;
     position: relative;
+    cursor: pointer;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .text > .edit,
@@ -158,6 +161,7 @@
     height: 30px;
     box-sizing: border-box;
     position: relative;
+    cursor: pointer;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .profiles > .labels > .label.selected {
@@ -204,6 +208,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   .profiler.vcomp .page-body > .profiler-body > .actions > .done.action.active {
@@ -215,6 +220,7 @@
 <script type='text/x-template' id='profiler-template'>
   <page
     class='profiler vcomp'
+    :order='session.page.profiler.order'
     :open='session.page.profiler.open'
     :from='session.page.profiler.from'
     :onloading='on_creating'
@@ -339,73 +345,81 @@
       if (this.is_first_profiling) {
         this.show_labels = false;
       }
+
+      this.boo = _.cloneDeep(this.session.user.auth.boo);
+      this.reset_basket();
     },
 
-    watch: {
-      'session.page.profiler.open': {
-        handler: function(_new, _old) {
-          if (_new) {
-            // 새로운걸 만들 일은 없다.... 처음 소셜로그인하면 자동으로 계정이 만들어지므로
-            if (this.session.page.profiler.type == 'new') {
-              console.log('making new profile');
-
-              this.boo = {
-                id: undefined,
-                nick: '',
-                text: '',
-                profile: { id: undefined, pix: undefined, pixblob: undefined },
-                // followees_id: [],
-                // nfollowers: 0,
-                // nposts: 0,
-                // voting_record: {},
-                // posts: undefined,
-
-                genderlabels: [],
-                agelabels: [],
-                stylelabels: [],
-                itemlabels: [],
-
-                // fit: {},
-                // ilikes_comment: [],
-                // active: true
-              };
-
-              const profilepix = '/static/materials/characters/ghost_' + _.sample(['b', 'm', 'p', 'y']) + '.png';
-
-              fetch(profilepix)
-                .then(x => x.blob())
-                .then(blob => {
-                  this.boo.profile.pix = profilepix;
-                  this.boo.profile.pixblob = blob; //URL.createObjectURL(blob);
-                  this.reset_basket();
-                });
-
-
-            } else {
-              this.boo = _.cloneDeep(this.session.user.auth.boo);
-
-              // 새로운 boo가 복사되면서, 기존 boo서 post loading 하던 것들이 사라진다.
-              // 이 부분을 해결하기 위해 아래처럼 기존 boo의 posts를 복사한다
-              // 2021.02.09
-              // this.boo.posts = this.session.user.auth.boo.posts;
-              this.reset_basket();
-            }
-          }
-        }, immediate: true
-      }
-    },
+    // watch: {
+    //   'session.page.profiler.open': {
+    //     handler: function(_new, _old) {
+    //       if (_new) {
+    //         // 새로운걸 만들 일은 없다.... 처음 소셜로그인하면 자동으로 계정이 만들어지므로
+    //         if (this.session.page.profiler.type == 'new') {
+    //           console.log('making new profile');
+    //
+    //           this.boo = {
+    //             id: undefined,
+    //             nick: '',
+    //             text: '',
+    //             profile: { id: undefined, pix: undefined, pixblob: undefined },
+    //             // followees_id: [],
+    //             // nfollowers: 0,
+    //             // nposts: 0,
+    //             // voting_record: {},
+    //             // posts: undefined,
+    //
+    //             genderlabels: [],
+    //             agelabels: [],
+    //             stylelabels: [],
+    //             itemlabels: [],
+    //
+    //             // fit: {},
+    //             // ilikes_comment: [],
+    //             // active: true
+    //           };
+    //
+    //           const profilepix = '/static/materials/characters/ghost_' + _.sample(['b', 'm', 'p', 'y']) + '.png';
+    //
+    //           fetch(profilepix)
+    //             .then(x => x.blob())
+    //             .then(blob => {
+    //               this.boo.profile.pix = profilepix;
+    //               this.boo.profile.pixblob = blob; //URL.createObjectURL(blob);
+    //               this.reset_basket();
+    //             });
+    //
+    //
+    //         } else {
+    //           // this.boo = Object.assign({}, this.boo, _.cloneDeep(this.session.user.auth.boo));
+    //           this.boo = _.cloneDeep(this.session.user.auth.boo);
+    //
+    //           // 새로운 boo가 복사되면서, 기존 boo서 post loading 하던 것들이 사라진다.
+    //           // 이 부분을 해결하기 위해 아래처럼 기존 boo의 posts를 복사한다
+    //           // 2021.02.09
+    //           // this.boo.posts = this.session.user.auth.boo.posts;
+    //           this.reset_basket();
+    //         }
+    //       }
+    //     }, immediate: true
+    //   }
+    // },
 
     methods: {
       edit_boo_text: function() {
         this.session.open_texteditor(this.boo.text, '설명을 입력해주세요', 3, txt_done => {
+          // console.log(this.boo.text, txt_done);
           this.boo.text = txt_done;
+          // this.$set(this.boo, 'text', txt_done);
           this.reset_basket();
         });
       },
 
       edit_boo_nick: function() {
         this.session.open_texteditor(this.boo.nick, '이름', 1, txt_done => {
+          // console.log(this.boo.nick, txt_done);
           this.boo.nick = txt_done;
+          // Vue.set(this.boo, 'nick', txt_done);
           this.reset_basket();
         });
       },

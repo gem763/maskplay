@@ -1,0 +1,335 @@
+<style>
+  .about.vcomp .page-body {
+    background: white;
+  }
+
+  .about.vcomp .page-body > .container {
+    width: 100%;
+    /* height: 200px; */
+    margin-top: var(--w-16);
+    margin-bottom: var(--w-20);
+    background: none;
+    padding-left: var(--w-6);
+    padding-right: var(--w-6);
+    box-sizing: border-box;
+  }
+
+  .about.vcomp .page-body > .container > .section {
+    font-size: 13px;
+    white-space: pre-line;
+  }
+
+  .about.vcomp .page-body > .container > .section > .text {
+    margin-top: var(--w-15);
+    margin-bottom: var(--w-18);
+    padding-left: var(--w-5);
+    padding-right: var(--w-5);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .about.vcomp .page-body > .container > .section > img {
+    width: 100%;
+    height: auto;
+  }
+
+  .about.vcomp .page-body > .container > .section > .journey {
+    background: var(--color-dark);
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    /* border-radius: 50px; */
+    font-size: 12px;
+    width: 200px;
+  }
+
+  .about.vcomp .page-body > .container > .section > .tail {
+    width: 100%;
+    background: none;
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+    margin-bottom: 100px;
+  }
+
+  .about.vcomp .page-body > .container > .section > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  .about.vcomp .page-body > .container > .section.recruit .action {
+    width: 75px;
+    height: 30px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background: var(--color-point);
+    border: 2px solid var(--color-point);
+    color: white;
+    margin-top: 3px;
+    font-size: 12px;
+  }
+
+  .about.vcomp .page-body > .container > .section.recruit > .position-category {
+    font-size: 14px;
+  }
+</style>
+
+<script type='text/x-template' id='about-template'>
+  <page
+    class='about vcomp'
+    :open='session.page.about.open'
+    :from='session.page.about.from'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <!-- <template #headerbar-menu>
+      <div class='item' @click='open_who'>회사소개</div>
+      <div class='item' @click='privacy'>개인정보보호</div>
+      <div class='item' @click='policy'>약관보기</div>
+      <div class='item' @click='suggest'>건의하기</div>
+    </template> -->
+
+    <template #headerbar-body-trans>
+      <span style='font-size:20px;font-weight:bold'>[[ title ]]</span>
+    </template>
+
+    <template #headerbar-body-default>
+      <span style='font-size:20px;font-weight:bold'>[[ title ]]</span>
+    </template>
+
+    <template #page-body>
+      <div class='container'>
+        <div ref='upmost'></div>
+
+        <div class='section who' v-show='is_who'>
+
+          <img src='/static/materials/pages/about2.png'>
+
+          <div class='text'>
+            <p>“요즘 뭐 입어?” 고민될 때?
+              <b>스타일 맞춤연결, 모이버!</b></p>
+
+            <p>팀 모이버는 혁신적인 패션 생태계를 만들어 가는
+               스타일 테크 스타트업 입니다.</p>
+          </div>
+
+          <img src='/static/materials/pages/about3.png'>
+          <div class='text'>
+            <p>대량 생산 시스템과 대중 매체가 유행 이라는 이름으로
+               불특정 다수에게 일방적으로 강요해 온
+               표준 취향과 대세 추종의 시대는 저물고 있습니다.</p>
+
+
+            <p>새로운 물결은 적극적으로 목소리를 높여
+              각각 자기 취향을 찾고
+              양방향 소통을 하며
+              트랜드와 제품을 함께 만들어 나가길 원합니다.</p>
+          </div>
+
+          <img src='/static/materials/pages/about1.png'>
+
+          <div class='text'>
+            <p>모이버는 인공지능의 혁신적인 테크 솔루션으로
+               양방향, 맞춤연결이 가능한 패션 애플리케이션을 만들어
+               마케팅 커뮤니케이션과 브랜드 기획/생산의
+               새로운 패러다임을 만들어 가고 있습니다. </p>
+          </div>
+
+          <img src='/static/materials/pages/about4.png'>
+
+          <div class='text'>
+            <p><b>임동석</b>(@magrittelim)은 모이버를 공동 설립하고
+              CEO로서 전에 없던 롱테일 이코노미 시대의
+              파괴적 혁신적인 패션 솔루션을
+              만들고 있습니다.
+              <!-- 그는 패션 밀리언셀러 기획자로 뉴발란스 574, 아디다스 슈퍼스타 등
+              년간 백만족 이상 판매 된 밀리언셀러를 발굴하고 기획해 왔습니다.
+              이후 YEEZY, 993, 알렉산더왕 등 패션 소비와 마케팅의 패러다임을
+              변화시킨 상징적인 프로젝트들을 중심에서 이끌어 왔습니다.
+              그는 서울대학교에서 건축학을 전공하며
+              시공간의 컨텍스트 속에서 사용자 니즈를 반영한
+              최적의 해결책(텍스트)을 제시하는 훈련을 받았습니다. -->
+            </p>
+            <p style='margin-top:20px;'><b>강세진</b>(@gem763)은 모이버를 공동 설립하고
+              CTO로서 패션에 최적화 된
+              인공지능 모이버 엔진을 설계하고
+              학습시키며 기술적인 혁신으로 아이디어를
+              솔루션으로 진화시키고 있습니다.
+              <!-- 그는 인공지능 개발을 통한 잠재 패턴에서 의미를 발굴하는 전문가 입니다.
+              테크 및 금융투자업계에서 데이터를 기반으로 한 계량 투자 전문 펀드 매니저로서
+              산업 지표에 대한 통찰과 소비자 행동에서 잠재 패턴을 발굴하는 탁월한 능력을 갖췄습니다.
+              그는 서울대학교 기계공학과와 응용수학 석사, MBA 과정을 거쳤습니다. -->
+            </p>
+          </div>
+
+          <!-- <br><br>
+          <hr style='border-top:1px solid black;border-bottom:none;'>
+          <p style='font-size:11px;margin-bottom: 50px;'>주식회사 모이버 | 대표 : 임동석 | 주소 : 서울 서초구 신반포로 315, 2층
+            사업자 등록 번호 : 707-87-01867 | 인터넷 정보 매개업</p> -->
+        </div>
+
+        <div class='section recruit' v-show='is_recruit'>
+          <!-- <img src='/static/materials/pages/moiber_recruit_header.png'> -->
+          <img src='/static/materials/pages/about4.png'>
+
+          <br><br><br><br>
+          <!-- <span style='font-size:20px;font-weight:bold'>모이버 채용정보</span><br><br> -->
+          <!-- <p @click='goto_recruit("designer_intern_0")' style='font-size:14px'>디자인 및 사용자경험 직무<br><strong>주니어 컨텐츠 디자이너(계약직, 인턴)</strong> 서울 마포구<br><span style='font-size:12px;color:lightgray'>자세히 보기</span></p>
+          <p @click='goto_recruit("marketer_intern_0")' style='font-size:14px'>세일즈 및 마케팅 직무<br><strong>주니어 마케터(계약직, 인턴)</strong> 서울 마포구<br><span style='font-size:12px;color:lightgray'>자세히 보기</span></p> -->
+
+
+
+          <p class='position-category'>
+            <div><u>전략기획 직무</u></div>
+            <p @click='goto_recruit("planner_0")'>
+              <b>서비스 기획자(정규직)</b> 서울 서초구
+              <span class='action'><b>보러가기</b></span>
+            </p>
+          </p>
+
+
+          <p class='position-category' style='margin-top:30px;'>
+            <div><u>디자인 및 사용자경험 직무</u></div>
+
+            <!-- <p @click='goto_recruit("designer_junior_0")'>
+              <b>UX/UI 디자이너(정규직)</b> 서울 서초구
+              <span class='action'><b>보러가기</b></span>
+            </p> -->
+
+            <p @click='goto_recruit("contents_designer_0")'>
+              <b>콘텐츠 디자이너(정규직)</b> 서울 서초구
+              <span class='action'><b>보러가기</b></span>
+            </p>
+          </p>
+
+
+          <p class='position-category' style='margin-top:30px;'>
+            <div><u>개발 직무</u></div>
+
+            <p @click='goto_recruit("frontend_developer_junior_0")'>
+              <b>프론트앤드 개발자(정규직)</b> 서울 서초구
+              <span class='action'><b>보러가기</b></span>
+            </p>
+
+            <p @click='goto_recruit("developer_senior_0")'>
+              <b>데이터 사이언티스트(정규직)</b> 서울 서초구
+              <span class='action'><b>보러가기</b></span>
+            </p>
+          </p>
+
+
+          <!-- <br>
+          <p class='position-category'>
+            <div><u>개발 및 데이터분석 직무</u></div>
+
+            <p @click='goto_recruit("developer_senior_0")'>
+              <b>데이터 사이언티스트(정규직)</b> 서울 서초구
+              <span class='action'><b>보러가기</b></span>
+            </p>
+          </p> -->
+
+          <!-- <p class='position-category' @click='goto_recruit("frontend_developer_junior_0")'>모바일웹 개발 직무<br><strong>프론트앤드 개발자(정규직)</strong> 서울 서초구
+            <span class='action'>
+              <b>보러가기</b>
+            </span>
+          </p> -->
+
+          <!-- <p class='position-category' @click='goto_recruit("designer_junior_0")'>디자인 및 사용자경험 직무<br><strong>UX/UI 디자이너(정규직)</strong> 서울 서초구
+            <span class='action'>
+              <b>보러가기</b>
+            </span>
+          </p> -->
+
+          <!-- <p class='position-category' @click='goto_recruit("developer_senior_0")'>개발 및 데이터분석 직무<br><strong>데이터 사이언티스트(정규직)</strong> 서울 서초구
+            <span class='action'>
+              <b>보러가기</b>
+            </span>
+          </p> -->
+          <!-- <p @click='goto_recruit("developer_senior_0")' style='font-size:14px'>개발 및 데이터분석 직무<br><strong>데이터 사이언티스트(정규직)</strong> 서울 서초구<br><span style='font-size:12px;color:lightgray'>자세히 보기</span></p> -->
+        </div>
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('about', {
+    template: '#about-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    watch: {
+      'session.page.about.section': function() {
+        this.goto_upmost();
+      }
+    },
+
+    computed: {
+      is_who: function() {
+        return this.session.page.about.section == 'who'
+      },
+
+      is_recruit: function() {
+        return this.session.page.about.section == 'recruit'
+      },
+
+      title: function() {
+        if (this.is_who) {
+          return '소개'
+
+        } else if (this.is_recruit) {
+          return '채용'
+        }
+      }
+    },
+
+    methods: {
+      open_who: function() {
+        this.session.page.about.section = 'who';
+      },
+
+      open_recruit: function() {
+        this.session.page.about.section = 'recruit';
+      },
+
+      policy: function() {
+        window.open('/policy');
+      },
+
+      privacy: function() {
+        window.open('/privacy');
+      },
+
+      suggest: function() {
+        window.open('mailto:contact@moiber.com');
+      },
+
+      goto_upmost: function() {
+        if (this.$refs) {
+          this.$refs.upmost.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        }
+      },
+
+      goto_recruit: function(position) {
+        this.session.open_infoboard(position);
+      },
+
+      journey: function() {
+        console.log(1);
+      }
+    }
+  });
+</script>

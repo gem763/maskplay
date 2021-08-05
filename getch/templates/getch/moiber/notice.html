@@ -1,0 +1,385 @@
+<style>
+  .notice.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.2s;
+    /* transition-delay: 0.5s; */
+    /* background: orange; */
+    background: rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .notice.vcomp.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .notice.vcomp > .frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    /* height: 50%; */
+    height: calc(var(--width) * 0.9 * 1.25);
+    border-radius: var(--w-3);
+    background: white;
+    transform: translate(-50%, -50%);
+  }
+
+  .notice.vcomp > .frame > .section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 12px;
+  }
+
+  .notice.vcomp > .frame > .section > .title {
+    font-size: var(--w-6);
+  }
+
+  .notice.vcomp > .frame > .section > .desc {
+    color: gray;
+  }
+
+  .notice.vcomp > .frame > .section.header {
+    height: 20%;
+    justify-content: flex-end;
+    /* background: orange; */
+  }
+
+  .notice.vcomp > .frame > .section.content {
+    height: 70%;
+    justify-content: flex-end;
+    /* flex-direction: row; */
+    /* background: lightblue; */
+  }
+
+  .notice.vcomp > .frame > .section.tail {
+    height: 10%;
+    flex-direction: row;
+    /* background: lightblue; */
+  }
+
+  .notice.vcomp > .frame > .section.content > .clock {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    color: gray;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar {
+    width: calc(12% * 7);
+    height: 90%;
+    background: none;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot {
+    position: relative;
+    width: calc(100% / 7);
+    height: calc(100% / 3);
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 90%;
+    padding-top: 90%;
+    background: white;
+    transform: translateX(-50%);
+    border-radius: 30%;
+    border: 1px solid var(--color-dark);
+    /* border: 1px solid rgba(0, 0, 0, 0.2); */
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.checked_in {
+    /* border: 1px solid var(--color-point);
+    background: white; */
+
+    /* border: 1px solid lightgray; */
+    background: lightgray;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.of_today {
+    /* border: 1px solid var(--color-point); */
+    background: var(--color-point);
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp > .ordering {
+    position: absolute;
+    top: 54%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    /* opacity: 0.2; */
+    color: var(--color-dark);
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.checked_in > .ordering {
+    opacity: 1;
+    color: transparent;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.of_today > .ordering {
+    opacity: 1;
+    color: white;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp > .date {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    width: 100%;
+    text-align: center;
+    transform: translateX(-50%);
+    font-size: 10px;
+    opacity: 0;
+    color: var(--color-point)
+  }
+
+  /* .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.of_begin > .date, */
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.of_today > .date {
+    opacity: 1;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp > .bonus {
+    position: absolute;
+    top: 110%;
+    /* left: 50%; */
+    right: 0;
+    width: 170%;
+    text-align: center;
+    /* transform: translateX(-50%); */
+    font-size: 18px;
+    opacity: 1;
+    color: white;
+    background: var(--color-dark);
+    height: 45px;
+    border-radius: 15px;
+    line-height: 16px;
+    white-space: pre;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp > img.checked-in {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp.of_today > img.checked-in,
+  .notice.vcomp > .frame > .section.content > .calendar > .slot > .stamp:not(.checked_in) > img.checked-in {
+    display: none;
+  }
+
+  .notice.vcomp > .frame > .section.tail > .nomore-today-label {
+    margin-left: 3px;
+  }
+</style>
+
+<script type='text/x-template' id='notice-template'>
+  <div class='notice vcomp' :class='{ show: show }' @click='hide'>
+    <div class='frame' @click.stop>
+      <div class='section header'>
+        <div class='title'><b>21일 출석 이벤트</b></div>
+        <div class='desc'>베타테스트 기간 매일 출석시 보너스 토큰 획득!</div>
+      </div>
+
+      <div class='section content'>
+        <div class='calendar'>
+          <div class='slot' v-for='n in 21'>
+            <div class='stamp' :class='{ of_today: is_today(n), of_begin: n==1, checked_in: checked_in(n) }'>
+              <div class='ordering'><b>[[ n ]]</b></div>
+              <!-- <span class='date'>[[ date(n) ]]</span> -->
+              <span class='bonus' v-if='bonus(n)'>+[[ bonus(n) + '\n토큰' ]]</span>
+              <!-- <span class='date begin-or-end'>[[ date(n) ]]</span> -->
+              <!-- <img class='checked-in' v-if='checked_in(n) && !is_today(n)' src='/static/materials/icons/check_icon.png'> -->
+              <img class='checked-in' src='/static/materials/icons/check_icon.png'>
+            </div>
+          </div>
+        </div>
+
+        <div class='clock'>이벤트 종료까지 <b style='color:var(--color-point);margin-left:5px;'> [[ time_remained ]]</b></div>
+      </div>
+
+      <div class='section tail'>
+        <input type="checkbox" id="nomore-today" v-model='nomore_today'>
+        <label class='nomore-today-label' for="nomore-today">오늘은 그만 보기</label>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('notice', {
+    template: '#notice-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        // show: undefined,
+        time_remained: '',
+        interval_id: undefined,
+        nomore_today: false
+      }
+    },
+
+    mounted: function() {
+      this.interval_id = setInterval(() => {
+        if (this.rewards_history) { this.set_deadline(); }
+      }, 60000);
+    },
+
+    watch: {
+      rewards_history: function(_new, _old) {
+        if (_new) {
+          this.set_deadline();
+        }
+      },
+
+      nomore_today: function(_new, _old) {
+        this.session.user.boo.rewards.today.nomore_today = _new;
+      },
+
+      days_to_deadline: function(_new, _old) {
+        if (this.show==undefined && !this.nomore_today) {
+          this.nomore_today = this.session.user.boo.rewards.today.nomore_today;
+
+          if (!this.nomore_today) {
+            this.session.show_notice = true;
+          }
+        }
+      }
+    },
+
+    beforeDestroy () {
+      clearInterval(this.interval_id);
+    },
+
+    computed: {
+      rewards_history: function() {
+        if (this.session.user.boo && this.session.user.boo.profiling_ready) {
+          return this.session.user.boo.rewards.history
+        }
+      },
+
+      // nomore_today: function() {
+      //   if (this.rewards_history) {
+      //     return this.session.user.boo.rewards.today.nomore_today
+      //   }
+      // },
+
+      // show: function() {
+      //   return this.rewards_history && this.session.show_notice && this.time_remained!=''// && !this.nomore_today
+      // },
+
+      show: function() {
+        return this.session.show_notice
+      },
+
+      days_to_deadline: function() {
+        if (this.rewards_history) {
+          return 21 - parseInt(_.findKey(this.rewards_history, ['is_today', true])) - 1
+        }
+      },
+    },
+
+    methods: {
+      // setIntervalAndExecute: function(fn, t) {
+      //     fn();
+      //     return setInterval(fn, t);
+      // },
+
+      hide: function() {
+        this.session.show_notice = false;
+        fetch(`notice/preset?nomore_today=${this.nomore_today}`)
+          .then(x=>x.json())
+          .then(console.log)
+      },
+
+      is_today: function(n) {
+        if (this.rewards_history) {
+          if (n-1 in this.rewards_history) {
+            const _is_today = this.rewards_history[n-1].is_today;
+            const _checkin_reward = this.rewards_history[n-1].checkin_reward;
+            const _bonus_reward = this.rewards_history[n-1].bonus_reward;
+
+            if (_is_today && _checkin_reward==0) {
+              this.rewards_history[n-1].checkin_reward += 10;
+              this.session.user.boo.settle_amount(10, 'checkin');
+            }
+
+            if (_is_today && n==1 && _bonus_reward==0) {
+              this.rewards_history[n-1].bonus_reward += 500;
+              this.session.user.boo.settle_amount(500, 'bonus');
+            }
+
+            return _is_today
+          }
+        }
+      },
+
+      checked_in: function(n) {
+        if (this.rewards_history) {
+          return n-1 in this.rewards_history
+        }
+      },
+
+      date: function(n) {
+        if (this.rewards_history) {
+          if (n-1 in this.rewards_history) {
+            if (this.rewards_history[n-1].is_today) {
+              return '오늘'
+            } else {
+              return this.rewards_history[n-1].date.slice(5)
+            }
+          }
+        }
+      },
+
+      bonus: function(n) {
+        if (n==7) {
+          return 300
+        } else if (n==14) {
+          return 500
+        } else if (n==21) {
+          return 1000
+        }
+      },
+
+      set_deadline: function() {
+        const now = new Date();
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 24, 00, 00);
+        const gap = end.getTime() - now.getTime();
+        let sec = parseInt(gap) / 1000;
+        let hour = parseInt(sec / 60 / 60);
+        sec = (sec - (hour * 60 * 60));
+        let min = parseInt(sec / 60);
+        sec = parseInt(sec - (min * 60));
+
+        this.time_remained = ` ${this.days_to_deadline}일 ${hour}시간 ${min}분`;
+        // this.time_remained = ` ${this.days_to_deadline}일 ${hour}시간 ${min}분 ${sec}초`;
+      },
+    }
+
+  });
+</script>

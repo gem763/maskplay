@@ -140,7 +140,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: calc(var(--w-91) - 2* var(--discover-img-interval));
+    width: calc(var(--w-91) - var(--img-outspace) - var(--img-inspace));
     height: var(--w-10);
     /* background: gray; */
     display: flex;
@@ -160,7 +160,7 @@
     padding-left: 12px;
     padding-right: 12px;
     height: var(--w-9);
-    margin-right: var(--discover-img-interval);
+    margin-right: var(--img-inspace);
     color: var(--color-dark);
     border-radius: var(--w-5);
     font-size: 14px;
@@ -193,7 +193,7 @@
   .collector.vcomp .page-body > .container > .section.collections-bar > .adder {
     position: absolute;
     top: calc(var(--w-1) / 2);
-    left: var(--discover-img-interval);
+    left: var(--img-outspace);
     width: var(--w-9);
     height: var(--w-9);
     display: flex;
@@ -243,8 +243,10 @@
   }
 
   .collector.vcomp .page-body > .container > .section.picks > .picks-container {
-    margin: var(--discover-img-padding);
-    margin-top: 0;
+    /* margin: var(--discover-img-padding); */
+    /* margin-top: 0; */
+    margin-left: var(--img-outpadding);
+    margin-right: var(--img-outpadding);
     height: 100%;
     position: relative;
   }
@@ -300,6 +302,7 @@
 <script type='text/x-template' id='collector-template'>
   <page
     class='collector vcomp'
+    :order='session.page.collector.order'
     :open='session.page.collector.open'
     :from='session.page.collector.from'
     :hide_close='true'
@@ -327,7 +330,7 @@
 
         <div class='section collections-bar'>
           <div class='collections' v-if='myboo && collections'>
-            <span class='collection' :class='{ active: idx==icol, onloading: !col.id }' v-for='(col, idx) in collections' @click='choose(idx)'>
+            <span class='collection' :class='{ active: idx==icol, onloading: !col.id }' v-for='(col, idx) in collections.list' @click='choose(idx)'>
               <i class="fa fa-spinner fa-spin"></i>
               [[col.name]]
             </span>
@@ -389,9 +392,7 @@
     },
 
     watch: {
-      icol: function(_new, _old) {
-
-      }
+      icol: function(_new, _old) { }
     },
 
     computed: {
@@ -423,12 +424,13 @@
 
       collection: function() {
         if (this.collections) {
-          return this.collections[this.icol]
+          return this.collections.list[this.icol]
         }
       },
 
       picks: function() {
         if (this.collection && this.collection.picks) {
+          this.load_picks();
           return this.collection.picks
         }
       },
@@ -439,8 +441,15 @@
     },
 
     methods: {
+      load_picks: function() {
+        const npicks = this.collection.picks.list.length;
+        if (npicks < 10) {
+          this.collection.picks.load(10 - npicks);
+        }
+      },
+
       go_login: function() {
-        this.session.close_pages_all();
+        // this.session.close_pages_all();
         this.session.open_login();
       },
 
@@ -468,30 +477,37 @@
               if (js.success) {
                 pick.id = js.pick_id;
               }
-            })
+            });
+
+          this.myboo.rewarder.settle(1, 'collect');
         }
       },
 
       make_collection: function() {
-        this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
-          const col = {
-            id: undefined,
-            name: txt_done,
-            picks: new Picks(this.session.store),
-            pixids: []
-          }
-
-          this.collections.unshift(col);
-          this.icol = 0;
-
-          fetch(`/collection/create/${col.name}`)
-            .then(x => x.json())
-            .then(js => {
-              if (js.success) {
-                col.id = js.collection_id;
-              }
-            });
-        });
+        if (this.myboo) {
+          this.myboo.make_collection(() => {
+            this.icol = 0;
+          });
+        }
+        // this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
+        //   const col = {
+        //     id: undefined,
+        //     name: txt_done,
+        //     picks: new Picks(this.session),
+        //     pixids: []
+        //   }
+        //
+        //   this.collections.list.unshift(col);
+        //   this.icol = 0;
+        //
+        //   fetch(`/collection/create/${col.name}`)
+        //     .then(x => x.json())
+        //     .then(js => {
+        //       if (js.success) {
+        //         col.id = js.collection_id;
+        //       }
+        //     });
+        // });
       }
     }
   });

@@ -1,0 +1,13 @@
+{{ form.media }}
+
+<div class="img_container">
+  {% if widget.value %}
+    <img class='current' src="{{ widget.value.url }}" style="width:150px;height:auto;">
+  {% endif %}
+
+  <img class='preview' style="width:150px;height:auto;display:none;">
+
+  <p style='padding-left:170px'>
+  {% include "admin/widgets/clearable_file_input.html" %}
+  </p>
+</div>

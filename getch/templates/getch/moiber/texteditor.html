@@ -45,6 +45,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   .texteditor.vcomp .page-body > .actions > .cancel.action {
@@ -59,10 +60,11 @@
 <script type='text/x-template' id='texteditor-template'>
   <page
     class='texteditor vcomp'
+    :order='session.page.texteditor.order'
     :open='session.page.texteditor.open'
     :from='session.page.texteditor.from'
     :hide_headerbar='true'
-    :hide_close='true'
+    :hide_close='false'
     @close='session.close_page()'>
 
     <template #headerbar-menu>
@@ -146,12 +148,12 @@
       },
 
       fix_window_width: function() {
-        const w = document.querySelector('#window').clientWidth;
+        const w = document.querySelector('#moiber > .window').clientWidth;
         document.documentElement.style.setProperty('--width', w + 'px');
       },
 
       release_window_width: function() {
-        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+        document.documentElement.style.setProperty('--width', 'min(var(--width-max), 100vw, calc(100vh * 11 / 16))');
       },
 
       action_done: function() {

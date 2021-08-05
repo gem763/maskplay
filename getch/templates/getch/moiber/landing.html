@@ -120,14 +120,15 @@
     bottom: var(--w-20);
     width: 100%;
     /* background: orange; */
-    font-size: 11px;
-    color: #CCCCCC;
+    font-size: 12px;
+    color: #828282;
     text-align: center;
   }
 
   .landing.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .tail > .item {
     margin-left: 5px;
     margin-right: 5px;
+    cursor: pointer;
   }
 </style>
 
@@ -135,6 +136,7 @@
 <script type='text/x-template' id='landing-template'>
   <page
     class='landing vcomp'
+    :order='session.page.landing.order'
     :open='session.page.landing.open'
     :from='session.page.landing.from'
     :hide_headerbar='true'
@@ -154,23 +156,23 @@
         <div class='swiper-container' ref='swiper'>
           <div class='swiper-wrapper'>
             <div class="swiper-slide">
-              <img src='/static/materials/pages/X - 1.png'>
+              <img src='/static/materials/pages/moiber_landing_01.jpg'>
             </div>
 
             <div class="swiper-slide">
-              <img src='/static/materials/pages/X - 2.png'>
+              <img src='/static/materials/pages/moiber_landing_02.jpg'>
             </div>
 
             <div class="swiper-slide">
-              <img src='/static/materials/pages/X - 3.png'>
+              <img src='/static/materials/pages/moiber_landing_03.jpg'>
             </div>
 
             <div class="swiper-slide">
-              <img src='/static/materials/pages/X - 4.png'>
+              <img src='/static/materials/pages/moiber_landing_04.jpg'>
             </div>
 
             <div class="swiper-slide">
-              <img src='/static/materials/pages/X - 5.png'>
+              <img src='/static/materials/pages/moiber_landing_05.jpg'>
 
               <!-- <div class='slogan'>
                 <div><b>"나, 뭐입어?"</b> 고민될 때?</div>
@@ -181,9 +183,9 @@
                 <span><b>시작하기</b></span>
               </div>
 
-              <div class='contactus'>
+              <!-- <div class='contactus'>
                 Contact us
-              </div>
+              </div> -->
 
               <div class='links'>
                 <div class='link' @click='goto_fb'>
@@ -196,11 +198,11 @@
               </div>
 
               <div class='tail'>
-                <span class='item' @click='open_who'>소개</span>
-                <span class='item' @click='open_recruit'>채용</span>
-                <span class='item' @click='policy'>약관</span>
-                <span class='item' @click='privacy'>개인정보보호</span>
-                <span class='item' @click='suggest'>컨텍트</span>
+                <span class='item' @click='session.open_about()'>회사소개</span>
+                <span class='item' @click='session.open_recruit()'>채용</span>
+                <span class='item' @click='session.open_policy()'>약관</span>
+                <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+                <span class='item' @click='contact'>문의</span>
               </div>
             </div>
           </div>
@@ -244,23 +246,7 @@
     },
 
     methods: {
-      open_who: function() {
-        this.session.open_about('who');
-      },
-
-      open_recruit: function() {
-        this.session.open_about('recruit');
-      },
-
-      policy: function() {
-        window.open('/policy');
-      },
-
-      privacy: function() {
-        window.open('/privacy');
-      },
-
-      suggest: function() {
+      contact: function() {
         window.open('mailto:contact@moiber.com');
       },
 

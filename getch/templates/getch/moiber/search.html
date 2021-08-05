@@ -1,0 +1,608 @@
+<style>
+  .search.vcomp .page-body {
+    background: white;
+  }
+
+  /* .homepixs.vcomp {
+    position: relative;
+    background: white;
+    width: 100%;
+    height: 100%;
+    color: var(--color-dark);
+    overflow-x: hidden;
+  } */
+
+  /* .search.vcomp > .pixs-body {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .homepixs.vcomp > .pixs-body::-webkit-scrollbar {
+    display: none;
+  } */
+
+  .search.vcomp .page-body > .agenda {
+    background: none;
+    font-size: 14px;
+    position: relative;
+    color: var(--color-dark);
+  }
+
+  .search.vcomp .page-body > .collection {
+    /* background: lightpink; */
+    font-size: 13px;
+    position: relative;
+    /* height: var(--w-50); */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .search.vcomp .page-body > .collection > .name {
+    font-size: 20px;
+    width: 100%;
+    text-align: center;
+    margin-top: var(--w-25);
+  }
+
+  .search.vcomp .page-body > .collection > .actions {
+    margin: var(--w-4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .search.vcomp .page-body > .collection > .actions.inactive {
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .search.vcomp .page-body > .collection > .actions > .action {
+    width: var(--w-16);
+    height: var(--w-10);
+    margin: var(--w-1);
+    /* background: orange; */
+    border-radius: var(--w-5);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-dark);
+  }
+
+  .search.vcomp .page-body > .collection > .actions > .action.active {
+    background: var(--color-dark);
+    color: white;
+    pointer-events: none;
+  }
+
+  .search.vcomp .page-body > .collection > .editor {
+    position: absolute;
+    bottom: var(--w-4);
+    /* top: var(--w-2); */
+    right: var(--w-2);
+    width: var(--w-10);
+    height: var(--w-10);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search.vcomp .page-body > .collection > .editor > img {
+    width: 50%;
+    height: auto;
+  }
+
+  .search.vcomp .page-body > .spacer {
+    background: none;
+    /* height: 65px; */
+    height: 150px;
+  }
+
+  .search.vcomp .page-body > .agenda > img.agendapix {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .search.vcomp .page-body > .goback {
+    position: absolute;
+    top: 225px;
+    left: var(--w-2);
+    width: var(--w-10);
+    height: var(--w-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+  }
+
+  .search.vcomp .page-body > .goback.hidden {
+    left: calc((-1) * var(--w-12));
+  }
+
+  .search.vcomp .page-body > .goback > img {
+    width: 50%;
+    height: auto;
+    transform: rotate(270deg) translateY(-10%);
+  }
+
+  .search.vcomp .page-body > .agenda > .owner {
+    margin-top: var(--w-2);
+    padding-left: var(--w-5);
+    height: var(--w-7);
+    position: relative;
+  }
+
+  .search.vcomp .page-body > .agenda > .owner > * {
+    pointer-events: none;
+  }
+
+  .search.vcomp .page-body > .agenda > .owner > .profilepix {
+    position: absolute;
+    width: var(--w-7);
+    height: var(--w-7);
+    object-fit: cover;
+    border-radius: 50%;
+    filter: brightness(95%);
+  }
+
+  .search.vcomp .page-body > .agenda > .owner > .nick {
+    line-height: var(--w-7);
+    margin-left: var(--w-9);
+  }
+
+  .search.vcomp .page-body > .agenda > .desc {
+    margin-top: var(--w-2);
+    padding-left: var(--w-5);
+    padding-right: var(--w-5);
+    margin-bottom: var(--w-3);
+    /* white-space: pre-line;
+    word-wrap: break-word; */
+  }
+
+  .search.vcomp .page-body > .agenda > .actions {
+    margin-top: var(--w-2);
+    padding-left: var(--w-5);
+    padding-right: var(--w-5);
+    margin-bottom: var(--w-3);
+    font-size: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .search.vcomp .page-body > .agenda > .actions > .action {
+    width: var(--w-20);
+    height: var(--w-10);
+    border-radius: var(--w-5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* font-size: 14px; */
+    margin-right: var(--w-2);
+    box-sizing: border-box;
+    box-shadow: 0 4px 6px rgb(0, 0, 0, 0.1);
+    font-size: 14px;
+  }
+
+  .search.vcomp .page-body > .agenda > .actions > .action > * {
+    pointer-events: none;
+  }
+
+  .search.vcomp .page-body > .agenda > .actions > .action.visit {
+    background: white;
+    color: var(--color-dark);
+  }
+
+  .search.vcomp .page-body > .agenda > .actions > .action.collect {
+    background: var(--color-point);
+    color: white;
+  }
+
+  .search.vcomp .page-body > .agenda > .actions > .action > img {
+    height: 50%;
+    width: auto;
+    margin-right: 8%;
+  }
+
+  .search.vcomp .page-body > .agenda > .actions > .action.collect > img {
+    transform: translateY(-3%);
+  }
+
+  .search.vcomp .page-body > .agenda > .divider {
+    height: var(--w-4);
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .search.vcomp .page-body > .container {
+    /* margin: var(--discover-img-padding); */
+    margin-left: var(--img-outpadding);
+    margin-right: var(--img-outpadding);
+    margin-bottom: var(--w-20);
+    position: relative;
+  }
+
+  .search.vcomp .page-body > .container > img.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: auto;
+  }
+
+  .search.vcomp .page-body > .container > .more-similars {
+    font-size: 15px;
+    padding: 10px;
+    color: var(--color-dark);
+  }
+
+  .search.vcomp .page-body > .container > .edit-message {
+    position: relative;
+    font-size: 13px;
+    width: 100%;
+    color: white;
+    height: 0;
+    transition: all 0.5s;
+    overflow: hidden;
+  }
+
+  .search.vcomp .page-body > .container > .edit-message.active {
+    height: var(--w-10);
+    color: var(--color-dark);
+  }
+
+  .search.vcomp .page-body > .container > .edit-message > span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .search.vcomp .page-body > .edit-actions {
+    position: absolute;
+    bottom: calc((-1) * var(--w-15));
+    width: 100%;
+    height: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+    overflow: hidden;
+  }
+
+  .search.vcomp .page-body > .edit-actions.editable {
+    bottom: 0;
+    height: var(--w-15);
+  }
+
+  .search.vcomp .page-body > .edit-actions > .action {
+    width: var(--w-20);
+    height: var(--w-10);
+    border-radius: var(--w-5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-right: var(--w-2);
+    margin-left: var(--w-2);
+    box-sizing: border-box;
+    background: white;
+    border: 2px solid var(--color-dark);
+  }
+
+  .search.vcomp .page-body > .edit-actions > .action.remove {
+    color: white;
+    background: var(--color-message);
+    border: 2px solid var(--color-message);
+    pointer-events: none;
+  }
+
+  .search.vcomp .page-body > .edit-actions > .action.remove.removable {
+    background: var(--color-point);
+    border: 2px solid var(--color-point);
+    pointer-events: auto;
+  }
+
+  .search.vcomp .page-body > .collections {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script type='text/x-template' id='search-template'>
+  <page
+    class='search vcomp'
+    :order='session.page.search.order'
+    :open='session.page.search.open'
+    :from='session.page.search.from'
+    :hide_close='true'
+    :hide_headerbar='true'
+    @scroll='scroll'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='spacer' ref='top'></div>
+
+      <template v-if='category=="pix"'>
+        <div class='agenda' v-if='agenda' ref='top'>
+          <img class='agendapix' :src='agenda.src'>
+
+          <div class='owner' @click='go_agit(agenda)'>
+            <img class='profilepix' :src='agenda_owner.profile.pix' v-if='agenda_owner.profile'>
+            <span class='nick'><b>[[agenda_owner.nick]]</b></span>
+          </div>
+          <div class='desc'>[[agenda.desc]]</div>
+          <div class='actions'>
+            <span class='action visit' v-if='agenda.outlink' @click='visit'>
+              <img src='/static/materials/icons/visit.png'>
+              <span>방문</span>
+            </span>
+
+            <span class='action collect' @click='go_collector(agenda)'>
+              <img src='/static/materials/icons/hanger_white.png'>
+              <span>넣기</span>
+            </span>
+          </div>
+
+          <div class='divider'></div>
+        </div>
+
+        <div class='collection' v-else-if='collection' ref='top'>
+          <div class='name'><b>[[collection.name]]</b></div>
+          <div class='actions' :class='{ inactive: session.editing.on }'>
+            <div class='action' :class='{ active: on_collection }' @click='back_to_collection'><b>옷장</b></div>
+            <div class='action' :class='{ active: on_suggest }' @click='suggest_on_collection'><b>추천</b></div>
+          </div>
+
+          <div class='editor' v-if='is_my_collection' @click='toggle_edit'>
+            <img src='/static/materials/icons/setting_line.png'>
+          </div>
+        </div>
+        <!-- <div class='spacer' v-else ref='top'></div> -->
+
+        <div class='container'>
+          <div class='more-similars' v-if='agenda'>
+            <b>유사스타일 더보기</b>
+          </div>
+
+          <div class='edit-message' :class='{ active: session.editing.on }'>
+            <span>삭제할 스타일을 선택하세요</span>
+          </div>
+
+          <pixs :pixs='pixs' :session='session' v-if='pixs' @choose='choose($event)'></pixs>
+          <picks :picks='picks' :session='session' :ncol='2' :hide_info='false' v-if='picks' @choose='choose($event)'></picks>
+          <img class='loading' src='/static/materials/logos/moiber_logo_splash.gif' v-if='onloading'>
+        </div>
+
+        <div class='goback' :class='goback_status' v-if='backable' @click='goback'>
+          <img src='/static/materials/icons/backicon.png'>
+        </div>
+
+        <div class='edit-actions' :class='{ editable: session.editing.on }'>
+          <span class='action' @click='cancel_edit'>
+            <b>[[session.editing.selected.length>0 ? "취소" : "완료"]]</b>
+          </span>
+
+          <span class='action remove' @click='remove_picks' :class='{ removable: session.editing.selected.length>0 }'>
+            <b>삭제</b>
+          </span>
+        </div>
+      </template>
+
+      <div class='collections' v-else-if='category=="collection"'>
+        <colib :collections='collections' :session='session'></colib>
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('search', {
+    template: '#search-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        collections: undefined
+      }
+    },
+
+    created: function() {
+      this.collections = new Collections(this.session);
+    },
+
+    computed: {
+      category: function() {
+        return this.session.page.search.category
+      },
+
+      is_my_collection: function() {
+        if (this.session.user.has_auth && this.on_collection) {
+          return _.findIndex(this.session.user.boo.collections, ['id', this.collection.id]) > -1
+        }
+      },
+
+      on_collection: function() {
+        return this.collection && this.picks
+      },
+
+      on_suggest: function() {
+        return this.collection && this.pixs
+      },
+
+      backable: function() {
+        return this.pixtory.length > 1
+      },
+
+      pixtory: function() {
+        return this.session.pixtory
+      },
+
+      pixs: function() {
+        return this.pixtory[this.pixtory.length-1].pixs
+      },
+
+      picks: function() {
+        return this.pixtory[this.pixtory.length-1].picks
+      },
+
+      agenda: function() {
+        return this.pixtory[this.pixtory.length-1].agenda
+      },
+
+      agenda_owner: function() {
+        if (this.agenda) {
+          return this.agenda.owner.load()
+        }
+      },
+
+      collection: function() {
+        return this.pixtory[this.pixtory.length-1].collection
+      },
+
+      goback_status: function() {
+        return {
+          hidden: (this.session.scroll_direction == 'down') || (this.session.editing.on)
+        }
+      },
+
+      onloading: function() {
+        if (this.pixs) {
+          return this.pixs.onloading
+
+        } else if (this.picks) {
+          return this.picks.onloading
+        }
+      }
+    },
+
+    methods: {
+      toggle_edit: function() {
+        this.session.editing.on = !this.session.editing.on
+      },
+
+      back_to_collection: function() {
+        this.goback();
+      },
+
+      suggest_on_collection: function() {
+        this.session.pixtory.push({
+          // pixs: new Searchpixs_by_collection(this.session.store, this.collection.id),
+          pixs: new Searchpixs_by_collection(this.session, this.collection.id),
+          collection: this.collection
+        });
+      },
+
+      visit: function() {
+        if (this.agenda) {
+          window.open(this.agenda.outlink);
+        }
+      },
+
+      goback: function() {
+        this.pixtory.pop();
+      },
+
+      go_collector: function(pix) {
+        this.session.open_collector(pix);
+      },
+
+      go_agit: function(pix) {
+        // console.log(pix);
+        // pix.load_owner();
+        this.session.open_agit(pix.owner);
+      },
+
+      choose: function(pix) {
+        // this.pixtory.push({
+        //   agenda: pix,
+        //   pixs: new Searchpixs_by_pix(this.session, pix.id)
+        // });
+        //
+        // this.$nextTick(() => {
+        //   this.$refs.top.scrollIntoView(true);
+        // });
+        this.session.open_search(pix);
+      },
+
+      scroll: function(obj) {
+        this.session.scroll_direction = obj.scroll_direction;
+
+        if (obj.triggered && this.session.scroll_direction=='down') {
+          if (this.category=='pix' && this.pixs && this.pixs.list_onloading.every(p => p.onloading==false)) {
+            this.pixs.load(6);
+
+          } else if (this.category=='pix' && this.picks && this.picks.list_onloading.every(p => p.onloading==false)) {
+            this.picks.load(6);
+
+          } else if (this.category=='collection' && this.collections && this.collections.list_onloading.every(p => p.onloading==false)) {
+            this.collections.load(4);
+          }
+        }
+      },
+
+      remove_picks: function() {
+        const pick_ids = this.session.editing.selected.join(',');
+        const collection_id = this.collection.id;
+
+        fetch(`/collection/${collection_id}/delpicks/${pick_ids}`)
+          .then(x => x.json())
+          .then(js => {
+            console.log(js);
+            if (js.success) { }
+          });
+
+        let where0, where1;
+        this.session.editing.selected.forEach(ipick => {
+          where0 = _.findIndex(this.collection.picks.list, o => {
+            if (o.id == ipick) {
+              where1 = this.collection.pixids.indexOf(o.pix.id);
+              if (where1 > -1)
+                this.collection.pixids.splice(where1, 1);
+
+              return true
+
+            } else {
+              return false
+            }
+          });
+
+          if (where0 > -1)
+            this.collection.picks.list.splice(where0, 1);
+        });
+
+        this.session.editing.selected = [];
+      },
+
+      cancel_edit: function() {
+        this.session.editing.on = false;
+      }
+    }
+  });
+</script>

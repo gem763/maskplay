@@ -1,0 +1,196 @@
+<style>
+  .joystick.vcomp {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: none;
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .joystick.vcomp.hidden {
+    bottom: calc((-1) * var(--w-20));
+  }
+
+  .joystick.vcomp > table {
+    background: rgba(255, 255, 255, 0.75);
+    border-collapse: collapse;
+    border-radius: var(--w-3) var(--w-3) 0 0;
+    box-shadow: 0 0 10px 1px rgb(70, 71, 105, 0.1);
+    pointer-events: auto;
+  }
+
+  .joystick.vcomp > table td {
+    width: var(--w-20);
+    height: 60px;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .joystick.vcomp > table td > img {
+    position: absolute;
+    bottom: 35%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--w-7);
+    height: auto;
+    pointer-events: none;
+  }
+
+  .joystick.vcomp > table td > span {
+    position: absolute;
+    top: 67%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: gray;
+    pointer-events: none;
+  }
+
+  .joystick.vcomp > table td > span.on {
+    font-weight: bold;
+    color: var(--color-point);
+  }
+</style>
+
+<script type='text/x-template' id='joystick-template'>
+  <div class='joystick vcomp' :class='status'>
+    <table>
+      <tbody>
+        <tr>
+          <td class='search' @click='go_search'>
+            <img v-show='!on_search' src='/static/materials/icons/home.png'>
+            <img v-show='on_search' src='/static/materials/icons/action_home.png'>
+            <span :class='{on:on_search}'>홈</span>
+          </td>
+
+          <td class='finder' @click='go_finder'>
+            <img v-show='!on_finder' src='/static/materials/icons/search.png'>
+            <img v-show='on_finder' src='/static/materials/icons/action_search.png'>
+            <span :class='{on:on_finder}'>찾아보기</span>
+          </td>
+
+          <td class='stylevote' @click='go_stylevote'>
+            <img v-show='!on_stylevote' src='/static/materials/icons/reward.png'>
+            <img v-show='on_stylevote' src='/static/materials/icons/action_reward.png'>
+            <span :class='{on:on_stylevote}'>리워드</span>
+          </td>
+
+          <td class='my' @click='go_my'>
+            <img v-show='!on_my' src='/static/materials/icons/profile.png'>
+            <img v-show='on_my' src='/static/materials/icons/action_profile.png'>
+            <span :class='{on:on_my}'>내 프로파일</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('joystick', {
+    template: '#joystick-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      status: function() {
+        return {
+          hidden: ((this.session.scroll_direction == 'down') && (this.on_search))// || this.on_stylevote))
+                    || this.on_agit
+                    || this.on_collector
+                    || this.on_login
+                    || this.on_texteditor
+                    || this.on_pixeditor
+                    || this.on_user_loading
+                    || this.on_landing
+                    || this.on_profiler
+                    || this.session.editing.on
+        }
+      },
+
+      on_my: function() {
+        return (this.session.mode.on=='agit') && (this.session.user.is_myboo(this.session.page.agit.boo))
+      },
+
+      on_finder: function() {
+        return this.session.mode.on=='finder'
+      },
+
+      on_stylevote: function() {
+        return this.session.mode.on=='stylevote'
+      },
+
+      on_search: function() {
+        return this.session.mode.on=='search'
+      },
+
+      on_agit: function() {
+        return (this.session.mode.on=='agit') && !(this.session.user.is_myboo(this.session.page.agit.boo))
+      },
+
+      on_collector: function() {
+        return this.session.mode.on=='collector'
+      },
+
+      on_login: function() {
+        return this.session.mode.on=='login'
+      },
+
+      on_texteditor: function() {
+        return this.session.mode.on=='texteditor'
+      },
+
+      on_pixeditor: function() {
+        return this.session.mode.on=='pixeditor'
+      },
+
+      on_landing: function() {
+        return this.session.mode.on=='landing'
+      },
+
+      on_profiler: function() {
+        return this.session.mode.on=='profiler'
+      },
+
+      on_user_loading: function() {
+        return this.session.user.onloading
+      }
+    },
+
+    methods: {
+      go_search: function() {
+        if (this.session.mode.on=='search') {
+          this.session.refresh();
+
+        } else {
+          this.session.close_pages_all();
+        }
+      },
+
+      go_finder: function() {
+        this.session.open_finder();
+      },
+
+      go_stylevote: function() {
+        this.session.open_stylevote();
+      },
+
+      go_my: function() {
+        this.session.open_my();
+      }
+    }
+  });
+</script>

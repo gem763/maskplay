@@ -22,6 +22,7 @@ import notifications.urls
 urlpatterns = [
     path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('', include(settings.APP + '.urls')),
     # path('', include('getch.urls')),
 ]

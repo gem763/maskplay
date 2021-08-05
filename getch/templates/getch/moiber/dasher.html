@@ -1,0 +1,412 @@
+<style>
+  .dasher.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s;
+    background: none;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  .dasher.vcomp.show.open {
+    background: rgba(255,255,255,0.5);
+    pointer-events: auto;
+  }
+
+  .dasher.vcomp > .panel {
+    position: absolute;
+    bottom: -77px;
+    left: 0;
+    width: 100%;
+    height: 77px;
+    background: rgba(255,255,255,0.8);
+    /* outline: 1px solid #333333; */
+    box-shadow: 0 0 0 0.5px #333 inset;
+    border-radius: 15px 15px 0 0;
+    pointer-events: auto;
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp.show > .panel {
+    bottom: 0;
+  }
+
+  .dasher.vcomp.show.open > .panel {
+    height: calc(100% - 50px);
+    background: white;
+  }
+
+  .dasher.vcomp > .panel > .sections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    bottom: 77px;
+    opacity: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp.show.open > .panel > .sections {
+    opacity: 1;
+  }
+
+  .dasher.vcomp > .panel > .sections > .head {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-bottom: 0.2px solid var(--color-dark);
+    box-sizing: border-box;
+  }
+
+  .dasher.vcomp > .panel > .sections > .head > .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--color-dark);
+  }
+
+  .dasher.vcomp > .panel > .sections > .head > .desc {
+    font-size: 12px;
+    color: var(--color-gray);
+  }
+
+  .dasher.vcomp > .panel > .sections > .content {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    transition: none;
+  }
+
+  .dasher.vcomp.show.open > .panel > .sections > .content {
+    transition: all 0.2s;
+  }
+
+  .dasher.vcomp > .panel.pointget > .sections > .content {
+    transform: translateX(0);
+  }
+
+  .dasher.vcomp > .panel.pointuse > .sections > .content {
+    transform: translateX(-100%);
+  }
+
+  .dasher.vcomp > .panel > .sections > .content > .section {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .dasher.vcomp > .panel > .sections > .content > .section.pointget {
+    left: 0;
+    /* background: lightblue; */
+  }
+
+  .dasher.vcomp > .panel > .sections > .content > .section.pointuse {
+    left: 100%;
+    /* background: lightpink; */
+  }
+
+  .dasher.vcomp > .panel > .monitor {
+    position: absolute;
+    bottom: -77px;
+    left: 0;
+    width: 100%;
+    height: 77px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp > .panel > .monitor.show {
+    bottom: 0;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .point-total {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color-dark);
+  }
+
+  .dasher.vcomp > .panel > .monitor > .point-today {
+    position: absolute;
+    bottom: 20px;
+    left: 16px;
+    font-size: 10px;
+    color: gray;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .action {
+    position: absolute;
+    font-size: 12px;
+    top: 12px;
+    color: var(--color-dark);
+    height: 36px;
+    width: 72px;
+    text-align: center;
+    line-height: 36px;
+    background: #f9f9f9;
+    border-radius: 100px;
+    cursor: pointer;
+  }
+
+  .dasher.vcomp.show.open > .panel.pointget > .monitor > .action.pointget,
+  .dasher.vcomp.show.open > .panel.pointuse > .monitor > .action.pointuse {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .action.pointuse {
+    right: 16px;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .action.pointget {
+    right: calc(16px + 72px + 8px);
+  }
+
+  .dasher.vcomp > .panel > .monitor > .action.pointget.rightmost {
+    right: 16px;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .pbar {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 12px;
+    height: 5px;
+    background: white;
+    border-radius: 100px;
+    /* border: 0.2px solid #828282; */
+    /* border: 1px solid black; */
+    box-shadow: 0 0 0 0.3px #828282 inset;
+    box-sizing: border-box;
+    /* overflow: hidden; */
+  }
+
+  .dasher.vcomp > .panel > .monitor > .pbar > .core {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: var(--color-point);
+    border-radius: 100px;
+  }
+
+  .dasher.vcomp > .panel > .spinner {
+    position: absolute;
+    bottom: -77px;
+    left: 0;
+    width: 100%;
+    height: 77px;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    font-size: 12px;
+    color: var(--color-dark);
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp > .panel > .spinner.show {
+    bottom: 0;
+  }
+
+  .dasher.vcomp > .panel > .spinner > i.fa {
+    font-size: 20px;
+    margin-right: 5px;
+  }
+</style>
+
+<script type='text/x-template' id='dasher-template'>
+  <div class='dasher vcomp' :class='status' @click='close'>
+    <div class='panel' :class='section' @click.stop>
+      <div class='sections'>
+        <div class='head'>
+          <span class='title'>Level - 001</span>
+          <span class='desc'>스타일 레벨을 올리면 리서치/인터뷰 참여 폭이 넓어집니다</span>
+        </div>
+
+        <div class='content'>
+          <div class='section pointget'>
+            <pointget :session='session' @close='close'></pointget>
+          </div>
+
+          <div class='section pointuse'>
+            <pointuse></pointuse>
+          </div>
+        </div>
+      </div>
+
+      <div class='monitor' :class='{ show: !rewards_onloading }'>
+        <div class='point-total'>[[ reward_total ]]P</div>
+        <div class='point-today'>매일획득 [[ reward_today ]] / [[ reward_amount_max_daily ]]</div>
+        <div class='action pointget' :class='{ rightmost: !is_superuser }' @click='toggle_section("pointget")'>포인트획득</div>
+        <div class='action pointuse' @click='toggle_section("pointuse")' v-if='is_superuser'>포인트사용</div>
+        <div class='pbar'>
+          <div class='core' :style='pbar_core_style'></div>
+        </div>
+      </div>
+
+      <div class='spinner' :class='{ show: rewards_onloading }'>
+        <i class="fa fa-spinner fa-spin"></i>
+        포인트 확인 중 입니다...
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('dasher', {
+    template: '#dasher-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        section: undefined,
+        open: false,
+      }
+    },
+
+    watch: {
+      rewards_loaded: function(_new, _old) {
+        if (_new) {
+          if (this.rewards_history) {
+            const of_today = _.find(this.rewards_history, 'is_today');
+
+            if (of_today.checkin_reward == 0) {
+              of_today.checkin_reward += this.rewarder.reward_per_checkin;
+              this.rewarder.settle_amount(this.rewarder.reward_per_checkin, 'checkin');
+            }
+
+            if ((Object.keys(this.rewards_history).length == 1) && (of_today.bonus_reward == 0)) {
+              of_today.bonus_reward += this.rewarder.reward_welcome;
+              this.rewarder.settle_amount(this.rewarder.reward_welcome, 'bonus');
+            }
+          }
+        }
+      }
+    },
+
+    methods: {
+      toggle_section: function(sec) {
+        // this.section = (this.section==sec) ? undefined : sec;
+        // this.open = (this.section==undefined) ? false : true;
+
+        if (this.section == sec) {
+          this.open = false;
+          setTimeout(() => { this.section = undefined }, 300);
+
+        } else {
+          setTimeout(() => { this.open = true; }, 10);
+          this.section = sec;
+        }
+      },
+
+      close: function() {
+        this.toggle_section(this.section);
+      }
+    },
+
+    computed: {
+      status: function() {
+        return {
+          // show: this.rewards_onloading || (true && this.session.on('research', 'stylevote', 'search')),
+          show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search')),
+          open: this.open
+        }
+      },
+
+      is_superuser: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.auth.is_superuser
+        }
+      },
+
+      boo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      rewards_loaded: function() {
+        if (this.boo) {
+          return this.boo.profiling_ready
+        }
+      },
+
+      rewarder: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder
+        }
+      },
+
+      rewards: function() {
+        if (this.rewarder) {
+          return this.rewarder.rewards
+        }
+      },
+
+      rewards_history: function() {
+        if (this.rewards) {
+          return this.rewards.history
+        }
+      },
+
+      rewards_onloading: function() {
+        return this.session.user.has_auth && !this.rewards_loaded
+      },
+
+      reward_total: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder.rewards.total.reward
+
+        } else {
+          return 0
+          // return '---'
+        }
+      },
+
+      reward_today: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder.rewards.today.reward
+
+        } else {
+          return 0
+          // return '--'
+        }
+      },
+
+      reward_amount_max_daily: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder.reward_amount_max_daily
+        } else {
+          return '--'
+        }
+      },
+
+      pbar_core_style: function() {
+        if (this.rewards_loaded) {
+          const pct = this.boo.rewarder.rewards.today.reward / this.reward_amount_max_daily * 100;
+          return {
+            'width': pct + '%'
+          }
+        }
+      },
+    }
+  });
+</script>

@@ -7,6 +7,7 @@ urlpatterns = [
     path('', v.discover, name='discover'),
     # path('profiler', v.profiler, name='profiler'),
     path('company/', v.company, name='company'),
+    path('about/', v.about, name='about'),
     path('company/recruit/', v.company_recruit, name='company_recruit'),
     path('landing/', v.landing, name='landing'),
     path('test/', v.test, name='test'),
@@ -15,7 +16,7 @@ urlpatterns = [
     path('privacy/', v.privacy, name='privacy'),
     path('policy/', v.policy, name='policy'),
     path('recruit/', v.recruit, name='recruit'),
-    path('accounts/', include('allauth.urls')),
+    # path('accounts/', include('allauth.urls')),
     # path('login/', v.Login.as_view(), name='login'),
     path('logout/', v.Logout.as_view(), name='logout'),
     # path('authorpage/<int:boo_id>/', v.authorpage, name='authorpage'),
@@ -48,6 +49,7 @@ urlpatterns = [
     # path('boo/<int:boo_id>/iposts/', v.get_ibooposts, name='get_ibooposts'),
     path('boo/<int:boo_id>/iposts/<str:type>/', v.get_ibooposts, name='get_ibooposts'),
     path('boo/<int:boo_id>/ifollowers/', v.get_ifollowers, name='get_ifollowers'),
+    path('boo/<int:boo_id>/icollections/', v.get_icollections, name='get_icollections'),
 
     path('boo/<int:boo_id>/profile/pix/', v.boo_profilepix, name='boo_profilepix'),
     path('boo/<int:boo_id>/baseboo/', v.get_baseboo, name='get_baseboo'),
@@ -82,9 +84,11 @@ urlpatterns = [
     # path('mbti/<str:type>/result/base/', v.mbtiresult_base, name='mbtiresult_base'),
 
     path('pix/ipixs/', v.get_ipixs, name='get_ipixs'),
+    path('pix/ipixs/comb/<int:n>/', v.get_ipixs_comb, name='get_ipixs_comb'),
     path('pix/<int:pix_id>/', v.get_pix, name='get_pix'),
 
-    path('collection/icols/', v.get_icols, name='get_icols'),
+    path('collection/icols/', v.get_random_icols, name='get_random_icols'),
+    # path('collection/icols/<int:owner_id>/', v.get_icols, name='get_icols'),
     path('collection/create/<str:name>/', v.create_collection, name='create_collection'),
     path('collection/<int:collection_id>/', v.get_collection, name='get_collection'),
     path('collection/<int:collection_id>/base/', v.get_collection_base, name='get_collection_base'),
@@ -95,6 +99,35 @@ urlpatterns = [
 
     path('pick/<int:pick_id>/', v.get_pick, name='get_pick'),
 
+    path('signup/email/', v.email_signup, name='email_signup'),
+    path('signup/email/check/', v.signup_email_check, name='signup_email_check'),
+    path('login/email/', v.email_login, name='email_login'),
+    path('login/social/kakaotalk/', v.kakaotalk_login, name='kakaotalk_login'),
+
+    # path('user/check/account/', v.acount_check, name='acount_check'),
     path('user2/', v.get_user2, name='get_user2'),
     path('user2/other_boos/', v.other_boos2, name='other_boos2'),
+
+    # path('stylevote/<int:ipix_pos>/<int:ipix_neg>/', v.stylevote, name='stylevote'),
+    path('stylevote/', v.stylevote, name='stylevote'),
+    path('settle/', v.settle, name='settle'),
+
+    path('postage/<int:postage_id>/', v.get_postage, name='get_postage'),
+    # path('contentwork/<str:agenda>/', v.get_contentwork, name='get_contentwork'),
+    # path('contentwork/<str:agenda>/ipostages/', v.get_contentwork_ipostages, name='get_contentwork_ipostages'),
+    # path('contentwork/<str:agenda>/resultize/', v.contentwork_resultize, name='contentwork_resultize'),
+
+    path('contentwork/<int:id>/', v.get_contentwork, name='get_contentwork'),
+    path('contentwork/<int:id>/ipostages/', v.get_contentwork_ipostages, name='get_contentwork_ipostages'),
+    path('contentwork/<int:id>/resultize/', v.contentwork_resultize, name='contentwork_resultize'),
+
+    path('postage/<int:postage_id>/contentvote/', v.contentvote, name='contentvote'),
+    path('notice/preset/', v.notice_preset, name='notice_preset'),
+
+    path('research/iresearches/', v.get_iresearches, name='get_iresearches'),
+    # path('research/iresearches/onwork', v.get_iresearches_onwork, name='get_iresearches_onwork'),
+    path('research/<int:research_id>/', v.get_research, name='get_research'),
+    path('research/<int:research_id>/iresearchitems/', v.get_iresearchitems, name='get_iresearchitems'),
+    path('research/item/<int:researchitem_id>/', v.get_researchitem, name='get_researchitem'),
+    path('research/<int:research_id>/item/<int:researchitem_id>/answer/<answer>/', v.researchitem_answer, name='researchitem_answer'),
 ]

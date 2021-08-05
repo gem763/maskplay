@@ -1,0 +1,507 @@
+<style>
+  .contentwork.vcomp .page-body > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper {
+    /* z-index: 0; */
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .outro.swiper-slide {
+    background: white;
+    height: var(--w-50);
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > img {
+    position: absolute;
+    width: var(--square-size);
+    height: auto;
+    bottom: var(--w-20);
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: var(--w-3);
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > .title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: rgba(255,255,255,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > .title > img {
+    width: 100%;
+    height: auto;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .btn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-point);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    width: var(--w-30);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 100px;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .btn.ready {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > .btn {
+    bottom: 55%;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > .btn > .spinner {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+
+  /* .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > .btn.ready {
+    opacity: 1;
+    pointer-events: auto;
+  } */
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .intro.swiper-slide > .btn.ready > .spinner {
+    display: none;
+  }
+
+  .contentwork.vcomp .page-body > .swiper-container > .swiper-wrapper > .outro.swiper-slide > .btn {
+    top: 0;
+  }
+
+  .contentwork.vcomp .page-body > .goback {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: rgba(255,255,255,0.9); */
+    border-radius: 50%;
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+  }
+
+  .contentwork.vcomp .page-body > .goback > img {
+    width: 40%;
+    height: auto;
+    transform: rotate(270deg) translateY(-10%);
+  }
+</style>
+
+
+<script type='text/x-template' id='contentwork-template'>
+  <page
+    class='contentwork vcomp'
+    :order='session.page.contentwork.order'
+    :open='session.page.contentwork.open'
+    :from='session.page.contentwork.from'
+    :onloading='onloading'
+    :hide_close='false'
+    :hide_menu='true'
+    :hide_headerbar='false'
+    :trans_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='swiper-container' ref='swiper'>
+        <div class='swiper-wrapper'>
+          <div class="intro swiper-slide">
+            <img src='/static/materials/mbti/dongne/contents-town-intro.jpg'>
+            <div class='title'>
+              <img src='/static/materials/mbti/dongne/contents-town-title.png'>
+            </div>
+            <div class='btn' :class='!onloading ? "ready" : ""' @click='goto_first'>
+              <span class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </span>
+              시작하기
+            </div>
+          </div>
+
+          <template v-if='!onloading'>
+            <div class="swiper-slide" v-for='c in contentlist'>
+              <postage v-if='c' :post='c' :session='session' :swiper='swiper'></postage>
+            </div>
+          </template>
+
+          <div class="outro swiper-slide" v-if='!onloading'>
+            <div class='btn' :class='result ? "ready" : ""' @click='see_result'>결과보기</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class='goback' @click=''>
+        <img src='/static/materials/icons/backicon.png'>
+      </div> -->
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('contentwork', {
+    template: '#contentwork-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        swiper: undefined,
+        swiper_options: {
+          direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          }
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    watch: {
+      'session.page.contentwork.open': function(_new, _old) {
+        if (_new && this.swiper) {
+          this.swiper.slideTo(0);
+        }
+      },
+
+      iwork: function(_new, _old) {
+        if (_new > _old) {
+          this.session.scroll_direction = 'down';
+        } else {
+          this.session.scroll_direction = 'up';
+        }
+      }
+    },
+
+    methods: {
+      content_of: function(group) {
+        return _.find(this.contents.list, ['group', group])
+      },
+
+      // content_of: function(group, pagination) {
+      //   const cont = _.find(this.contents.list, ['group', group])
+      //
+      //   if (cont && pagination)
+      //     cont.pagination = pagination;
+      //
+      //   return cont
+      // },
+
+      goto_first: function() {
+        this.swiper.slideNext();
+      },
+
+      see_result: function() {
+        if (this.result) {
+          // if (this.session.user.has_auth) {
+          if (this.rewarder) {
+            // this.session.user.boo.contentwork_result[this.agenda] = this.result;
+            // this.$set(this.session.user.boo.contentwork_result, this.agenda, this.result);
+            const researched = this.session.user.boo.researched;
+
+            if (!researched.includes(this.contentwork.id)) {
+              researched.push(this.contentwork.id);
+              this.rewarder.settle_amount(300, 'bonus');
+            }
+
+            const formdata = new FormData();
+            formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+            formdata.append('result', JSON.stringify(this.result));
+            fetch(`/contentwork/${this.contentwork.id}/resultize/`, { method: 'POST', body: formdata })
+              .then(res => res.json())
+              .then(console.log)
+          }
+
+          this.session.open_mbtiresult(this.contentwork.agenda, this.result, this.gender);
+        }
+      },
+
+      vote_state_of: function(content) {
+        if (content) {
+          return this.session.user.has_voted_as(content.id)
+
+        } else {
+          return -1
+        }
+      },
+
+      mixed_feature_of: function(c1, c2, c3) {
+        const cnt = _.countBy([
+          this.vote_state_of(c1),
+          this.vote_state_of(c2),
+          this.vote_state_of(c3)
+        ]);
+
+        if (cnt[0] > 1) {
+          return 'A'
+
+        } else if (cnt[1] > 1) {
+          return 'B'
+
+        } else {
+          return ''
+        }
+      },
+
+      single_feature_of: function(c1) {
+        const state = this.vote_state_of(c1);
+
+        if (state == 0) {
+          return 'A'
+
+        } else if (state == 1) {
+          return 'B'
+
+        } else {
+          return ''
+        }
+      }
+    },
+
+    computed: {
+      boo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      rewards_loaded: function() {
+        if (this.boo) {
+          return this.boo.profiling_ready
+        }
+      },
+
+      rewarder: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder
+        }
+      },
+
+      iwork: function() {
+        if (this.swiper) {
+          return this.swiper.realIndex
+        }
+      },
+
+      contentwork: function() {
+        return this.session.page.contentwork.contents
+      },
+
+      agenda: function() {
+        if (this.contentwork) {
+          return this.contentwork.agenda
+        }
+      },
+
+      contents: function() {
+        if (this.contentwork) {
+          return this.contentwork.postages
+        }
+      },
+
+      content_gender: function() {
+        return this.content_of('mbti-dongne-0')
+      },
+
+      content_type1_1: function() {
+        return this.content_of('mbti-dongne-개성대세-1')
+      },
+
+      content_type1_2: function() {
+        return this.content_of('mbti-dongne-개성대세-2')
+      },
+
+      content_type1_3: function() {
+        return this.content_of('mbti-dongne-개성대세-3')
+      },
+
+      content_type2_1: function() {
+        return this.content_of('mbti-dongne-멋부림무난-1')
+      },
+
+      content_type2_2: function() {
+        return this.content_of('mbti-dongne-멋부림무난-2-' + this.gender)
+      },
+
+      content_type2_3: function() {
+        return this.content_of('mbti-dongne-멋부림무난-3-' + this.gender)
+      },
+
+      content_type3_1: function() {
+        return this.content_of('mbti-dongne-포멀캐쥬얼-1-' + this.gender)
+      },
+
+      content_type3_2: function() {
+        return this.content_of('mbti-dongne-포멀캐쥬얼-2-' + this.gender)
+      },
+
+      content_type3_3: function() {
+        return this.content_of('mbti-dongne-포멀캐쥬얼-3-' + this.gender)
+      },
+
+      content_type4: function() {
+        return this.content_of('mbti-dongne-도시휴양지')
+      },
+
+      contentlist: function() {
+        return [
+          this.content_gender,
+          this.content_type1_1,
+          this.content_type1_2,
+          this.content_type2_1,
+          this.content_type3_1,
+          this.content_type1_3,
+          this.content_type3_2,
+          this.content_type2_2,
+          this.content_type3_3,
+          this.content_type2_3,
+          this.content_type4
+        ]
+      },
+
+      onloading: function() {
+        return this.content_gender ? false : true
+      },
+
+      gender: function() {
+        if (this.content_gender && this.vote_state_of(this.content_gender)==0) {
+          return 'w'
+        } else {
+          return 'm'
+        }
+      },
+
+      final_feature: function() {
+        const feat1 = this.mixed_feature_of(this.content_type1_1, this.content_type1_2, this.content_type1_3)
+        const feat2 = this.mixed_feature_of(this.content_type2_1, this.content_type2_2, this.content_type2_3)
+        const feat3 = this.mixed_feature_of(this.content_type3_1, this.content_type3_2, this.content_type3_3)
+        const feat4 = this.single_feature_of(this.content_type4)
+        return feat1 + feat2 + feat3 + feat4
+      },
+
+      result: function() {
+        const _result = {};
+        const _final_feature = this.final_feature;
+
+        if (_final_feature.length==4) {
+          const feat1 = _final_feature[0];
+          if (feat1 == 'A') {
+            _result[1] = '트랜드추구';
+          } else if (feat1 == 'B') {
+            _result[1] = '개성추구'
+          }
+
+          const feat2 = _final_feature[1];
+          if (feat2 == 'A') {
+            _result[2] = '맥시멀리스트';
+          } else if (feat2 == 'B') {
+            _result[2] = '미니멀리스트'
+          }
+
+          const feat3 = _final_feature[2];
+          if (feat3 == 'A') {
+            _result[3] = '포멀러버';
+          } else if (feat3 == 'B') {
+            _result[3] = '캐주얼러버'
+          }
+
+          switch(_final_feature) {
+            case 'BABA':
+            case 'BABB':
+              // return '강남'
+              _result[0] = '강남'
+              break;
+
+            case 'AABA':
+              // return '이태원'
+              _result[0] = '이태원'
+              break;
+
+            case 'AAAA':
+            case 'AAAB':
+              // return '청담'
+              _result[0] = '청담'
+              break;
+
+            case 'ABBA':
+            case 'ABBB':
+              // return '노량진'
+              _result[0] = '노량진'
+              break;
+
+            case 'AABB':
+              // return '제주도'
+              _result[0] = '제주도'
+              break;
+
+            case 'BAAA':
+            case 'BAAB':
+              // return '테헤란'
+              _result[0] = '테헤란'
+              break;
+
+            case 'BBAA':
+            case 'BBAB':
+            case 'ABAA':
+            case 'ABAB':
+              // return '여의도'
+              _result[0] = '여의도'
+              break;
+
+            case 'BBBA':
+            case 'BBBB':
+              // return '판교'
+              _result[0] = '판교'
+              break;
+          }
+
+          return _result
+        }
+      }
+    }
+  });
+</script>

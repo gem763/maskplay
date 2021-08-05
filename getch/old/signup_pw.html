@@ -1,0 +1,309 @@
+<style>
+  .signup_pw.vcomp .page-body {
+    width: 100%;
+    height: 100%;
+    background: white;
+    font-size: 12px;
+  }
+
+  .signup_pw.vcomp .page-body > .section {
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .signup_pw.vcomp .page-body > .section.top {
+    height: 20%;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle {
+    height: 60%;
+    background: white;
+  }
+
+  .signup_pw.vcomp .page-body > .section.bottom {
+    height: 20%;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action {
+    width: var(--w-50);
+    height: var(--w-10);
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 4%;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action.signup {
+    margin-bottom: 0;
+    background: var(--color-dark);
+    border-radius: var(--w-3);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action.signup.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action > input {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: var(--w-3);
+    box-sizing: border-box;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: var(--color-dark);
+    border-style: solid;
+    text-align: center;
+    /* background: lightblue; */
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action > input.highlighten {
+    border: 1px solid var(--color-point);
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action > input:focus {
+    outline: none;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .action > input::placeholder {
+    text-align: center;
+    font-weight: normal;
+    color: rgba(0,0,0,0.2);
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .desc {
+    width: 100%;
+    text-align: center;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .title.desc {
+    margin-bottom: 5%;
+    font-size: 20px;
+  }
+
+  .signup_pw.vcomp .page-body > .section.middle > .alert.desc {
+    margin-bottom: 5%;
+    color: var(--color-point);
+    height: 12px;
+  }
+
+  .signup_pw.vcomp .page-body > .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+</style>
+
+
+<script type='text/x-template' id='signup-pw-template'>
+  <page
+    class='signup_pw vcomp'
+    :order='session.page.signup_pw.order'
+    :open='session.page.signup_pw.open'
+    :from='session.page.signup_pw.from'
+    :hide_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='section top'></div>
+
+      <div class='section middle'>
+        <div class='desc title'><b>비밀번호를 정해주세요</b></div>
+        <div class='desc alert'>[[ alert ]]</div>
+
+        <div class='action pw'>
+          <input type='password' :class='{ highlighten: pw_highlighten }' placeholder='비밀번호' spellcheck='false' v-model.trim='pw' @blur='pw_checkon'>
+        </div>
+
+        <div class='action pwre'>
+          <input type='password' :class='{ highlighten: pwre_highlighten }' placeholder='비밀번호 확인' spellcheck='false' v-model.trim='pwre' @blur='pwre_checkon'>
+        </div>
+
+        <div class='action signup' :class='{ active: signup_available }' @click='signup'>가입하기</div>
+      </div>
+
+      <div class='section bottom'></div>
+
+      <div class='cover' v-if='signuping'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('signup-pw', {
+    template: '#signup-pw-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        pw: '',
+        pwre: '',
+        pw_onchecking: false,
+        pwre_onchecking: false,
+        alert_mode: undefined,
+        signuping: false,
+      }
+    },
+
+    watch: {
+      pw: function(_new, _old) {
+        if (this.pw_onchecking) {
+          this.pw_check(true);
+        }
+      },
+
+      pwre: function(_new, _old) {
+        if (this.pwre_onchecking) {
+          this.pwre_check(true);
+        }
+      }
+      // signup_available: function(_new, _old) {
+      //   if (_new) {
+      //     this.alert_mode = undefined;
+      //
+      //   } else {
+      //     this.alert_mode = 'keep_email_format';
+      //   }
+      // }
+    },
+
+    computed: {
+      signup_available: function() {
+        // const reg = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        // return reg.test(this.email)
+      },
+
+      alert: function() {
+        switch (this.alert_mode) {
+          case 'limit_length':
+            return '8~20자 이내로 입력해주세요'
+
+          case 'no_whitespace':
+            return '공백을 제거해주세요'
+
+          case 'english_and_number':
+            return '영문과 숫자를 혼합해주세요'
+
+          case 'recheck':
+            return '비밀번호를 다시한번 확인해주세요'
+
+          default:
+            return ''
+        }
+      },
+
+      pw_highlighten: function() {
+        return (this.alert_mode == 'limit_length')
+                || (this.alert_mode == 'no_whitespace')
+                || (this.alert_mode == 'english_and_number')
+      },
+
+      pwre_highlighten: function() {
+        return this.alert_mode == 'recheck'
+      }
+    },
+
+    methods: {
+      pw_checkon: function() {
+        this.pw_onchecking = true;
+        this.pw_check(true);
+      },
+
+      pwre_checkon: function() {
+        this.pwre_onchecking = true;
+        this.pwre_check(true);
+      },
+
+      pw_check: function(with_pwre_check) {
+        // https://java119.tistory.com/71
+        const num = this.pw.search(/[0-9]/g);
+        const eng = this.pw.search(/[a-z]/ig);
+        // var spe = pw.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+
+        if (this.pw.length < 8 || this.pw.length > 20) {
+          this.alert_mode = 'limit_length';
+
+        } else if (this.pw.search(/\s/) != -1) {
+          this.alert_mode = 'no_whitespace';
+
+        } else if (num < 0 || eng < 0) {
+          this.alert_mode = 'english_and_number';
+
+        } else if (with_pwre_check) {
+          this.pwre_check(false);
+
+        } else {
+          this.alert_mode = undefined;
+        }
+      },
+
+      pwre_check: function(with_pw_check) {
+        if (this.pwre != this.pw) {
+          this.alert_mode = 'recheck';
+
+        } else if (with_pw_check) {
+          this.pw_check(false);
+
+        } else {
+          this.alert_mode = undefined;
+        }
+      },
+
+      signup: function() {
+        this.signuping = true;
+
+        const formdata = new FormData();
+        formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+        formdata.append('email', this.email);
+
+        fetch('/signup/email/check/', { method: 'POST', body: formdata })
+          .then(res => res.json())
+          .then(js => {
+            console.log(js);
+            this.signuping = false;
+
+            switch (js.code) {
+              // 해당 이메일을 사용할수 있는 경우
+              case 0:
+
+                break;
+
+              case 1:
+                // 해당 이메일이 이미 존재하는 경우
+                this.session.open_accountcheck(js.existing);
+                break;
+
+              default:
+                // 이메일 확인 과정에 문제가 발생한 경우
+                this.alert_mode = 'something_wrong';
+                break;
+            }
+          });
+      }
+    }
+  });
+</script>

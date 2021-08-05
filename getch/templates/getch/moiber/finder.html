@@ -8,7 +8,8 @@
   }
 
   .finder.vcomp .page-body > .searcher {
-    height: var(--w-17);
+    /* height: var(--w-17); */
+    height: 114px;
     /* background: lightpink; */
     width: 100%;
     position: relative;
@@ -23,7 +24,8 @@
   .finder.vcomp .page-body > .searcher > .search-bar {
     position: relative;
     width: 90%;
-    height: var(--w-12);
+    height: 45px;
+    /* height: var(--w-12); */
     /* background: orange; */
   }
 
@@ -32,12 +34,13 @@
     height: 100%;
     font-size: 14px;
     font-weight: bold;
-    border: 2px solid var(--color-dark);
+    border: 1px solid rgba(228,228,228,0.6);
     border-radius: var(--w-4);
     box-sizing: border-box;
     padding-left: var(--w-5);
     padding-right: var(--w-12);
     color: var(--color-dark);
+    border-style: solid;
   }
 
   .finder.vcomp .page-body > .searcher > .search-bar > input:focus {
@@ -48,7 +51,7 @@
     padding-left: var(--w-7);
     text-align: center;
     font-weight: normal;
-    color: var(--color-message);
+    color: #333333;
   }
 
   .finder.vcomp .page-body > .searcher > .search-bar > .button {
@@ -64,7 +67,7 @@
   }
 
   .finder.vcomp .page-body > .searcher > .search-bar > .button > img {
-    width: 60%;
+    width: 30%;
     height: auto;
   }
 
@@ -112,9 +115,12 @@
   }
 
   .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-wrapper > .swiper-slide > img {
-    width: 100%;
+    /* width: 100%; */
     height: auto;
     pointer-events: auto;
+    width: calc(100% - 2*var(--discover-col-interval));
+    margin-left: var(--discover-col-interval);
+    border-radius: var(--w-3);
   }
 
   .finder.vcomp .page-body > .section.banner > .swiper-container > .swiper-pagination {
@@ -220,6 +226,7 @@
 <script type='text/x-template' id='finder-template'>
   <page
     class='finder vcomp'
+    :order='session.page.finder.order'
     :open='session.page.finder.open'
     :from='session.page.finder.from'
     :hide_close='true'
@@ -241,7 +248,7 @@
           <input v-model.trim='keywords' @keyup.enter='run_search' placeholder='스타일을 검색해보세요' spellcheck="false" ref='input'>
 
           <div class='button' @click='run_search'>
-            <img src='/static/materials/icons/search_bar.png'>
+            <img src='/static/materials/icons/search_window.png'>
           </div>
         </div>
       </div>
@@ -250,11 +257,11 @@
         <div class='swiper-container' ref='swiper'>
           <div class='swiper-wrapper'>
             <div class="swiper-slide">
-              <img src='/static/materials/pages/moiber_banner.png' @click='session.open_landing()'>
+              <img src='/static/materials/pages/moiber_banner_01.png' @click='session.open_landing()'>
             </div>
 
             <div class="swiper-slide">
-              <img src='/static/materials/mbti/dongne/banner.png' @click='session.open_mbti()'>
+              <img src='/static/materials/pages/moiber_banner_02.png' @click='session.open_contentwork("동네스타일")'>
             </div>
           </div>
 
@@ -455,25 +462,25 @@
           this.$refs.input.blur();
         }
 
-        this.session.keyset_sampling();
+        // this.session.keyset_sampling();
         this.session.keywording(this.keywords);
         this.session.close_page();
       },
 
       run_searchkeys: function(what) {
         console.log(what);
-        this.session.keyset_sampling();
+        // this.session.keyset_sampling();
         this.session.keywording(what);
         this.session.close_page();
       },
 
       fix_window_width: function() {
-        const w = document.querySelector('#window').clientWidth;
+        const w = document.querySelector('#moiber > .window').clientWidth;
         document.documentElement.style.setProperty('--width', w + 'px');
       },
 
       release_window_width: function() {
-        document.documentElement.style.setProperty('--width', 'min(100vw, calc(100vh * 11 / 16))');
+        document.documentElement.style.setProperty('--width', 'min(var(--width-max), 100vw, calc(100vh * 11 / 16))');
       },
 
       scroll: function(triggered) {

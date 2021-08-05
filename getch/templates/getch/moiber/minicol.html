@@ -31,13 +31,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    text-align: center; */
     font-size: 24px;
     color: white;
-    /* opacity: 0; */
     transition: all 0.5s;
     display: flex;
     align-items: center;
@@ -61,13 +56,7 @@
   .minicol.vcomp > .cover.default {
     opacity: 1;
     background: white;
-    /* opacity: 0.3; */
   }
-
-  /* .minicol.vcomp > .name.blank {
-    color: black;
-    background: white;
-  } */
 
   .minicol.vcomp > .cover.loaded {
     opacity: 1;
@@ -82,16 +71,11 @@
     opacity: 0;
     text-align: center;
     color: white;
-    /* color: var(--color-message); */
   }
 
   .minicol.vcomp > .name > .message.empty {
     opacity: 1;
   }
-
-  /* .minicol.vcomp > .name.blank > .message {
-    opacity: 1;
-  } */
 </style>
 
 <script type='text/x-template' id='minicol-template'>
@@ -131,21 +115,30 @@
     },
 
     computed: {
+      picks: function() {
+        return this.collection.picks
+      },
+
       pick_0: function() {
-        if (this.collection.picks.list) {
-          // console.log(this.collection.picks.list[0])
-          return this.collection.picks.list[0]
+        if (this.picks && this.picks.list) {
+          return this.picks.list[0]
         }
+        // return this.collection.picks.list[0]
       },
 
       coverpix: function() {
         if (this.pick_0 && this.pick_0.pix) {
-          return this.pick_0.pix.src
+          return this.pick_0.pix.load().src
         }
+        // return this.pick_0.pix.load().src
       },
 
       is_empty: function() {
-        return (!this.collection.picks.onloading && (this.collection.picks.list.length == 0)) && this.collection.id
+        if (this.picks && this.picks.list) {
+          return (!this.picks.onloading && (this.picks.list.length == 0)) && this.collection.id
+        }
+
+        // return (!this.collection.picks.onloading && (this.collection.picks.list.length == 0)) && this.collection.id
       }
     },
 

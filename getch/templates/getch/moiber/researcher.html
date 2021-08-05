@@ -1,0 +1,80 @@
+<style>
+  .researcher.vcomp .page-body {
+    background: white;
+  }
+
+  .researcher.vcomp .page-body > .spacer {
+    width: 100%;
+    position: relative;
+  }
+
+  .researcher.vcomp .page-body > .spacer.head {
+    height: 100px;
+  }
+
+  .researcher.vcomp .page-body > .spacer.tail {
+    height: 100px;
+  }
+</style>
+
+<script type='text/x-template' id='researcher-template'>
+  <page
+    class='researcher vcomp'
+    :order='session.page.researcher.order'
+    :open='session.page.researcher.open'
+    :from='session.page.researcher.from'
+    :hide_close='true'
+    :hide_headerbar='true'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-trans>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='spacer head'></div>
+      <researchcard :session='session'></researchcard>
+      <researchcard :session='session' :research='r' v-for='r in researches_list' :key='r.id'></researchcard>
+      <!-- <researchcard :session='session' :research='r' v-for='r in researches.list' :key='r.id'></researchcard> -->
+      <div class='spacer tail'></div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('researcher', {
+    template: '#researcher-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      researches: function() {
+        return this.session.researches
+      },
+
+      is_superuser: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.auth.is_superuser
+        }
+      },
+
+      researches_list: function() {
+        if (this.is_superuser) {
+          return this.researches.list
+
+        } else {
+          return _.filter(this.researches.list, 'published')
+        }
+      }
+    }
+  });
+</script>

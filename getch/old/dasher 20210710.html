@@ -1,0 +1,786 @@
+<style>
+  .dasher.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s;
+    /* transition-delay: 0.3s; */
+    background: none;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  .dasher.vcomp.maximized {
+    background: rgba(0,0,0,0.5);
+    pointer-events: auto;
+  }
+
+  .dasher.vcomp > .container {
+    position: absolute;
+    bottom: calc((-1) * var(--dasher-height-min));
+    /* top: 0; */
+    left: 0;
+    width: var(--width);
+    height: var(--dasher-height-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* scrollbar-width: none; */
+    font-size: 11px;
+    background: rgba(255,255,255,0.75);
+    transition: all 0.2s;
+    pointer-events: auto;
+    border-radius: 0 0 var(--w-3) var(--w-3);
+    overflow: hidden;
+  }
+
+  .dasher.vcomp.show > .container {
+    bottom: 0;
+  }
+
+  .dasher.vcomp.show.expanded > .container {
+    height: var(--dasher-height-expanded);
+    background: white;
+  }
+
+  .dasher.vcomp.maximized > .container {
+    height: 600px;
+    background: whitesmoke;
+  }
+
+  .dasher.vcomp .bt {
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    /* margin: 15px; */
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* border: 2px solid var(--color-dark); */
+    color: var(--color-dark);
+  }
+
+  /* .dasher.vcomp > .container.ask-login > .bt.login {
+    width: var(--w-30);
+    height: var(--w-10);
+    font-size: 14px;
+  } */
+
+  .dasher.vcomp > .container.rewards > .spinner {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    color: var(--color-dark);
+    transition: top 0.3s;
+  }
+
+  .dasher.vcomp > .container.rewards > .spinner > i.fa {
+    font-size: 20px;
+    margin-right: 5px;
+  }
+
+  .dasher.vcomp > .container.rewards > .spinner.show {
+    top: 50%;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor {
+    position: absolute;
+    /* top: 0; */
+    top: -100%;
+    width: 100%;
+    /* height: var(--dasher-height-min); */
+    height: 100%;
+    font-size: 10px;
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor.show {
+    top: 0;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > img.tokens {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    width: 60px;
+    height: auto;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > img.tokens {
+    opacity: 1;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .monitor-section {
+    position: absolute;
+    top: 0;
+    height: var(--dasher-height-min);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .logo.monitor-section {
+    width: 60px;
+    left: 0;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .amounts.monitor-section {
+    /* left: 60px; */
+    width: calc(50% - 80px / 2);
+    /* width: calc(50% - 60px - 80px / 2); */
+    /* text-align: center; */
+    text-align: left;
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .amounts.monitor-section {
+    top: 80px;
+    left: 5px;
+    width: calc(50% - 80px / 2);
+    /* width: calc(50% - 60px - 80px / 2); */
+    text-align: left;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .actions.monitor-section {
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .actions.monitor-section {
+    top: 50%;
+  }
+
+  .dasher.vcomp.maximized > .container.rewards > .monitor > .actions.monitor-section {
+    opacity: 0;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .earn.monitor-section {
+    right: 80px;
+    width: 65px;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .spend.monitor-section {
+    right: 15px;
+    width: 65px;
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .earn.monitor-section,
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .spend.monitor-section {
+    opacity: 0;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .logo.monitor-section > img {
+    width: 75%;
+    height: auto;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .amounts.monitor-section > div > span.total {
+    font-size: 12px;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .amounts.monitor-section > div > span.today {
+    color: gray;
+    font-size: 10px;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .actions.monitor-section > .pbar {
+    position: relative;
+    width: 60px;
+    height: 5px;
+    background: white;
+    margin-top: -2px;
+    border-radius: 100px;
+    transition: all 0.3s;
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .actions.monitor-section > .pbar {
+    height: 8px;
+    width: 80px;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .actions.monitor-section > .counter > span.n {
+    font-size: 28px;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .actions.monitor-section > .counter > span.cycle {
+    font-size: 18px;
+    display: none;
+    /* opacity: 0; */
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .actions.monitor-section > .counter > span.n {
+    font-size: 36px;
+  }
+
+  .dasher.vcomp.expanded > .container.rewards > .monitor > .actions.monitor-section > .counter > span.cycle {
+    display: inline;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .actions.monitor-section > .pbar > .pbar-core {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .dasher.vcomp.maximized > .container.rewards > .monitor > .actions.monitor-section > .pbar > .pbar-core {
+    background: white;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .actions.monitor-section > .pbar > .pbar-core > .pbar-filler {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: var(--color-point);
+    transition: width 0.2s;
+    border-radius: 0 100px 100px 0;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .earn.monitor-section > .bt,
+  .dasher.vcomp > .container.rewards > .monitor > .spend.monitor-section > .bt {
+    width: 60px;
+    height: 34px;
+    font-size: 11px;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .earn.monitor-section > .bt {
+    background: var(--color-point);
+    color: white;
+  }
+
+  .dasher.vcomp > .container.rewards > .monitor > .earn.monitor-section > .bt.pointed,
+  .dasher.vcomp > .container.rewards > .monitor > .spend.monitor-section > .bt.pointed {
+    background: var(--color-dark);
+    border: 2px solid var(--color-dark);
+    color: white;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen {
+    position: absolute;
+    top: var(--dasher-height-min);
+    width: 200%;
+    bottom: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen.on_earning {
+    left: 0;
+    opacity: 1;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen.on_spending {
+    left: -100%;
+    opacity: 1;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.earning {
+    left: 0;
+    /* background: lightblue; */
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.spending {
+    left: 50%;
+    /* background: lightpink; */
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group > .section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+    flex-direction: column;
+    font-size: 12px;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.earning > .section.header {
+    height: 15%;
+    /* background: lightblue; */
+    justify-content: flex-end;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.earning > .section.content {
+    height: 20%;
+    /* background: lightpink; */
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.spending > .section.header {
+    height: 42%;
+    /* background: lightblue; */
+    justify-content: flex-end;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.spending > .section.content {
+    height: 58%;
+    /* background: lightpink; */
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.spending > .section.content > .coupon {
+    width: 30%;
+    height: auto;
+    margin: 20px;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.earning > .section.content > .block {
+    position: relative;
+    width: 25%;
+    padding-top: 25%;
+    /* margin: 3%; */
+    /* background: orange; */
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group.earning > .section.content > .block > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group > .section.tail {
+    height: 20%;
+    /* background: orange; */
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group > .section > .title {
+    font-size: 24px;
+  }
+
+  .dasher.vcomp > .container.rewards > .screen > .group > .section > .desc {
+    font-size: 12px;
+    color: gray;
+  }
+
+  /* .dasher.vcomp > .container.rewards > .screen > .group > .section.tail > .bt {
+    width: 100%;
+    height: var(--w-10);
+    font-size: 24px;
+    background: none;
+    box-shadow: none;
+  } */
+
+  .dasher.vcomp > .alerter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .dasher.vcomp > .alerter.show {
+    background: rgba(0, 0, 0, 0.1);
+    pointer-events: auto;
+  }
+
+  .dasher.vcomp > .alerter > .alertbox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.9);
+    transform: translate(-50%, -50%);
+    border-radius: var(--w-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: all 0.2s;
+    opacity: 0;
+  }
+
+  .dasher.vcomp > .alerter.show > .alertbox {
+    opacity: 1;
+  }
+
+  .dasher.vcomp > .alerter > .alertbox > span {
+    font-size: 13px;
+  }
+
+  .dasher.vcomp > .alerter > .alertbox > .bt {
+    width: var(--w-30);
+    height: var(--w-10);
+    background: var(--color-point);
+    color: white;
+    margin-top: 10px;
+  }
+</style>
+
+<script type='text/x-template' id='dasher-template'>
+  <div class='dasher vcomp' :class='status' @click='minimize'>
+    <div class='container rewards' @click.stop>
+      <!-- <div class='monitor' :class='{ show: rewards_loaded }'> -->
+      <div class='monitor' :class='{ show: !rewards_onloading }'>
+        <!-- <div class='monitor-section logo'>
+          <img src='/static/materials/logos/logo.png'>
+        </div> -->
+
+        <div class='monitor-section amounts'>
+          <div>
+            <span class='total'><b>내토큰 [[ reward_total ]]</b></span><br>
+            <span class='today'>일일획득 [[ reward_today ]] / [[ reward_amount_max ]]</span>
+          </div>
+        </div>
+
+        <div class='monitor-section actions'>
+          <div class='counter'>
+            <span class='n'>[[ n_action_subwork ]]</span>
+            <span class='cycle'>/ [[ reward_n_cycle ]]</span>
+          </div>
+          <div class='pbar'>
+            <div class='pbar-core'>
+              <div class='pbar-filler' :style='pbar_filler_style'></div>
+            </div>
+          </div>
+        </div>
+
+        <div class='monitor-section earn'>
+          <div class='bt' :class='{ pointed: on_earning }' @click='toggle_earning'>
+            <b>토큰모으기</b>
+          </div>
+        </div>
+
+        <div class='monitor-section spend'>
+          <div class='bt' :class='{ pointed: on_spending }' @click='toggle_spending'>
+            <b>토큰사용</b>
+          </div>
+        </div>
+
+        <!-- <img class='tokens' src='/static/materials/icons/token_status.png'> -->
+      </div>
+
+      <div class='screen' :class='{ on_earning: on_earning, on_spending: on_spending }'>
+        <div class='group earning'>
+          <div class='section header'>
+            <div class='title'><b>매일매일 100토큰</b></div>
+            <div class='desc'>오늘 획득한 토큰: [[ reward_today ]] / [[ reward_amount_max ]]</div>
+            <!-- (잔여 [[ boo.reward_amount_max - reward_today ]])</div> -->
+          </div>
+
+          <div class='section content'>
+            <div class='block vote-play' @click='goto_stylevote'>
+              <img src='/static/materials/icons/reward_select.png'>
+            </div>
+
+            <div class='block collection-play' @click='goto_search'>
+              <img src='/static/materials/icons/reward_closet.png'>
+            </div>
+          </div>
+
+          <div class='section header'>
+            <div class='title'><b>내 스타일 타입은?</b></div>
+            <div class='desc'>콘텐츠 참여 완료 시 500토큰 지급</div>
+          </div>
+
+          <div class='section content'>
+            <div class='block dongne' @click='goto_contentwork'>
+              <img src='/static/materials/icons/contents_townstyle.png' style='transform: translateX(10%)'>
+            </div>
+
+            <div class='block fanung'>
+              <img src='/static/materials/icons/contents_fashiontest.png' style='opacity: 0.1;'>
+            </div>
+
+            <div class='block movie-charac'>
+              <img src='/static/materials/icons/contents_character.png' style='opacity: 0.1; transform: translateX(-10%)'>
+            </div>
+          </div>
+
+          <div class='section tail' @click='show_checkin'>
+            <div class='title'><b>출석 이벤트 보상</b></div>
+            <div class='desc'>베타 기간 매일 출석 시 보너스 토큰 지급!!   <b style='margin-left:10px;'>더보러가기</b></div>
+            <!-- <div class='bt' @click='show_checkin'>
+              <b>** 출석 이벤트 보상 ** >>>></b>
+            </div> -->
+          </div>
+        </div>
+
+        <div class='group spending'>
+          <div class='section header'>
+            <div class='title'><b>스타벅스 쿠폰 바로 구매하기</b></div>
+            <div class='desc'>필요토큰: 4,000</div>
+          </div>
+
+          <div class='section content'>
+            <img class='coupon' src='/static/materials/icons/starbucks_coupon.png'>
+          </div>
+
+          <!-- <div class='section tail'>
+          </div> -->
+        </div>
+      </div>
+
+      <span class='spinner' :class='{ show: rewards_onloading }'>
+        <i class="fa fa-spinner fa-spin"></i>
+        리워드 확인 중...
+      </span>
+    </div>
+
+    <div class='alerter' :class='{ show: session.user.loginplz }' @click='dismiss_loginplz'>
+      <div class='alertbox' @click.stop>
+        <span>로그인이 필요합니다</span>
+        <div class='bt pointed login' @click='goto_login'>
+          <b>로그인하기</b>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('dasher', {
+    template: '#dasher-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        on_earning: false,
+        on_spending: false,
+        is_maximized: false,
+      }
+    },
+
+    methods: {
+      goto_login: function() {
+        this.session.user.loginplz = false;
+        this.session.open_login();
+      },
+
+      goto_search: function() {
+        this.minimize();
+        this.session.open_search();
+        // this.session.close_pages_all();
+      },
+
+      goto_stylevote: function() {
+        this.minimize();
+        this.session.open_stylevote();
+      },
+
+      goto_contentwork: function() {
+        this.minimize();
+        this.session.open_contentwork('동네스타일');
+      },
+
+      toggle_earning: function() {
+        if (this.on_earning) {
+          this.minimize();
+
+        } else {
+          this.on_earning = true;
+          this.on_spending = false;
+          this.maximize();
+        }
+      },
+
+      toggle_spending: function() {
+        if (this.on_spending) {
+          this.minimize();
+
+        } else {
+          this.on_spending = true;
+          this.on_earning = false;
+          this.maximize();
+        }
+      },
+
+      minimize: function() {
+        this.is_maximized = false;
+        setTimeout(()=>{
+          this.on_earning = false;
+          this.on_spending = false;
+        }, 200);
+      },
+
+      maximize: function() {
+        setTimeout(()=>{ this.is_maximized = true; }, 200);
+      },
+
+      show_checkin: function() {
+        this.session.show_notice = true;
+      },
+
+      dismiss_loginplz: function() {
+        this.session.user.loginplz = false;
+      }
+    },
+
+    computed: {
+      // is_maximized: function() {
+      //   return this.on_earning || this.on_spending
+      // },
+
+      status: function() {
+        return {
+          // hidden: (!this.on_stylevote || !this.boo) && !this.session.user.loginplz,
+          // show: (this.on_home && (this.session.scroll_direction == 'up'))
+          //       || this.on_stylevote
+          //       || this.on_collector
+          //       || this.on_finder
+          //       || this.session.user.loginplz,
+
+          // show: (this.on_home && (this.session.scroll_direction == 'up'))
+          show: (this.on_search)
+                || (this.on_stylevote)
+                // || (this.on_collector)
+                // || (this.on_agit)
+                || (this.on_research),
+                // || this.session.user.loginplz,
+
+          // expanded: (this.on_home && (this.session.scroll_direction == 'up')),
+          expanded: false,
+          maximized: this.is_maximized
+        }
+      },
+
+      on_search: function() {
+        return this.session.mode.on=='search'
+      },
+
+      on_agit: function() {
+        return this.session.mode.on=='agit'
+      },
+
+      on_research: function() {
+        return this.session.mode.on=='research'
+      },
+
+      on_stylevote: function() {
+        return this.session.mode.on=='stylevote'
+      },
+
+      on_collector: function() {
+        return this.session.mode.on=='collector'
+      },
+
+      boo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      rewards_loaded: function() {
+        if (this.boo) {
+          return this.boo.profiling_ready
+        }
+      },
+
+      rewards_onloading: function() {
+        return this.session.user.has_auth && !this.rewards_loaded
+      },
+
+      settled: function() {
+        if (this.boo) {
+          return !this.boo.on_settling
+        }
+      },
+
+      reward_total: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewards.total.reward
+        } else {
+          return '---'
+        }
+      },
+
+      reward_today: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewards.today.reward
+        } else {
+          return '--'
+        }
+      },
+
+      n_action_today: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewards.today.n_action
+        } else {
+          return 0
+        }
+      },
+
+      n_action_subwork: function() {
+        if (this.rewards_loaded && this.n_action_today!=0) {
+          const _subwork = this.n_action_today % this.boo.reward_n_cycle;
+          return _subwork==0 ? this.boo.reward_n_cycle : _subwork
+        } else {
+          return 0
+        }
+      },
+
+      reward_amount_max: function() {
+        if (this.rewards_loaded) {
+          return this.boo.reward_amount_max
+        } else {
+          return 0
+        }
+      },
+
+      reward_n_cycle: function() {
+        if (this.rewards_loaded) {
+          return this.boo.reward_n_cycle
+        } else {
+          return 0
+        }
+      },
+
+      pbar_filler_style: function() {
+        if (this.rewards_loaded) {
+          const pct = this.n_action_subwork / this.boo.reward_n_cycle * 100;
+          return {
+            'width': pct + '%'
+          }
+        }
+      },
+
+      // scores: function() {
+      //   if (this.boo) {
+      //     return this.boo.styleprofile.scores
+      //   }
+      // },
+      //
+      // yourbrands: function() {
+      //   if (this.boo) {
+      //     if (this.boo.styleprofile.yourbrands) {
+      //       return this.boo.styleprofile.yourbrands.join(' / ')
+      //     }
+      //   }
+      // }
+    }
+  });
+</script>

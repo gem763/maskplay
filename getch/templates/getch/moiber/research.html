@@ -1,0 +1,176 @@
+<style>
+  .research.vcomp .page-body > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .research.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .research.vcomp .page-body > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    background: white;
+    color: var(--color-dark);
+  }
+</style>
+
+
+<script type='text/x-template' id='research-template'>
+  <page
+    class='research vcomp'
+    :order='session.page.research.order'
+    :open='session.page.research.open'
+    :from='session.page.research.from'
+    :hide_close='false'
+    :hide_menu='true'
+    :hide_headerbar='false'
+    :trans_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='swiper-container' ref='swiper' v-show='intro'>
+        <div class='swiper-wrapper'>
+
+          <researchitem
+            class='swiper-slide' v-if='intro'
+            :researchitem='intro'
+            :brand='brand'
+            :session='session'
+            :swiper='swiper'
+            @intro_loaded='intro_loaded'
+          ></researchitem>
+
+          <researchitem
+            class='swiper-slide' v-if='r' v-for='(r, idx) in mainstory'
+            :researchitem='r'
+            :brand='brand'
+            :session='session'
+            :swiper='swiper'
+            :pagination='pagination(idx)'
+            :key='idx'
+          ></researchitem>
+
+          <researchitem
+            class='swiper-slide' v-if='outro'
+            :researchitem='outro'
+            :brand='brand'
+            :session='session'
+            :swiper='swiper'
+          ></researchitem>
+
+        </div>
+      </div>
+
+      <div class='spinner' v-if='onloading'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('research', {
+    template: '#research-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        onloading: true,
+        swiper: undefined,
+        swiper_options: {
+          direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          }
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    methods: {
+      intro_loaded: function() {
+        this.onloading = false;
+      },
+
+      pagination: function(ipage) {
+        if (this.npage) {
+          return (ipage + 1) + '/' + this.npage
+        }
+      }
+    },
+
+    computed: {
+      research: function() {
+        return this.session.page.research.content
+      },
+
+      brand: function() {
+        return this.research.brand
+      },
+
+      researchitems: function() {
+        if (this.research) {
+          return this.research.researchitems
+        }
+      },
+
+      researchitems_list: function() {
+        if (this.researchitems) {
+          if (this.researchitems.list.length == 0) {
+            this.researchitems.load_all();
+          }
+          return this.researchitems.list
+        }
+      },
+
+      intro: function() {
+        if (this.researchitems_list) {
+          return _.find(this.researchitems_list, ['type', 'IN'])
+        }
+      },
+
+      outro: function() {
+        if (this.researchitems_list) {
+          return _.find(this.researchitems_list, ['type', 'OUT'])
+        }
+      },
+
+      mainstory: function() {
+        if (this.researchitems_list) {
+          let _mainstory = _.filter(this.researchitems_list, o => { return (o.type!='IN') && (o.type!='OUT') });
+          return _.sortBy(_mainstory, ['order'])
+        }
+      },
+
+      npage: function() {
+        if (this.mainstory) {
+          return this.mainstory.length
+        }
+      }
+    }
+  });
+</script>

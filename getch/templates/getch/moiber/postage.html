@@ -1,0 +1,367 @@
+<style>
+  .postage {
+    background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .postage > .backbone {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .postage > .backbone > .section {
+    position: absolute;
+    /* pointer-events: none; */
+  }
+
+  /* .pixchooser.vcomp.loaded > .section {
+    pointer-events: auto;
+  } */
+
+  .postage > .backbone > .section.outfocused {
+    opacity: 0.2;
+    filter: grayscale(1);
+  }
+
+  .postage > .backbone > .section.pix {
+    width: 100%;
+    height: calc(50% + var(--square-size) * 0.4);
+    top: 0;
+  }
+
+  .postage > .backbone > .section.down-left {
+    width: 50%;
+    height: calc(50% - var(--square-size) * 0.4 - var(--w-15));
+    bottom: var(--w-15);
+    left: 0;
+    /* background: lightpink; */
+  }
+
+  .postage > .backbone > .section.down-right {
+    width: 50%;
+    height: calc(50% - var(--square-size) * 0.4 - var(--w-15));
+    bottom: var(--w-15);
+    right: 0;
+    /* background: lightblue; */
+  }
+
+  .postage > .backbone > .section.up {
+    width: 100%;
+    height: 50%;
+    top: 0;
+  }
+
+  .postage > .backbone > .section.down {
+    width: 100%;
+    height: 50%;
+    bottom: 0;
+  }
+
+  .postage > .backbone > .section > img.candidate {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: cover;
+    transition: opacity 0.3s;
+    border-radius: var(--w-3);
+    filter: brightness(95%);
+  }
+
+  .postage > .backbone > .section > img.ox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    transition: opacity 0.3s;
+  }
+
+
+  .postage > .backbone > .section.pix > img.candidate {
+    width: var(--square-size);
+    height: calc(var(--square-size) * 1.4);
+    bottom: var(--w-1);
+  }
+
+  .postage > .backbone > .section.down-left > img.ox {
+    width: 60%;
+    height: auto;
+  }
+
+  .postage > .backbone > .section.down-right > img.ox {
+    width: 60%;
+    height: auto;
+  }
+
+  .postage > .backbone > .section.up > img.candidate {
+    width: var(--square-size);
+    height: var(--square-size);
+    bottom: var(--w-1);
+  }
+
+  .postage > .backbone > .section.down > img.candidate {
+    width: var(--square-size);
+    height: var(--square-size);
+    top: var(--w-1);
+  }
+
+  .postage > .backbone > .section > .label {
+    text-align: center;
+    position: absolute;
+    width: calc(var(--square-size) * 0.8);
+    /* height: 50px; */
+    /* background: orange; */
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: var(--w-5);
+    white-space: pre-line;
+    padding: 5px;
+    font-size: 13px;
+    background: rgba(255,255,255,0.7);
+  }
+
+  .postage > .backbone > .section.up > .label {
+    bottom: var(--w-7);
+  }
+
+  .postage > .backbone > .section.down > .label {
+    top: var(--w-7);
+  }
+
+  .postage > .backbone > .divider {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    background: white;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .postage > .backbone > .divider > .vs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: var(--w-20);
+    height: var(--w-10);
+    width: var(--w-10);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+  }
+
+  .postage > .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .postage > .header > .header-section {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .postage > .header > .header-section.logo {
+    width: 12%;
+    /* background: orange; */
+  }
+
+  .postage > .header > .header-section.question {
+    width: 71%;
+    /* background: lightpink; */
+    font-size: 13px;
+  }
+
+  .postage > .header > .header-section.npage {
+    width: 12%;
+    /* background: lightgray; */
+  }
+
+  .postage > .header > .header-section.logo > img {
+    width: 70%;
+    height: auto;
+  }
+
+  .postage > .header > .header-section.npage > .pagination {
+    font-size: 12px;
+  }
+</style>
+
+
+<script type='text/x-template' id='postage-template'>
+  <div class='postage' :class='post_type' ref='post'>
+
+    <div class='backbone' v-if='is_postvoteox'>
+      <div class='section pix'>
+        <img class='candidate' :src='post_pix'>
+      </div>
+
+      <div class='section down-left' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
+        <img class='ox' src='/static/materials/icons/moiber_letter_o.png'>
+      </div>
+
+      <div class='section down-right' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
+        <img class='ox' src='/static/materials/icons/moiber_letter_x.png'>
+      </div>
+    </div>
+
+
+    <div class='backbone' v-if='is_postvoteab'>
+      <div class='section up' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
+        <img class='candidate' :src='post_pix_a'>
+        <div class='label' v-if='post_pixlabel_a'>[[ post_pixlabel_a ]]</div>
+      </div>
+
+      <div class='section down' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
+        <img class='candidate' :src='post_pix_b'>
+        <div class='label' v-if='post_pixlabel_b'>[[ post_pixlabel_b ]]</div>
+      </div>
+
+      <div class='divider'>
+        <div class='vs'><b>VS</b></div>
+      </div>
+    </div>
+
+
+    <div class='header'>
+      <div class='header-section logo'>
+        <!-- <img src='/static/materials/logos/logo.png'> -->
+      </div>
+
+      <div class='header-section question'>
+        <b>[[ post_text ]]</b>
+      </div>
+
+      <div class='header-section npage'>
+        <div class='pagination' v-if='pagination'>[[ pagination ]]</div>
+      </div>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('postage', {
+    template: '#postage-template',
+    delimiters: ['[[', ']]'],
+    props: ['post', 'session', 'type', 'editable', 'swiper'],
+    data: function() {
+      return {
+        status: -1,
+      }
+    },
+
+    created: function() {
+      this.status = this.vote_state;
+    },
+
+    watch: {
+      vote_state: function(_new, _old) {
+        this.status = this.vote_state;
+      }
+    },
+
+
+    computed: {
+      pagination: function() {
+        if (this.post) {
+          if (this.post.order!=0) {
+            return this.post.order + '/10'
+          }
+        }
+      },
+
+      post_type: function() {
+        if (this.post.pix_b) {
+          return 'postvoteab'
+        } else {
+          return 'postvoteox'
+        }
+      },
+
+      is_postvoteox: function() {
+        return (this.post_type == 'postvoteox')
+      },
+
+      is_postvoteab: function() {
+        return (this.post_type == 'postvoteab')
+      },
+
+      post_pix: function() {
+        if (this.is_postvoteox) {
+          return this.post_pix_a
+        }
+      },
+
+      post_pix_a: function() {
+        try { return this.post.pix_a }
+        catch(e) { return '' }
+      },
+
+      post_pix_b: function() {
+        try { return this.post.pix_b }
+        catch(e) { return '' }
+      },
+
+      post_pixlabel_a: function() {
+        try { return this.post.pixlabel_a }
+        catch(e) { return '' }
+      },
+
+      post_pixlabel_b: function() {
+        try { return this.post.pixlabel_b }
+        catch(e) { return '' }
+      },
+
+      post_text: function() {
+        if (this.post) {
+          return this.post.text
+        } else {
+          return ''
+        }
+      },
+
+      vote_state: function() {
+        if (this.post) {
+          return this.session.user.has_voted_as(this.post.id)
+
+        } else {
+          return -1
+        }
+      }
+    },
+
+
+    methods: {
+      toggle_choose: function(act) {
+        // 선택을 클리어하는 경우
+        if (this.status==act) {
+          this.status = -1;
+          this.session.user.contentvote(this.post.id, -1);
+
+        } else {
+          this.status = act;
+          this.session.user.contentvote(this.post.id, act);
+          setTimeout(() => { this.swiper.slideNext() }, 300);
+        }
+      }
+    }
+  });
+</script>

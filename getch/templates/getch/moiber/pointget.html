@@ -1,0 +1,180 @@
+<script type='text/x-template' id='pointget-template'>
+  <pointguider
+    :phase='phase'
+    @go_menu='go_menu'>
+
+    <template #menu>
+      <div class='item' @click='go_content(0)' v-if='is_superuser'>
+        <img src='/static/materials/imgs/menu/pointget_checkin_balancegame.png'>
+        <div class='title'>
+          <span>출석체크</span>
+          <span>밸런스게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(1)'>
+        <img src='/static/materials/imgs/menu/pointget_daybonus_balancegame.png'>
+        <div class='title'>
+          <span>매일보너스</span>
+          <span>밸런스게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(2)'>
+        <img src='/static/materials/imgs/menu/pointget_daybonus_collection.png'>
+        <div class='title'>
+          <span>매일보너스</span>
+          <span>옷장넣기</span>
+        </div>
+      </div>
+
+      <!-- <div class='item' @click='go_content(3)'> -->
+      <div class='item' @click='goto_researcher'>
+        <img src='/static/materials/imgs/menu/pointget_badge.png'>
+        <div class='title'>
+          <span>스타일유형</span>
+          <span>뱃지</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(4)' v-if='is_superuser'>
+        <img src='/static/materials/imgs/menu/pointget_brandresearch.png'>
+        <div class='title'>
+          <span>브랜드리서치</span>
+          <span>참여</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(5)' v-if='is_superuser'>
+        <img src='/static/materials/imgs/menu/pointget_interview.png'>
+        <div class='title'>
+          <span>인터뷰</span>
+          <span>참여</span>
+        </div>
+      </div>
+    </template>
+
+    <template #content>
+      <template v-if='content==0'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          출석체크 밸런스게임
+        </div>
+      </template>
+
+      <template v-else-if='content==1'>
+        <div class='explain'>
+          <span class='title'><b>밸런스게임 참여</b>로 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
+          <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
+          <span class='desc'>위 혹은 아래? 맘에 드는 스타일을 골라 클릭할 때 마다 1P 지급!</span>
+        </div>
+
+        <div class='illust'>
+          <img src='/static/materials/imgs/illust_balancegame.jpg' @click='goto_stylevote'>
+        </div>
+      </template>
+
+      <template v-else-if='content==2'>
+        <div class='explain'>
+          <span class='title'><b>옷장넣기</b>를 통해서도 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
+          <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
+          <span class='desc'>관심가는 스타일을 즐겨찾기처럼 옷장에 넣을 때 마다 1P 지급!</span>
+        </div>
+
+        <div class='illust'>
+          <img src='/static/materials/imgs/illust_balancegame.jpg' @click='goto_search'>
+        </div>
+      </template>
+
+      <template v-else-if='content==3'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          스타일유형 뱃지
+        </div>
+      </template>
+
+      <template v-else-if='content==4'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          브랜드리서치 참여
+        </div>
+      </template>
+
+      <template v-else-if='content==5'>
+        <div class='explain'>
+          <span class='title'></span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'>
+          인터뷰 참여
+        </div>
+      </template>
+    </template>
+  </pointguider>
+</script>
+
+
+<script>
+  Vue.component('pointget', {
+    template: '#pointget-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        phase: 'menu',
+        content: undefined
+      }
+    },
+
+    computed: {
+      is_superuser: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.auth.is_superuser
+        }
+      },
+    },
+
+    methods: {
+      go_menu: function() {
+        this.phase = 'menu';
+      },
+
+      go_content: function(what) {
+        this.phase = 'content';
+        this.content = what;
+      },
+
+      goto_researcher: function() {
+        this.$emit('close');
+        this.session.open_researcher();
+      },
+
+      goto_search: function() {
+        this.$emit('close');
+        this.session.open_search();
+      },
+
+      goto_stylevote: function() {
+        this.$emit('close');
+        this.session.open_stylevote();
+      },
+    }
+  });
+</script>

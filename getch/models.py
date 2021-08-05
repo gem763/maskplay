@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.utils.functional import classproperty
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
+from django.utils.safestring import mark_safe
 # from notifications.base.models import AbstractNotification
 from notifications.signals import notify
 from ordered_model.models import OrderedModel
@@ -38,6 +39,17 @@ GUESTBOO = 363
 
 # model_path = os.path.join(settings.BASE_DIR, 'data', 'doc2vec.model')
 # d2v = Doc2Vec.load(model_path)
+
+class Identity(models.Model):
+    name = models.CharField(max_length=50, blank=False, null=False)
+    keywords = models.TextField(max_length=200, blank=False, null=False)
+
+    def __str__(self):
+        return self.name
+
+    # @property
+    # def val(self):
+    #     return Identity.objects.all()
 
 
 class BigIdAbstract(models.Model):
@@ -166,7 +178,8 @@ class User(AbstractEmailUser):
     @property
     def other_boos2(self):
         _boos = self.boo_set.filter(active=True).exclude(pk=self.boo_selected)
-        _boos = { boo.id:{'id':boo.id, 'nick':boo.nick, 'collections':boo.collections } for boo in _boos }
+        _boos = { boo.id:{'id':boo.id, 'nick':boo.nick } for boo in _boos }
+        # _boos = { boo.id:{'id':boo.id, 'nick':boo.nick, 'collections':boo.collections } for boo in _boos }
         return _boos
         # return json.dumps(_boos)
 
@@ -182,8 +195,11 @@ class User(AbstractEmailUser):
         _user = {
             'id': self.id,
             'email': self.email,
+            'is_superuser': self.is_superuser,
             'boo_selected': self.boo_selected,
-            'boo': {'id':self.boo.id, 'nick':self.boo.nick, 'collections':self.boo.collections }
+            'boo': {'id':self.boo.id, 'nick':self.boo.nick }
+            # 'boo': {'id':self.boo.id, 'nick':self.boo.nick, 'collections':self.boo.collections }
+            # 'boo': {'id':self.boo.id, 'nick':self.boo.nick, 'collections':self.boo.collections, 'styleprofile':self.boo.styleprofile }
         }
 
         return _user
@@ -239,6 +255,7 @@ class Link(BigIdAbstract):
         return self.url
 
 
+
 class Boo(BigIdAbstract, ModelWithFlag):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nick = models.CharField(max_length=100, blank=True, null=True)
@@ -254,8 +271,18 @@ class Boo(BigIdAbstract, ModelWithFlag):
 
     active = models.BooleanField(default=True)
     hidden = models.BooleanField(default=False)
-
     links = models.ManyToManyField(Link, blank=True)
+
+    postags = models.JSONField(default=dict, blank=True, null=True)
+    negtags = models.JSONField(default=dict, blank=True, null=True)
+    coltags = models.JSONField(default=dict, blank=True, null=True)
+    # reward_today = models.IntegerField(default=0)
+
+    coltagged = models.BooleanField(default=False)
+
+    contentwork_result = models.JSONField(default=dict, blank=True, null=True)
+    researched = models.JSONField(default=list, blank=True, null=True)
+    answers = models.JSONField(default=dict, blank=True, null=True)
 
 
     def __str__(self):
@@ -275,7 +302,18 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return self.id == GUESTBOO
 
     @property
+    def icollections(self):
+        user = get_current_user()
+        if user.is_authenticated and (user.boo.id == self.id) and (self.ncollections == 0):
+            Collection.objects.create(owner=self, name=self.nick+'의 옷장')
+
+        return list(self.collection_set.order_by('-order').values_list('id', flat=True))
+
+    @property
     def collections(self):
+        # if self.ncollections == 0:
+        #     Collection.objects.create(owner=self, name=self.nick+'의 옷장')
+
         return list(self.collection_set.order_by('-order').values('id', 'name'))
 
     @property
@@ -395,66 +433,482 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return list(Flager.objects.filter(status=LIKE_COMMENT, user=self).values_list('object_id', flat=True))
 
 
-    # @property
-    # def baseid(self):
-    #     styletags = list(self.styletags.values_list('tag', flat=True))
-    #     fashiontems = list(self.fashiontems.values_list('item', flat=True))
-    #     nick = self.nick.lower()
-    #     text = self.text.lower() if self.text else ''
-    #     return preproc(nick + ' ' + text).split(' ') + styletags + fashiontems
-    #
-    # @property
-    # def votokens(self):
-    #     pos = []
-    #     neg = []
-    #
-    #     votes = self.voting_record
-    #     for pix in Postpix.objects.filter(post_id__in=votes).select_related('post'):
-    #         act = votes[pix.post.id]
-    #         desc = preproc(pix.desc.lower()).split(' ') if pix.desc else []
-    #
-    #         if pix.key=='ox' and act==0:
-    #             pos += pix.tokens.split(', ') + desc
-    #
-    #         elif pix.key=='ox' and act==1:
-    #             neg += pix.tokens.split(', ') + desc
-    #
-    #         elif (pix.key=='a' and act==0) or (pix.key=='b' and act==1):
-    #             pos += pix.tokens.split(', ') + desc
-    #
-    #         elif (pix.key=='a' and act==1) or (pix.key=='b' and act==0):
-    #             neg += pix.tokens.split(', ') + desc
-    #
-    #     return { 'pos_tokens': pos, 'neg_tokens': neg }
+    @property
+    def styleprofile(self):
+        try:
+            # if not self.coltagged:
+            #     _tokens = Pix.objects.filter(pick__collection__owner=self).values_list('tokens', flat=True)
+            #     self.coltags = collections.Counter(' '.join(_tokens).split())
+            #     self.coltagged = True
+            #     self.save()
+            #
+            #
+            # n = 100
+            # _basetags = dict(collections.Counter(self.basetags).most_common(n))#; print(_basetags)
+            # _coltags = dict(collections.Counter(self.coltags).most_common(n))#; print(_coltags)
+            # _postags = dict(collections.Counter(self.postags).most_common(n))#; print(_postags)
+            # _negtags = dict(collections.Counter(self.negtags).most_common(n))#; print(_negtags)
+            #
+            # base_vec = d2v.infer_vector(_basetags, epochs=500)#; print(base_vec)
+            # col_vec = d2v.infer_vector(_coltags, epochs=500)#; print(col_vec)
+            # pos_vec = d2v.infer_vector(_postags, epochs=500)#; print(pos_vec)
+            # neg_vec = d2v.infer_vector(_negtags, epochs=500)#; print(neg_vec)
+            #
+            # _vec = base_vec + col_vec + pos_vec - neg_vec
+            # sim = lambda v: d2v.wv.cosine_similarities(_vec, [d2v.infer_vector(v.split(), epochs=500)])[0]
+            # _style = {__id.name:sim(__id.keywords) for __id in Identity.objects.all()}
+            #
+            # _max = max(_style.values())
+            # _min = min(_style.values())
+            # scaled = lambda x: round((x-_min)/(_max-_min) * 100)
+            #
+            # brand_freq = d2v.docvecs.most_similar(positive=[base_vec, col_vec, pos_vec], negative=[neg_vec], topn=10)
+            # yourbrands = list(dict(brand_freq).keys())
+            #
+            # if 'ootd' in yourbrands: yourbrands.remove('ootd')
+            # if 'category' in yourbrands: yourbrands.remove('category')
+            # if 'fashion' in yourbrands: yourbrands.remove('fashion')
+            #
+            # return {
+            #     'scores': {k:scaled(v) for k,v in _style.items()},
+            #     'yourbrands': sorted(yourbrands)
+            # }
+            return {}
+
+        except:
+            return {}
+
 
     @property
-    def fit(self):
-        return []
-        # try:
-        #     votokens = self.votokens
-        #     pos_tokens = votokens['pos_tokens']
-        #     neg_tokens = votokens['neg_tokens']
-        #     pos_freq = collections.Counter(pos_tokens)
-        #     neg_freq = collections.Counter(neg_tokens)
-        #
-        #     like_tokens = list(dict((pos_freq - neg_freq).most_common(10)).keys())
-        #     dislike_tokens = list(dict((neg_freq - pos_freq).most_common(10)).keys())
-        #
-        #     pos_vec = d2v.infer_vector(pos_tokens, epochs=500)
-        #     neg_vec = d2v.infer_vector(neg_tokens, epochs=500)
-        #     baseid_vec = d2v.infer_vector(self.baseid, epochs=500)
-        #     brand_freq = d2v.docvecs.most_similar(positive=[pos_vec, baseid_vec], negative=[neg_vec], topn=5)
-        #     yourbrands = list(dict(brand_freq).keys())
-        #
-        # except:
-        #     like_tokens = []
-        #     dislike_tokens = []
-        #     baseid_vec = d2v.infer_vector(self.baseid, epochs=500)
-        #     brand_freq = d2v.docvecs.most_similar(positive=[baseid_vec], topn=5)
-        #     yourbrands = list(dict(brand_freq).keys())
-        #
-        # return {'likes':like_tokens, 'dislikes':dislike_tokens, 'yourbrands':yourbrands}
+    def basetags(self):
+        genderlabels = list(self.genderlabels.values_list('label', flat=True))
+        agelabels = [l.replace(' ', '_') for l in self.agelabels.values_list('label', flat=True)]
+        # bodylabels = list(self.bodylabels.values_list('label', flat=True))
+        stylelabels = list(self.stylelabels.values_list('label', flat=True))
+        itemlabels = list(self.itemlabels.values_list('label', flat=True))
 
+        nick = self.nick.lower()
+        text = self.text.lower() if self.text else ''
+        return preproc(nick + ' ' + text).split(' ') + genderlabels + agelabels + stylelabels + itemlabels
+
+
+    def settle(self, n_collected=0, n_voted=0, collect_reward=0, vote_reward=0, checkin_reward=0, bonus_reward=0, nomore_today=None):
+        _date = datetime.now().date()
+        _reward, _ = Reward.objects.get_or_create(boo=self, date=_date)
+        _reward.n_collected += n_collected
+        _reward.n_voted += n_voted
+        _reward.collect_reward += collect_reward
+        _reward.vote_reward += vote_reward
+        _reward.checkin_reward += checkin_reward
+        _reward.bonus_reward += bonus_reward
+
+        if nomore_today is not None:
+            # print(nomore_today, '*************************')
+            _reward.nomore_today = nomore_today
+
+        _reward.save()
+        return _reward
+
+    @property
+    def rewards_history(self):
+        _rewards = self.reward_set.all()
+        _begin = _rewards.earliest('date').date
+
+        _rewards_hist = {}
+        _today = datetime.now().date()
+
+        for _r in _rewards:
+            k = (_r.date-_begin).days
+            _rewards_hist[k] = {
+                'date': str(_r.date),
+                'is_today': _r.date == _today,
+                'n_action': _r.n_collected + _r.n_voted,
+                'action_reward': _r.collect_reward + _r.vote_reward,
+                'checkin_reward': _r.checkin_reward,
+                'bonus_reward': _r.bonus_reward
+            }
+
+        return _rewards_hist
+
+
+    @property
+    def rewards(self):
+        _total = self.reward_set.aggregate(
+            n_action = Sum( F('n_collected') + F('n_voted') ),
+            reward = Sum( F('collect_reward') + F('vote_reward') + F('checkin_reward') + F('bonus_reward') ))
+
+        _total['n_action'] = _total['n_action'] if _total['n_action'] else 0
+        _total['reward'] = _total['reward'] if _total['reward'] else 0
+
+        _today = self.settle()
+        _today = {
+            'n_action': _today.n_collected + _today.n_voted,
+            'reward': _today.collect_reward + _today.vote_reward,# + _today.checkin_reward + _today.bonus_reward,
+            'nomore_today': _today.nomore_today
+            }
+
+        # print(_total)
+        return { 'total': _total, 'today': _today, 'history': self.rewards_history }
+
+    # def contentwork_resultize(self, agenda, result):
+    def contentwork_resultize(self, id, result):
+        self.contentwork_result[id] = result
+
+        if id not in self.researched:
+            self.researched.append(id)
+
+        self.save()
+
+
+
+
+def _brandpix_path(instance, fname):
+    _fname = str(datetime.now()) + '__' + fname
+    _bname = instance.name_en
+    _id = instance.id
+    fmt = 'brand/{bname}/{id}/{fname}'
+    return fmt.format(bname=_bname, id=_id, fname=_fname)
+
+
+class Brand(BigIdAbstract):
+    name_en = models.CharField(max_length=50, blank=False, null=False, default='')
+    name_kr = models.CharField(max_length=50, blank=False, null=False, default='')
+    logo = models.ImageField(upload_to=_brandpix_path, max_length=500, null=True, blank=True)
+    coverpix_0 = models.ImageField(upload_to=_brandpix_path, max_length=500, null=True, blank=True)
+    coverpix_1 = models.ImageField(upload_to=_brandpix_path, max_length=500, null=True, blank=True)
+    coverpix_2 = models.ImageField(upload_to=_brandpix_path, max_length=500, null=True, blank=True)
+    coverpix_3 = models.ImageField(upload_to=_brandpix_path, max_length=500, null=True, blank=True)
+    coverpix_4 = models.ImageField(upload_to=_brandpix_path, max_length=500, null=True, blank=True)
+    established = models.IntegerField(null=True, blank=True)
+    origin = models.CharField(max_length=20, blank=True, null=True)
+    desc = models.TextField(max_length=500, blank=True, null=True)
+    homepage = models.URLField(max_length=200, blank=True, null=True)
+    insta = models.URLField(max_length=200, blank=True, null=True)
+    facebook = models.URLField(max_length=200, blank=True, null=True)
+    youtube = models.URLField(max_length=200, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return self.name_en + ' | ' + self.name_kr
+
+    @property
+    def logo_preview(self):
+        if self.logo:
+            return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(self.logo.url))
+        return ""
+
+
+
+def _coverpix_path(instance, fname):
+    try:
+        _user = instance.owner.user.email
+    except:
+        _user = 'anonymous'
+
+    _date = str(instance.created_at.date())
+    _fname = str(datetime.now()) + '__' + fname
+    fmt = 'research/{user}/{date}/{fname}'
+    return fmt.format(user=_user, date=_date, fname=_fname)
+
+
+class Research(BigIdAbstract):
+    owner = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    brand = models.ForeignKey(Brand, blank=True, null=True, on_delete=models.SET_NULL)
+    title = models.CharField(max_length=50, blank=True, null=True)
+    desc = models.TextField(max_length=200, blank=True, null=True)
+    published = models.BooleanField(default=False)
+    coverpix = models.ImageField(upload_to=_coverpix_path, max_length=500, null=True, blank=True)
+    reward = models.IntegerField(default=0)
+    due = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def coverpix_preview(self):
+        if self.coverpix:
+            return mark_safe('<img src="{}" style="height:100px;width:170px;object-fit:cover;" />'.format(self.coverpix.url))
+        return ""
+
+    # @classmethod
+    # def iresearches(cls, published_only=True):
+    #     if published_only:
+    #         return cls.objects.filter(published=True).order_by('-id').values_list('id', flat=True)
+    #     else:
+    #         return cls.objects.order_by('-id').values_list('id', flat=True)
+
+    @classproperty
+    def iresearches(cls):
+        return cls.objects.order_by('due').values_list('id', flat=True)
+        # return cls.objects.filter(published=True).order_by('due').values_list('id', flat=True)
+
+    # @classproperty
+    # def iresearches_onwork(cls):
+    #     return cls.objects.filter(published=False).order_by('due').values_list('id', flat=True)
+
+    @property
+    def iresearchitems(self):
+        return self.researchitem_set.order_by('order').values_list('id', flat=True)
+
+
+class ResearchSerializer(serializers.ModelSerializer):
+    owner = serializers.SerializerMethodField()
+    brand = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Research
+        fields = ['id', 'owner', 'brand', 'title', 'published', 'coverpix', 'reward', 'due', 'created_at']
+        read_only_fields = fields
+
+    def get_owner(self, obj):
+        return {'id': obj.owner.id, 'nick': obj.owner.nick}
+
+    def get_brand(self, obj):
+        if obj.brand:
+            return {
+                'id': obj.brand.id,
+                'logo': obj.brand.logo.url,
+                'name_en': obj.brand.name_en,
+                'name_kr': obj.brand.name_kr,
+                'homepage': obj.brand.homepage,
+                'insta': obj.brand.insta
+            }
+
+
+
+
+def _researchitempix_path(instance, fname):
+    try:
+        _user = instance.research.owner.user.email
+    except:
+        _user = 'anonymous'
+
+    try:
+        _date = str(instance.research.created_at.date())
+    except:
+        _date = str(datetime.now().date())
+
+    _fname = str(datetime.now()) + '__' + fname
+    fmt = 'research/{user}/{date}/items/{fname}'
+    return fmt.format(user=_user, date=_date, fname=_fname)
+
+
+class ResearchItem(BigIdAbstract, ModelWithFlag):
+    research = models.ForeignKey(Research, blank=True, null=True, on_delete=models.SET_NULL)
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    TYPE_KEYS = ( ('AB', 'AB타입'), ('OX', 'OX타입'), ('QA', '주관식'), ('MC', '다중선택형'), ('IN', 'INTRO'), ('OUT', 'OUTRO') )
+    type = models.CharField(max_length=3, choices=TYPE_KEYS, default='AB', null=False, blank=False)
+
+    GENDER_KEYS = ( ('X', 'X'), ('M', 'M'), ('F', 'F') )
+    gender = models.CharField(max_length=1, choices=GENDER_KEYS, default='X', null=False, blank=False)
+
+    preq = models.BooleanField(default=False)
+    text = models.TextField(max_length=100, blank=True, null=True)
+
+    pix_0 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    pixlabel_0 = models.CharField(max_length=20, blank=True, null=True)
+
+    pix_1 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    pixlabel_1 = models.CharField(max_length=20, blank=True, null=True)
+
+    # multi_choices = models.TextField(max_length=200, blank=True, null=True)
+
+    mcpix_0 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_0 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_1 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_1 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_2 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_2 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_3 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_3 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_4 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_4 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_5 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_5 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_6 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_6 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_7 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_7 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_8 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_8 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_9 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_9 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_10 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_10 = models.CharField(max_length=20, blank=True, null=True)
+
+    mcpix_11 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    mclabel_11 = models.CharField(max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return self.type + ((' | ' + str(self.text)) if self.text else '')
+
+
+
+class ResearchItemSerializer(serializers.ModelSerializer):
+    pix = serializers.SerializerMethodField()
+    mc = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ResearchItem
+        fields = ['id', 'order', 'type', 'gender', 'preq', 'text', 'pix', 'mc']
+        read_only_fields = fields
+
+    def get_pix(self, obj):
+        if obj.type == 'AB':
+            return { 'pix_0': obj.pix_0.url, 'pixlabel_0': obj.pixlabel_0, 'pix_1': obj.pix_1.url, 'pixlabel_1': obj.pixlabel_1 }
+
+        elif obj.type == 'OX':
+            return { 'pix_0': obj.pix_0.url }
+
+        elif obj.type == 'QA':
+            if obj.pix_0:
+                return { 'pix_0': obj.pix_0.url }
+
+        elif obj.type == 'MC':
+            if obj.pix_0:
+                return { 'pix_0': obj.pix_0.url }
+
+        elif obj.type == 'IN':
+            return { 'pix_0': obj.pix_0.url }
+
+        elif obj.type == 'OUT':
+            return { 'pix_0': obj.pix_0.url }
+
+
+    def get_mc(self, obj):
+        if obj.type == 'MC':
+            _mc = []#{}
+            # _obj = obj.__dict__
+            # print(_obj['mcpix_0']['url'])
+
+            for i in range(12):
+                __mclabel = getattr(obj, 'mclabel_' + str(i))
+                __mcpix = getattr(obj, 'mcpix_' + str(i))
+
+                # 이미지필드가 비어있는지 확인하는 방법
+                # https://stackoverflow.com/questions/5213025/how-to-check-imagefield-is-empty
+                if (__mclabel is None) and (not bool(__mcpix)):
+                    break
+
+                else:
+                    if bool(__mcpix):
+                        __mcpix = __mcpix.url
+
+                    else:
+                        __mcpix = None
+
+                    _mc.append({ 'mclabel': __mclabel, 'mcpix': __mcpix})
+                    # _mc['mclabel_' + str(i)] = __mclabel
+                    # _mc['mcpix_' + str(i)] = __mcpix.url
+
+            return _mc
+
+
+class Contentwork(BigIdAbstract):
+    owner = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    agenda = models.CharField(max_length=30, null=False, blank=False)
+    profiles = models.JSONField(default=dict, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.agenda
+
+    @classmethod
+    def ipostages(cls, id):
+    # def ipostages(cls, agenda):
+        return Postage.objects.filter(contentwork_id=id).values_list('id', flat=True)
+
+    @property
+    def serialized(self):
+        _cwork = {
+            'id': self.id,
+            'agenda': self.agenda,
+            'profiles': self.profiles,
+        }
+
+        return _cwork
+
+
+def _postagepix_path(instance, fname):
+    try:
+        agenda = instance.contentwork.agenda
+    except:
+        agenda = 'default'
+
+    now = datetime.now()
+    fname = str(now) + '__' + fname
+    fmt = 'postage/{agenda}/{fname}'
+    return fmt.format(agenda=agenda, fname=fname)
+
+
+class Postage(BigIdAbstract, ModelWithFlag):
+    contentwork = models.ForeignKey(Contentwork, blank=True, null=True, on_delete=models.SET_NULL)
+    text = models.TextField(max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    pix_a = models.ImageField(upload_to=_postagepix_path, max_length=500, null=False, blank=False)
+    pix_b = models.ImageField(upload_to=_postagepix_path, max_length=500, null=True, blank=True)
+
+    pixlabel_a = models.TextField(max_length=200, blank=True, null=True)
+    pixlabel_b = models.TextField(max_length=200, blank=True, null=True)
+
+    group = models.CharField(max_length=30, null=False, blank=False)
+    order = models.IntegerField(default=0)
+
+
+    def __str__(self):
+        return self.group + ' | ' + self.text + ((' | ' + str(self.contentwork)) if self.contentwork else '')
+
+
+    def contentvote(self, action, boo, note=''):
+        # up
+        if action==VOTE_UP:
+            Flager.vote_up(self, boo, note)
+
+        # down
+        elif action==VOTE_DOWN:
+            Flager.vote_down(self, boo, note)
+
+        # clear
+        else:
+            Flager.vote_clear(self, boo, note)
+
+
+class Reward(BigIdAbstract):
+    boo = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    date = models.DateField(default=timezone.now, null=False)
+    n_collected = models.IntegerField(default=0)
+    n_voted = models.IntegerField(default=0)
+    collect_reward = models.IntegerField(default=0)
+    vote_reward = models.IntegerField(default=0)
+    checkin_reward = models.IntegerField(default=0)
+    bonus_reward = models.IntegerField(default=0)
+    nomore_today = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.date) + ' ' + str(self.boo)
+
+    class Meta:
+        constraints =  [
+            models.UniqueConstraint(
+                fields=['boo', 'date'],
+                name='daily unique reward'
+            )
+        ]
 
 
 class Post(BigIdAbstract, ModelWithFlag):
@@ -686,7 +1140,8 @@ class PixSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_owner(self, obj):
-        return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
+        return {'id': obj.owner.id, 'nick': obj.owner.nick}
+        # return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
 
 
 class Collection(OrderedModel):
@@ -704,9 +1159,9 @@ class Collection(OrderedModel):
 
     @classmethod
     def icols(cls):
-        _icols = Pick.objects.filter(collection__isnull=False).exclude(collection__name__contains='님의 옷장').values_list('collection_id', flat=True)
+        # _icols = Pick.objects.filter(collection__isnull=False).exclude(collection__name__contains='님의 옷장').values_list('collection_id', flat=True)
+        _icols = cls.objects.annotate(npicks=Count('pick')).filter(npicks__gte=5).values_list('id', flat=True)
         return list(set(_icols))
-        # return Collection.objects.exclude(name__contains='님의 옷장').order_by('?').values_list('id', flat=True)
 
     @property
     def npicks(self):
@@ -718,33 +1173,35 @@ class Collection(OrderedModel):
 
     @property
     def serialized(self):
-        _pixids = Pix.objects.filter(pick__collection_id=self.id)
-        _pixids = _pixids.values_list('id', flat=True)
         _serialized = self.serialized_base
-        _serialized['pixids'] = list(_pixids)
-        return _serialized
+        user = get_current_user()
 
-        # return {
-        #     'id': self.id,
-        #     'name': self.name,
-        #     'pixids': list(_pixids)
-        # }
+        if user.is_authenticated and (user.boo.id == self.owner.id):
+            _pixids = Pix.objects.filter(pick__collection_id=self.id).values_list('id', flat=True)
+            _serialized['pixids'] = list(_pixids)
+
+        return _serialized
 
     @property
     def serialized_base(self):
         return {
             'id': self.id,
             'name': self.name,
-            'owner': {'id':self.owner.id, 'nick':self.owner.nick, 'collections':self.owner.collections }
+            'owner': {'id':self.owner.id, 'nick':self.owner.nick }
+            # 'owner': {'id':self.owner.id, 'nick':self.owner.nick, 'collections':self.owner.collections }
             }
 
-    # @property
-    # def first_pick(self):
-    #     return self.pick_set.first()
-    #
-    # @property
-    # def first_pick_serialized(self):
-    #     return PickSerializer(self.first_pick).data
+
+# class CollectionSerializer(serializers.ModelSerializer):
+#     picks = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Collection
+#         fields = ['id', 'name', 'picks']
+#         read_only_fields = fields
+#
+#     def get_picks(self, obj):
+#         return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
 
 
 class Pick(OrderedModel):
@@ -765,21 +1222,17 @@ class Pick(OrderedModel):
 
 
 class PickSerializer(serializers.ModelSerializer):
-    pix = PixSerializer(required=False)
+    # pix = PixSerializer(required=False)
+    pix = serializers.SerializerMethodField()
 
     class Meta:
         model = Pick
         fields = ['id', 'pix']
         read_only_fields = fields
 
+    def get_pix(self, obj):
+        return {'id': obj.pix.id}
 
-# class CollectionSerializer(serializers.ModelSerializer):
-#     picks = PickSerializer(source='pick_set', required=False, many=True)
-#
-#     class Meta:
-#         model = Collection
-#         fields = ['id', 'name', 'picks']
-#         read_only_fields = fields
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -830,28 +1283,29 @@ class LinkSerializer(serializers.ModelSerializer):
 # https://stackoverflow.com/questions/39104575/django-rest-framework-recursive-nested-parent-serialization
 class BasebooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
-    links = serializers.SerializerMethodField()
+    # links = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']#, 'collections']
+        # fields = ['id', 'nick', 'text', 'profile', 'active', 'nfollowers', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']#, 'collections']
+        fields = ['id', 'nick', 'text', 'profile', 'nfollowers']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
 
-    def get_links(self, obj):
-        return list(obj.links.filter(user_id=obj.user.id).values_list('url', flat=True))
+    # def get_links(self, obj):
+    #     return list(obj.links.filter(user_id=obj.user.id).values_list('url', flat=True))
 
 
 class GuestbooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
     voting_record = serializers.SerializerMethodField()
-    ilikes_comment = serializers.SerializerMethodField()
+    # ilikes_comment = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'voting_record', 'ilikes_comment']
+        fields = ['id', 'nick', 'text', 'profile', 'voting_record']#, 'ilikes_comment']
         read_only_fields = fields
 
     def get_profile(self, obj):
@@ -861,8 +1315,8 @@ class GuestbooSerializer(serializers.ModelSerializer):
         q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
         return {f.object_id:f.status for f in Flager.objects.filter(q, user=obj, note=self.context.get('sessionkey'))}
 
-    def get_ilikes_comment(self, obj):
-        return list(Flager.objects.filter(status=LIKE_COMMENT, user=obj, note=self.context.get('sessionkey')).values_list('object_id', flat=True))
+    # def get_ilikes_comment(self, obj):
+    #     return list(Flager.objects.filter(status=LIKE_COMMENT, user=obj, note=self.context.get('sessionkey')).values_list('object_id', flat=True))
 
 
 class BooSerializer(serializers.ModelSerializer):
@@ -871,8 +1325,11 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links']
-        read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'fit', 'links']
+        fields = ['id', 'nick', 'text', 'profile', 'followees_id', 'voting_record', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'rewards', 'researched']#, 'contentwork_result']#, 'styleprofile']
+        read_only_fields = ['id', 'followees_id', 'voting_record', 'rewards']#, 'styleprofile']
+
+        # fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links', 'styleprofile', 'rewards']
+        # read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'links', 'styleprofile', 'rewards']
 
     # def get_collections(self, obj):
     #     return list(obj.collection_set.order_by('-order').values('id', 'name'))
@@ -938,6 +1395,13 @@ class CommentSerializer(serializers.ModelSerializer):
             return { 'img': obj.commentpix_set.first().img.url }
         except:
             pass
+
+
+class PostageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Postage
+        fields = ['id', 'text', 'pix_a', 'pix_b', 'pixlabel_a', 'pixlabel_b', 'created_at', 'group', 'order']
+        read_only_fields = fields
 
 
 class PostVoteOXSerializer(serializers.ModelSerializer):

@@ -1,0 +1,232 @@
+<style>
+  .signup_email.vcomp .page-body {
+    width: 100%;
+    height: 100%;
+    background: white;
+    font-size: 12px;
+  }
+
+  .signup_email.vcomp .page-body > .section {
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .signup_email.vcomp .page-body > .section.top {
+    height: 20%;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle {
+    height: 60%;
+    background: white;
+  }
+
+  .signup_email.vcomp .page-body > .section.bottom {
+    height: 20%;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action {
+    width: var(--w-50);
+    height: var(--w-10);
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 4%;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action.next {
+    margin-bottom: 0;
+    background: var(--color-dark);
+    border-radius: var(--w-3);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action.next.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action > input {
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: var(--w-3);
+    box-sizing: border-box;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: var(--color-dark);
+    border-style: solid;
+    text-align: center;
+    /* background: lightblue; */
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action > input.highlighten {
+    border: 1px solid var(--color-point);
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action > input:focus {
+    outline: none;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .action > input::placeholder {
+    text-align: center;
+    font-weight: normal;
+    color: rgba(0,0,0,0.2);
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .desc {
+    width: 100%;
+    text-align: center;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .title.desc {
+    margin-bottom: 5%;
+    font-size: 20px;
+  }
+
+  .signup_email.vcomp .page-body > .section.middle > .alert.desc {
+    margin-bottom: 5%;
+    color: var(--color-point);
+    height: 12px;
+  }
+</style>
+
+
+<script type='text/x-template' id='signup-email-template'>
+  <page
+    class='signup_email vcomp'
+    :order='session.page.signup_email.order'
+    :open='session.page.signup_email.open'
+    :from='session.page.signup_email.from'
+    :hide_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='section top'></div>
+
+      <div class='section middle'>
+        <div class='desc title'><b>이메일을 입력해주세요</b></div>
+        <div class='desc alert'>[[ alert ]]</div>
+
+        <div class='action email'>
+          <input type='email' :class='{ highlighten: email_highlighten }' placeholder='이메일주소' spellcheck='false' v-model.trim='email'>
+        </div>
+
+        <div class='action next' :class='{ active: next_available }' @click='next'>다음</div>
+      </div>
+
+      <div class='section bottom'></div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('signup-email', {
+    template: '#signup-email-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        email: '',
+        alert: '',
+        email_highlighten: false
+      }
+    },
+
+    watch: {
+      next_available: function(_new, _old) {
+        if (_new) {
+          this.alert = '';
+          this.email_highlighten = false;
+
+        } else {
+          this.alert = '올바른 형식으로 입력해주세요';
+          this.email_highlighten = true;
+        }
+      }
+    },
+
+    // watch: {
+    //   pw: function(pw, _old) {
+    //     if (this.input_test_0) {
+    //       // https://java119.tistory.com/71
+    //       const num = pw.search(/[0-9]/g);
+    //       const eng = pw.search(/[a-z]/ig);
+    //       // var spe = pw.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+    //
+    //       if (pw.length < 8 || pw.length > 20) {
+    //         this.alert = '비밀번호는 8자 ~ 20자 이내로 해주세요';
+    //         this.input_test_1 = false;
+    //
+    //       } else if (this.pw.search(/\s/) != -1) {
+    //         this.alert = '비밀번호는 공백없이 입력해주세요';
+    //         this.input_test_1 = false;
+    //
+    //       } else if (num < 0 || eng < 0) {
+    //         this.alert = '비밀번호는 영문과 숫자를 혼합해주세요';
+    //         this.input_test_1 = false;
+    //
+    //       } else {
+    //         this.alert = '';
+    //         this.input_test_1 = true;
+    //       }
+    //     }
+    //   },
+    //
+    //   pwcheck: function(pwcheck, _old) {
+    //     if (this.input_test_1) {
+    //       if (pwcheck != this.pw) {
+    //         this.alert = '비밀번호를 다시한번 확인해주세요';
+    //         this.input_test_2 = false;
+    //
+    //       } else {
+    //         this.alert = '';
+    //         this.input_test_2 = true;
+    //       }
+    //     }
+    //   }
+    // },
+
+    computed: {
+      next_available: function() {
+        const reg = /([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        return reg.test(this.email)
+      }
+    },
+
+    methods: {
+      // signup_check: function() {
+      //   const formdata = new FormData();
+      //   formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+      //   formdata.append('email', this.email);
+      //
+      //   fetch('/user/check/signup/', { method: 'POST', body: formdata })
+      //     .then(res => res.json())
+      //     .then(js => {
+      //       if (js.exist) {
+      //         this.alert = '이미 가입되어 있는 이메일이예요';
+      //         this.input_test_0 = false;
+      //
+      //       } else {
+      //         this.alert = '';
+      //         this.input_test_0 = true;
+      //       }
+      //     });
+      // },
+
+      next: function() {
+      }
+    }
+  });
+</script>

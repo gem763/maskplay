@@ -81,6 +81,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
 
   .pixeditor.vcomp .actions > .cancel.action {
@@ -95,6 +96,7 @@
 <script type='text/x-template' id='pixeditor-template'>
   <page
     class='pixeditor vcomp'
+    :order='session.page.pixeditor.order'
     :open='session.page.pixeditor.open'
     :from='session.page.pixeditor.from'
     :hide_close='true'

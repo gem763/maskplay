@@ -3,13 +3,16 @@
     position: relative;
     background: none;
     width: 100%;
-    margin: var(--discover-col-padding);
+    margin-left: var(--img-outpadding);
+    margin-right: var(--img-outpadding);
+    /* margin: var(--discover-col-padding); */
     margin-bottom: var(--w-20);
   }
 
   .colib.vcomp .masonry-item {
     background: none;
-    padding: var(--discover-col-padding);
+    padding: var(--img-inpadding);
+    /* padding: var(--discover-col-padding); */
   }
 
   .colib.vcomp .masonry-item > .info {
@@ -23,7 +26,8 @@
   .colib.vcomp .masonry-item > .info > span {
     position: absolute;
     top: 40%;
-    right: var(--discover-col-interval);
+    /* right: var(--discover-col-interval); */
+    right: 0;
     transform: translateY(-50%);
     font-size: 12px;
   }
@@ -69,6 +73,14 @@
 <script type='text/x-template' id='colib-template'>
   <div class='colib vcomp'>
     <masonry :cols="2" :gutter="0">
+
+      <div class='masonry-item' v-for="(col, idx) in cols" :key="idx" @click='go_collection(col)'>
+        <minicol :collection='col'></minicol>
+        <div class='info' v-if='session.on("search")'>
+          <span @click.stop='go_agit(col)' v-if='col.owner'><span style='font-size:10px'>by </span><b>[[col.owner.nick]]</b></span>
+        </div>
+      </div>
+
       <div class='masonry-item' @click='make_collection' v-if='is_myboo || on_saving'>
         <div class='adder'>
           <div class='adder-message'>
@@ -78,12 +90,6 @@
         </div>
       </div>
 
-      <div class='masonry-item' v-for="(col, idx) in cols" :key="idx" @click='go_collection(col)'>
-        <minicol :collection='col'></minicol>
-        <div class='info' v-if='session.mode.on=="finder"'>
-          <span @click.stop='go_agit(col)' v-if='col.owner'><span style='font-size:10px'>by </span><b>[[col.owner.nick]]</b></span>
-        </div>
-      </div>
     </masonry>
   </div>
 </script>
@@ -93,6 +99,7 @@
   Vue.component('colib', {
     template: '#colib-template',
     delimiters: ['[[', ']]'],
+    // props: [ 'collections', 'session' ],
     props: [ 'boo', 'collections', 'session' ],
     data: function() {
       return { }
@@ -100,16 +107,24 @@
 
     computed: {
       cols: function() {
-        if (this.boo) {
-          return this.boo.collections
-
-        } else if (this.collections) {
-          return this.collections
+        // if (this.boo) {
+        //   return this.boo.collections.list
+        //
+        // } else if (this.collections) {
+        //   return this.collections.list
+        if (this.collections) {
+          return this.collections.list
 
         } else {
           return []
         }
       },
+
+      // boo: function() {
+      //   if (this.session.user.has_auth) {
+      //     return this.session.user.boo
+      //   }
+      // },
 
       is_myboo: function() {
         if (this.boo) {
@@ -126,7 +141,7 @@
 
     methods: {
       go_agit: function(collection) {
-        collection.load_owner();
+        // collection.load_owner();
         this.session.open_agit(collection.owner);
       },
 
@@ -137,27 +152,32 @@
           collection: col
         });
 
-        this.session.close_pages_all();
+        // this.session.close_pages_all();
+        this.session.page.search.category = 'pix';
+        this.session.open_search();
       },
 
       make_collection: function() {
-        this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
-          const col = {
-            id: undefined,
-            name: txt_done,
-            picks: new Picks(this.session.store),
-            pixids: []
-          }
-
-          this.cols.unshift(col);
-          fetch(`/collection/create/${col.name}`)
-            .then(x => x.json())
-            .then(js => {
-              if (js.success) {
-                col.id = js.collection_id;
-              }
-            })
-        });
+        if (this.boo) {
+          this.boo.make_collection();
+        }
+        // this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
+        //   const col = {
+        //     id: undefined,
+        //     name: txt_done,
+        //     picks: new Picks(this.session),
+        //     pixids: []
+        //   }
+        //
+        //   this.cols.unshift(col);
+        //   fetch(`/collection/create/${col.name}`)
+        //     .then(x => x.json())
+        //     .then(js => {
+        //       if (js.success) {
+        //         col.id = js.collection_id;
+        //       }
+        //     })
+        // });
       }
     },
   });

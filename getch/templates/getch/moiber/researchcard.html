@@ -1,0 +1,265 @@
+<style>
+  .researchcard.vcomp {
+    position: relative;
+    background: none;
+    width: 100%;
+    padding: 32px 16px 16px 16px;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+  .researchcard.vcomp > .pix {
+    position: relative;
+    width: 100%;
+    padding-top: 58%;
+    margin-bottom: 24px;
+    background: rgba(0,0,0,0.03);
+    border-radius: var(--w-3);
+    overflow: hidden;
+  }
+
+  .researchcard.vcomp > .pix > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: lightgray;
+  }
+
+  .researchcard.vcomp > .pix > img.cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--w-3);
+    filter: brightness(95%);
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .researchcard.vcomp > .pix > img.cover.loaded {
+    opacity: 1;
+  }
+
+  .researchcard.vcomp > .pix > .reward {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .researchcard.vcomp > .pix > .logo {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 45px;
+    height: 45px;
+    border-radius: 100px;
+    background: white;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .researchcard.vcomp > .pix > .logo > img {
+    width: 80%;
+    height: auto;
+    /* object-fit: cover; */
+  }
+
+  .researchcard.vcomp > .content {
+    position: relative;
+    width: 100%;
+    opacity: 0;
+    min-height: 54px;
+    transition: all 0.5s;
+  }
+
+  .researchcard.vcomp > .content.loaded {
+    opacity: 1;
+  }
+
+  .researchcard.vcomp > .content > .title {
+    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .researchcard.vcomp > .content > .title > span.onwork {
+    color: var(--color-point);
+  }
+
+  .researchcard.vcomp > .content > .info {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .researchcard.vcomp > .info > span.due {
+    color: var(--color-gray);
+  }
+</style>
+
+<script type='text/x-template' id='researchcard-template'>
+  <div class='researchcard vcomp' @click='go_research'>
+
+    <div class='pix'>
+      <div class='spinner'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+
+      <img class='cover' :class='{ loaded: coverpix_loaded }' :src='coverpix' @load='coverpix_set_loaded'>
+      <span class='reward'>[[ reward ]]</span>
+      <div class='logo' v-if='logo'>
+        <img :src='logo'>
+      </div>
+    </div>
+
+    <div class='content' :class='{ loaded: research_loaded }'>
+      <div class='title'>[[ title ]]<span class='onwork' v-if='!published'>(작성중)</span></div>
+      <div class='info'>
+        <span class='owner'>[[ bname ]]</span>
+        <span class='due'>[[ days_to_due ]]</span>
+      </div>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('researchcard', {
+    template: '#researchcard-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session', 'research' ],
+    data: function() {
+      return {
+        coverpix_loaded: false
+      }
+    },
+
+    methods: {
+      go_research: function() {
+        if (this.research) {
+          this.session.open_research(this.research);
+
+        } else {
+          this.session.open_contentwork("동네스타일");
+        }
+      },
+
+      coverpix_set_loaded: function() {
+        this.coverpix_loaded = true;
+      }
+    },
+
+    computed: {
+      research_loaded: function() {
+        if (this.research) {
+          return this.research.loaded
+
+        } else {
+          return true
+        }
+      },
+
+      coverpix: function() {
+        if (this.research) {
+          return this.research.coverpix
+
+        } else {
+          return '/static/materials/research/dongne_style.png'
+        }
+      },
+
+      reward: function() {
+        if (this.research) {
+          return this.research.reward ? this.research.reward + 'P': ''
+
+        } else {
+          return '300P'
+        }
+      },
+
+      brand: function() {
+        if (this.research) {
+          return this.research.brand
+        }
+      },
+
+      bname: function() {
+        if (this.brand) {
+          return this.brand.name_en
+        }
+      },
+
+      logo: function() {
+        if (this.brand) {
+          return this.brand.logo
+
+        } else if (!this.research) {
+          return '/static/materials/logos/logo.png'
+        }
+      },
+
+      title: function() {
+        if (this.research) {
+          return this.research.title
+
+        } else {
+          return '내 패션은 어느 동네 느낌일까?'
+        }
+      },
+
+      due: function() {
+        if (this.research) {
+          return this.research.due
+        }
+      },
+
+      days_to_due: function() {
+        if (this.due) {
+          return '마감 ' + Math.ceil( (new Date(this.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+
+        } else {
+          return ''
+        }
+      },
+
+      published: function() {
+        if (this.research) {
+          return this.research.published
+
+        } else {
+          return true
+        }
+      },
+
+      owner: function() {
+        if (this.research) {
+          return this.research.owner
+        }
+      },
+
+      ownernick: function() {
+        if (this.owner) {
+          return this.owner.nick
+
+        } else {
+          return '모이버'
+        }
+      }
+    }
+  });
+</script>

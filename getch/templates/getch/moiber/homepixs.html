@@ -5,7 +5,8 @@
     width: 100%;
     height: 100%;
     color: var(--color-dark);
-    /* overflow-y: auto; */
+    overflow-x: hidden;
+    /* overflow: hidden; */
     /* padding-top: var(--headerbar-height); */
   }
 
@@ -80,7 +81,8 @@
 
   .homepixs.vcomp > .pixs-body > .collection > .editor {
     position: absolute;
-    top: var(--w-2);
+    bottom: var(--w-4);
+    /* top: var(--w-2); */
     right: var(--w-2);
     width: var(--w-10);
     height: var(--w-10);
@@ -97,7 +99,8 @@
 
   .homepixs.vcomp > .pixs-body > .spacer {
     background: none;
-    height: var(--headerbar-height);
+    height: 65px;
+    /* height: 155px; */
   }
 
   .homepixs.vcomp > .pixs-body > .agenda > img.agendapix {
@@ -108,7 +111,7 @@
 
   .homepixs.vcomp > .pixs-body > .goback {
     position: absolute;
-    top: var(--w-2);
+    top: 225px;
     left: var(--w-2);
     width: var(--w-10);
     height: var(--w-10);
@@ -187,6 +190,8 @@
     /* font-size: 14px; */
     margin-right: var(--w-2);
     box-sizing: border-box;
+    box-shadow: 0 4px 6px rgb(0, 0, 0, 0.1);
+    font-size: 14px;
   }
 
   .homepixs.vcomp > .pixs-body > .agenda > .actions > .action > * {
@@ -195,13 +200,13 @@
 
   .homepixs.vcomp > .pixs-body > .agenda > .actions > .action.visit {
     background: white;
-    border: 2px solid var(--color-dark);
+    /* border: 2px solid var(--color-dark); */
     color: var(--color-dark);
   }
 
   .homepixs.vcomp > .pixs-body > .agenda > .actions > .action.collect {
     background: var(--color-point);
-    border: 2px solid var(--color-point);
+    /* border: 2px solid var(--color-point); */
     color: white;
   }
 
@@ -211,9 +216,9 @@
   } */
 
   .homepixs.vcomp > .pixs-body > .agenda > .actions > .action > img {
-    height: 70%;
+    height: 50%;
     width: auto;
-    margin-right: 5%;
+    margin-right: 8%;
   }
 
   .homepixs.vcomp > .pixs-body > .agenda > .actions > .action.collect > img {
@@ -236,7 +241,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: var(--w-10);
+    width: 45px;
     height: auto;
     /* background: orange; */
   }
@@ -274,11 +279,12 @@
     transform: translate(-50%, -50%);
   }
 
-  .homepixs.vcomp > .pixs-body > .edit-actions {
+  .homepixs.vcomp > .edit-actions {
     position: absolute;
     bottom: calc((-1) * var(--w-15));
     width: 100%;
-    height: var(--w-15);
+    /* height: var(--w-15); */
+    height: 0;
     background: rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
@@ -286,13 +292,16 @@
     /* justify-content: flex-end; */
     transition: all 0.3s;
     transition-delay: 0.3s;
+    overflow: hidden;
   }
 
-  .homepixs.vcomp > .pixs-body > .edit-actions.editable {
+  .homepixs.vcomp > .edit-actions.editable {
     bottom: 0;
+    height: var(--w-15);
+    /* display: flex; */
   }
 
-  .homepixs.vcomp > .pixs-body > .edit-actions > .action {
+  .homepixs.vcomp > .edit-actions > .action {
     width: var(--w-20);
     height: var(--w-10);
     border-radius: var(--w-5);
@@ -307,14 +316,14 @@
     border: 2px solid var(--color-dark);
   }
 
-  .homepixs.vcomp > .pixs-body > .edit-actions > .action.remove {
+  .homepixs.vcomp > .edit-actions > .action.remove {
     color: white;
     background: var(--color-message);
     border: 2px solid var(--color-message);
     pointer-events: none;
   }
 
-  .homepixs.vcomp > .pixs-body > .edit-actions > .action.remove.removable {
+  .homepixs.vcomp > .edit-actions > .action.remove.removable {
     background: var(--color-point);
     border: 2px solid var(--color-point);
     pointer-events: auto;
@@ -324,6 +333,8 @@
 <script type='text/x-template' id='homepixs-template'>
   <div class='homepixs vcomp'>
     <div class='pixs-body' @scroll='scroll'>
+      <div class='spacer' ref='top'></div>
+
       <div class='agenda' v-if='agenda' ref='top'>
         <img class='agendapix' :src='agenda.src'>
 
@@ -335,12 +346,12 @@
         <div class='actions'>
           <span class='action visit' v-if='agenda.outlink' @click='visit'>
             <img src='/static/materials/icons/visit.png'>
-            <b>방문</b>
+            <span>방문</span>
           </span>
           <!-- <span class='action collect' @click='go_collector(agenda)' :class='{ owned: is_owned }'> -->
           <span class='action collect' @click='go_collector(agenda)'>
             <img src='/static/materials/icons/hanger_white.png'>
-            <b>넣기</b>
+            <span>넣기</span>
           </span>
         </div>
 
@@ -358,8 +369,7 @@
           <img src='/static/materials/icons/setting_line.png'>
         </div>
       </div>
-
-      <div class='spacer' v-else ref='top'></div>
+      <!-- <div class='spacer' v-else ref='top'></div> -->
 
       <div class='container'>
         <div class='more-similars' v-if='agenda'>
@@ -372,22 +382,22 @@
 
         <pixs :pixs='pixs' :session='session' v-if='pixs' @choose='choose($event)'></pixs>
         <picks :picks='picks' :session='session' :ncol='2' :hide_info='false' v-if='picks' @choose='choose($event)'></picks>
-        <img class='loading' src='/static/materials/logos/splash.gif' v-if='onloading'>
+        <img class='loading' src='/static/materials/logos/moiber_logo_splash.gif' v-if='onloading'>
       </div>
 
       <div class='goback' :class='goback_status' v-if='backable' @click='goback'>
         <img src='/static/materials/icons/backicon.png'>
       </div>
+    </div>
 
-      <div class='edit-actions' :class='{ editable: session.editing.on }'>
-        <span class='action' @click='cancel_edit'>
-          <b>[[session.editing.selected.length>0 ? "취소" : "완료"]]</b>
-        </span>
+    <div class='edit-actions' :class='{ editable: session.editing.on }'>
+      <span class='action' @click='cancel_edit'>
+        <b>[[session.editing.selected.length>0 ? "취소" : "완료"]]</b>
+      </span>
 
-        <span class='action remove' @click='remove_picks' :class='{ removable: session.editing.selected.length>0 }'>
-          <b>삭제</b>
-        </span>
-      </div>
+      <span class='action remove' @click='remove_picks' :class='{ removable: session.editing.selected.length>0 }'>
+        <b>삭제</b>
+      </span>
     </div>
   </div>
 </script>

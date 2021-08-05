@@ -1,91 +1,217 @@
 <style>
   .joystick.vcomp {
-    position: fixed;
-    bottom: 0;
+    position: absolute;
+    top: 0;
     left: 0;
-    width: 100%;
-    height: var(--w-20);
-    background: none;
+    width: var(--width);
+    height: 100px;
+    /* background: white; */
+    background: rgba(255,255,255,0.8);
     transition: all 0.3s;
     transition-delay: 0.3s;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    pointer-events: none;
+    z-index: 100;
+    font-size: 14px;
+  }
+
+  .joystick.vcomp.minimized {
+    top: -60px;
+    /* background: rgba(255,255,255,0.6); */
+    font-size: 13px;
   }
 
   .joystick.vcomp.hidden {
-    bottom: calc((-1) * var(--w-20));
+    top: -100px;
   }
 
-  .joystick.vcomp > table {
-    background: rgba(255, 255, 255, 0.9);
-    border-collapse: collapse;
-    border-radius: var(--w-3) var(--w-3) 0 0;
-    box-shadow: 0 0 10px 1px rgb(70, 71, 105, 0.1);
-    pointer-events: auto;
-  }
-
-  .joystick.vcomp > table td {
-    /* border: 1px solid black; */
-    width: var(--w-20);
-    height: var(--w-15);
-    position: relative;
-  }
-
-  .joystick.vcomp > table td > img {
+  .joystick.vcomp > .head {
     position: absolute;
-    bottom: 35%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: var(--w-7);
-    height: auto;
-    pointer-events: none;
-  }
-
-  .joystick.vcomp > table td > span {
-    position: absolute;
-    top: 67%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
     width: 100%;
-    text-align: center;
-    font-size: 10px;
-    color: gray;
-    pointer-events: none;
+    height: 60%;
   }
 
-  .joystick.vcomp > table td > span.on {
+  .joystick.vcomp > .head > .icon {
+    position: absolute;
+    top: 0;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .joystick.vcomp > .head > .icon.logo {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .joystick.vcomp > .head > .icon.setting {
+    right: -60px;
+    transition: all 0.2s;
+  }
+
+  .joystick.vcomp > .head > .icon.setting.on {
+    right: 0;
+  }
+
+  .joystick.vcomp > .head > .icon > img {
+    height: auto;
+  }
+
+  .joystick.vcomp > .head > .icon.logo > img {
+    width: 50px;
+  }
+
+  .joystick.vcomp > .head > .icon.setting > img {
+    width: 20px;
+    opacity: 0.5;
+  }
+
+  .joystick.vcomp > .body {
+    position: absolute;
+    bottom: 0;
+    /* left: 0;
+    width: 100%; */
+    left: 16px;
+    right: 16px;
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    /* padding-bottom: 5px; */
+  }
+
+  .joystick.vcomp > .body > span.menu {
+    height: 36px;
+    line-height: 36px;
+    padding-left: 10px;
+    padding-right: 10px;
+    /* margin-left: 5px;
+    margin-right: 5px; */
+    border-radius: 100px;
+    letter-spacing: -0.3px;
+    color: #828282;
+    box-sizing: border-box;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .joystick.vcomp > .body > span.menu.on {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .joystick.vcomp > .tail {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 0;
+    display: flex;
+    flex-direction: row;
+    /* background: white; */
+    background: rgba(255,255,255,0.8);
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+  }
+
+  .joystick.vcomp > .tail.show {
+    height: 50%;
+  }
+
+  .joystick.vcomp.minimized > .tail.show {
+    height: 30%;
+  }
+
+  .joystick.vcomp > .tail > .category {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #828282;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .joystick.vcomp > .tail > .category.on {
+    color: var(--color-dark);
+    text-decoration: underline;
     font-weight: bold;
-    color: var(--color-point);
+  }
+
+
+  .joystick.vcomp > .head > .icon.setting > .setting-menu {
+    position: absolute;
+    top: 100%;
+    right: 10px;
+    background: white;
+    width: 110px;
+    border-radius: 9px;
+    overflow: hidden;
+    font-size: 12px;
+    box-shadow: 0px 2px 6px rgb(70, 71, 105, 0.3);
+  }
+
+  .joystick.vcomp > .head > .icon.setting > .setting-menu > .item {
+    background: none;
+    height: var(--w-9);
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .joystick.vcomp > .head > .icon.setting > .setting-menu > .item:last-child {
+    border-bottom: none;
+  }
+
+  .joystick.vcomp > .head > .icon.setting > .dimmer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--width);
+    height: var(--height);
+    background: rgba(0,0,0,0.5);
   }
 </style>
 
 <script type='text/x-template' id='joystick-template'>
-  <div class='joystick vcomp' :class='status'>
-    <table>
-      <tbody>
-        <tr>
-          <td class='home' @click='go_home'>
-            <img v-show='!on_home' src='/static/materials/icons/home.png'>
-            <img v-show='on_home' src='/static/materials/icons/action_home.png'>
-            <span :class='{on:on_home}'>홈</span>
-          </td>
+  <div class='joystick vcomp' :class='phase'>
+    <div class='body'>
+      <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>참여</span>
+      <span class='menu' :class='{ on: session.on("stylevote") }' @click='session.open_stylevote()'>밸런스게임</span>
+      <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>맞춤검색</span>
+      <span class='menu' :class='{ on: on_my }' @click='session.open_my()'>내프로파일</span>
+    </div>
 
-          <td class='finder' @click='go_finder'>
-            <img v-show='!on_finder' src='/static/materials/icons/search.png'>
-            <img v-show='on_finder' src='/static/materials/icons/action_search.png'>
-            <span :class='{on:on_finder}'>찾아보기</span>
-          </td>
+    <div class='tail' :class='{ show: session.on("search") }'>
+      <span class='category' :class='{ on: category=="pix" }' @click='categorize("pix")'>피드</span>
+      <span class='category' :class='{ on: category=="collection" }' @click='categorize("collection")'>옷장</span>
+    </div>
 
-          <td class='my' @click='go_my'>
-            <img v-show='!on_my' src='/static/materials/icons/hanger.png'>
-            <img v-show='on_my' src='/static/materials/icons/action_hanger.png'>
-            <span :class='{on:on_my}'>내 옷장</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class='head'>
+      <div class='icon logo' @click='session.open_home()'>
+        <img src='/static/materials/logos/logo.png'>
+      </div>
+
+      <div class='icon setting' :class='{ on: settable }' @click.stop='toggle_menu'>
+        <img src='/static/materials/icons/setting_line.png'>
+        <div class='dimmer' v-if='on_menu'></div>
+        <div class='setting-menu' v-if='on_menu'>
+          <div class='item' @click='session.open_profiler()'>내 프로필 편집</div>
+          <div class='item' @click='make_collection'>옷장 만들기</div>
+          <div class='item logout' @click='session.logout()'>로그아웃</div>
+        </div>
+      </div>
+    </div>
   </div>
 </script>
 
@@ -96,97 +222,59 @@
     delimiters: ['[[', ']]'],
     props: [ 'session' ],
     data: function() {
-      return { }
+      return {
+        on_menu: false
+      }
     },
 
     computed: {
-      status: function() {
+      boo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      settable: function() {
+        if (this.boo) {
+          return this.boo.profile && this.boo.id
+        }
+      },
+
+      category: function() {
+        return this.session.page.search.category
+      },
+
+      phase: function() {
         return {
-          hidden: ((this.session.scroll_direction == 'down') && (this.on_home))
-                    || this.on_agit
-                    || this.on_collector
-                    || this.on_login
-                    || this.on_texteditor
-                    || this.on_pixeditor
-                    || this.on_user_loading
-                    || this.on_landing
-                    || this.on_profiler
-                    || this.session.editing.on
+          minimized: (this.session.scroll_direction=='down' && this.session.on('search'))
+                      || (this.session.scroll_direction=='down' && this.session.on('stylevote')),
+
+          hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'signup', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'texteditor', 'pixeditor', 'collector', 'research')
+                  || this.on_agit
         }
       },
 
       on_my: function() {
-        return (this.session.mode.on=='agit') && (this.session.user.is_myboo(this.session.page.agit.boo))
-      },
-
-      on_finder: function() {
-        return this.session.mode.on=='finder'
-      },
-
-      on_home: function() {
-        return this.session.mode.on=='home'
+        return (this.session.on('agit')) && (this.session.user.is_myboo(this.session.page.agit.boo))
       },
 
       on_agit: function() {
-        return (this.session.mode.on=='agit') && !(this.session.user.is_myboo(this.session.page.agit.boo))
-      },
-
-      on_collector: function() {
-        return this.session.mode.on=='collector'
-      },
-
-      on_login: function() {
-        return this.session.mode.on=='login'
-      },
-
-      on_texteditor: function() {
-        return this.session.mode.on=='texteditor'
-      },
-
-      on_pixeditor: function() {
-        return this.session.mode.on=='pixeditor'
-      },
-
-      on_landing: function() {
-        return this.session.mode.on=='landing'
-      },
-
-      on_profiler: function() {
-        return this.session.mode.on=='profiler'
-      },
-
-      on_user_loading: function() {
-        return this.session.user.onloading
+        return (this.session.on('agit')) && (!this.session.user.is_myboo(this.session.page.agit.boo))
       }
     },
 
     methods: {
-      go_home: function() {
-        if (this.session.mode.on=='home') {
-          this.session.refresh();
-
-        } else {
-          this.session.close_pages_all();
-        }
+      toggle_menu: function() {
+        this.on_menu = !this.on_menu;
       },
 
-      go_finder: function() {
-        if (this.session.mode.on=='finder') {
-          this.session.close_page();
-
-        } else {
-          // this.session.close_pages_all();
-          this.session.open_finder();
-        }
+      categorize: function(cat) {
+        this.session.page.search.category = cat
       },
 
-      go_my: function() {
-        if (this.session.mode.on=='agit') {
-          this.session.close_page();
-
-        } else {
-          // this.session.close_pages_all();
-          this.session.open_my();
+      make_collection: function() {
+        if (this.boo) {
+          this.boo.make_collection();
         }
       }
     }

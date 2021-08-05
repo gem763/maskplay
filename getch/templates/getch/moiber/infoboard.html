@@ -1,0 +1,116 @@
+<style>
+  .infoboard.vcomp .page-body {
+    background: white;
+    font-size: 14px;
+  }
+
+  .infoboard.vcomp .page-body > .container {
+    position: relative;
+    background: lightpink;
+    width: 100%;
+    /* height: 200px; */
+    /* margin-top: var(--w-16);
+    margin-bottom: var(--w-20); */
+    background: none;
+    /* padding-left: var(--w-6);
+    padding-right: var(--w-6); */
+    box-sizing: border-box;
+  }
+
+  .infoboard.vcomp .page-body > .container > .apply {
+    position: absolute;
+    bottom: var(--w-50);
+    left: 50%;
+    transform: translateX(-50%);
+    height: var(--w-10);
+    width: 30%;
+    background: var(--color-point);
+    color: white;
+    font-weight: bold;
+    /* padding: 10px; */
+    text-align: center;
+    /* margin-top: 20px;
+    margin-bottom: 30px; */
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .infoboard.vcomp .page-body > .container img.pix {
+    width: 100%;
+    /* margin-bottom: 60px;
+    margin-top: 60px; */
+  }
+</style>
+
+<script type='text/x-template' id='infoboard-template'>
+  <page
+    class='infoboard vcomp'
+    :order='session.page.infoboard.order'
+    :open='session.page.infoboard.open'
+    :from='session.page.infoboard.from'
+    :hide_menu='true'
+    :trans_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='container'>
+        <div ref='upmost'></div>
+
+        <div v-if='session.page.infoboard.contents=="frontend_developer_junior_0"'>
+          <img class='pix' src='/static/materials/pages/recruit/frontend_dev.jpg'>
+        </div>
+
+        <div v-if='session.page.infoboard.contents=="contents_designer_0"'>
+          <img class='pix' src='/static/materials/pages/recruit/designer.jpg'>
+        </div>
+
+        <div v-if='session.page.infoboard.contents=="planner_0"'>
+          <img class='pix' src='/static/materials/pages/recruit/planner.jpg'>
+        </div>
+
+        <div v-if='session.page.infoboard.contents=="developer_senior_0"'>
+          <img class='pix' src='/static/materials/pages/recruit/data_scientist.jpg'>
+        </div>
+
+        <!-- <br><br> -->
+        <div class='apply' @click='apply'>지원하기</div>
+        <!-- <br> -->
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('infoboard', {
+    template: '#infoboard-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    },
+
+    watch: {
+      'session.page.infoboard.open': function(_new, _old) {
+        if (_new) {
+          this.goto_upmost();
+        }
+      }
+    },
+
+    methods: {
+      goto_upmost: function() {
+        if (this.$refs) {
+          this.$refs.upmost.scrollIntoView({behavior: 'smooth', block: 'end', inline: 'nearest'});
+        }
+      },
+
+      apply: function() {
+        window.open('mailto:contact@moiber.com');
+      }
+    }
+  });
+</script>

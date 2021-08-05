@@ -1,8 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.urls import reverse
 from django.apps import apps
 from django.conf import settings
 from django.core import serializers
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.hashers import check_password
+from allauth.account.utils import perform_login
+from urllib import parse
 # from django.db.models import F
 # from django.db.models import Q
 from django.db.models import F, Q, Sum, Count, Case, When
@@ -10,6 +15,8 @@ from django.template.loader import render_to_string
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 import getch.models as m
 from allauth.account.views import LoginView, LogoutView
+from allauth.socialaccount.helpers import complete_social_signup, complete_social_login
+from allauth.socialaccount.models import SocialAccount, SocialLogin
 # import getch.serializers as ser
 # from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -17,7 +24,10 @@ from notifications.signals import notify
 import random
 import os
 import json
+import collections
 from datetime import datetime, date, timedelta
+# from gensim.models import Doc2Vec
+from django.utils import timezone
 
 labels = {
     'gender': list(m.Genderlabel.objects.order_by('key').values('id', 'label')),
@@ -35,6 +45,19 @@ labels = {
 
 # anonyboo = m.Boo.objects.get(pk=m.BOO_DELETED)
 context = { 'labels':labels }
+# print(timezone.now().date())
+# model_path = os.path.join(settings.BASE_DIR, 'data', 'doc2vec.model')
+# d2v = Doc2Vec.load(model_path)
+# identities = m.Identity.objects.all()
+
+
+def redirect_params(url, params=None):
+    response = redirect(url)
+    if params:
+        query_string = parse.urlencode(params)
+        response['Location'] += '?' + query_string
+    return response
+
 
 def test(request):
     return render(request, 'getch/test.html')
@@ -44,17 +67,33 @@ def discover(request):
     context['entry'] = request.GET.get('entry', None)
     context['dongne'] = request.GET.get('dongne', None)
     context['gender'] = request.GET.get('gender', None)
+    # print(request.user.boo.reward_snapshot)
     return render(request, 'getch/moiber/discover.html', context)
 
 
+# def policy(request):
+#     return render(request, 'getch/policy.html')
+#
+# def privacy(request):
+#     return render(request, 'getch/privacy.html')
+#
+# def recruit(request):
+#     return render(request, 'getch/recruit.html')
+
 def policy(request):
-    return render(request, 'getch/policy.html')
+    params = { 'entry': 'policy' }
+    return redirect_params('discover', params)
+
 
 def privacy(request):
-    return render(request, 'getch/privacy.html')
+    params = { 'entry': 'privacy' }
+    return redirect_params('discover', params)
+
 
 def recruit(request):
-    return render(request, 'getch/recruit.html')
+    params = { 'entry': 'recruit' }
+    return redirect_params('discover', params)
+
 
 def load(request, ctx):
     # 처음 로딩할때는 session 객체가 없어서,
@@ -65,16 +104,14 @@ def load(request, ctx):
     # 2021.02.19
     request.session.save()
 
-    if request.user.is_authenticated:
-        if request.user.is_staff:
-            ctx['utype'] = 'staff'
-        else:
-            ctx['utype'] = 'general'
-
-    else:
-        ctx['utype'] = 'guest'
-
-    # print(m.Flager.objects.filter(status=0, user_id=59, object_id=0).values('user'))
+    # if request.user.is_authenticated:
+    #     if request.user.is_staff:
+    #         ctx['utype'] = 'staff'
+    #     else:
+    #         ctx['utype'] = 'general'
+    #
+    # else:
+    #     ctx['utype'] = 'guest'
 
     return render(request, 'getch/play.html', ctx)
 
@@ -90,17 +127,31 @@ def play(request):
     return load(request, context)
 
 
+# def company(request):
+#     return HttpResponseRedirect(reverse('discover'))
+
 def company(request):
-    context['req'] = 1
-    return load(request, context)
+    params = { 'entry': 'about' }
+    return redirect_params('discover', params)
+
+def about(request):
+    params = { 'entry': 'about' }
+    return redirect_params('discover', params)
 
 def company_recruit(request):
     context['req'] = 2
     return load(request, context)
 
+# def landing(request):
+#     return HttpResponseRedirect(reverse('discover'))
+
+
 def landing(request):
-    context['req'] = 3
-    return load(request, context)
+    params = { 'entry': 'landing' }
+    return redirect_params('discover', params)
+    # request.session.save()
+    # context['entry'] = 'landing'
+    # return render(request, 'getch/moiber/discover.html', context)
 
 def testbed(request):
     context['req'] = 5
@@ -109,6 +160,150 @@ def testbed(request):
 def testfeed(request):
     context['req'] = 6
     return load(request, context)
+
+
+# def user_check_signup(request):
+#     if request.method=='POST':
+#         _email = request.POST.get('email', None)
+#
+#         if _email:
+#             _exist = m.User.objects.filter(email=_email).exists()
+#             return JsonResponse({'success':True, 'exist':_exist, 'message':'signup checked successfully'}, safe=False)
+#
+#         else:
+#             return JsonResponse({'success':False, 'message':'something wrong while checking signup'}, safe=False)
+
+def signup_email_check(request):
+    if request.method == 'POST':
+        try:
+            _email = request.POST.get('email', None)
+            _user = m.User.objects.filter(email=_email).first()
+
+            if _user:
+                _boo = _user.boo
+                _nick = _boo.nick
+                _profilepix = _boo.profile.pix.url
+                _socialaccount = _user.socialaccount_set.first()
+
+                if _socialaccount:
+                    _provider = _socialaccount.provider
+                else:
+                    _provider = None
+
+                _existing = { 'email': _email, 'nick': _nick, 'profilepix': _profilepix, 'provider': _provider }
+                return JsonResponse({'code':1, 'existing':_existing, 'message':'this email already exists'}, safe=False)
+
+            else:
+                return JsonResponse({'code':0, 'message':'possible to use this email'}, safe=False)
+
+        except:
+            return JsonResponse({'code':-1, 'message':'something wrong while checking email'}, safe=False)
+
+
+def kakaotalk_login(request):
+    # _user = m.User.objects.create(email='tekk21@tageaglk.cm')
+    # _account = SocialAccount.objects.create(user=_user, provider='kakao', uid='11122331')
+    # perform_login(request, _user, email_verification='optional')
+    # return JsonResponse({'code':-1, 'message':'something wrong while checking email'}, safe=False)
+
+    # sociallogin = SocialLogin(account)
+    # complete_social_login(request, sociallogin)
+
+    if request.method == 'POST':
+        try:
+            _data = request.POST.get('data', None)#; print(type(_data))
+            _data = json.loads(_data)#; print(type(_data), _data)
+            _email = _data['kakao_account']['email']
+            _user = m.User.objects.filter(email=_email).first()
+
+            if _user:
+                perform_login(request, _user, email_verification='optional')
+                return JsonResponse({'code':0, 'message':'logged in successfully'}, safe=False)
+
+            else:
+                _user = m.User.objects.create(email=_email)
+                _user.set_unusable_password()
+                _user.save()
+                _account = SocialAccount.objects.create(user=_user, provider='kakao', uid=_data['id'])
+                perform_login(request, _user, email_verification='optional')
+                return JsonResponse({'code':1, 'message':'signed up successfully'}, safe=False)
+
+
+        except:
+            return JsonResponse({'code':-1, 'message':'something wrong while kakaotalk logining'}, safe=False)
+
+
+    # if request.method == 'POST':
+    #     try:
+    #         _email = request.POST.get('email', None)
+    #         _user = m.User.objects.filter(email=_email).first()
+    #
+    #         if _user:
+    #             _socialaccount = _user.socialaccount_set.first()
+    #
+    #             if _socialaccount:
+    #                 _provider = _socialaccount.provider
+    #                 _existing = { 'email': _email, 'nick': _nick, 'profilepix': _profilepix, 'provider': _provider }
+    #                 return JsonResponse({'code':3, 'existing':_existing, 'message':'the socialacount already exists'}, safe=False)
+    #
+    #             else:
+    #                 return JsonResponse({'code':0, 'message':'no matching kakao account'}, safe=False)
+    #
+    #         else:
+    #             return JsonResponse({'code':1, 'message':'no matching acount'}, safe=False)
+    #
+    #     except:
+    #         return JsonResponse({'code':-1, 'message':'something wrong while logining'}, safe=False)
+
+
+def email_login(request):
+    if request.method == 'POST':
+        try:
+            _email = request.POST.get('email', None)
+            _pw = request.POST.get('pw', None)
+            _user = m.User.objects.filter(email=_email).first()
+
+            if _user:
+                _boo = _user.boo
+                _nick = _boo.nick
+                _profilepix = _boo.profile.pix.url
+                _socialaccount = _user.socialaccount_set.first()
+
+                if _socialaccount:
+                    _provider = _socialaccount.provider
+                    _existing = { 'email': _email, 'nick': _nick, 'profilepix': _profilepix, 'provider': _provider }
+                    return JsonResponse({'code':3, 'existing':_existing, 'message':'the socialacount already exists'}, safe=False)
+
+                elif check_password(_pw, _user.password):
+                    # __user = authenticate(email=_email, password=_pw)
+                    # login(request, _user)
+                    perform_login(request, _user, email_verification='optional')
+                    return JsonResponse({'code':0, 'message':'logged in successfully'}, safe=False)
+
+                else:
+                    return JsonResponse({'code':2, 'message':'password check'}, safe=False)
+
+            else:
+                return JsonResponse({'code':1, 'message':'no matching acount'}, safe=False)
+
+        except:
+            return JsonResponse({'code':-1, 'message':'something wrong while logining'}, safe=False)
+
+
+def email_signup(request):
+    if request.method == 'POST':
+        try:
+            _email = request.POST.get('email', None)
+            _pw = request.POST.get('pw', None)
+            _user = m.User.objects.create(email=_email)
+            _user.set_password(_pw)
+            _user.save()
+            perform_login(request, _user, email_verification='optional')
+            # print(_user, '*****************')
+            return JsonResponse({'success':True, 'message':'signed up successfully'}, safe=False)
+
+        except:
+            return JsonResponse({'success':False, 'message':'something wrong while signing-up'}, safe=False)
 
 
 
@@ -140,15 +335,109 @@ def get_user2(request):
         return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
 
 
+def notice_preset(request):
+    nomore_today = request.GET.get('nomore_today', None)
+
+    if nomore_today and request.user.is_authenticated:
+        nomore_today = (nomore_today == 'true')
+
+        # print(nomore_today, '*****************')
+        request.user.boo.settle(nomore_today=nomore_today)
+        return JsonResponse({'success':True, 'nomore_today':nomore_today, 'message':'notice preset successfully'}, safe=False)
+
+    else:
+        return JsonResponse({'success':False, 'message':'something wrong while notice presetting'}, safe=False)
+
+
+def get_iresearches(request):
+    # _ires = list(m.Research.iresearches(published_only=False))
+    _ires = list(m.Research.iresearches)
+    return JsonResponse({'success':True, 'ids':_ires}, safe=False)
+
+
+# def get_iresearches_onwork(request):
+#     _ires = list(m.Research.iresearches_onwork)
+#     return JsonResponse({'success':True, 'ids':_ires}, safe=False)
+
+
+def get_research(request, research_id):
+    try:
+        _research = m.Research.objects.get(pk=research_id)
+        _research = m.ResearchSerializer(_research).data
+        return JsonResponse({'success':True, 'content':_research}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_iresearchitems(request, research_id):
+    _research = m.Research.objects.get(pk=research_id)
+    _iresitems = list(_research.iresearchitems)
+    return JsonResponse({'success':True, 'ids':_iresitems}, safe=False)
+
+
+def get_researchitem(request, researchitem_id):
+    try:
+        _researchitem = m.ResearchItem.objects.get(pk=researchitem_id)
+        _researchitem = m.ResearchItemSerializer(_researchitem).data
+        return JsonResponse({'success':True, 'content':_researchitem}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def researchitem_answer(request, research_id, researchitem_id, answer):
+    try:
+        if request.user.is_authenticated:
+            boo = request.user.boo
+            research_id = str(research_id)
+            researchitem_id = str(researchitem_id)
+            # print(str(research_id) not in boo.answers, '*************')
+            if research_id not in boo.answers:
+                # print('*******************')
+                boo.answers[research_id] = {
+                    'finished': False
+                }
+
+            boo.answers[research_id][researchitem_id] = json.loads(answer)
+            boo.save()
+            return JsonResponse({'success':True, 'message':'answered successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while answering'}, safe=False)
+
+
+
+def _pix_combinations(n):
+    _ipixs = list(m.Pix.ipixs())
+    comb = set()
+
+    while len(comb) < n:
+        comb.add(frozenset(random.sample(_ipixs, 2)))
+
+    return comb
+
+
+def get_ipixs_comb(request, n):
+    _comb = _pix_combinations(n)
+    _comb = [list(e) for e in _comb]
+    return JsonResponse({'success':True, 'ids':_comb}, safe=False)
+
+
 def get_ipixs(request):
     _ipixs = list(m.Pix.ipixs())
     random.shuffle(_ipixs)
     return JsonResponse({'success':True, 'ids':_ipixs}, safe=False)
 
 
-def get_icols(request):
+def get_random_icols(request):
     _icols = m.Collection.icols()
     random.shuffle(_icols)
+    return JsonResponse({'success':True, 'ids':_icols}, safe=False)
+
+
+def get_icollections(request, boo_id):
+    _icols = m.Boo.objects.get(id=boo_id).icollections
     return JsonResponse({'success':True, 'ids':_icols}, safe=False)
 
 
@@ -165,6 +454,12 @@ def get_pix(request, pix_id):
 def collect_pix(request, collection_id, pix_id):
     try:
         pick = m.Pick.objects.create(collection_id=collection_id, pix_id=pix_id)
+        # print(collections.Counter(pick.pix.tokens.split()))
+
+        _boo = pick.collection.owner
+        _boo.coltags = collections.Counter(_boo.coltags) + collections.Counter(pick.pix.tokens.split())
+        # _boo.rewarding(n_collected=1, amount_by_collect=100)
+        _boo.save()
         return JsonResponse({'success':True, 'pick_id':pick.id, 'message':'pix collected successfully'}, safe=False)
 
     except:
@@ -203,7 +498,13 @@ def get_pick(request, pick_id):
 
 def remove_picks(request, collection_id, pick_ids):
     try:
+        _boo = request.user.boo
         _pids = pick_ids.split(',')
+        _toks = m.Pix.objects.filter(pick__in=_pids).values_list('tokens', flat=True)
+        # print(collections.Counter(' '.join(_toks).split()))
+        _boo.coltags = collections.Counter(_boo.coltags) - collections.Counter(' '.join(_toks).split())
+        _boo.save()
+
         _picks = m.Pick.objects.filter(collection_id=collection_id, id__in=_pids)
         _picks.delete()
         return JsonResponse({'success':True, 'message':'picks removed successfully'}, safe=False)
@@ -232,6 +533,32 @@ def get_mbti_iposts(request, type):
     return JsonResponse({'success':True, 'idlist':_iposts, 'ids':_iposts}, safe=False)
 
 
+def get_contentwork(request, id):
+    # _cwork = m.Contentwork.objects.get(agenda=agenda)
+    _cwork = m.Contentwork.objects.get(id=id)
+    return JsonResponse({'success':True, 'content':_cwork.serialized}, safe=False)
+
+
+def get_contentwork_ipostages(request, id):
+    # _ipostages = list(m.Contentwork.ipostages(agenda))
+    _ipostages = list(m.Contentwork.ipostages(id))
+    return JsonResponse({'success':True, 'ids':_ipostages}, safe=False)
+
+
+def contentwork_resultize(request, id):
+    if request.method=='POST':
+        _result = request.POST.get('result', None)
+        _result = json.loads(_result)
+
+        if _result:
+            # request.user.boo.contentwork_resultize(agenda, _result)
+            request.user.boo.contentwork_resultize(id, _result)
+            return JsonResponse({'success':True, 'result':_result, 'message':'contentwork resultized successfully'}, safe=False)
+
+        else:
+            return JsonResponse({'success':True, 'message':'something wrong while resultizing contentwork'}, safe=False)
+
+
 def mbtiresult_base(request, type):
     return render(request, 'getch/mbtiresult_base.html')
 
@@ -239,15 +566,18 @@ def mbtiresult_base(request, type):
 def get_post(request, post_id):
     try:
         _post = m.Post.objects.get_subclass(pk=post_id)
-
-        # if _post.boo.hidden:
-        #     print(_post.text)
-        #     return JsonResponse({'success':False}, safe=False)
-
-        # else:
-        # print(_post.boo.hidden, '**********************************')
         _post = m.PostSerializer(_post).data
         return JsonResponse({'success':True, 'content':_post}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_postage(request, postage_id):
+    try:
+        _postage = m.Postage.objects.get(pk=postage_id)
+        _postage = m.PostageSerializer(_postage).data
+        return JsonResponse({'success':True, 'content':_postage}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)
@@ -331,6 +661,7 @@ def get_baseboo(request, boo_id):
 
         if request.user.is_authenticated and request.user.boo_set.filter(id=boo_id).exists():
             _baseboo = m.BooSerializer(_baseboo).data
+            # print(_baseboo)
 
         else:
             _baseboo = m.BasebooSerializer(_baseboo).data
@@ -434,6 +765,76 @@ def link_delete(request, link_id):
         return JsonResponse({'success':False, 'message':'something wrong while link deleting'}, safe=False)
 
 
+def settle(request):
+    # if request.user.is_authenticated:
+    try:
+        _boo = request.user.boo
+        n_collected = int(request.GET.get('n_collected', 0))
+        n_voted = int(request.GET.get('n_voted', 0))
+        collect_reward = int(request.GET.get('collect_reward', 0))
+        vote_reward = int(request.GET.get('vote_reward', 0))
+        checkin_reward = int(request.GET.get('checkin_reward', 0))
+        bonus_reward = int(request.GET.get('bonus_reward', 0))
+        _boo.settle(n_collected=n_collected, n_voted=n_voted, collect_reward=collect_reward, vote_reward=vote_reward, checkin_reward=checkin_reward, bonus_reward=bonus_reward)
+        return JsonResponse({'success':True, 'message':'settled successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while settle'}, safe=False)
+
+
+def stylevote(request):
+    ipix_pos = request.GET.get('ipix_pos', None)
+    ipix_neg = request.GET.get('ipix_neg', None)
+    toggletype = request.GET.get('type', None)
+
+    if request.user.is_authenticated and ipix_pos and ipix_neg and toggletype:
+        _pix_pos = m.Pix.objects.get(pk=ipix_pos)
+        _pix_neg = m.Pix.objects.get(pk=ipix_neg)
+        _tags_pos = collections.Counter(_pix_pos.tokens.split())
+        _tags_neg = collections.Counter(_pix_neg.tokens.split())
+        _boo = request.user.boo
+
+        if toggletype == 'clear':
+            _boo.postags = collections.Counter(_boo.postags) - _tags_neg
+            _boo.negtags = collections.Counter(_boo.negtags) - _tags_pos
+
+        elif toggletype == 'change':
+            _boo.postags = collections.Counter(_boo.postags) - _tags_neg + _tags_pos
+            _boo.negtags = collections.Counter(_boo.negtags) - _tags_pos + _tags_neg
+
+        else: # toggletype=='new'
+            _boo.postags = collections.Counter(_boo.postags) + _tags_pos
+            _boo.negtags = collections.Counter(_boo.negtags) + _tags_neg
+
+        # _boo.rewarding(n_voted=1, amount_by_vote=10)
+        _boo.save()
+        return JsonResponse({'success':True, 'message':'tagged successfully'}, safe=False)
+        # return JsonResponse({'success':True, 'message':'tagged successfully', 'styleprofile':_boo.styleprofile}, safe=False)
+
+    else:
+        return JsonResponse({'success':False, 'message':'something wrong while tagging'}, safe=False)
+
+
+
+def contentvote(request, postage_id):
+    action = request.GET.get('action', None)
+
+    if action:
+        postage = m.Postage.objects.get(pk=postage_id)
+
+        if request.user.is_authenticated:
+            postage.contentvote(int(action), request.user.boo)
+
+        else:
+            postage.contentvote(int(action), m.Boo.guestboo, note=request.session.session_key)
+
+        return JsonResponse({'success':True, 'action':action}, safe=False)
+
+    else:
+        return JsonResponse({'success':False}, safe=False)
+
+
+
 def vote(request, post_id):
     action = request.GET.get('action', None)
     # fit = session.fit #request.user.boo.fit
@@ -443,16 +844,17 @@ def vote(request, post_id):
         post = m.Post.objects.get(pk=post_id)
 
         if request.user.is_authenticated:
-            fit = request.user.boo.fit
+            # fit = request.user.boo.fit
             post.vote(int(action), request.user.boo)
 
         else:
-            fit = []
+            # fit = []
             post.vote(int(action), m.Boo.guestboo, note=request.session.session_key)
 
         # post.vote(int(action), request.user.boo)
         # session.vote(post_id, action)
-        return JsonResponse({'success':True, 'action':action, 'fit':fit}, safe=False)
+        # return JsonResponse({'success':True, 'action':action, 'fit':fit}, safe=False)
+        return JsonResponse({'success':True, 'action':action}, safe=False)
 
     else:
         return JsonResponse({'success':False}, safe=False)
@@ -689,11 +1091,13 @@ def search_by_pix(request, pix_id):
 
         # _searched = m.Pix.objects.annotate(similarity=TrigramSimilarity('tokens', '나이키')).order_by('-similarity')
         # print(_searched, '**********************')
+        st = datetime.now()
         vector = SearchVector('tokens')
         query = SearchQuery(pix.tokens)
         _searched = m.Pix.objects.exclude(id=pix.id).annotate(rank=SearchRank(vector, query)).exclude(rank=0).order_by('-rank')
-        print(_searched.values('id','rank'))
+        # print(_searched.values('id','rank'))
         _searched = _searched.values_list('id', flat=True)
+        print(datetime.now()-st, '*******************************')
         return JsonResponse({'success':True, 'ids':list(_searched), 'message':'searched successfully'}, safe=False)
 
     except:
@@ -704,15 +1108,18 @@ def search_by_collection(request, collection_id):
     # n = 50
 
     try:
-        pixs = m.Pix.objects.filter(pick__collection_id=collection_id).order_by('?')[:5]
+        pixs = m.Pix.objects.filter(pick__collection_id=collection_id)
         tokens = ' '.join(pixs.values_list('tokens', flat=True))
+        tokens = ' '.join(dict(collections.Counter(tokens.split()).most_common(30)).keys())
+        # pixs = m.Pix.objects.filter(pick__collection_id=collection_id).order_by('?')[:5]
+        # tokens = ' '.join(pixs.values_list('tokens', flat=True))
         # print(tokens)
         # return
 
         vector = SearchVector('tokens')
         query = SearchQuery(tokens)
         _searched = m.Pix.objects.exclude(pick__collection_id=collection_id).annotate(rank=SearchRank(vector, query)).exclude(rank=0).order_by('-rank')
-        print(_searched.values('id','rank'))
+        # print(_searched.values('id','rank'))
         _searched = _searched.values_list('id', flat=True)
 
         _append = list(m.Pix.ipixs())

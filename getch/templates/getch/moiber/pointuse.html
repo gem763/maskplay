@@ -1,0 +1,142 @@
+<script type='text/x-template' id='pointuse-template'>
+  <pointguider
+    :phase='phase'
+    @go_menu='go_menu'>
+
+    <template #menu>
+      <div class='item' @click='go_content(0)'>
+        <img src='/static/materials/imgs/menu/pointuse_support.png'>
+        <div class='title'>
+          <span>브랜드</span>
+          <span>후원</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(1)'>
+        <img src='/static/materials/imgs/menu/pointuse_raffle.png'>
+        <div class='title'>
+          <span>래플</span>
+          <span>참여</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(2)'>
+        <img src='/static/materials/imgs/menu/pointuse_shopping.png'>
+        <div class='title'>
+          <span>취향템</span>
+          <span>쇼핑</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(3)'>
+        <img src='/static/materials/imgs/menu/pointget_badge.png'>
+        <div class='title'>
+          <span>건의하기</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(4)'>
+        <img src='/static/materials/imgs/menu/pointuse_coffee.png'>
+        <div class='title'>
+          <span>스타벅스</span>
+          <span>쿠폰</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content(5)'>
+        <img src='/static/materials/imgs/menu/pointget_interview.png'>
+        <div class='title'>
+          <span>건의하기</span>
+        </div>
+      </div>
+    </template>
+
+    <template #content>
+      <template v-if='content==0'>
+        <div class='explain'>
+          <span class='title'>브랜드후원</span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'></div>
+      </template>
+
+      <template v-else-if='content==1'>
+        <div class='explain'>
+          <span class='title'>래플참여</span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'></div>
+      </template>
+
+      <template v-else-if='content==2'>
+        <div class='explain'>
+          <span class='title'>취향템쇼핑</span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'></div>
+      </template>
+
+      <template v-else-if='content==3'>
+        <div class='explain'>
+          <span class='title'>건의하기</span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'></div>
+      </template>
+
+      <template v-else-if='content==4'>
+        <div class='explain'>
+          <span class='title'>스타벅스쿠폰</span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'></div>
+      </template>
+
+      <template v-else-if='content==5'>
+        <div class='explain'>
+          <span class='title'>건의하기</span>
+          <span class='subtitle'></span>
+          <span class='desc'></span>
+        </div>
+
+        <div class='illust'></div>
+      </template>
+    </template>
+  </pointguider>
+</script>
+
+
+<script>
+  Vue.component('pointuse', {
+    template: '#pointuse-template',
+    delimiters: ['[[', ']]'],
+    props: [ ],
+    data: function() {
+      return {
+        phase: 'menu',
+        content: undefined
+      }
+    },
+
+    methods: {
+      go_menu: function() {
+        this.phase = 'menu';
+      },
+
+      go_content: function(what) {
+        this.phase = 'content';
+        this.content = what;
+      }
+    }
+  });
+</script>

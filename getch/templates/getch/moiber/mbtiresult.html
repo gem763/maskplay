@@ -160,6 +160,7 @@
   .mbtiresult .page-body > .main > .tail > .item {
     margin-left: 5px;
     margin-right: 5px;
+    cursor: pointer;
   }
 </style>
 
@@ -167,7 +168,9 @@
 <script type='text/x-template' id='mbtiresult-template'>
   <page
     class='mbtiresult vcomp'
+    :order='session.page.mbtiresult.order'
     :open='session.page.mbtiresult.open'
+    :from='session.page.mbtiresult.from'
     :hide_headerbar='true'
     @close='session.close_page()'>
 
@@ -183,8 +186,8 @@
 
         <div class='header' ref='upmost'>
           <img class='background' src='/static/materials/mbti/dongne/headerback.png'>
-          <img class='profilepix' :src='imgsrc(type)'>
-          <span class='title'>당신은 <b>[[style]]</b> 스타일!</span>
+          <img class='profilepix' :src='imgsrc(type_eng(type))'>
+          <span class='title'>당신은 <b>[[type]]</b> 스타일!</span>
         </div>
 
         <div class='details'>
@@ -197,14 +200,14 @@
             <tr>
               <td>
                 <img class='matchead best' src='/static/materials/mbti/dongne/best.png'>
-                <img class='match-img' :src='imgsrc(bestmatch)'>
-                <span><b>[[bestmatch_style]]</b> 스타일!</span>
+                <img class='match-img' :src='imgsrc(type_eng(bestmatch))'>
+                <span><b>[[bestmatch]]</b> 스타일!</span>
                 <div class='desc'>[[bestmatch_desc]]</div>
               </td>
               <td>
                 <img class='matchead worst' src='/static/materials/mbti/dongne/worst.png'>
-                <img class='match-img' :src='imgsrc(worstmatch)'>
-                <span><b>[[worstmatch_style]]</b> 스타일!</span>
+                <img class='match-img' :src='imgsrc(type_eng(worstmatch))'>
+                <span><b>[[worstmatch]]</b> 스타일!</span>
                 <div class='desc'>[[worstmatch_desc]]</div>
               </td>
             </tr>
@@ -218,8 +221,8 @@
         </div>
 
         <div class='retry action'>
-          <div class='btn share' @click='open_mbti' v-if='mode=="share"'>나도 해보기</div>
-          <div class='btn' @click='open_mbti' v-else>다시 해보기</div>
+          <div class='btn share' @click='open_contentwork' v-if='mode=="share"'>나도 해보기</div>
+          <div class='btn' @click='open_contentwork' v-else>다시 해보기</div>
         </div>
 
         <div class='share action'>
@@ -228,11 +231,12 @@
         </div>
 
         <div class='tail'>
-          <span class='item' @click='open_who'>소개</span>
-          <span class='item' @click='open_recruit'>채용</span>
-          <span class='item' @click='policy'>약관</span>
-          <span class='item' @click='privacy'>개인정보보호</span>
-          <span class='item' @click='suggest'>컨텍트</span>
+          <span class='item' @click='session.open_about()'>회사소개</span>
+          <span class='item' @click='session.open_landing()'>서비스소개</span>
+          <span class='item' @click='session.open_recruit()'>채용</span>
+          <span class='item' @click='session.open_policy()'>약관</span>
+          <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+          <span class='item' @click='contact'>문의</span>
         </div>
       </div>
     </template>
@@ -266,6 +270,10 @@
     },
 
     computed: {
+      contentwork: function() {
+        return this.session.page.contentwork.contents
+      },
+
       url_share: function() {
         return `https://moiber.com/?entry=mbti-dongne-result&dongne=${this.type}&gender=${this.gender}`
       },
@@ -275,56 +283,69 @@
       },
 
       type: function() {
-        return this.session.page.mbtiresult.result
+        if (this.session.page.mbtiresult.result)
+          return this.session.page.mbtiresult.result[0]
       },
 
       gender: function() {
         return this.session.page.mbtiresult.gender
       },
 
-      style: function() {
-        if (!this.type) return
-        return this.profiles(this.type).style
-      },
+      // style: function() {
+      //   if (!this.type) return
+      //   return this.profiles(this.type).style
+      // },
 
       phrase: function() {
-        if (!this.type) return
-        return this.profiles(this.type).phrase
+        try {
+          if (!this.type) return
+          return this.profiles(this.type).phrase
+        } catch {}
       },
 
       desc: function() {
-        if (!this.type) return
-        return this.profiles(this.type).desc
+        try {
+          if (!this.type) return
+          return this.profiles(this.type).desc
+        } catch {}
       },
 
       bestmatch: function() {
-        if (!this.type) return
-        return this.profiles(this.type).bestmatch
+        try {
+          if (!this.type) return
+          return this.profiles(this.type).bestmatch
+        } catch {}
       },
 
       worstmatch: function() {
-        if (!this.type) return
-        return this.profiles(this.type).worstmatch
+        try {
+          if (!this.type) return
+          return this.profiles(this.type).worstmatch
+        } catch {}
       },
 
-      bestmatch_style: function() {
-        if (!this.bestmatch) return
-        return this.profiles(this.bestmatch).style
-      },
-
-      worstmatch_style: function() {
-        if (!this.worstmatch) return
-        return this.profiles(this.worstmatch).style
-      },
+      // bestmatch_style: function() {
+      //   if (!this.bestmatch) return
+      //   return this.profiles(this.bestmatch).style
+      // },
+      //
+      // worstmatch_style: function() {
+      //   if (!this.worstmatch) return
+      //   return this.profiles(this.worstmatch).style
+      // },
 
       bestmatch_desc: function() {
-        if (!this.type) return
-        return this.profiles(this.type).desc_best
+        try {
+          if (!this.type) return
+          return this.profiles(this.type).desc_best
+        } catch {}
       },
 
       worstmatch_desc: function() {
-        if (!this.type) return
-        return this.profiles(this.type).desc_worst
+        try {
+          if (!this.type) return
+          return this.profiles(this.type).desc_worst
+        } catch {}
       },
     },
 
@@ -334,128 +355,155 @@
         setTimeout(() => { this.show_share = false; }, 1000);
       },
 
-      imgsrc: function(type) {
-        if (type && this.gender)
-          return `/static/materials/mbti/dongne/profiles/${type}_${this.gender}.png`
+      imgsrc: function(type_eng) {
+        if (type_eng && this.gender)
+          return `/static/materials/mbti/dongne/profiles/${type_eng}_${this.gender}.png`
         else
           return ''
       },
 
       profiles: function(type) {
-        switch(type) {
-          case 'gangnam':
-            return {
-              style: '강남',
-              bestmatch: 'jeju',
-              worstmatch: 'teheran',
-              phrase: '이렇게 멋진 날 봐! 짜릿해! 늘 새로워!',
-              desc: '멀리서도 한 눈에 들어오는 당신은 강남스타일!\n 주목받는 것을 좋아하고 화려한 옷을 선호하는 당신은\n 기본템을 사더라도 비비드한 컬러를 선택하는 편이네요.\n 에너지 넘치는 당신은 멋쟁이 패셔니스타!',
-              desc_best: '힙플? 피크닉?\n 어디든 말만해!\n 스타일링의 고수 제주도 스타일과 함께라면, 우리가 가는 곳이 휴가지!',
-              desc_worst: '무슨 면접보러 가냐고!\n 세련이라 쓰고 경직이라 읽는다. 테헤란 스타일? 아, 나랑 안맞아..'
-            }
-
-          case 'etaewon':
-            return {
-              style: '이태원',
-              bestmatch: 'chungdam',
-              worstmatch: 'gangnam',
-              phrase: '유행을 쫓는 건 NO!',
-              desc: '확고한 나만의 스타일을 쫓는 당신은 이태원스타일!\n 취향에 맞춰 자유자재로 멋을 부릴 줄 아는 당신은\n 새로운 트렌드를 이끄는 멋쟁이군요.\n 개성파 패셔니스타인 당신은 개척자 스타일!',
-              desc_best: '오 역시,\n 뭘 좀 아는데?\n 걸어다니는 런웨이 청담과 힙스터 이태원은 의외로 꽤 잘 맞는 궁합!',
-              desc_worst: '어 그래..(할많하않)\n 트랜드 계의 소문난 충신 강남만 만나면 꿈틀대는 내 안의 시어머니 본능? (소오름)'
-            }
-
-          case 'chungdam':
-            return {
-              style: '청담',
-              bestmatch: 'teheran',
-              worstmatch: 'noryang',
-              phrase: '럭셔리의 중심!',
-              desc: '세련미 넘치는 스타일을 좋아하는 당신은 청담스타일!\n 품위있는 차림에도 앞선 감각의 개성과 패션 위트를 잃지 않는 당신은\n 새로운 트렌드에 언제나 민감하게 반응하는 패셔니스타이군요.\n 기품 있는 이미지를 뽐내는 당신은 하이앤드 스타일!',
-              desc_best: '네트워킹? 콜!\n 댄디한 테헤란과 세련된 청담은 시크한 듯 다정한 한쌍!',
-              desc_worst: '진짜로 그거,\n 돈 주고 샀다고?\n 셋업? 그게 먼데? 하는 노량진은 정말 진짜 레알 찐으로..'
-            }
-
-          case 'noryang':
-            return {
-              style: '노량진',
-              bestmatch: 'yeoui',
-              worstmatch: 'jeju',
-              phrase: '유행? 그게 뭐야?',
-              desc: '패션에 별 관심이 없는 당신은 노량진스타일!\n 다른 것에 신경쓰느라 패션 스타일은 뒷전이 되는 경우가 많은 당신은\n 항상 같은 패션을 고수해도 별로 신경쓰지 않습니다.\n 아직 패린이에 머물고 있는 당신은 논 패션 스타일!',
-              desc_best: '오오 번듯한데?\n 후리한 노량진과 깔끔한 여의도는 닮은 듯 안 닮은 듯 의외의 찰떡 궁합!',
-              desc_worst: '왜 절엄?\n 어딜가나 인증샷 남길 것 같은 제주도 스타일? 피곤하다 피곤해..'
-            }
-
-          case 'jeju':
-            return {
-              style: '제주도',
-              bestmatch: 'pangyo',
-              worstmatch: 'yeoui',
-              phrase: '샤랄랄라랄랄라~~~',
-              desc: '언제 어디서든 여행을 떠날 수 있을 것 같은 당신은 제주도스타일!\n 꾸안꾸가 유행할 때도 꿋꿋하게 ‘꾸꾸꾸’를 추구하는 당신은\n 뛰어난 패션센스로 중무장한 멋쟁이군요.\n 화려한 옷차림을 선호하는 당신은 휴양지 스타일!',
-              desc_best: 'stay hungry,\n stay foolish!\n 꾸안꾸지만 뭔가 앞선 듯 한. 판교 스타일, 좀 멋진데?',
-              desc_worst: '집에 와이셔츠 밖에 없어?\n 여의도는 왜 일평생 모나미룩이에요? 왜 그러는지 아시는 분?'
-            }
-
-          case 'teheran':
-            return {
-              style: '테헤란',
-              bestmatch: 'etaewon',
-              worstmatch: 'pangyo',
-              phrase: '깔끔! 세련! 시크!',
-              desc: '멋지게 차려입는 당신은 테헤란스타일!\n 깔끔하고 단정한 옷차림으로 시크하고 세련된 분위기를 내는 당신은\n 영화 <킹스맨>을 떠올리게 하는 멋쟁이군요.\n 지적인 이미지를 봄내는 당신은 시크댄디 스타일!',
-              desc_best: '(힐끗) 나름 멋진데?\n 과한듯 힙한듯, 따라하진 않아도 참조는 하고 싶은 이태원의 유니크함.',
-              desc_worst: '그러고 미팅하고 왔다고?\n 이해는 안되지만 뭐 그러려니 하게 되는, 맞는 듯 안맞는 듯 판교 스타일..'
-            }
-
-          case 'yeoui':
-            return {
-              style: '여의도',
-              bestmatch: 'gangnam',
-              worstmatch: 'etaewon',
-              phrase: '깔끔! 단정!',
-              desc: '지적이고 세련된 분위기를 좋아하는 당신은 여의도스타일!\n 직장환경에 따라 딱딱해 보이는 모습을 보일 때도 있는 당신은\n 개별 상황에 맞춰 단정하게 입는 것을 선호하는군요.\n 화려함보다는 품위있는 차림을 선호하는 당신은 도시적인 스타일!',
-              desc_best: '역시 강남 스타일!\n 강남 스타일에서 베어 나오는 트랜디함은 언젠가 따라하고 싶은 워너비 스타일!',
-              desc_worst: '넌 참 유니크해!\n (이태원에게) 그래그래.. 너도 무슨 사정이 (생각이) 있겠지.. 그래그래.'
-            }
-
-          case 'pangyo':
-            return {
-              style: '판교',
-              bestmatch: 'noryang',
-              worstmatch: 'chungdam',
-              phrase: 'Simple is the Best!',
-              desc: '미니멀룩을 추구하는 당신은 판교스타일!\n 심플하고 편안한 스타일을 좋아하는 당신은\n 꾸밈없이 멋을 낼 줄 아는 사람이군요.\n 있는 그대로의 모습을 보여주는 당신은 미니멀리스트 스타일!',
-              desc_best: '편안함으로 대동단결!\n 노량진만 보면 기분이 좋읍니다 "야, 너두 나처럼 될 수 있어!"',
-              desc_worst: '안 불편한가?\n 청담의 하이패션 스타일은 언제봐도 노이해.. 왜 굳이..'
-            }
+        if (this.contentwork.profiles) {
+          return this.contentwork.profiles[type]
         }
       },
 
-      open_who: function() {
-        this.session.open_about('who');
+      type_eng: function(type) {
+        switch(type) {
+          case '강남':
+            return 'gangnam'
+          case '이태원':
+            return 'etaewon'
+          case '청담':
+            return 'chungdam'
+          case '노량진':
+            return 'noryang'
+          case '제주도':
+            return 'jeju'
+          case '테헤란':
+            return 'teheran'
+          case '여의도':
+            return 'yeoui'
+          case '판교':
+            return 'pangyo'
+        }
       },
 
-      open_recruit: function() {
-        this.session.open_about('recruit');
-      },
+      // profiles: function(type) {
+      //   switch(type) {
+      //     case 'gangnam':
+      //       return {
+      //         style: '강남',
+      //         bestmatch: 'jeju',
+      //         worstmatch: 'teheran',
+      //         phrase: '이렇게 멋진 날 봐! 짜릿해! 늘 새로워!',
+      //         desc: '멀리서도 한 눈에 들어오는 당신은 강남스타일!\n 주목받는 것을 좋아하고 화려한 옷을 선호하는 당신은\n 기본템을 사더라도 비비드한 컬러를 선택하는 편이네요.\n 에너지 넘치는 당신은 멋쟁이 패셔니스타!',
+      //         desc_best: '힙플? 피크닉?\n 어디든 말만해!\n 스타일링의 고수 제주도 스타일과 함께라면, 우리가 가는 곳이 휴가지!',
+      //         desc_worst: '무슨 면접보러 가냐고!\n 세련이라 쓰고 경직이라 읽는다. 테헤란 스타일? 아, 나랑 안맞아..'
+      //       }
+      //
+      //     case 'etaewon':
+      //       return {
+      //         style: '이태원',
+      //         bestmatch: 'chungdam',
+      //         worstmatch: 'gangnam',
+      //         phrase: '유행을 쫓는 건 NO!',
+      //         desc: '확고한 나만의 스타일을 쫓는 당신은 이태원스타일!\n 취향에 맞춰 자유자재로 멋을 부릴 줄 아는 당신은\n 새로운 트렌드를 이끄는 멋쟁이군요.\n 개성파 패셔니스타인 당신은 개척자 스타일!',
+      //         desc_best: '오 역시,\n 뭘 좀 아는데?\n 걸어다니는 런웨이 청담과 힙스터 이태원은 의외로 꽤 잘 맞는 궁합!',
+      //         desc_worst: '어 그래..(할많하않)\n 트랜드 계의 소문난 충신 강남만 만나면 꿈틀대는 내 안의 시어머니 본능? (소오름)'
+      //       }
+      //
+      //     case 'chungdam':
+      //       return {
+      //         style: '청담',
+      //         bestmatch: 'teheran',
+      //         worstmatch: 'noryang',
+      //         phrase: '럭셔리의 중심!',
+      //         desc: '세련미 넘치는 스타일을 좋아하는 당신은 청담스타일!\n 품위있는 차림에도 앞선 감각의 개성과 패션 위트를 잃지 않는 당신은\n 새로운 트렌드에 언제나 민감하게 반응하는 패셔니스타이군요.\n 기품 있는 이미지를 뽐내는 당신은 하이앤드 스타일!',
+      //         desc_best: '네트워킹? 콜!\n 댄디한 테헤란과 세련된 청담은 시크한 듯 다정한 한쌍!',
+      //         desc_worst: '진짜로 그거,\n 돈 주고 샀다고?\n 셋업? 그게 먼데? 하는 노량진은 정말 진짜 레알 찐으로..'
+      //       }
+      //
+      //     case 'noryang':
+      //       return {
+      //         style: '노량진',
+      //         bestmatch: 'yeoui',
+      //         worstmatch: 'jeju',
+      //         phrase: '유행? 그게 뭐야?',
+      //         desc: '패션에 별 관심이 없는 당신은 노량진스타일!\n 다른 것에 신경쓰느라 패션 스타일은 뒷전이 되는 경우가 많은 당신은\n 항상 같은 패션을 고수해도 별로 신경쓰지 않습니다.\n 아직 패린이에 머물고 있는 당신은 논 패션 스타일!',
+      //         desc_best: '오오 번듯한데?\n 후리한 노량진과 깔끔한 여의도는 닮은 듯 안 닮은 듯 의외의 찰떡 궁합!',
+      //         desc_worst: '왜 절엄?\n 어딜가나 인증샷 남길 것 같은 제주도 스타일? 피곤하다 피곤해..'
+      //       }
+      //
+      //     case 'jeju':
+      //       return {
+      //         style: '제주도',
+      //         bestmatch: 'pangyo',
+      //         worstmatch: 'yeoui',
+      //         phrase: '샤랄랄라랄랄라~~~',
+      //         desc: '언제 어디서든 여행을 떠날 수 있을 것 같은 당신은 제주도스타일!\n 꾸안꾸가 유행할 때도 꿋꿋하게 ‘꾸꾸꾸’를 추구하는 당신은\n 뛰어난 패션센스로 중무장한 멋쟁이군요.\n 화려한 옷차림을 선호하는 당신은 휴양지 스타일!',
+      //         desc_best: 'stay hungry,\n stay foolish!\n 꾸안꾸지만 뭔가 앞선 듯 한. 판교 스타일, 좀 멋진데?',
+      //         desc_worst: '집에 와이셔츠 밖에 없어?\n 여의도는 왜 일평생 모나미룩이에요? 왜 그러는지 아시는 분?'
+      //       }
+      //
+      //     case 'teheran':
+      //       return {
+      //         style: '테헤란',
+      //         bestmatch: 'etaewon',
+      //         worstmatch: 'pangyo',
+      //         phrase: '깔끔! 세련! 시크!',
+      //         desc: '멋지게 차려입는 당신은 테헤란스타일!\n 깔끔하고 단정한 옷차림으로 시크하고 세련된 분위기를 내는 당신은\n 영화 <킹스맨>을 떠올리게 하는 멋쟁이군요.\n 지적인 이미지를 봄내는 당신은 시크댄디 스타일!',
+      //         desc_best: '(힐끗) 나름 멋진데?\n 과한듯 힙한듯, 따라하진 않아도 참조는 하고 싶은 이태원의 유니크함.',
+      //         desc_worst: '그러고 미팅하고 왔다고?\n 이해는 안되지만 뭐 그러려니 하게 되는, 맞는 듯 안맞는 듯 판교 스타일..'
+      //       }
+      //
+      //     case 'yeoui':
+      //       return {
+      //         style: '여의도',
+      //         bestmatch: 'gangnam',
+      //         worstmatch: 'etaewon',
+      //         phrase: '깔끔! 단정!',
+      //         desc: '지적이고 세련된 분위기를 좋아하는 당신은 여의도스타일!\n 직장환경에 따라 딱딱해 보이는 모습을 보일 때도 있는 당신은\n 개별 상황에 맞춰 단정하게 입는 것을 선호하는군요.\n 화려함보다는 품위있는 차림을 선호하는 당신은 도시적인 스타일!',
+      //         desc_best: '역시 강남 스타일!\n 강남 스타일에서 베어 나오는 트랜디함은 언젠가 따라하고 싶은 워너비 스타일!',
+      //         desc_worst: '넌 참 유니크해!\n (이태원에게) 그래그래.. 너도 무슨 사정이 (생각이) 있겠지.. 그래그래.'
+      //       }
+      //
+      //     case 'pangyo':
+      //       return {
+      //         style: '판교',
+      //         bestmatch: 'noryang',
+      //         worstmatch: 'chungdam',
+      //         phrase: 'Simple is the Best!',
+      //         desc: '미니멀룩을 추구하는 당신은 판교스타일!\n 심플하고 편안한 스타일을 좋아하는 당신은\n 꾸밈없이 멋을 낼 줄 아는 사람이군요.\n 있는 그대로의 모습을 보여주는 당신은 미니멀리스트 스타일!',
+      //         desc_best: '편안함으로 대동단결!\n 노량진만 보면 기분이 좋읍니다 "야, 너두 나처럼 될 수 있어!"',
+      //         desc_worst: '안 불편한가?\n 청담의 하이패션 스타일은 언제봐도 노이해.. 왜 굳이..'
+      //       }
+      //   }
+      // },
 
-      policy: function() {
-        window.open('/policy');
-      },
+      // open_who: function() {
+      //   this.session.open_about('who');
+      // },
+      //
+      // open_recruit: function() {
+      //   this.session.open_about('recruit');
+      // },
+      //
+      // policy: function() {
+      //   window.open('/policy');
+      // },
+      //
+      // privacy: function() {
+      //   window.open('/privacy');
+      // },
 
-      privacy: function() {
-        window.open('/privacy');
-      },
-
-      suggest: function() {
+      contact: function() {
         window.open('mailto:contact@moiber.com');
       },
 
-      open_mbti: function() {
+      open_contentwork: function() {
         this.session.close_pages_all();
-        this.$nextTick(() => { this.session.open_mbti(); })
+        this.$nextTick(() => { this.session.open_contentwork('동네스타일'); })
       },
 
       goto_upmost: function() {

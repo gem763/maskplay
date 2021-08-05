@@ -3,72 +3,80 @@ const guestboo = 363;
 class Session {
   constructor() {
     this.page = {
-      my:           { open: false },
-      agit:         { open: false, boo: undefined, from: 'left' },
-      finder:       { open: false, from: 'left', collections: undefined },
-      collector:    { open: false, from: 'bottom', pix: undefined },
-      login:        { open: false, from: 'left' },
-      about:        { open: false, from: 'left', section: 'who' },
-      texteditor:   { open: false, basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
-      pixeditor:    { open: false, src: undefined, pixloader: undefined, type: undefined },
-      profiler:     { open: false, from: 'left', type: undefined },
-      landing:      { open: false, from: 'left' },
+      my:           { order: 0, instant: false, open: false },
+      agit:         { order: 0, instant: false, open: false, boo: undefined, from: 'left' },
+      researcher:     { order: 0, instant: false, open: false, from: 'left' },
+      // finder:       { order: 0, instant: false, open: false, from: 'left', collections: undefined },
+      collector:    { order: 0, instant: false, open: false, from: 'bottom', pix: undefined },
+      signup:       { order: 0, instant: false, open: false, from: 'left' },
+      // signup_email: { order: 0, instant: false, open: false, from: 'left', email: undefined },
+      // signup_pw:    { order: 0, instant: false, open: false, from: 'left', email: undefined },
+      login:        { order: 0, instant: false, open: false, from: 'left' },
+      accountcheck: { order: 0, instant: false, open: false, from: 'left', existing: undefined },
+      emailogin:    { order: 0, instant: false, open: false, from: 'left', email: undefined },
+      emailsignup:  { order: 0, instant: false, open: false, from: 'left', email: undefined },
+      texteditor:   { order: 0, instant: false, open: false, from: 'left', basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
+      pixeditor:    { order: 0, instant: false, open: false, from: 'left', src: undefined, pixloader: undefined, type: undefined },
+      profiler:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
 
-      mbti:         { open: false, from: 'left', contents: undefined },
-      mbtiresult:   { open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
+      // mbti:         { order: 0, instant: false, open: false, from: 'left', contents: undefined },
+      mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
+      contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
+      research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
 
-      // home:       { open: false, from: 'left', hotboos: new Boos('hot') },
-      // posts:      { open: true, contents: undefined, univ: { hot: new Posts('hot'), history: new Posts('history'), custom: undefined, search: undefined }, swiper: undefined },
-      // mypage:     { open: false, from: 'left' },
-      // loginpage:  { open: false, from: 'bottom' },
-      // navigator:  { open: false, from: 'left' },
-      // profiler:   { open: false, from: 'right', type: undefined },
-      // boopage:    { open: false, from: 'left', boo: undefined },
-      // network:    { open: false, from: 'right', type: undefined, boos_group: undefined },
-      // posting:    { open: false, from: 'right', post: undefined, type: undefined },
-      // comments:   { open: false, from: 'right', post: undefined },
-      // booposts:   { open: false, from: 'right', open_at: 0, swiper: undefined },
-      // pixeditor:  { open: false, src: undefined, pixloader: undefined, type: undefined },
-      // bridge:     { open: false, from: undefined, type: undefined, callback: undefined, args: undefined },
-      // searcher:   { open: false, from: 'right' },
-      // company:    { open: false, from: 'right', section: 'who' },
-      // landing:    { open: false, from: 'right' },
-      // infoboard:  { open: false, from: 'right', contents: undefined },
+      stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: undefined },
+      search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
+
+      about:        { order: 0, instant: true, open: false, from: 'left' },
+      recruit:      { order: 0, instant: true, open: false, from: 'left' },
+      policy:       { order: 0, instant: true, open: false, from: 'left' },
+      privacy:      { order: 0, instant: true, open: false, from: 'left' },
+      landing:      { order: 0, instant: true, open: false, from: 'left' },
+      infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
     };
+
+    this.home = 'researcher';
+    this.page[this.home].open = true;
+
+    this.contentworks = {
+      '동네스타일': Contentwork.build(this, { id: 1})
+      // '동네스타일': Contentwork.build(this, { agenda: '동네스타일'})
+    }
 
     this.store = new Store();
     this.editing = { on: false, selected:[] };
-    this.pixtory = [{ pixs: new Pixs(this.store) }];
+    this.pixtory = [{ pixs: new Pixs(this) }];
     this.scroll_direction = 'up';
-    this.mode = { on: 'home', order: 0, prev: undefined };
+    this.mode = { on: this.home, order: 0, prev: undefined };
     this.ikeyset = undefined;
     this.labels = undefined;
     this.entry = undefined;
+    this.show_notice = undefined;
+    this.researches = new Researches(this);
     this.user = new User(this);
-    this.keyset_sampling();
+    // setTimeout(()=>{this.user = new User(this);}, 10);
+    // this.keyset_sampling();
   }
 
-  keyset_sampling() {
-    this.ikeyset = _.sample([0, 1, 2]);
-  }
+  // keyset_sampling() {
+  //   this.ikeyset = _.sample([0, 1, 2]);
+  // }
 
   refresh() {
-    this.keyset_sampling();
-    this.pixtory = [{ pixs: new Pixs(this.store) }];
+    // this.keyset_sampling();
+    this.pixtory = [{ pixs: new Pixs(this) }];
   }
 
-  keywording(keyword) {
-    this.pixtory = [{ pixs: new Searchpixs_by_keyword(this.store, keyword) }];
-    // this.pixtory.push({ pixs: new Searchpixs_by_keyword(this.store, keyword) });
-  }
+  // keywording(keyword) {
+  //   this.pixtory = [{ pixs: new Searchpixs_by_keyword(this, keyword) }];
+  // }
 
   logout() {
-    this.close_page();
-    this.expire();
-
+    // this.expire();
     fetch('/logout/')
       .then(x => {
         if (x.ok) {
+          location.reload();
           console.log('successfully logged out');
         }
       });
@@ -81,18 +89,47 @@ class Session {
 
   close_page() {
     this.page[this.mode.on].open = false;
+    // this.page[this.mode.on].order = 0;
     this.checkout();
+
+    if (this.mode.on in this.page) {
+      this.page[this.mode.on].open = true;
+      this.page[this.mode.on].order = this.mode.order;
+    }
   }
 
   close_pages_all() {
-    while (this.mode.on!='home') {
+    while (!this.on(this.home)) {
       this.close_page();
     }
   }
 
-  open_page(pagename) {
-    this.page[pagename].open = true;
+  open_page(pagename, covering) {
+    if (this.on(pagename)) {
+      return
+    }
+
+    if (pagename == this.home) {
+      this.close_pages_all();
+      return
+    }
+
+    if (this.on('researcher')) {
+      covering = true;
+    }
+
+    if (!covering && this.mode.on in this.page) {
+      this.page[this.mode.on].open = false;
+      // this.page[this.mode.on].order = 0;
+
+      if (this.page[this.mode.on].instant) {
+        this.checkout();
+      }
+    }
+
     this.checkin(pagename);
+    this.page[pagename].open = true;
+    this.page[pagename].order = this.mode.order;
   }
 
   checkin(on) {
@@ -112,29 +149,74 @@ class Session {
     }
   }
 
-  open_finder() {
-    this.close_pages_all();
-    this.open_page('finder');
+  on(...pages) {
+    return !!pages.filter(p => this.mode.on == p).length
+  }
+
+  open_home() {
+    this.open_page(this.home);
+    // this.open_researcher();
+  }
+
+  open_about() {
+    this.open_page('about');
+  }
+
+  open_infoboard(position) {
+    this.page.infoboard.contents = position;
+    this.open_page('infoboard');
+  }
+
+  open_recruit() {
+    this.open_page('recruit');
+  }
+
+  open_policy() {
+    this.open_page('policy');
+  }
+
+  open_privacy() {
+    this.open_page('privacy');
+  }
+
+  open_landing() {
+    this.open_page('landing');
+  }
+
+  open_signup() {
+    this.open_page('signup');
   }
 
   open_login() {
     this.open_page('login');
   }
 
-  open_my() {
-    this.close_pages_all();
+  open_accountcheck(existing) {
+    this.page.accountcheck.existing = existing;
+    setTimeout(() => { this.open_page('accountcheck'); }, 10);
+  }
 
+  open_emailogin(email) {
+    if (email) {
+      this.page.emailogin.email = email;
+    }
+    this.open_page('emailogin');
+  }
+
+  open_emailsignup(email) {
+    if (email) {
+      this.page.emailsignup.email = email;
+    }
+    this.open_page('emailsignup');
+  }
+
+  open_my() {
     if (this.user.auth) {
       this.open_agit(this.user.boo);
 
     } else {
       this.open_login();
     }
-  }
-
-  open_collector(pix) {
-    this.page.collector.pix = pix;
-    this.open_page('collector');
   }
 
   open_agit(boo) {
@@ -144,16 +226,37 @@ class Session {
     setTimeout(() => { this.open_page('agit'); }, 10);
   }
 
-  open_about(section) {
-    if (section) {
-      this.page.about.section = section;
+  open_researcher() {
+    this.open_page('researcher');
+  }
 
-    } else {
-      this.page.about.section = 'who';
+  open_search(pix) {
+    if (pix) {
+      this.pixtory.push({
+        agenda: pix,
+        pixs: new Searchpixs_by_pix(this, pix.id)
+      });
     }
 
-    this.close_pages_all();
-    this.open_page('about');
+    this.open_page('search');
+  }
+
+  open_research(content) {
+    this.page.research.content = content;
+    this.open_page('research');
+  }
+
+  open_stylevote() {
+    if (!this.page.stylevote.contents) {
+      this.page.stylevote.contents = new PixpairSet(this, 1000);
+    }
+
+    setTimeout(() => { this.open_page('stylevote'); }, 10);
+  }
+
+  open_collector(pix) {
+    this.page.collector.pix = pix;
+    this.open_page('collector', true);
   }
 
   open_texteditor(basetext, placeholder, maxlines, setter) {
@@ -171,25 +274,23 @@ class Session {
     this.open_page('pixeditor');
   }
 
-  open_mbti() {
-    if (!this.page.mbti.contents) {
-      this.page.mbti.contents = new Mbti(this.store, 'dongne');
+  open_contentwork(agenda) {
+    if (!this.page.contentwork.contents) {
+      this.page.contentwork.contents = this.contentworks[agenda];
     }
 
-    this.close_pages_all();
-    this.open_page('mbti');
+    setTimeout(() => { this.open_page('contentwork'); }, 10);
   }
 
-  open_mbtiresult(result, gender, mode) {
+  open_mbtiresult(agenda, result, gender, mode) {
+    if (!this.page.contentwork.contents) {
+      this.page.contentwork.contents = this.contentworks[agenda];
+    }
+
     this.page.mbtiresult.result = result;
     this.page.mbtiresult.gender = gender;
     this.page.mbtiresult.mode = mode;
     this.open_page('mbtiresult');
-  }
-
-  open_landing() {
-    // this.close_pages_all();
-    this.open_page('landing');
   }
 
   open_profiler(type) {
@@ -203,218 +304,178 @@ class Session {
     this.open_page('profiler');
   }
 
-  // open_mypage() {
-  //   this.close_pages_all();
-  //
-  //   if (this.user.auth) {
-  //     this.open_page('mypage');
-  //
-  //   } else {
-  //     this.open_bridge('login_guide_for_mypage', 'bottom');
-  //   }
-  // }
-  //
-  // open_bridge(type, from, callback, args) {
-  //   this.page.bridge.type = type;
-  //   this.page.bridge.from = from;
-  //   this.page.bridge.callback = callback;
-  //   this.page.bridge.args = args;
-  //   this.open_page('bridge');
-  // }
-  //
-  // open_boochooser() {
-  //   this.open_page('boochooser');
-  // }
-  //
-  //
-  // open_comments(post) {
-  //   this.page.comments.post = post;
-  //
-  //   // 코멘트창이 최초로 열릴때 post정보를 업데이트하는 시간때문에 약간의 딜레이를 준다
-  //   setTimeout(() => { this.open_page('comments'); }, 100);
-  // }
-
-  // open_booposts() {
-  //   this.open_page('booposts');
-  // }
-  //
-  // open_posting_guide() {
-  //   if (this.user.auth) {
-  //     this.open_bridge('posting_guide', 'bottom');
-  //
-  //   } else {
-  //     this.open_bridge('login_guide_for_posting', 'bottom');
-  //   }
-  // }
-  //
-  // open_newpost(type) {
-  //   this.close_pages_all();
-  //   this.page.posting.post = undefined;
-  //   this.page.posting.type = type;
-  //   this.open_page('posting');
-  // }
-  //
-  // open_editpost(post) {
-  //   this.page.posting.post = post;
-  //   this.page.posting.type = undefined;
-  //   this.open_page('posting');
-  // }
-  //
-  //
-  // open_infoboard(position) {
-  //   this.page.infoboard.contents = position;
-  //   this.open_page('infoboard');
-  // }
-  //
-  //
-  // open_boopage(boo) {
-  //   if (this.mode.on=='posting') {
-  //     return
-  //
-  //   // } else if (this.auth && this.auth.boo_selected==boo.id) {
-  //   } else if (this.user.is_myboo(boo)) {
-  //     this.open_mypage();
-  //
-  //   } else if (this.mode.on=='booposts') {
-  //     this.close_page();
-  //
-  //   } else if (this.user.guest.boo.id==boo.id) {
-  //     alert('익명사용자입니다');
-  //     return
-  //
-  //   } else if (!boo.active) {
-  //     alert('삭제된 사용자입니다');
-  //     return
-  //
-  //   } else {
-  //     if (!this.page.boopage.boo || this.page.boopage.boo.id!=boo.id) {
-  //       this.page.boopage.boo = boo;
-  //     }
-  //
-  //     this.close_pages_all();
-  //     this.open_page('boopage');
-  //   }
-  // }
-  //
-  // open_navigator() {
-  //   this.close_pages_all();
-  //   this.open_page('navigator');
-  // }
-  //
-  // open_home() {
-  //   this.close_pages_all();
-  //   this.open_page('home');
-  // }
-  //
-  // open_searcher() {
-  //   this.open_page('searcher');
-  // }
-  //
-  // open_network(type, boos_group) {
-  //   this.page.network.type = type;
-  //   this.page.network.boos_group = boos_group;
-  //   this.open_page('network');
-  // }
-
+  contact() {
+    window.open('mailto:contact@moiber.com')
+  }
 }
+
+
+
+
+
 
 
 class Loader {
-  constructor(id, store) {
-    this.id = id;
-    this.store = store;
-    this.onloading = true;
+  constructor(session, baseobj) {
+    this.session = session;
+    this.onloading = false;
+    // this.onloading = true;
+    this.loaded = false;
+    this.id = undefined;
+    this.url = undefined;
+    Object.assign(this, baseobj);
+  }
+
+  assign(obj) {
+    Object.assign(this, obj);
   }
 
   load() {
-    fetch(this.url(this.id))
-      .then(x => x.json())
-      .then(js => {
-        this.onloading = false;
+    if (!this.loaded) {
+      this.onloading = true;
 
-        if (js.success) {
-          Object.assign(this, js.content);
-        }
-      });
+      fetch(this.url)
+        .then(x => x.json())
+        .then(js => {
+          this.onloading = false;
+          this.loaded = true;
+
+          if (js.success) {
+            this.assign(js.content);
+          }
+        });
+    }
+
+    return this
+  }
+
+  // 객체만 생성 (로드는 안하기)
+  static init(session, baseobj) {
+    return new this(session, baseobj)
+  }
+
+  // 완전히 로드하기
+  static build(session, baseobj) {
+    return this.init(session, baseobj).load()
   }
 }
+
+
 
 class Pix extends Loader {
-  constructor(id, store) {
-    if (id in store.pixstore) {
-      return store.pixstore[id]
-
-    } else {
-      super(id, store);
-      store.pixstore[this.id] = this;
-      this.url = (id) => `/pix/${id}`;
-      this.desc = undefined;
-      this.src = undefined;
-      this.owner = undefined;
-      this.outlink = undefined;
-      this.load();
-    }
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/pix/${baseobj.id}`;
+    this.desc = undefined;
+    this.src = undefined;
+    this.owner = undefined;
+    this.outlink = undefined;
   }
 
-  load_owner() {
-    this.owner = Boo.rebuild(this.owner, this.store);
+  assign(obj) {
+    this.desc = obj.desc;
+    this.src = obj.src;
+    this.outlink = obj.outlink;
+    this.owner = Baseboo.init(this.session, obj.owner);
+  }
+
+  static init(session, baseobj) {
+    if (baseobj.id in session.store.pixstore) {
+      return session.store.pixstore[baseobj.id]
+
+    } else {
+      const pix = super.init(session, baseobj);
+      Vue.set(session.store.pixstore, pix.id, pix);
+      return pix
+    }
   }
 }
 
-class Boo extends Loader {
-  constructor(id, store) {
-    if (id in store.boostore) {
-      return store.boostore[id]
+
+class Baseboo extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/boo/${baseobj.id}/baseboo`;
+    this.text = undefined;
+    this.profile = undefined;
+    this.collections = undefined;
+    // this.collections = new Collections(session, baseobj.id);
+  }
+
+  assign(obj) {
+    // this.text = obj.text;
+    // this.profile = obj.profile;
+    // super.assign(abj);
+    Object.assign(this, obj);
+    this.collections = new Collections(this.session, this.id);
+  }
+
+  static init(session, baseobj) {
+    if (baseobj.id in session.store.boostore) {
+      return session.store.boostore[baseobj.id]
 
     } else {
-      super(id, store);
-      store.boostore[this.id] = this;
-      this.url = (id) => `/boo/${id}/baseboo`;
-      this.text = undefined;
-      this.profile = undefined;
-      this.active = undefined;
-      this.voting_record = undefined;
-      this.genderlabels = [];
-      this.agelabels = [];
-      this.stylelabels = [];
-      this.itemlabels = [];
-      this.load();
+      const boo = super.init(session, baseobj);
+      Vue.set(session.store.boostore, boo.id, boo);
+      return boo
     }
   }
+}
 
-  static rebuild(baseboo, store, is_auth) {
-    const nick = baseboo.nick;
-    const collections = baseboo.collections;
-    const _boo = new Boo(baseboo.id, store);
-    _boo.evolute(nick, collections, is_auth);
-    return _boo
+
+class Boo extends Baseboo {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.voting_record = undefined;
+    this.genderlabels = [];
+    this.agelabels = [];
+    this.stylelabels = [];
+    this.itemlabels = [];
+    this.styleprofile = {};
+    // this.contentwork_result = {};
+    this.rewarder = undefined;
+    this.researched = [];
   }
 
-  evolute(nick, collections, is_auth) {
-    if (!this.nick) {
-      this.nick = nick;
+  static init(session, baseobj) {
+    const boo = super.init(session, baseobj);
+    Vue.set(session.store.boostore, boo.id, boo);
+    return boo
+  }
+
+  assign(obj) {
+    Object.assign(this, obj);
+    this.rewarder = new Rewarder(obj.rewards);
+    this.collections = new Collections(this.session, this.id);
+    delete this['rewards'];
+  }
+
+
+  get profiling_ready() {
+    return this.rewarder!=undefined
+  }
+
+
+  stylevote(ipix_pos, ipix_neg, type) {
+    if (!this.rewarder) {
+      return
     }
 
-    if (!this.collections) {
-      // collections = collections.map(...) 으로 하면 안된다
-      // 새로운 객체 new Picks(...)에 Vue가 reactive하지 못하다
-      // collections.forEach(col => {
-      //   if (!col.picks)
-      //     Vue.set(col, 'picks', new Picks(this.store, col.id));
-      // });
-      //
-      // this.collections = collections;
-      this.collections = collections.map(col => {
-        if (!col.picks) {
-          const _col = is_auth ? new Collection(col.id, this.store) : new CollectionBase(col.id, this.store);
-          _col.name = col.name;
-          return _col
-
-        } else {
-          return col
+    fetch(`stylevote?ipix_pos=${ipix_pos}&ipix_neg=${ipix_neg}&type=${type}`)
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          // this.styleprofile.yourbrands = js.styleprofile.yourbrands;
+          // this.styleprofile.scores = js.styleprofile.scores;
         }
-      })
-    }
+      });
+
+      if (type == 'clear') {
+        this.rewarder.settle(-1, 'vote');
+
+      } else if (type == 'new') {
+        this.rewarder.settle(1, 'vote');
+      }
   }
 
   has_pix(pix_id, collection) {
@@ -433,87 +494,221 @@ class Boo extends Loader {
       }) > -1;
     }
   }
-}
 
+  make_collection(callback) {
+    if (!this.collections) {
+      return
+    }
 
-class Collection extends Loader {
-  constructor(id, store) {
-    super(id, store);
-    this.url = (id) => `/collection/${id}`;
-    this.owner = undefined;
-    this.pixids = undefined;
-    this.picks = new Picks(this.store, id, 6);
-    this.load();
-  }
+    this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
+      const col = {
+        id: undefined,
+        name: txt_done,
+        picks: new Picks(this.session),
+        pixids: []
+      }
 
-  load_owner() {
-    this.owner = Boo.rebuild(this.owner, this.store, true);
-  }
-}
+      this.collections.list.unshift(col);
+      if (callback) { callback(); }
 
-class CollectionBase extends Loader {
-  constructor(id, store) {
-    super(id, store);
-    this.url = (id) => `/collection/${id}/base`;
-    this.owner = undefined;
-    // this.pixids = undefined;
-    this.picks = new Picks(this.store, id, 1);
-    this.load();
-  }
-
-  load_owner() {
-    this.owner = Boo.rebuild(this.owner, this.store);
+      // this.cols.unshift(col);
+      fetch(`/collection/create/${col.name}`)
+        .then(x => x.json())
+        .then(js => {
+          if (js.success) {
+            col.id = js.collection_id;
+          }
+        })
+    });
   }
 }
 
-class Pick extends Loader {
-  constructor(id, store) {
-    super(id, store);
-    this.url = (id) => `/pick/${id}`;
-    this.pix = undefined;
-    this.load();
+class Rewarder {
+  constructor(rewards) {
+    this.rewards = rewards;
+    this.on_settling = false;
+    this.reward_amount_max_daily = 100;
+    this.reward_per_vote = 1;
+    this.reward_per_collect = 1;
+    this.reward_per_checkin = 10;
+    this.reward_welcome = 500;
+    this.reward_to_levelup = 2500;
   }
 
-  load() {
-    fetch(this.url(this.id))
+  settle(n, by) {
+    let reward_change;
+    let param_n, param_reward;
+
+    if (by == 'vote') {
+      reward_change = n * this.reward_per_vote;
+      param_n = 'n_voted';
+      param_reward = 'vote_reward';
+
+    } else if (by == 'collect') {
+      reward_change = n * this.reward_per_collect;
+      param_n = 'n_collected';
+      param_reward = 'collect_reward';
+    }
+
+    reward_change = Math.min(this.rewards.today.reward + reward_change, this.reward_amount_max_daily) - this.rewards.today.reward;
+
+    this.rewards.today.n_action += n;
+    this.rewards.total.n_action += n;
+    this.rewards.today.reward += reward_change;
+    this.rewards.total.reward += reward_change;
+    this.on_settling = true;
+
+    fetch(`settle?${param_n}=${n}&${param_reward}=${reward_change}`)
       .then(x => x.json())
       .then(js => {
-        this.onloading = false;
-
         if (js.success) {
-          this.pix = new Pix(js.content.pix.id, this.store);
+          this.on_settling = false;
+          console.log(js);
+        }
+      });
+  }
+
+  settle_amount(amount, by) {
+    this.on_settling = true;
+    // this.rewards.today.reward += amount;
+    this.rewards.total.reward += amount;
+
+    let param_reward;
+
+    if (by == 'checkin') {
+      param_reward = 'checkin_reward';
+
+    } else if (by == 'bonus') {
+      param_reward = 'bonus_reward';
+    }
+
+    fetch(`settle?${param_reward}=${amount}`)
+      .then(x => x.json())
+      .then(js => {
+        if (js.success) {
+          this.on_settling = false;
+          console.log(js);
         }
       });
   }
 }
 
 
-class Post extends Loader {
-  constructor(id, store) {
-    super(id, store);
-    this.url = (id) => `/post/${id}`;
+class Contentwork extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/contentwork/${baseobj.id}`;
+    this.agenda = undefined;
+    this.profiles = undefined;
+    this.postages = new Postages(session, baseobj.id);
+  }
+}
+
+
+class Collection extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/collection/${baseobj.id}`;
+    this.name = undefined;
+    this.pixids = undefined;
+    this.owner = undefined;
+    this.picks = undefined;
+  }
+
+  assign(obj) {
+    this.name = obj.name;
+    this.pixids = obj.pixids;
+    this.owner = Baseboo.init(this.session, obj.owner);
+    this.picks = new Picks(this.session, this.id);
+  }
+}
+
+
+class Pick extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/pick/${baseobj.id}`;
+    this.pix = undefined;
+  }
+
+  assign(obj) {
+    this.pix = Pix.init(this.session, obj.pix);
+  }
+}
+
+
+class Postage extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/postage/${baseobj.id}`;
     this.group = undefined;
-    this.load();
+  }
+}
+
+
+class ResearchItem extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/research/item/${baseobj.id}`;
+    this.order = undefined;
+    this.type = undefined;
+    this.gender = undefined;
+    this.preq = undefined;
+    this.question = undefined;
+    this.pix = undefined;
+    this.mc = undefined;
+    // this.pix_0 = undefined;
+    // this.pixlabel_0 = undefined;
+    // this.pix_1 = undefined;
+    // this.pixlabel_1 = undefined;
+  }
+}
+
+
+class Research extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/research/${baseobj.id}`;
+    this.owner = undefined;
+    this.brand = undefined;
+    this.title = undefined;
+    this.published = undefined;
+    this.coverpix = undefined;
+    this.reward = undefined;
+    this.due = undefined;
+    this.created_at = undefined;
+    this.answers = undefined;
+    this.researchitems = new ResearchItems(session, baseobj.id);
+  }
+
+  assign(obj) {
+    this.owner = Baseboo.init(this.session, obj.owner);
+    this.brand = obj.brand;
+    this.title = obj.title;
+    this.published = obj.published;
+    this.coverpix = obj.coverpix;
+    this.reward = obj.reward;
+    this.due = obj.due;
+    this.created_at = obj.created_at;
+    this.answers = obj.answers;
   }
 }
 
 
 class Multiloader {
-  constructor(store) {
-    this.store = store;
+  constructor(session) {
+    this.session = session;
+    this.ids_url = undefined;
     this.ids = [];
     this.list = [];
     this.onloading = false;
-    this.contentype = undefined;
-
+    this.contentype;
     this.list_onloading = [];
   }
 
   load(n) {
-    if (this.ids.length == 0) {
-      return
-    }
-
+    if (this.ids.length == 0) { return }
+    if (n == 0) { return }
     if (!n) { var n = 1; }
     n = Math.min(n, this.ids.length);
 
@@ -522,13 +717,16 @@ class Multiloader {
 
     for (let i = 0; i < n; i++) {
       _id = this.ids.shift();
-      const content = new this.contentype(_id, this.store)
+      // const content = this.contentype.build(this.session, { id:_id })
 
       if (_.findIndex(this.list, ['id', _id]) == -1) {
+        const content = this.contentype.build(this.session, { id:_id })
         this.list.push(content);
         this.list_onloading.push(content);
       }
     };
+
+    return this
   }
 
   load_ids() {
@@ -547,10 +745,50 @@ class Multiloader {
 }
 
 
+class ResearchItems extends Multiloader {
+  constructor(session, research_id) {
+    super(session);
+    this.contentype = ResearchItem;
+    this.nloads_init = 0;
+    this.ids_url = `/research/${research_id}/iresearchitems`;
+    this.load_ids();
+  }
+
+  load_all() {
+    this.load(this.ids.length);
+  }
+}
+
+
+class Researches extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Research;
+    this.nloads_init = 10;
+    this.ids_url = `/research/iresearches`;
+    this.load_ids();
+  }
+
+  load_onworks() {
+    this.onloading = true;
+    fetch('/research/iresearches/onwork')
+      .then(x => x.json())
+      .then(js => {
+        this.onloading = false;
+
+        if (js.success) {
+          this.ids = js.ids.concat(this.ids);
+          // console.log(this.ids);
+          this.load(js.ids.length);
+        }
+      });
+  }
+}
+
 
 class Pixs extends Multiloader {
-  constructor(store) {
-    super(store);
+  constructor(session) {
+    super(session);
     this.contentype = Pix;
     this.nloads_init = 10;
     this.ids_url = `/pix/ipixs`;
@@ -560,8 +798,8 @@ class Pixs extends Multiloader {
 
 
 class Searchpixs_by_pix extends Multiloader {
-  constructor(store, pix_id) {
-    super(store);
+  constructor(session, pix_id) {
+    super(session);
     this.contentype = Pix;
     this.nloads_init = 10;
     this.ids_url = `search/pix/${pix_id}`;
@@ -571,8 +809,8 @@ class Searchpixs_by_pix extends Multiloader {
 
 
 class Searchpixs_by_keyword extends Multiloader {
-  constructor(store, keyword) {
-    super(store);
+  constructor(session, keyword) {
+    super(session);
     this.contentype = Pix;
     this.nloads_init = 10;
     this.ids_url = `search/keyword/${keyword}`;
@@ -581,8 +819,8 @@ class Searchpixs_by_keyword extends Multiloader {
 }
 
 class Searchpixs_by_collection extends Multiloader {
-  constructor(store, collection_id) {
-    super(store);
+  constructor(session, collection_id) {
+    super(session);
     this.contentype = Pix;
     this.nloads_init = 10;
     this.ids_url = `search/collection/${collection_id}`;
@@ -591,10 +829,12 @@ class Searchpixs_by_collection extends Multiloader {
 }
 
 class Picks extends Multiloader {
-  constructor(store, collection_id, nloads_init) {
-    super(store);
+  // constructor(session, collection_id, nloads_init) {
+  constructor(session, collection_id) {
+    super(session);
     this.contentype = Pick;
-    this.nloads_init = nloads_init;
+    this.nloads_init = 1;
+    // this.nloads_init = nloads_init;
 
     if (collection_id) {
       this.ids_url = `/collection/${collection_id}/ipicks`;
@@ -604,34 +844,54 @@ class Picks extends Multiloader {
 }
 
 class Collections extends Multiloader {
-  constructor(store) {
-    super(store);
-    this.contentype = CollectionBase;
-    this.nloads_init = 2;
-    this.ids_url = `/collection/icols`;
+  constructor(session, owner_id) {
+    super(session);
+    this.contentype = Collection;
+    this.nloads_init = 12;
+
+    if (owner_id) {
+      this.ids_url = `/boo/${owner_id}/icollections`;
+
+    } else {
+      this.ids_url = `/collection/icols`;
+    }
+
     this.load_ids();
   }
 }
 
-class Mbti extends Multiloader {
-  constructor(store, type) {
-    super(store);
-    this.contentype = Post;
+class Postages extends Multiloader {
+  constructor(session, contentwork_id) {
+    super(session);
+    this.contentype = Postage;
     this.nloads_init = 20;
-    this.ids_url = `/mbti/${type}/iposts`;
+    this.ids_url = `/contentwork/${contentwork_id}/ipostages`;
     this.load_ids();
   }
 }
 
-// class Searchkeywords extends Multiloader {
-//   constructor(store, pix_id) {
-//     super(store);
-//     this.contentype = Pix;
-//     this.nloads_init = 10;
-//     this.ids_url = `search/pix/${pix_id}`;
-//     this.load_ids();
-//   }
-// }
+class Pixpair extends Multiloader {
+  constructor(session, baseobj) {
+    super(session);
+    this.contentype = Pix;
+    this.ids = baseobj.id;
+    // this.load(2);
+  }
+
+  static build(session, baseobj) {
+    return new this(session, baseobj).load(2)
+  }
+}
+
+class PixpairSet extends Multiloader {
+  constructor(session, n) {
+    super(session);
+    this.contentype = Pixpair;
+    this.nloads_init = 10;
+    this.ids_url = `/pix/ipixs/comb/${n}`;
+    this.load_ids();
+  }
+}
 
 
 class Store {
@@ -639,102 +899,7 @@ class Store {
     this.pixstore = {};
     this.boostore = {};
   }
-
-  // get(id) {
-  //   return this.dict[id]
-  // }
 }
-
-// class Posts extends ContentLoader {
-//   constructor(type, ninit) {
-//     super();
-//     // this.nloads_init = (ninit ? ninit : 24);
-//     this.nloads_init = (ninit ? ninit : 12);
-//     // this.nloads_init = (ninit ? ninit : 4);
-//     this.idlist_url = `/posts/iposts/${type}`;
-//     this.content_url = (id) => `/post/${id}`;
-//     this.load_idlist();
-//   }
-// }
-//
-//
-// class SearchPosts extends ContentLoader {
-//   constructor(keywords) {
-//     super();
-//     this.nloads_init = 15;
-//     this.idlist_url = `/search/${keywords}`;
-//     this.content_url = (id) => `/post/${id}`;
-//     this.load_idlist();
-//   }
-// }
-//
-//
-// class Booposts extends ContentLoader {
-//   constructor(boo, type) {
-//     super();
-//     this.boo = boo;
-//     this.nloads_init = 6;
-//     // this.nloads_init = 16;
-//     this.idlist_url = `/boo/${boo.id}/iposts/${type}`;
-//     // this.idlist_url = `/posts/iposts/${boo.id}`;
-//     this.content_url = (id) => `/post/${id}/boo`;
-//     this.load_idlist();
-//   }
-// }
-//
-// class Mbti extends ContentLoader {
-//   constructor(type) {
-//     super();
-//     this.nloads_init = 20;
-//     this.idlist_url = `/mbti/${type}/iposts`;
-//     this.content_url = (id) => `/post/${id}`;
-//     this.load_idlist();
-//   }
-// }
-//
-// class Comments extends ContentLoader {
-//   constructor(post) {
-//     super();
-//     this.nloads_init = 10;
-//     this.idlist_url = `/post/${post.id}/icomments`;
-//     this.content_url = (id) => `/comment/${id}`;
-//     this.load_idlist();
-//   }
-// }
-//
-// class Voters extends ContentLoader {
-//   constructor(post, act) {
-//     super();
-//     this.nloads_init = 5;
-//     this.n_guestboos = 0;
-//     this.idlist_url = `/post/${post.id}/ivoters/${act}`;
-//     this.content_url = (id) => `/boo/${id}/baseboo`;
-//     // this.content_url = (id) => `/boo/${id}/voter`;
-//     this.load_idlist();
-//   }
-// }
-//
-// class Followers extends ContentLoader {
-//   constructor(boo) {
-//     super();
-//     this.nloads_init = 10;
-//     this.idlist_url = `/boo/${boo.id}/ifollowers`;
-//     this.content_url = (id) => `/boo/${id}/baseboo`;
-//     // this.content_url = (id) => `/boo/${id}/follower`;
-//     this.load_idlist();
-//   }
-// }
-//
-// class Boos extends ContentLoader {
-//   constructor(type) {
-//     super();
-//     this.nloads_init = 10;
-//     this.idlist_url = `/boos/iboos/${type}`;
-//     this.content_url = (id) => `/boo/${id}/baseboo`;
-//     this.load_idlist();
-//   }
-// }
-
 
 
 class User {
@@ -742,6 +907,7 @@ class User {
     this.auth = undefined;
     this.guest = undefined;
     this.onloading = true;
+    this.loginplz = false;
     this.session = session;
     this.load();
   }
@@ -750,15 +916,11 @@ class User {
     fetch('/user2')
       .then(x => x.json())
       .then(js => {
-        // console.log(js);
-
         if (js.success) {
-          this.auth = new Auth(js.user, this.session.store);
-          // this.auth = new Auth(JSON.parse(js.user), this.session.store);
+          this.auth = new Auth(js.user, this.session);
 
-          // if (js.first_visit) {
-          //   this.auth.first_visit = js.first_visit;
-          //   this.session.open_profiler();
+          // if (js.user.is_superuser) {
+          //   this.session.researches.load_onworks();
           // }
         }
 
@@ -781,6 +943,12 @@ class User {
 
     } else if (this.is_guest){
       return this.guest.boo
+    }
+  }
+
+  get auth_ready() {
+    if (this.has_auth) {
+      return this.boo.loaded
     }
   }
 
@@ -815,29 +983,48 @@ class User {
     }
   }
 
-  vote(post_id, action) {
+  contentvote(postage_id, action) {
     if (!this.boo) {
       return
     }
 
     const feed_act = {};
-    feed_act[post_id] = action;
+    feed_act[postage_id] = action;
     this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
 
-    fetch(`/post/${post_id}/vote?action=${action}`)
+    fetch(`/postage/${postage_id}/contentvote?action=${action}`)
       .then(x => x.json())
       .then(js => {
         console.log(js);
-        this.boo.fit = js.fit;
       });
   }
 
-  has_voted_as(post_id) {
-    if (!this.boo)
-      return
 
-    if (post_id in this.boo.voting_record) {
-      return this.boo.voting_record[post_id]
+  // vote(post_id, action) {
+  //   if (!this.boo) {
+  //     return
+  //   }
+  //
+  //   const feed_act = {};
+  //   feed_act[post_id] = action;
+  //   this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+  //
+  //   fetch(`/post/${post_id}/vote?action=${action}`)
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       console.log(js);
+  //     });
+  // }
+
+  has_voted_as(postage_id) {
+    if (!this.boo)
+      return -1
+
+    if (!this.boo.voting_record)
+      return -1
+
+    if (postage_id in this.boo.voting_record) {
+      return this.boo.voting_record[postage_id]
 
     } else {
       return -1
@@ -864,18 +1051,20 @@ class User {
 
 
 class Auth {
-  constructor(cuser, store) {
-    // console.log(cuser)
+  // constructor(cuser, store) {
+  constructor(cuser, session) {
     this.id = Number(cuser.id);
-    this.store = store;
+    // this.store = store;
+    this.session = session;
     this.email = cuser.email;
+    this.is_superuser = cuser.is_superuser;
     this.boo_selected = Number(cuser.boo_selected);
-    this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.rebuild(cuser.boo, store, true)} : {};
-    // this.boos = cuser.boo ? {[cuser.boo_selected]: cuser.boo} : {};
+    this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(session, cuser.boo)} : {};
+    // this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(cuser.boo.id, store)} : {};
+    // this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.rebuild(cuser.boo, store, true)} : {};
     this.boos_fully_loaded = false;
-    this.links = cuser.links;
-    // this.first_visit = false;
-    this.load_other_boos();
+    // this.links = cuser.links;
+    // this.load_other_boos();
   }
 
   is_myboo(boo) {
@@ -895,7 +1084,6 @@ class Auth {
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          // this.boos = { ...this.boos, ...JSON.parse(js.other_boos) };
           this.boos = { ...this.boos, ...js.other_boos };
           this.boos_fully_loaded = true;
         }
@@ -911,7 +1099,9 @@ class Auth {
     }
 
     this.boo_selected = Number(boo_id);
-    this.boos[this.boo_selected] = Boo.rebuild(this.boos[this.boo_selected], this.store, true);
+    this.boos[this.boo_selected] = Boo.build(this.session, this.boos[this.boo_selected]);
+    // this.boos[this.boo_selected] = Boo.build(this.boo_selected, this.store);
+    // this.boos[this.boo_selected] = Boo.rebuild(this.boos[this.boo_selected], this.store, true);
     this.api_get(`/boo/${boo_id}/set/`);
   }
 

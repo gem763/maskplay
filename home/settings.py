@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'imagekit',
+    'django_json_widget',
     'getch',
 
     'django.contrib.sites',
@@ -149,6 +151,10 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # ACCOUNT_UNIQUE_EMAIL = False
+
+
+# ACCOUNT_FORMS = {'login': 'getch.forms.CustomLoginForm'}
+
 
 
 # NOTIFICATIONS_NOTIFICATION_MODEL = 'getch.Notification'

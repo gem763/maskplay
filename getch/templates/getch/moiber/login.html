@@ -16,12 +16,11 @@
   }
 
   .login.vcomp .page-body > .section.top {
-    height: 30%;
-    /* background: lightpink; */
+    height: 20%;
   }
 
   .login.vcomp .page-body > .section.middle {
-    height: 50%;
+    height: 60%;
     background: none;
   }
 
@@ -44,9 +43,16 @@
     color: #CCCCCC;
   }
 
-  .login.vcomp .page-body > .section.middle > .alert.desc {
+  .login.vcomp .page-body > .section.middle > .agree.desc {
     margin-top: 10%;
     color: #CCCCCC;
+  }
+
+  .login.vcomp .page-body > .section.middle > .signup.desc {
+    margin-top: 9%;
+    color: var(--color-dark);
+    text-decoration: underline;
+    cursor: pointer;
   }
 
   .login.vcomp .page-body > .section.middle > .action {
@@ -58,12 +64,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
   }
-
-  /* .login.vcomp .page-body > .section.top > .sub > .action.login-google {
-    background: black;
-    margin-bottom: var(--w-12);
-  } */
 
   .login.vcomp .page-body > .section.middle > .action.login-kakao {
     background: #FFE810;
@@ -78,47 +80,15 @@
 
   .login.vcomp .page-body > .section.middle > .action.login-facebook {
     background: #0095F6;
-    /* margin-bottom: var(--w-12); */
+    margin-bottom: 4%;
   }
 
-  .login.vcomp .page-body > .section.bottom > .sub {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-  }
-
-  .login.vcomp .page-body > .section.bottom > .sub > .action {
-    width: 35%;
-    padding: 10px;
-    box-sizing: border-box;
-    text-align: center;
-    /* font-size: 12pt; */
-  }
-
-  .login.vcomp .page-body > .section.bottom > .sub > .action.register {
-    background: white;
-    margin-top: var(--w-12);
-    border: 1px solid var(--color-dark);
-    opacity: 0;
-  }
-
-  .login.vcomp .page-body > .section.bottom > .sub > .logo {
-    margin-top: var(--w-8);
-    width: 45%;
-    height: auto;
+  .login.vcomp .page-body > .section.middle > .action.login-email {
+    background: var(--color-dark);
   }
 
   .login.vcomp .page-body > .section.bottom > .tail {
-    /* position: absolute; */
-    /* bottom: calc(var(--w-16) + 10px); */
     width: 100%;
-    /* left: 0; */
     background: none;
     font-size: 11px;
     color: #CCCCCC;
@@ -128,6 +98,21 @@
   .login.vcomp .page-body > .section.bottom > .tail > .item {
     margin-left: 5px;
     margin-right: 5px;
+    cursor: pointer;
+  }
+
+  .login.vcomp .page-body > .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
   }
 </style>
 
@@ -136,42 +121,39 @@
 <script type='text/x-template' id='login-template'>
   <page
     class='login vcomp'
+    :order='session.page.login.order'
     :open='session.page.login.open'
     :from='session.page.login.from'
     :hide_headerbar='true'
     @close='session.close_page()'>
 
-    <template #headerbar-menu>
-    </template>
-
-    <template #headerbar-body-trans>
-    </template>
-
-    <template #headerbar-body-default>
-    </template>
-
     <template #page-body>
       <div class='section top'></div>
 
       <div class='section middle'>
-        <!-- <div class='sub'> -->
         <div class='desc title'><b>로그인</b></div>
         <div class='desc subtitle'>로그인하고 더 많은 활동을 해보세요</div>
         <div class='action login-kakao' @click='action_login_kakao'>카카오로 로그인하기</div>
         <div class='action login-naver' @click='action_login_naver'>네이버로 로그인하기</div>
-        <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 로그인하기</div>
-        <!-- </div> -->
-        <div class='desc alert'>약관에 동의하고 로그인합니다.</div>
+        <!-- <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 로그인하기</div> -->
+        <div class='action login-email' @click='session.open_emailogin()'>이메일로 로그인하기</div>
+        <div class='desc agree'>약관에 동의하고 로그인합니다.</div>
+        <div class='desc signup' @click='session.open_signup()'>모이버에 처음 방문했어요</div>
       </div>
 
       <div class='section bottom'>
         <div class='tail'>
-          <span class='item' @click='corporate'>소개</span>
-          <span class='item' @click='recruit'>채용</span>
-          <span class='item' @click='policy'>약관</span>
-          <span class='item' @click='privacy'>개인정보보호</span>
-          <span class='item' @click='contact'>컨텍트</span>
+          <span class='item' @click='session.open_about()'>회사소개</span>
+          <span class='item' @click='session.open_landing()'>서비스소개</span>
+          <span class='item' @click='session.open_recruit()'>채용</span>
+          <span class='item' @click='session.open_policy()'>약관</span>
+          <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+          <span class='item' @click='session.contact()'>문의</span>
         </div>
+      </div>
+
+      <div class='cover' v-if='user_onloading'>
+        <i class="fa fa-spinner fa-spin"></i>
       </div>
     </template>
   </page>
@@ -192,6 +174,21 @@
       }
     },
 
+    computed: {
+      user_onloading: function() {
+        return this.session.user.onloading
+      }
+    },
+
+    watch: {
+      user_onloading: function(_new, _old) {
+        if (_old && this.session.user.has_auth && this.session.on('login')) {
+          this.session.close_page();
+          this.session.open_my();
+        }
+      }
+    },
+
     methods: {
       action_login_facebook: function() {
         window.location.assign(this.facebook_login_url);
@@ -204,41 +201,19 @@
       },
 
       action_login_kakao: function() {
-        window.location.assign(this.kakao_login_url);
-        // var win = window.open(this.kakao_login_url, "PopupWin", "width=500,height=600");
-        // this.$refs.login_frame.innerHTML = `<iframe src=${this.kakao_login_url} width="100%" height="100%" border="0"></iframe>`;
+        if(navigator.userAgent.toLowerCase().indexOf('iosapp') != -1){
+          //앱인경우
+          var param = { action: 'kakaologin' };
+          webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(param));
+
+        } else {
+          //웹인경우
+          window.location.assign(this.kakao_login_url);
+        }
       },
 
       action_login_naver: function() {
         window.location.assign(this.naver_login_url);
-      },
-
-      action_register: function() {
-        // alert('가입하기');
-      },
-
-      corporate: function() {
-        this.session.open_about('who');
-      },
-
-      recruit: function() {
-        this.session.open_about('recruit');
-      },
-
-      help: function() {
-        alert('도움말');
-      },
-
-      policy: function() {
-        window.open('/policy');
-      },
-
-      privacy: function() {
-        window.open('/privacy');
-      },
-
-      contact: function() {
-        window.open('mailto:contact@moiber.com')
       }
     }
   });

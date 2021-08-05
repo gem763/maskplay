@@ -1,16 +1,29 @@
 {% include "getch/moiber/page3.html" %}
 {% include "getch/moiber/finder.html" %}
-<!-- {% include "getch/moiber/my.html" %} -->
 {% include "getch/moiber/collector.html" %}
 {% include "getch/moiber/agit.html" %}
+{% include "getch/moiber/accountcheck.html" %}
+{% include "getch/moiber/signup.html" %}
 {% include "getch/moiber/login.html" %}
+{% include "getch/moiber/emailogin.html" %}
+{% include "getch/moiber/emailsignup.html" %}
 {% include "getch/moiber/about.html" %}
+{% include "getch/moiber/recruit.html" %}
+{% include "getch/moiber/policy.html" %}
+{% include "getch/moiber/privacy.html" %}
 {% include "getch/moiber/texteditor.html" %}
 {% include "getch/moiber/pixeditor.html" %}
-{% include "getch/moiber/mbti.html" %}
 {% include "getch/moiber/mbtiresult.html" %}
 {% include "getch/moiber/landing.html" %}
 {% include "getch/moiber/profiler.html" %}
+{% include "getch/moiber/infoboard.html" %}
+{% include "getch/moiber/pixchooser.html" %}
+{% include "getch/moiber/stylevote.html" %}
+{% include "getch/moiber/contentwork.html" %}
+{% include "getch/moiber/search.html" %}
+{% include "getch/moiber/researcher.html" %}
+{% include "getch/moiber/research.html" %}
+{% include "getch/moiber/researchitem.html" %}
 
 <style>
   .pages {
@@ -27,17 +40,30 @@
 
 <script type='text/x-template' id='pages-template'>
   <div class='pages'>
-    <finder :session='session'></finder>
+    <researcher :session='session'></researcher>
+    <!-- <finder :session='session'></finder> -->
+    <search :session='session'></search>
+    <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote>
+    <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork>
+    <research :session='session'></research>
+    <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult>
     <agit :session='session'></agit>
-    <profiler :session='session' v-if='session.user.has_auth'></profiler>
-    <mbti :session='session' v-if='session.page.mbti.contents'></mbti>
-    <mbtiresult :session='session'></mbtiresult>
+    <profiler :session='session' v-if='session.user.auth_ready'></profiler>
+    <!-- <profiler :session='session' v-if='session.user.has_auth'></profiler> -->
     <collector :session='session'></collector>
     <pixeditor :session='session'></pixeditor>
     <texteditor :session='session'></texteditor>
-    <login :session='session'></login>
-    <about v-if='session.page.about.open' :session='session'></about>
     <landing :session='session'></landing>
+    <about :session='session'></about>
+    <recruit :session='session'></recruit>
+    <policy :session='session'></policy>
+    <privacy :session='session'></privacy>
+    <infoboard :session='session'></infoboard>
+    <signup :session='session'></signup>
+    <accountcheck :session='session'></accountcheck>
+    <login :session='session'></login>
+    <emailogin :session='session'></emailogin>
+    <emailsignup :session='session'></emailsignup>
   </div>
 </script>
 

@@ -1,0 +1,289 @@
+<style>
+  .pixchooser.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .pixchooser.vcomp > .divider {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    background: white;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .pixchooser.vcomp > .divider > .vs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: var(--w-20);
+    height: 45px;
+    width: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+  }
+
+  .pixchooser.vcomp > .divider > .vs > * {
+    transform: translateY(2px);
+    letter-spacing: -1px;
+  }
+
+  .pixchooser.vcomp > .section {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+  }
+
+  .pixchooser.vcomp.loaded > .section {
+    pointer-events: auto;
+  }
+
+  .pixchooser.vcomp > .section.outfocused {
+    opacity: 0.2;
+    filter: grayscale(1);
+  }
+
+  .pixchooser.vcomp > .section.up {
+    bottom: 50%;
+    /* background: white; */
+  }
+
+  .pixchooser.vcomp > .section.down {
+    top: 50%;
+    /* background: white; */
+  }
+
+  .pixchooser.vcomp > .section > img.candidate {
+    position: absolute;
+    left: 50%;
+    width: var(--square-size);
+    height: var(--square-size);
+    transform: translateX(-50%);
+    object-fit: cover;
+    transition: opacity 0.3s;
+    border-radius: var(--w-3);
+    filter: brightness(95%);
+    opacity: 0;
+  }
+
+  .pixchooser.vcomp.loaded > .section > img.candidate {
+    opacity: 1;
+  }
+
+  .pixchooser.vcomp > .section.up > img.candidate {
+    bottom: 2px;
+  }
+
+  .pixchooser.vcomp > .section.down > img.candidate {
+    top: 2px;
+  }
+
+  .pixchooser.vcomp > .section > .more {
+    position: absolute;
+    width: var(--w-15);
+    height: var(--w-15);
+    /* background: orange; */
+    right: calc(50% - var(--square-size)/2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pixchooser.vcomp > .section.up > .more {
+    bottom: 2px;
+  }
+
+  .pixchooser.vcomp > .section.down > .more {
+    top: 2px;
+  }
+
+  .pixchooser.vcomp > .section > .more > img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+  }
+
+  .pixchooser.vcomp > img.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: auto;
+    opacity: 1;
+  }
+
+
+  .pixchooser.vcomp.loaded > img.loading {
+    opacity: 0;
+  }
+
+  /* .pixchooser.vcomp.loaded > .loginplz {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .pixchooser.vcomp.loaded > .loginplz > .logger {
+    width: 260px;
+    height: 120px;
+    background: white;
+    border-radius: var(--w-3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .pixchooser.vcomp.loaded > .loginplz > .logger > .title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .pixchooser.vcomp.loaded > .loginplz > .logger > .actions {
+    position: relative;
+    width: 100%;
+    height: calc(33px + 20px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .pixchooser.vcomp.loaded > .loginplz > .logger > .actions > .action {
+    width: 50%;
+    height: calc(100% - 20px);
+    background: var(--color-point);
+    border-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 15px;
+  } */
+</style>
+
+<script type='text/x-template' id='pixchooser-template'>
+  <div class='pixchooser vcomp' :class='{ loaded: loaded }'>
+    <img class='loading' src='/static/materials/logos/moiber_logo_splash.gif'>
+
+    <div class='section up' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
+      <img class='candidate' :src='pixpair.list[0].src' @load='imgloaded_0=true'>
+      <div class='more' v-if='imgloaded_0' @click.stop='session.open_search(pixpair.list[0])'><img src='/static/materials/icons/more_menu.png'></div>
+    </div>
+
+    <div class='section down' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
+      <img class='candidate' :src='pixpair.list[1].src' @load='imgloaded_1=true'>
+      <div class='more' v-if='imgloaded_1' @click.stop='session.open_search(pixpair.list[1])'><img src='/static/materials/icons/more_menu.png'></div>
+    </div>
+
+    <div class='divider' v-if='loaded'>
+      <div class='vs'><b>VS</b></div>
+    </div>
+
+    <!-- <div class='loginplz' v-if='on_loginplz' @click='dismiss_loginplz'>
+      <div class='logger'>
+        <div class='title'>로그인이 필요합니다</div>
+        <div class='actions'>
+          <div class='action' @click.stop='go_login'>로그인하기</div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</script>
+
+
+<script>
+  Vue.component('pixchooser', {
+    template: '#pixchooser-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'pixpair', 'swiper', 'session' ],
+    data: function() {
+      return {
+        status: -1,
+        imgloaded_0: false,
+        imgloaded_1: false,
+        // on_loginplz: false
+      }
+    },
+
+    computed: {
+      loaded: function() {
+        return this.imgloaded_0 && this.imgloaded_1
+      }
+    },
+
+    methods: {
+      toggle_choose: function(act) {
+        if (!this.session.user.has_auth) {
+          this.$emit('show_loginplz');
+          // this.session.user.loginplz = true;
+          // this.on_loginplz = true;
+          // setTimeout(() => { this.session.user.loginplz = false; }, 3000);
+          return
+
+        } else if (!this.session.user.boo.profiling_ready) {
+          console.log('프로파일링 정보 로딩중');
+          return
+        }
+        // 리워드의 concurrency를 어떻게 해결할까
+        // 리워드 관련 객체를 만들어서, 업데이트가 하나 완료되면 다음 fetch를 진행하는 방식으로 해보자
+        // } else if (this.session.user.boo.on_settling) {
+        //   console.log('리워드 업데이트 중');
+        //   return
+        // }
+
+        let ipix_pos, ipix_neg;
+        let type;
+
+        // 선택을 클리어하는 경우
+        if (this.status==act) {
+          ipix_pos = this.pixpair.list[1-act].id;
+          ipix_neg = this.pixpair.list[act].id;
+          type = 'clear';
+          this.status = -1;
+
+        } else {
+          // 완전히 새로 선택하는 경우
+          if (this.status==-1) {
+            ipix_pos = this.pixpair.list[act].id;
+            ipix_neg = this.pixpair.list[1-act].id;
+            type = 'new';
+
+          // 반대 것을 선택하는 경우
+          } else {
+            ipix_pos = this.pixpair.list[act].id;
+            ipix_neg = this.pixpair.list[1-act].id;
+            type = 'change';
+          }
+
+          this.status = act;
+          setTimeout(() => { this.swiper.slideNext() }, 300);
+        }
+
+        this.session.user.boo.stylevote(ipix_pos, ipix_neg, type);
+      }
+    }
+  });
+</script>

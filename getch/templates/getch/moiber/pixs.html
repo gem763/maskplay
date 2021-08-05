@@ -4,7 +4,8 @@
 
   .pixs.vcomp .pix {
     position: relative;
-    padding: var(--discover-img-padding);
+    /* padding: var(--discover-img-padding); */
+    padding: var(--img-inpadding);
     opacity: 0;
     transition: all 2s;
   }
@@ -27,7 +28,8 @@
   .pixs.vcomp .pix > .info > span {
     position: absolute;
     top: 40%;
-    right: var(--discover-img-interval);
+    right: 0;
+    /* right: var(--discover-img-interval); */
     transform: translateY(-50%);
     font-size: 12px;
   }
@@ -35,7 +37,7 @@
   .pixs.vcomp .pix > .info > .collector {
     position: absolute;
     top: 40%;
-    left: var(--discover-img-interval);
+    /* left: var(--discover-img-interval); */
     width: var(--w-5);
     height: var(--w-5);
     transform: translateY(-50%);
@@ -109,7 +111,7 @@
       },
 
       go_agit: function(pix) {
-        pix.load_owner();
+        // pix.load_owner();
         this.session.open_agit(pix.owner);
       },
 

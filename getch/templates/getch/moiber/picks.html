@@ -4,7 +4,8 @@
 
   .picks.vcomp .pick {
     position: relative;
-    padding: var(--discover-img-padding);
+    /* padding: var(--discover-img-padding); */
+    padding: var(--img-inpadding);
     opacity: 0;
     transition: all 2s;
   }
@@ -23,11 +24,13 @@
 
   .picks.vcomp.square .pick {
     position: relative;
+    padding: 0;
     padding-top: 100%;
   }
 
   .picks.vcomp .pick.empty {
     position: relative;
+    padding: 0;
     padding-top: 100%;
     /* background: lightblue; */
     opacity: 1;
@@ -35,20 +38,20 @@
 
   .picks.vcomp .pick.empty > .adder {
     position: absolute;
-    top: var(--discover-img-padding);
-    left: var(--discover-img-padding);
-    width: calc(100% - 2*var(--discover-img-padding));
-    height: calc(100% - 2*var(--discover-img-padding));
+    top: var(--img-inpadding);
+    left: var(--img-inpadding);
+    width: calc(100% - 2*var(--img-inpadding));
+    height: calc(100% - 2*var(--img-inpadding));
     border-radius: var(--w-3);
     background: var(--color-backgray);
   }
 
   .picks.vcomp.square .pick > img {
     position: absolute;
-    top: var(--discover-img-padding);
-    left: var(--discover-img-padding);
-    width: calc(100% - 2*var(--discover-img-padding));
-    height: calc(100% - 2*var(--discover-img-padding));
+    top: var(--img-inpadding);
+    left: var(--img-inpadding);
+    width: calc(100% - 2*var(--img-inpadding));
+    height: calc(100% - 2*var(--img-inpadding));
     object-fit: cover;
   }
 
@@ -67,7 +70,8 @@
   .picks.vcomp .pick > .info > span {
     position: absolute;
     top: 40%;
-    right: var(--discover-img-interval);
+    /* right: var(--discover-img-interval); */
+    right: 0;
     transform: translateY(-50%);
     font-size: 12px;
   }
@@ -75,7 +79,7 @@
   .picks.vcomp .pick > .info > .collector {
     position: absolute;
     top: 40%;
-    left: var(--discover-img-interval);
+    /* left: var(--discover-img-interval); */
     width: var(--w-5);
     height: var(--w-5);
     transform: translateY(-50%);
@@ -132,7 +136,7 @@
 <script type='text/x-template' id='picks-template'>
   <div class='picks vcomp' :class='{ square: square }'>
     <masonry :cols='ncol' :gutter="0">
-      <div class='pick empty' @click='go_home' v-if='picklist.length==0 && session.mode.on=="home"'>
+      <div class='pick empty' @click='go_search' v-if='picklist.length==0 && session.on("search")'>
         <div class='adder'>
           <div class='adder-message'>
             <img src='/static/materials/icons/plus.png'>
@@ -143,7 +147,7 @@
 
       <div class='pick' v-for="(pick, idx) in picklist" :key="idx" @click='choose(pick)'>
         <template v-if='pick.pix'>
-          <img :src='pick.pix.src' @load='pixloaded' :class='{ inactive: is_inactive(pick) }'>
+          <img :src='pick.pix.load().src' @load='pixloaded' :class='{ inactive: is_inactive(pick) }'>
           <!-- <img :src='pick.pix.src' @load='pixloaded' :class='{ inactive: on_edit && !selected.includes(pick.id) }'> -->
 
           <div class='info' v-if='pick.pix.owner && !hide_info' :class='{ inactive: is_inactive(pick) }'>
@@ -197,6 +201,12 @@
     },
 
     methods: {
+      // pix: function(pix) {
+      //   if (pix) {
+      //     return pix.load()
+      //   }
+      // },
+
       is_inactive: function(pick) {
         return this.on_edit && !this.selected.includes(pick.id)
       },
@@ -226,7 +236,7 @@
         event.target.parentElement.style.opacity = 1;
       },
 
-      go_home: function() {
+      go_search: function() {
         this.session.refresh();
       },
 
@@ -234,7 +244,7 @@
         if (this.on_edit)
           return
 
-        pix.load_owner();
+        // pix.load_owner();
         this.session.open_agit(pix.owner);
       },
 

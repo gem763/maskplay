@@ -19,8 +19,8 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://moiber.com">
   <meta property="og:title" content="모이버">
-  <meta property="og:description" content="인공지능 스타일리스트">
-  <meta property="og:image" content="/static/materials/imgs/katalk_share.png">
+  <meta property="og:description" content="포인트 얻는 브랜드 참여">
+  <meta property="og:image" content="/static/materials/imgs/kakao_share.png">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href='/static/jquery-ui/jquery-ui.min.css'>
@@ -37,12 +37,13 @@
       --color-message: #CCCCCC;
       --color-pos: rgb(241,20,15);
       --color-neg: #0095F6;
-      /* --color-dark: #302E2F; */
       --color-dark: #333333;
+      --color-gray: #828282;
       --color-inactive: #CBCAC9;
-      --s-menu: 50px;
 
-      --width: min(100vw, calc(100vh * 11 / 16));
+      --width-max: 414px;
+      --width-max-twins: calc(var(--width-max) * 2);
+      --width: min(var(--width-max), 100vw, calc(100vh * 11 / 16));
       --width-unit: calc(var(--width) / 100);
 
       --w-1: calc(var(--width-unit) * 1);
@@ -72,6 +73,7 @@
       --w-30: calc(var(--width-unit) * 30);
       --w-32: calc(var(--width-unit) * 32);
       --w-33: calc(var(--width-unit) * 33);
+      --w-35: calc(var(--width-unit) * 35);
       --w-40: calc(var(--width-unit) * 40);
       --w-45: calc(var(--width-unit) * 45);
       --w-46: calc(var(--width-unit) * 46);
@@ -92,18 +94,38 @@
       --w-98: calc(var(--width-unit) * 98);
       --w-99: calc(var(--width-unit) * 99);
 
-      --discover-img-width: var(--w-47);
+      --img-outspace: 16px;
+      --img-inspace: 8px;
+      --img-inpadding: calc(var(--img-inspace) / 2);
+      --img-outpadding: calc(var(--img-outspace) - var(--img-inpadding));
+
+
+      --discover-img-width: var(--w-48);
       --discover-img-interval: calc((var(--width) - 2 * var(--discover-img-width)) / 3);
       --discover-img-padding: calc(var(--discover-img-interval) / 2);
 
-      --discover-col-width: var(--w-46);
+      --discover-col-width: var(--w-48);
       --discover-col-interval: calc((var(--width) - 2 * var(--discover-col-width)) / 3);
       --discover-col-padding: calc(var(--discover-col-interval) / 2);
 
-      --headerbar-height: var(--w-15);
+      /* --headerbar-height: var(--w-15); */
+      --dasher-height-min: 60px;
+      --dasher-height-expanded: 150px;
+      /* --dasher-height-max: var(--w-40); */
 
       --minipost-margin: var(--w-1);
       --minipost-width: calc((var(--width) - var(--minipost-margin) * 4) / 3);
+
+      /* vh 단위는 아이폰에서 안먹히는 경우가 있어서
+      아래처럼 height를 js로 새로 정의하고, var(--height) 방식으로 보정했다
+      https://stackoverflow.com/questions/23223157/how-to-fix-vhviewport-unit-css-in-mobile-safari */
+      --height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+      --height: calc(var(--vh, 1vh) * 100);
+
+      /* --height: -webkit-fill-available; */
+      /* --square-size: calc(min(var(--width), var(--height)/2) * 0.75); */
+      --square-size: calc(min(var(--width) - 90px, var(--height)/2));
+      /* --square-size: calc(min(100vw, 45vh) * 0.95); */
     }
 
     @font-face {
@@ -118,17 +140,6 @@
       font-weight: bold;
     }
 
-    @font-face {
-      font-family: 'Equilibrium';
-      src: url('/static/font/Equilibrium.ttf') format('truetype');
-      font-weight: normal;
-    }
-
-    @font-face {
-      font-family: 'Equilibrium';
-      src: url('/static/font/Equilibrium_Bold.ttf') format('truetype');
-      font-weight: bold;
-    }
 
     html, body {
       /* 모바일브라우저 검색바를 고정하기 위함
@@ -136,6 +147,7 @@
       margin: 0;
       height: 100%;
       overflow: hidden;
+      background: white;
     }
 
     * {
@@ -143,19 +155,85 @@
       /* color: var(--color-dark); */
     }
 
-    #window {
+    #moiber > .window {
+      position: absolute;
+      top: 0;
+      left: 50%;
       width: var(--width);
       height: 100%;
       background: white;
-      position: relative;
-      margin: auto;
-      box-shadow: 0 0 10px 1px rgba(0,0,0,0.5);
+      transform: translateX(-50%);
+      /* margin: auto; */
+      /* box-shadow: 0 0 10px 1px rgba(0,0,0,0.5); */
+      border-right: 1px solid #cecece;
+      border-left: 1px solid #cecece;
+      box-sizing: content-box;
+      overflow: hidden;
+    }
+
+    #moiber > .sider {
+      position: absolute;
+      top: 0;
+      right: 50%;
+      /* left: calc(50% - var(--width)/2); */
+      width: var(--width);
+      height: 100%;
+      /* transform: translateX(-50%); */
+      background: none;
+      display: none;
+    }
+
+    #moiber > .sider > img {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 375px;
+      height: auto;
+      transform: translate(-50%, -50%);
+    }
+
+    #moiber > .sider > .about {
+      text-align: right;
+      position: absolute;
+      bottom: 10px;
+      right: 14px;
+      font-size: 11px;
+      color: #333333;
+    }
+
+    #moiber > .sider > .corpmenu {
+      text-align: right;
+      position: absolute;
+      bottom: 50px;
+      right: 14px;
+      font-size: 12px;
+      color: #828282;
+    }
+
+    #moiber > .sider > .corpmenu > .item {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    @media (min-width: 1200px) {
+      body {
+        /* background: lightpink; */
+      }
+
+      #moiber > .window {
+        left: calc(50% + var(--width)/2);
+      }
+
+      #moiber > .sider {
+        display: block;
+      }
     }
   </style>
 </head>
 
 
-<body style='background:white;margin:0;'>
+<!-- <body style='background:white;margin:0;'> -->
+<body>
   <!-- Google Tag Manager (noscript) -->
   <noscript>
     <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5PVVB55" height="0" width="0" style="display:none;visibility:hidden"></iframe>
@@ -163,11 +241,31 @@
   <!-- End Google Tag Manager (noscript) -->
 
 
-  <div id='window'>
-    <homepixs :session='session'></homepixs>
-    <headerbar :session='session'></headerbar>
-    <pages :session='session'></pages>
-    <joystick :session='session'></joystick>
+  <div id='moiber'>
+    <div class='window'>
+      <!-- <homepixs :session='session'></homepixs> -->
+      <!-- <headerbar :session='session'></headerbar> -->
+      <pages :session='session'></pages>
+      <joystick :session='session'></joystick>
+      <dasher :session='session'></dasher>
+      <!-- <notice :session='session'></notice> -->
+    </div>
+
+    <div class='sider'>
+      <img src="/static/materials/imgs/brouser_logocoppy.png">
+      <div class='corpmenu'>
+        <span class='item' @click='session.open_about()'>회사소개</span>
+        <span class='item' @click='session.open_landing()'>서비스소개</span>
+        <span class='item' @click='session.open_recruit()'>채용</span>
+        <span class='item' @click='session.open_policy()'>약관</span>
+        <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+        <span class='item' @click='contact'>문의</span>
+      </div>
+
+      <div class='about'>주식회사 모이버 | 대표 : 임동석 | 주소 : 서울 서초구 신반포로 315, 2층<br>
+        사업자 등록 번호 : 707-87-01867 | 인터넷 정보 매개업</div>
+      <!-- <div class='rights'>©2021 MOIBER Co., Ltd. All rights reserved.</div> -->
+    </div>
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -188,25 +286,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 
   {% include "getch/moiber/pages2.html" %}
-  {% include "getch/moiber/homepixs.html" %}
   {% include "getch/moiber/joystick.html" %}
   {% include "getch/moiber/headerbar.html" %}
   {% include "getch/moiber/colib.html" %}
   {% include "getch/moiber/minicol.html" %}
   {% include "getch/moiber/pixs.html" %}
   {% include "getch/moiber/picks.html" %}
+  {% include "getch/moiber/dasher.html" %}
+  {% include "getch/moiber/notice.html" %}
+  {% include "getch/moiber/postage.html" %}
+  {% include "getch/moiber/pointguider.html" %}
+  {% include "getch/moiber/pointget.html" %}
+  {% include "getch/moiber/pointuse.html" %}
+  {% include "getch/moiber/researchcard.html" %}
 
-  {% include "getch/post.html" %}
   {% include "getch/pixloader.html" %}
   {% include "getch/editext.html" %}
-  {% include "getch/aber.html" %}
-  {% include "getch/oxer.html" %}
-  {% include "getch/oxcard.html" %}
-  {% include "getch/scorebutton.html" %}
 
   <script>
     const moiber = new Vue({
-      el: '#window',
+      el: '#moiber',
       delimiters: ['[[', ']]'],
       data: {
         session: undefined,
@@ -227,18 +326,62 @@
             this.session.open_about();
             break;
 
+          case 'recruit':
+            this.session.open_recruit();
+            break;
+
+          case 'privacy':
+            this.session.open_privacy();
+            break;
+
+          case 'policy':
+            this.session.open_policy();
+            break;
+
           case 'mbti-dongne':
-            this.session.open_mbti();
+            this.session.open_contentwork('동네스타일');
             break;
 
           case 'mbti-dongne-result':
             const dongne = '{{dongne}}';
             const gender = '{{gender}}';
-            this.session.open_mbtiresult(dongne, gender, 'share');
+            this.session.open_mbtiresult('동네스타일', {0:dongne}, gender, 'share');
+            break;
+
+          case 'test':
+            this.session.open_stylevote();
             break;
         }
+      },
+
+      methods: {
+        contact: function() {
+          window.open('mailto:contact@moiber.com');
+        },
       }
     });
+
+    function kakaotalk_login(data) {
+      // alert(typeof(data) + data);
+      // alert(data);
+      const formdata = new FormData();
+      formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+      formdata.append('data', data);
+      // formdata.append('data', JSON.stringify(data));
+
+      fetch('/login/social/kakaotalk/', { method: 'POST', body: formdata })
+        .then(res => res.json())
+        .then(js => {
+          console.log(js);
+          // alert(js.message);
+          if (js.code == -1) {
+            alert(js.message);
+
+          } else {
+            location.reload();
+          }
+        });
+    }
 
 
     function csrfSafeMethod(method) {
@@ -254,6 +397,14 @@
           }
         }
       });
+
+      // $.ajaxSetup({
+      //   headers: { "X-CSRFToken": '{{csrf_token}}' }
+      // });
+
+      let vh = window.innerHeight * 0.01;
+      // Then we set the value in the --vh custom property to the root of the document
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
 
       // history.pushState(null, null, document.URL);
       // window.addEventListener('popstate', function () {

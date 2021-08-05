@@ -1,0 +1,182 @@
+<style>
+  .pointguider.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* overflow: hidden; */
+    transition: all 0.2s;
+    /* background: lightblue; */
+  }
+
+  .pointguider.vcomp.menu {
+    transform: translateX(0);
+  }
+
+  .pointguider.vcomp.content {
+    transform: translateX(-100%);
+  }
+
+  .pointguider.vcomp > .section {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 45px;
+    box-sizing: border-box;
+  }
+
+  .pointguider.vcomp > .section.menu {
+    left: 0;
+    align-items: flex-start;
+    justify-content: space-between;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    background: white;
+  }
+
+  .pointguider.vcomp > .section.content {
+    left: 100%;
+    background: white;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .pointguider.vcomp > .section.menu > .item {
+    position: relative;
+    width: calc((100% - 2 * 8px) / 3);
+    padding-top: calc((100% - 2 * 8px) / 3);
+    background: orange;
+    border-radius: var(--w-3);
+    overflow: hidden;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .pointguider.vcomp > .section.menu > .item > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(80%);
+  }
+
+  .pointguider.vcomp > .section.menu > .item > .title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .pointguider.vcomp > .section.content > .goback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pointguider.vcomp > .section.content > .goback > img {
+    width: 30%;
+    height: auto;
+    transform: rotate(270deg);
+  }
+
+  .pointguider.vcomp > .section.content > .explain {
+    position: relative;
+    /* background: lightblue; */
+    /* height: 100px; */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 12px;
+    color: var(--color-dark);
+  }
+
+  .pointguider.vcomp > .section.content > .explain > .title {
+    margin-top: 5px;
+  }
+
+  .pointguider.vcomp > .section.content > .explain > .subtitle {
+    margin-top: 5px;
+  }
+
+  .pointguider.vcomp > .section.content > .explain > .desc {
+    margin-top: 10px;
+  }
+
+  .pointguider.vcomp > .section.content > .illust {
+    position: relative;
+    /* background: lightyellow; */
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pointguider.vcomp > .section.content > .illust > img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 90%;
+    object-fit: contain;
+    transform: translate(-50%, -50%);
+  }
+</style>
+
+<script type='text/x-template' id='pointguider-template'>
+  <div class='pointguider vcomp' :class='phase'>
+    <div class='section menu'>
+      <slot name='menu'></slot>
+    </div>
+
+    <div class='section content'>
+      <div class='goback' @click='go_menu'>
+        <img src='/static/materials/icons/backicon.png'>
+      </div>
+
+      <slot name='content'></slot>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('pointguider', {
+    template: '#pointguider-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'phase' ],
+    data: function() {
+      return {}
+    },
+
+    methods: {
+      go_menu: function() {
+        this.$emit('go_menu');
+      }
+    }
+  });
+</script>

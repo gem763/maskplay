@@ -1,0 +1,47 @@
+{% if thumbnail %}
+{{ thumbnail }}
+<img id='{{thumbnail}}' src="{{ thumbnail.url }}" style='height:100px;width:170px;object-fit:cover;' alt="thumbnail">
+<!-- <img id='coverpix_preview' src="{{ thumbnail.url }}" style='height:100px;width:170px;object-fit:cover;' alt="thumbnail"> -->
+
+{% else %}
+<!-- <div id="preview_image" style="display:none;width:170px;height:100px;"></div> -->
+<!-- <img id='coverpix_preview' src="" style='display:none;height:100px;width:170px;object-fit:cover;' alt="thumbnail"> -->
+<img id='{{thumbnail}}' src="" style='display:none;height:100px;width:170px;object-fit:cover;' alt="thumbnail">
+{% endif %}
+
+
+<script>
+  function handleFileSelect(event) {
+    var files = event.target.files; // FileList object
+    // Loop through the FileList and render image files as thumbnails
+    for (var i = 0, f; f = files[i]; i++) {
+      // Only process image files
+      if (!f.type.match('image.*')) continue;
+      // Init FileReader()
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+      var reader = new FileReader();
+      // Closure to capture the file information
+      reader.onload = (function () {
+        return function (e) {
+          document.getElementById('{{thumbnail}}').src = e.target.result;
+          document.getElementById('{{thumbnail}}').style.display = 'block';
+
+          // document.getElementById('coverpix_preview').src = e.target.result;
+          // document.getElementById('coverpix_preview').style.display = 'block';
+
+          // // Render background image
+          // document.getElementById('preview_image').style.background = 'url(' + e.target.result + ') no-repeat center center';
+          // document.getElementById('preview_image').style.backgroundSize = 'cover';
+          // // Set `display: block` to preview image container
+          // document.getElementById('preview_image').style.display = 'block';
+        };
+      })(f);
+      // Read in the image file as a data URL
+      reader.readAsDataURL(f);
+    }
+  }
+
+  // Change background after change file input
+  // id_image — is default ID for ImageField input named `image` (in Django Admin)
+  document.getElementById('id_coverpix').addEventListener('change', handleFileSelect, false);
+</script>

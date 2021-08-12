@@ -1,7 +1,34 @@
+<style>
+  .pointuse.vcomp .content > .title,
+  .pointuse.vcomp .detail > .title {
+    position: relative;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-dark);
+    height: 60px;
+    line-height: 60px;
+    /* padding-left: 32px; */
+    box-sizing: border-box;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .pointuse.vcomp .content > .body,
+  .pointuse.vcomp .detail > .body {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+    /* overflow: auto; */
+  }
+</style>
+
 <script type='text/x-template' id='pointuse-template'>
   <pointguider
+    class='pointuse vcomp'
     :phase='phase'
-    @go_menu='go_menu'>
+    @backto_menu='backto_menu'
+    @backto_content='backto_content'>
 
     <template #menu>
       <div class='item' @click='go_content(0)'>
@@ -28,14 +55,14 @@
         </div>
       </div>
 
-      <div class='item' @click='go_content(3)'>
-        <img src='/static/materials/imgs/menu/pointget_badge.png'>
+      <div class='item' @click='suggest'>
+        <!-- <img src='/static/materials/imgs/menu/pointget_badge.png'> -->
         <div class='title'>
           <span>건의하기</span>
         </div>
       </div>
 
-      <div class='item' @click='go_content(4)'>
+      <div class='item' @click='go_starbucks_coupon'>
         <img src='/static/materials/imgs/menu/pointuse_coffee.png'>
         <div class='title'>
           <span>스타벅스</span>
@@ -43,73 +70,69 @@
         </div>
       </div>
 
-      <div class='item' @click='go_content(5)'>
-        <img src='/static/materials/imgs/menu/pointget_interview.png'>
+      <div class='item' @click='suggest'>
+        <!-- <img src='/static/materials/imgs/menu/pointget_interview.png'> -->
         <div class='title'>
-          <span>건의하기</span>
+          <span>질문하기</span>
         </div>
       </div>
     </template>
 
+
     <template #content>
       <template v-if='content==0'>
-        <div class='explain'>
-          <span class='title'>브랜드후원</span>
-          <span class='subtitle'></span>
-          <span class='desc'></span>
+        <div class='title'>후원 이벤트 진행 중인 브랜드</div>
+        <div class='body'>
+          <supportbrands :session='session'></supportbrands>
         </div>
-
-        <div class='illust'></div>
       </template>
 
       <template v-else-if='content==1'>
-        <div class='explain'>
-          <span class='title'>래플참여</span>
-          <span class='subtitle'></span>
-          <span class='desc'></span>
+        <div class='title'>진행 중인 래플</div>
+        <div class='body'>
+          <raffler :session='session' @go_detail='go_detail'></raffler>
         </div>
-
-        <div class='illust'></div>
       </template>
 
       <template v-else-if='content==2'>
-        <div class='explain'>
-          <span class='title'>취향템쇼핑</span>
-          <span class='subtitle'></span>
-          <span class='desc'></span>
+        <div class='title'>취향이 다 했다! 포인트 쇼핑</div>
+        <div class='body'>
+          <shop :session='session' @go_detail='go_detail'></shop>
         </div>
-
-        <div class='illust'></div>
       </template>
 
       <template v-else-if='content==3'>
-        <div class='explain'>
-          <span class='title'>건의하기</span>
-          <span class='subtitle'></span>
-          <span class='desc'></span>
-        </div>
-
-        <div class='illust'></div>
+        <div class='title'>건의하기</div>
+        <div class='body'>11</div>
       </template>
 
       <template v-else-if='content==4'>
-        <div class='explain'>
-          <span class='title'>스타벅스쿠폰</span>
-          <span class='subtitle'></span>
-          <span class='desc'></span>
+        <div class='title'>스타벅스쿠폰</div>
+        <div class='body'>
+          <itemdetail :obj='starbucks_coupon' :session='session'></itemdetail>
         </div>
-
-        <div class='illust'></div>
       </template>
 
       <template v-else-if='content==5'>
-        <div class='explain'>
-          <span class='title'>건의하기</span>
-          <span class='subtitle'></span>
-          <span class='desc'></span>
-        </div>
+        <div class='title'>건의하기</div>
+        <div class='body'>11</div>
+      </template>
+    </template>
 
-        <div class='illust'></div>
+
+    <template #detail>
+      <template v-if='detail_type=="raffle"'>
+        <div class='title'>진행 중인 래플</div>
+        <div class='body'>
+          <itemdetail :obj='detail_obj' :session='session'></itemdetail>
+        </div>
+      </template>
+
+      <template v-else-if='detail_type=="shoptem"'>
+        <div class='title'>취향이 다 했다! 포인트 쇼핑</div>
+        <div class='body'>
+          <itemdetail :obj='detail_obj' :session='session'></itemdetail>
+        </div>
       </template>
     </template>
   </pointguider>
@@ -120,22 +143,63 @@
   Vue.component('pointuse', {
     template: '#pointuse-template',
     delimiters: ['[[', ']]'],
-    props: [ ],
+    props: [ 'session' ],
     data: function() {
       return {
         phase: 'menu',
-        content: undefined
+        content: undefined,
+        detail_obj: undefined,
+      }
+    },
+
+    computed: {
+      detail_type: function() {
+        if (this.detail_obj) {
+          return this.detail_obj.constructor.name.toLowerCase()
+        }
+      },
+
+      coffeecoupons_list: function() {
+        if (this.session.coffeecoupons) {
+          return this.session.coffeecoupons.list
+        }
+      },
+
+      starbucks_coupon: function() {
+        if (this.coffeecoupons_list) {
+          return this.coffeecoupons_list[0]
+        }
       }
     },
 
     methods: {
-      go_menu: function() {
+      backto_menu: function() {
         this.phase = 'menu';
+      },
+
+      backto_content: function() {
+        this.phase = 'content';
       },
 
       go_content: function(what) {
         this.phase = 'content';
         this.content = what;
+      },
+
+      go_detail: function(obj) {
+        this.phase = 'detail';
+        this.detail_obj = obj;
+      },
+
+      go_starbucks_coupon: function() {
+        if (!this.session.coffeecoupons) {
+          this.session.load_coffeecoupons();
+        }
+        this.go_content(4);
+      },
+
+      suggest: function() {
+        window.open('mailto:contact@moiber.com');
       }
     }
   });

@@ -3,7 +3,8 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: white;
+    /* background: white; */
+    background: #f8f8f8;
   }
 
   .pixchooser.vcomp > .divider {
@@ -27,7 +28,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .pixchooser.vcomp > .divider > .vs > * {
@@ -40,6 +41,7 @@
     width: 100%;
     height: 50%;
     pointer-events: none;
+    /* background: #f8f8f8; */
   }
 
   .pixchooser.vcomp.loaded > .section {
@@ -79,17 +81,17 @@
   }
 
   .pixchooser.vcomp > .section.up > img.candidate {
-    bottom: 2px;
+    bottom: 1px;
   }
 
   .pixchooser.vcomp > .section.down > img.candidate {
-    top: 2px;
+    top: 1px;
   }
 
   .pixchooser.vcomp > .section > .more {
     position: absolute;
-    width: var(--w-15);
-    height: var(--w-15);
+    width: 45px;
+    height: 45px;
     /* background: orange; */
     right: calc(50% - var(--square-size)/2);
     display: flex;
@@ -98,18 +100,20 @@
   }
 
   .pixchooser.vcomp > .section.up > .more {
-    bottom: 2px;
+    /* bottom: calc(var(--square-size) - 44px); */
+    bottom: 1px;
   }
 
   .pixchooser.vcomp > .section.down > .more {
-    top: 2px;
+    /* top: 1px; */
+    top: calc(var(--square-size) - 44px);
   }
 
   .pixchooser.vcomp > .section > .more > img {
-    width: 30px;
-    height: 30px;
+    width: 14px;
+    height: 14px;
     object-fit: contain;
-    background: rgba(255,255,255,0.3);
+    /* background: rgba(255,255,255,0.3); */
     border-radius: 50%;
   }
 
@@ -190,16 +194,16 @@
 
     <div class='section up' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
       <img class='candidate' :src='pixpair.list[0].src' @load='imgloaded_0=true'>
-      <div class='more' v-if='imgloaded_0' @click.stop='session.open_search(pixpair.list[0])'><img src='/static/materials/icons/more_menu.png'></div>
+      <div class='more' v-if='imgloaded_0' @click.stop='session.open_search(pixpair.list[0])'><img src='/static/materials/icons/seemore.png'></div>
     </div>
 
     <div class='section down' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
       <img class='candidate' :src='pixpair.list[1].src' @load='imgloaded_1=true'>
-      <div class='more' v-if='imgloaded_1' @click.stop='session.open_search(pixpair.list[1])'><img src='/static/materials/icons/more_menu.png'></div>
+      <div class='more' v-if='imgloaded_1' @click.stop='session.open_search(pixpair.list[1])'><img src='/static/materials/icons/seemore.png'></div>
     </div>
 
     <div class='divider' v-if='loaded'>
-      <div class='vs'><b>VS</b></div>
+      <div class='vs'>VS</div>
     </div>
 
     <!-- <div class='loginplz' v-if='on_loginplz' @click='dismiss_loginplz'>

@@ -5,8 +5,8 @@
     left: 0;
     width: var(--width);
     height: 100px;
-    /* background: white; */
-    background: rgba(255,255,255,0.8);
+    background: white;
+    /* background: rgba(255,255,255,0.8); */
     transition: all 0.3s;
     transition-delay: 0.3s;
     z-index: 100;
@@ -14,7 +14,7 @@
   }
 
   .joystick.vcomp.minimized {
-    top: -60px;
+    top: -55px;
     /* background: rgba(255,255,255,0.6); */
     font-size: 13px;
   }
@@ -28,14 +28,14 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 60%;
+    height: 55%;
   }
 
   .joystick.vcomp > .head > .icon {
     position: absolute;
     top: 0;
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -48,7 +48,7 @@
   }
 
   .joystick.vcomp > .head > .icon.setting {
-    right: -60px;
+    right: -55px;
     transition: all 0.2s;
   }
 
@@ -65,8 +65,8 @@
   }
 
   .joystick.vcomp > .head > .icon.setting > img {
-    width: 20px;
-    opacity: 0.5;
+    width: 22px;
+    /* opacity: 0.5; */
   }
 
   .joystick.vcomp > .body {
@@ -76,7 +76,7 @@
     width: 100%; */
     left: 16px;
     right: 16px;
-    height: 40%;
+    height: 45%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -112,13 +112,14 @@
     height: 0;
     display: flex;
     flex-direction: row;
-    /* background: white; */
-    background: rgba(255,255,255,0.8);
+    background: white;
+    /* background: rgba(255,255,255,0.8); */
     padding-left: 16px;
     padding-right: 16px;
     box-sizing: border-box;
     transition: all 0.3s;
     transition-delay: 0.3s;
+    border-bottom: 1px solid #cecece;
   }
 
   .joystick.vcomp > .tail.show {
@@ -186,9 +187,9 @@
 <script type='text/x-template' id='joystick-template'>
   <div class='joystick vcomp' :class='phase'>
     <div class='body'>
-      <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>참여</span>
+      <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>서베이</span>
       <span class='menu' :class='{ on: session.on("stylevote") }' @click='session.open_stylevote()'>밸런스게임</span>
-      <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>맞춤검색</span>
+      <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>검색</span>
       <span class='menu' :class='{ on: on_my }' @click='session.open_my()'>내프로파일</span>
     </div>
 
@@ -247,9 +248,11 @@
       phase: function() {
         return {
           minimized: (this.session.scroll_direction=='down' && this.session.on('search'))
-                      || (this.session.scroll_direction=='down' && this.session.on('stylevote')),
+                      || (this.session.scroll_direction=='down' && this.session.on('stylevote'))
+                      || (this.session.scroll_direction=='down' && this.session.on('researcher'))
+                      || (this.session.scroll_direction=='down' && this.session.on('agit')),
 
-          hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'signup', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'texteditor', 'pixeditor', 'collector', 'research')
+          hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'signup', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research', 'checkingame')
                   || this.on_agit
         }
       },

@@ -1,0 +1,44 @@
+<style>
+  .multichooser.vcomp .page-body {
+    background: #f8f8f8;
+  }
+
+  .multichooser.vcomp .page-body > .container {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 100px;
+    padding-bottom: 200px;
+  }
+</style>
+
+<script type='text/x-template' id='multichooser-template'>
+  <page
+    class='multichooser vcomp'
+    :order='session.page.multichooser.order'
+    :open='session.page.multichooser.open'
+    :from='session.page.multichooser.from'
+    :hide_close='false'
+    :trans_headerbar='true'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='container'>
+        AAAA
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('multichooser', {
+    template: '#multichooser-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    }
+  });
+</script>

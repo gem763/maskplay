@@ -1,0 +1,627 @@
+<style>
+  .brander.vcomp .page-body {
+    background: white;
+  }
+
+  .brander.vcomp .page-body > .main {
+    position: relative;
+    width: 100%;
+    opacity: 0;
+    transition: all 0.5s;
+    background: #f5f5f5;
+  }
+
+  .brander.vcomp .page-body > .main.loaded {
+    opacity: 1;
+  }
+
+  .brander.vcomp .page-body > .main > .coverpix {
+    position: relative;
+    margin-top: 100px;
+  }
+
+  .brander.vcomp .page-body > .main > .coverpix > img {
+    width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .brander.vcomp .page-body > .main > .coverpix > .logo {
+    position: absolute;
+    bottom: -40px;
+    left: 16px;
+    width: 80px;
+    height: 80px;
+    border-radius: 100px;
+    background: white;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
+  }
+
+  .brander.vcomp .page-body > .main > .coverpix > .logo > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .brander.vcomp .page-body > .main > .coverpix > img.loaded,
+  .brander.vcomp .page-body > .main > .coverpix > .logo > img.loaded {
+    opacity: 1;
+  }
+
+  .brander.vcomp .page-body > .main > .menu {
+    position: relative;
+    height: 36px;
+    width: 100%;
+    /* background: lightgreen; */
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: row;
+    font-size: 12px;
+  }
+
+  .brander.vcomp .page-body > .main > .menu > .item {
+    height: 100%;
+    line-height: 36px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 100px;
+    margin-right: 8px;
+    color: var(--color-dark);
+    cursor: pointer;
+  }
+
+  .brander.vcomp .page-body > .main > .menu > .item.on {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .brander.vcomp .page-body > .main > .menu > .item:last-child {
+    margin-right: 16px;
+  }
+
+  .brander.vcomp .page-body > .main > .guage {
+    position: relative;
+    /* height: 100px; */
+    /* background: orange; */
+    padding: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: var(--color-gray);
+  }
+
+  .brander.vcomp .page-body > .main > .guage > .pbar {
+    position: relative;
+    height: 5px;
+    width: 100%;
+    margin-top: 5px;
+    background: white;
+    border-radius: 100px;
+    /* box-shadow: 0 0 0 3px black inset; */
+    box-shadow: 0 0 0 0.3px #828282 inset;
+    box-sizing: border-box;
+  }
+
+  .brander.vcomp .page-body > .main > .guage > .pbar > .core {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: #404277;
+    border-radius: 100px;
+  }
+
+  .brander.vcomp .page-body > .main > .guage > .score {
+    width: 100%;
+    margin-top: 5px;
+    text-align: right;
+    font-size: 16px;
+    color: var(--color-dark);
+  }
+
+  .brander.vcomp .page-body > .main > .title {
+    position: relative;
+    height: 40px;
+    width: 100%;
+    /* background: lightblue; */
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    color: var(--color-dark);
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    font-size: 18px;
+  }
+
+  .brander.vcomp .page-body > .main > .title > .bname {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section  {
+    position: relative;
+    padding: 16px;
+    padding-top: 0;
+    padding-bottom: 200px;
+    /* background: lightblue; */
+    font-size: 14px;
+    color: var(--color-dark);
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section > .text {
+    white-space: pre-line;
+    padding-top: 15px;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action {
+    height: 34px;
+    background: #183394;
+    color: white;
+    line-height: 34px;
+    text-align: center;
+    font-size: 14px;
+    display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 15px;
+    opacity: 0.2;
+    pointer-events: none;
+    cursor: pointer;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action.supported {
+    opacity: 1;
+    pointer-events: none;
+    background: var(--color-dark);
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift {
+    position: relative;
+    width: 100%;
+    margin-top: 20px;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift.loaded {
+    opacity: 1;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > img {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-name {
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-price {
+    width: 100%;
+    font-size: 16px;
+    text-align: right;
+  }
+
+  .brander.vcomp .page-body > .goback {
+    position: absolute;
+    top: 105px;
+    left: 5px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.5);
+    border-radius: 100px;
+  }
+
+  .brander.vcomp .page-body > .goback > img {
+    width: 30%;
+    height: auto;
+    transform: rotate(270deg);
+  }
+
+  .brander.vcomp .page-body > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+</style>
+
+
+<script type='text/x-template' id='brander-template'>
+  <page
+    class='brander vcomp'
+    :order='session.page.brander.order'
+    :open='session.page.brander.open'
+    :from='session.page.brander.from'
+    :hide_close='false'
+    :hide_menu='true'
+    :hide_headerbar='true'
+    :trans_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='main' :class='{ loaded: ready && support }'>
+        <div class='coverpix'>
+          <img :src='coverpix_0' @load='coverpix_loaded'>
+          <div class='logo'>
+            <img :src='logo' @load='logo_loaded'>
+          </div>
+        </div>
+
+        <div class='menu'>
+          <span class='item' :class='{ on: on("who") }' @click='sectionize("who")'>브랜드 소개</span>
+          <span class='item' :class='{ on: on("support") }' @click='sectionize("support")'>후원이벤트</span>
+          <span class='item' :class='{ on: on("research") }' @click='open_researcher'>소비자 리서치</span>
+          <!-- <span class='item' :class='{ on: on("research") }' @click='sectionize("research")'>소비자 리서치</span> -->
+        </div>
+
+        <div class='title'>
+          <span class='bname'>[[ name_kr ]], [[ name_en ]]</span>
+          <span class='info'>[[ established ]]년, [[ origin ]]</span>
+        </div>
+
+        <div class='guage'>
+          <div>첫번째 후원 이벤트</div>
+          <div class='pbar'>
+            <div class='core' :style='pbar_style'></div>
+          </div>
+          <div class='score'>[[ support_collected_p ]] / [[ support_target_p ]]</div>
+        </div>
+
+        <div class='sections'>
+          <div class='section who' v-if='on("who")'>
+            <div class='text'>[[ desc ]]</div>
+          </div>
+
+          <div class='section support' v-else-if='on("support")'>
+            <div class='action' :class='{ active: supportable, supported: supported }' @click='buy_ticket'>
+              [[ action_support_text ]] -[[ support_ticketsize_p ]]
+            </div>
+
+            <div class='text'>
+              [[ '누적 10,000 포인트 후원 달성 시, 1분을 추첨하여 브랜드 신제품을 감사 선물로 드립니다.\n\n 매일 100P 씩 후원할 수 있으며, 여러번 후원할 수록 당첨 확률이 올라갑니다.' ]]
+            </div>
+            <div class='gift'>
+              <img :src='gift_pix_0' @load='giftpix_loaded'>
+              <div class='gift-name'>[[ gift_name ]]</div>
+              <div class='gift-price'>[[ gift_price ]]</div>
+            </div>
+          </div>
+
+          <div class='section research' v-else-if='on("research")'>
+            <div class='text'>리서칭</div>
+          </div>
+        </div>
+      </div>
+
+      <div class='goback' v-if='ready && support' @click='goback'>
+        <img src='/static/materials/icons/backicon.png'>
+      </div>
+
+      <div class='spinner' v-if='!(ready && support)'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('brander', {
+    template: '#brander-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        section: 'support',
+        ready: false
+      }
+    },
+
+    watch: {
+      brand: function() {},
+      brand_id: function() {
+        this.ready = false;
+      }
+    },
+
+    methods: {
+      on: function(sec) {
+        return this.section == sec
+      },
+
+      sectionize: function(sec) {
+        this.section = sec;
+      },
+
+      coverpix_loaded: function(event) {
+        this.ready = true;
+        // this.session.page.brander.ready = true;
+        event.target.classList.add('loaded');
+      },
+
+      logo_loaded: function(event) {
+        event.target.classList.add('loaded');
+      },
+
+      giftpix_loaded: function(event) {
+        event.target.closest('.gift').classList.add('loaded');
+      },
+
+      buy_ticket: function() {
+        if (this.supportable) {
+          const obj = 'support';
+          const obj_id = this.support.id;
+          const type = 'support';
+          const amount = this.support_ticketsize;
+
+          if (obj_id && amount) {
+            this.support.wallet.collected += amount;
+            this.support.wallet.supported = true;
+
+            fetch(`wallet/write?obj=${obj}&obj_id=${obj_id}&type=${type}&amount=${amount}`)
+              .then(x => x.json())
+              .then(js => {
+                if (js.success) {
+                  console.log(js);
+                }
+              });
+
+            this.rewarder.settle_amount(-amount, 'bonus');
+          }
+        }
+      },
+
+      open_researcher: function() {
+        // this.session.dasher_close = true;
+        this.session.dasher_control = 'close';
+        this.session.open_researcher();
+      },
+
+      goback: function() {
+        this.session.dasher_control = 'open_pointuse';
+        this.session.close_page();
+      }
+    },
+
+    computed: {
+      myboo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      // myboo_id: function() {
+      //   if (this.myboo) {
+      //     return this.myboo.id
+      //   }
+      // },
+
+      rewarder: function() {
+        if (this.myboo) {
+          return this.myboo.rewarder
+        }
+      },
+
+      mywallet: function() {
+        if (this.rewarder) {
+          return this.rewarder.rewards
+        }
+      },
+
+      budget: function() {
+        if (this.mywallet) {
+          return this.mywallet.total.reward
+        }
+      },
+
+      supportable: function() {
+        return this.budget >= this.support_ticketsize
+      },
+
+      brand: function() {
+        const b = this.session.page.brander.brand;
+        if (b) {
+          return b.load()
+        }
+      },
+
+      brand_id: function() {
+        if (this.brand) {
+          return this.brand.id
+        }
+      },
+
+      name_en: function() {
+        if (this.brand) {
+          return this.brand.name_en
+        }
+      },
+
+      name_kr: function() {
+        if (this.brand) {
+          return this.brand.name_kr
+        }
+      },
+
+      logo: function() {
+        if (this.brand) {
+          return this.brand.logo
+        }
+      },
+
+      origin: function() {
+        if (this.brand) {
+          return this.brand.origin
+        }
+      },
+
+      established: function() {
+        if (this.brand) {
+          return this.brand.established
+        }
+      },
+
+      desc: function() {
+        if (this.brand) {
+          return this.brand.desc
+        }
+      },
+
+      coverpix_0: function() {
+        if (this.brand) {
+          return this.brand.coverpix_0
+        }
+      },
+
+      homepage: function() {
+        if (this.brand) {
+          return this.brand.homepage
+        }
+      },
+
+      insta: function() {
+        if (this.brand) {
+          return this.brand.insta
+        }
+      },
+
+      supports: function() {
+        if (this.brand) {
+          return this.brand.supports
+        }
+      },
+
+      support: function() {
+        if (this.supports && this.supports.length > 0) {
+          return this.supports[0]
+        }
+      },
+
+      support_id: function() {
+        if (this.support) {
+          return this.support.id
+        }
+      },
+
+      support_target: function() {
+        if (this.support && this.support.target) {
+          return this.support.target//.toLocaleString() + 'P'
+        }
+      },
+
+      support_target_p: function() {
+        if (this.support_target) {
+          return this.support_target.toLocaleString() + 'P'
+        }
+      },
+
+      support_ticketsize: function() {
+        if (this.support && this.support.ticketsize) {
+          return this.support.ticketsize//.toLocaleString() + 'P'
+        }
+      },
+
+      support_ticketsize_p: function() {
+        if (this.support_ticketsize) {
+          return this.support_ticketsize.toLocaleString() + 'P'
+        }
+      },
+
+      support_wallet: function() {
+        if (this.support) {
+          return this.support.wallet
+        }
+      },
+
+      supported: function() {
+        if (this.support_wallet) {
+          return this.support_wallet.supported
+        }
+      },
+
+      action_support_text: function() {
+        if (this.supported) {
+          return '후원완료'
+
+        } else {
+          return '후원하기'
+        }
+      },
+
+      support_collected: function() {
+        if (this.support_wallet) {
+          return this.support_wallet.collected//.toLocaleString() + 'P'
+        }
+      },
+
+      support_collected_p: function() {
+        if (this.support_collected != undefined) {
+          return this.support_collected.toLocaleString() + 'P'
+        }
+      },
+
+      pbar_style: function() {
+        if (this.support_collected !=undefined && this.support_target) {
+          return {
+            width: (this.support_collected / this.support_target * 100) + '%'
+          }
+        }
+      },
+
+      gift: function() {
+        if (this.support) {
+          return this.support.gift
+        }
+      },
+
+      gift_pix_0: function() {
+        if (this.gift) {
+          return this.gift.pix_0
+        }
+      },
+
+      gift_name: function() {
+        if (this.gift) {
+          return this.gift.name
+        }
+      },
+
+      gift_price: function() {
+        if (this.gift) {
+          return '소비자가: ' + this.gift.price.toLocaleString() + '원 상당'
+        }
+      }
+    }
+  });
+</script>

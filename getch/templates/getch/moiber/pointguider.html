@@ -16,15 +16,19 @@
     transform: translateX(-100%);
   }
 
+  .pointguider.vcomp.detail {
+    transform: translateX(-200%);
+  }
+
   .pointguider.vcomp > .section {
     position: absolute;
     top: 0;
     width: 100%;
     height: 100%;
     display: flex;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 45px;
+    /* padding-left: 16px;
+    padding-right: 16px; */
+    /* padding-top: 45px; */
     box-sizing: border-box;
   }
 
@@ -35,12 +39,20 @@
     align-content: flex-start;
     flex-wrap: wrap;
     flex-direction: row;
-    background: white;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 60px;
   }
 
   .pointguider.vcomp > .section.content {
     left: 100%;
-    background: white;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .pointguider.vcomp > .section.detail {
+    left: 200%;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -50,7 +62,8 @@
     position: relative;
     width: calc((100% - 2 * 8px) / 3);
     padding-top: calc((100% - 2 * 8px) / 3);
-    background: orange;
+    /* background: orange; */
+    background: rgba(0, 0, 0, 0.08);
     border-radius: var(--w-3);
     overflow: hidden;
     margin-bottom: 8px;
@@ -82,12 +95,12 @@
     flex-direction: column;
   }
 
-  .pointguider.vcomp > .section.content > .goback {
+  .pointguider.vcomp > .section > .goback {
     position: absolute;
     top: 0;
     left: 0;
-    width: 45px;
-    height: 45px;
+    width: 60px;
+    height: 60px;
     /* background: orange; */
     cursor: pointer;
     display: flex;
@@ -95,55 +108,10 @@
     justify-content: center;
   }
 
-  .pointguider.vcomp > .section.content > .goback > img {
-    width: 30%;
+  .pointguider.vcomp > .section > .goback > img {
+    width: 12px;
     height: auto;
     transform: rotate(270deg);
-  }
-
-  .pointguider.vcomp > .section.content > .explain {
-    position: relative;
-    /* background: lightblue; */
-    /* height: 100px; */
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-size: 12px;
-    color: var(--color-dark);
-  }
-
-  .pointguider.vcomp > .section.content > .explain > .title {
-    margin-top: 5px;
-  }
-
-  .pointguider.vcomp > .section.content > .explain > .subtitle {
-    margin-top: 5px;
-  }
-
-  .pointguider.vcomp > .section.content > .explain > .desc {
-    margin-top: 10px;
-  }
-
-  .pointguider.vcomp > .section.content > .illust {
-    position: relative;
-    /* background: lightyellow; */
-    width: 100%;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .pointguider.vcomp > .section.content > .illust > img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80%;
-    height: 90%;
-    object-fit: contain;
-    transform: translate(-50%, -50%);
   }
 </style>
 
@@ -154,11 +122,19 @@
     </div>
 
     <div class='section content'>
-      <div class='goback' @click='go_menu'>
+      <div class='goback' @click='backto_menu'>
         <img src='/static/materials/icons/backicon.png'>
       </div>
 
       <slot name='content'></slot>
+    </div>
+
+    <div class='section detail'>
+      <div class='goback' @click='backto_content'>
+        <img src='/static/materials/icons/backicon.png'>
+      </div>
+
+      <slot name='detail'></slot>
     </div>
   </div>
 </script>
@@ -174,8 +150,12 @@
     },
 
     methods: {
-      go_menu: function() {
-        this.$emit('go_menu');
+      backto_menu: function() {
+        this.$emit('backto_menu');
+      },
+
+      backto_content: function() {
+        this.$emit('backto_content');
       }
     }
   });

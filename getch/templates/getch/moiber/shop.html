@@ -1,0 +1,175 @@
+<style>
+  .shop.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .shop.vcomp::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shop.vcomp > .shoptems {
+    position: relative;
+    width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
+  .shop.vcomp > .shoptems > .shoptem {
+    position: relative;
+    width: calc((100% - 8px) / 2);
+    margin-bottom: 8px;
+    height: 220px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 0.5px solid #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: all 0.5s;
+    box-sizing: border-box;
+    color: #555555;
+  }
+
+  .shop.vcomp > .shoptems > .shoptem.loaded {
+    opacity: 1;
+  }
+
+  .shop.vcomp > .shoptems > .shoptem > .coverpix {
+    position: relative;
+    width: 100%;
+    height: 140px;
+  }
+
+  .shop.vcomp > .shoptems > .shoptem > .coverpix > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .shop.vcomp > .shoptems > .shoptem > .name {
+    flex-grow: 1;
+    width: 100%;
+    padding: 5px 10px 0 10px;
+    box-sizing: border-box;
+  }
+
+  .shop.vcomp > .shoptems > .shoptem > .price {
+    width: 100%;
+    font-weight: bold;
+    text-align: right;
+    padding: 0 10px 5px 10px;
+    box-sizing: border-box;
+  }
+
+  .shop.vcomp > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+</style>
+
+<script type='text/x-template' id='shop-template'>
+  <div class='shop vcomp'>
+    <div class='shoptems'>
+      <div class='shoptem' v-for='(s, idx) in shoptems_list' @click='go_detail(s)'>
+        <div class='coverpix'>
+          <img :src='coverpix(s)' @load='coverpix_loaded'>
+        </div>
+        <div class='name'>[[ name(s) ]]</div>
+        <div class='price'>[[ price(s) ]]</div>
+      </div>
+    </div>
+
+    <div class='spinner' v-if='!ready'>
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('shop', {
+    template: '#shop-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        ready: false
+      }
+    },
+
+    created: function() {
+      if (!this.session.shoptems) {
+        this.session.load_shoptems();
+      }
+    },
+
+    methods: {
+      coverpix: function(shoptem) {
+        if (shoptem.item) {
+          return shoptem.item.pix_0
+        }
+      },
+
+      name: function(shoptem) {
+        if (shoptem.item) {
+          return shoptem.item.name
+        }
+      },
+
+      price: function(shoptem) {
+        if (shoptem.item) {
+          if (shoptem.item.price) {
+            return shoptem.item.price.toLocaleString() + 'P'
+          }
+        }
+      },
+
+      coverpix_loaded: function(event) {
+        this.ready = true;
+        event.target.closest('.shoptem').classList.add('loaded');
+        // event.target.parentElement.classList.add('loaded');
+      },
+
+      go_detail: function(shoptem) {
+        this.$emit('go_detail', shoptem);
+      }
+    },
+
+    computed: {
+      shoptems: function() {
+        return this.session.shoptems
+      },
+
+      shoptems_list: function() {
+        if (this.shoptems) {
+          return this.shoptems.list
+        }
+      }
+    }
+  });
+</script>

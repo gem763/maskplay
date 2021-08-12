@@ -1,246 +1,313 @@
 <style>
   .agit.vcomp .page-body {
-    background: var(--color-backgray);
-    color: var(--color-dark);
+    background: #f8f8f8;
   }
 
-  .agit.vcomp .page-body > .header {
-    height: var(--w-14);
-    background: white;
+  .agit.vcomp .page-body > .container {
+    position: relative;
+    width: 100%;
+    /* height: 100%; */
+    /* background: #f5f5f5; */
+    /* padding-top: 100px; */
+    box-sizing: border-box;
+    padding-bottom: 200px;
   }
 
-  .agit.vcomp .page-body > .profile {
+  .agit.vcomp .page-body > .container > .segment {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .agit.vcomp .page-body > .container > .segment.topspacer {
+    height: 70px;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard {
+    position: relative;
+    /* width: 100%; */
+    height: 200px;
     background: white;
+    margin-top: 60px;
+    border-radius: 8px;
+    /* margin-left: 16px; */
+    /* margin-right: 16px; */
+    /* box-sizing: border-box; */
+    width: calc(100% - 32px);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard.other {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    /* padding-top: var(--w-10); */
-    padding-top: 70px;
-    padding-bottom: var(--w-5);
   }
 
-  .agit.vcomp .page-body > .profile > .profilepix {
+  .agit.vcomp .page-body > .container > .segment > .menu {
     position: relative;
-    /* background: var(--color-backgray); */
-    background: rgba(0, 0, 0, 0.07);
-    width: var(--w-35);
-    height: var(--w-35);
-    border-radius: 50%;
+    /* width: 100%; */
+    height: 60px;
+    /* background: lightblue; */
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+    font-size: 12px;
+    width: calc(100% - 32px);
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .spacer {
+    height: 4px
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .menu > .item {
+    /* width: 76px; */
+    height: 36px;
+    /* background: var(--color-dark); */
+    line-height: 36px;
+    text-align: center;
+    border-radius: 100px;
+    padding-left: 15px;
+    padding-right: 15px;
+    color: var(--color-dark);
+    cursor: pointer;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .menu > .item.on {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .sections {
+    position: relative;
+    width: 100%;
+    /* height: 300px; */
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .sections > .section.related {
+    padding-top: 100px;
+    background: lightpink;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .sections > .section {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 30px;
-    color: white;
-    overflow: hidden;
   }
 
-  .agit.vcomp .page-body > .profile > .profilepix > img {
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .spinner {
+  /* .agit.vcomp .page-body > .container > .segment > .spinner { */
     position: absolute;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--color-dark);
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix {
+    width: 80px;
+    height: 80px;
+    border-radius: 100px;
+    overflow: hidden;
+    filter: brightness(95%);
+  }
+
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard.me > .profilepix {
+    position: absolute;
+    top: 30px;
+    left: 16px;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix > img {
+    /* position: absolute;
+    top: 0;
+    left: 0; */
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0;
     transition: all 0.5s;
-    filter: brightness(95%);
-    border-radius: 50%;
   }
 
-  .agit.vcomp .page-body > .profile > .nick {
-    margin-top: 10px;
-    font-size: 20px;
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix > img.loaded {
+    opacity: 1;
   }
 
-  .agit.vcomp .page-body > .profile > .level-title {
-    margin-top: 20px;
-    font-size: 35px;
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .nick {
+    font-size: 22px;
+    margin-top: 15px;
   }
 
-  .agit.vcomp .page-body > .profile > .level-score {
-    margin-top: 10px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .text {
+    font-size: 12px;
+    color: #777777;
   }
 
-  .agit.vcomp .page-body > .profile > .level-score > .remain {
-    font-size: 10px;
-    color: lightgray;
-  }
-
-  .agit.vcomp .page-body > .profile > .level-score > .message {
-    font-size: 10px;
-    color: gray;
-    margin-top: 20px;
-  }
-
-  .agit.vcomp .page-body > .profile > .pbar {
-    position: relative;
-    width: var(--w-35);
-    height: 10px;
-    background: white;
-    margin-top: -5px;
-    margin-bottom: -5px;
-    border-radius: 100px;
-  }
-
-  .agit.vcomp .page-body > .profile > .pbar > .pbar-core {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    bottom: 2px;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 100px;
-    overflow: hidden;
-  }
-
-  .agit.vcomp .page-body > .profile > .pbar > .pbar-core > .pbar-filler {
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo {
     position: absolute;
     top: 0;
-    left: 0;
+    right: 0;
+    width: 70%;
     height: 100%;
-    width: 30%;
-    background: var(--color-point);
-    transition: width 0.2s;
-    border-radius: 0 100px 100px 0;
-  }
-
-  .agit.vcomp .page-body > .profile > .actions {
-    width: 100%;
-    height: var(--w-10);
-    margin-top: var(--w-5);
-    /* background: lightpink; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .agit.vcomp .page-body > .profile > .actions > .bt {
-    border-radius: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* background: lightgreen; */
+    padding-top: 30px;
+    padding-right: 16px;
+    padding-bottom: 30px;
     box-sizing: border-box;
-    /* margin: 15px; */
-    background: white;
-    border: 2px solid var(--color-dark);
-    color: var(--color-dark);
-    width: 25%;
-    height: var(--w-10);
-    font-size: 14px;
-    margin: 3px;
   }
 
-  .agit.vcomp .page-body > .profile > .actions > .bt.selected {
-    background: var(--color-dark);
-    border: 2px solid var(--color-dark);
-    color: white;
-  }
-
-  .agit.vcomp .page-body > .container {
-    width: 100%;
-    /* background: none;
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .right {
     display: flex;
     align-items: center;
-    justify-content: center; */
+    justify-content: flex-end;
   }
 
-  .agit.vcomp .page-body > .container > .section {
-    width: 100%;
-    background: none;
-    padding-top: 20px;
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .nick.right {
+    font-size: 18px;
+    height: 20%;
+    /* background: orange; */
+    align-items: flex-start;
   }
 
-  .agit.vcomp .page-body > .container > .section.collection {
-    width: 100%;
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .styleprofile.right {
+    font-size: 20px;
+    height: 25%;
+    color: #828282;
+    align-items: flex-end;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .level.right {
+    font-size: 24px;
+    height: 25%;
+    /* background: orange; */
+    font-weight: bold;
+    align-items: flex-start;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .wallet.right {
+    font-size: 18px;
+    height: 20%;
+    font-weight: bold;
+    align-items: flex-end;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .levelup-remain.right {
+    font-size: 10px;
+    height: 10%;
+    /* background: orange; */
+    color: #cecece;
+    align-items: flex-start;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .message {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 40%;
+    /* background: orange; */
+    padding-bottom: 30px;
+    padding-left: 16px;
+    box-sizing: border-box;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-end;
+    justify-content: flex-start;
+    font-size: 12px;
+    color: #555555;
   }
 </style>
 
 <script type='text/x-template' id='agit-template'>
   <page
-    v-if='boo'
     class='agit vcomp'
     :order='session.page.agit.order'
     :open='session.page.agit.open'
     :from='session.page.agit.from'
     :hide_close='hide_close'
-    :trans_headerbar='false'
+    :trans_headerbar='true'
     :hide_menu='true'
     @scroll='scroll'
     @close='session.close_page()'>
 
-    <!-- <template #headerbar-menu>
-      <div class='item' @click='go_profiler'>내 프로필 편집</div>
-      <div class='item' @click='$refs.colib.make_collection()'>옷장 만들기</div>
-      <div class='item logout' @click='session.logout()'>로그아웃</div>
-    </template>
-
-    <template #headerbar-body-trans>
-    </template>
-
-    <template #headerbar-body-default>
-    </template> -->
-
     <template #page-body>
-      <div class='header'></div>
+      <div class='container'>
+        <div class='segment topspacer' v-if='is_myboo'></div>
 
-      <div class='profile'>
-        <div class='profilepix' @click='go_profiler'>
-          <i class="fa fa-spinner fa-spin"></i>
-          <img :src='boo.profile.pix' v-if='boo.profile && boo.id' @load='pixloaded'>
+        <div class='segment'>
+          <div class='profilecard me' v-if='is_myboo' @click='go_profileconfig'>
+            <div class='profilepix'>
+              <img :src='profilepix' @load='profilepix_loaded'>
+            </div>
+
+            <div class='profileinfo'>
+              <div class='right nick'>HI, @[[ nick ]]!</div>
+              <div class='right styleprofile'>Style profile</div>
+              <div class='right level'>LEVEL 1</div>
+              <div class='right wallet'>[[ reward_total ]] / [[ reward_to_levelup ]]</div>
+              <div class='right levelup-remain'>레벨업까지 [[ reward_remain ]] 포인트</div>
+            </div>
+
+            <div class='message'>[!] 레벨업을 하면 더 많은 리서치에 참여할 수 있어요</div>
+
+            <div class='spinner' v-if='!profilecard_ready'>
+              <i class="fa fa-spinner fa-spin"></i>
+            </div>
+          </div>
+
+          <div class='profilecard other' v-else>
+            <div class='profilepix'>
+              <img :src='profilepix' @load='profilepix_loaded'>
+            </div>
+            <div class='nick'>[[ nick ]]!</div>
+            <div class='text' v-if='text'>[[ text ]]</div>
+            <!-- <div class='text' v-else>아직 자기소개를 입력하지 않으셨네요</div> -->
+
+            <div class='spinner' v-if='!profilecard_ready'>
+              <i class="fa fa-spinner fa-spin"></i>
+            </div>
+          </div>
         </div>
 
-        <div class='nick'><b>HI, @[[boo.nick]]!</b></div>
-
-
-        <template v-if='is_myboo'>
-          <div class='level-title'><b>Level - 001</b></div>
-          <div class='pbar'>
-            <div class='pbar-core'>
-              <div class='pbar-filler' :style='pbar_filler_style'></div>
-            </div>
-          </div>
-          <div class='level-score'>
-            <span class='score'><b>[[ reward_total ]] / [[ reward_to_levelup ]]</b></span>
-            <span class='remain'>레벨업까지 [[ reward_to_levelup - reward_total ]]토큰</span>
-            <span class='message'>[!] 레벨업을 하면 더 많은 리서치에 참여할 수 있어요</span>
+        <div class='segment'>
+          <!-- <div class='menu' v-if='false'> -->
+          <div class='menu' v-if='is_myboo'>
+            <span class='item' :class='{ on: on("myinfo") }' @click='sectionize("myinfo")'>내정보</span>
+            <!-- <span class='item' :class='{ on: on("related") }' @click='sectionize("related")'>참여 중인 이벤트</span> -->
+            <span class='item' :class='{ on: on("collection") }' @click='sectionize("collection")'>내옷장</span>
           </div>
 
-          <div class='actions'>
-            <!-- <div class='bt' :class='{ selected: section=="styleprofile" }' @click='sectionize("styleprofile")'>
-              <b>스타일분석</b>
-            </div> -->
+          <div class='spacer' v-else></div>
+        </div>
 
-            <div class='bt' :class='{ selected: section=="collection" }' @click='sectionize("collection")'>
-              <b>내옷장</b>
+        <div class='segment content'>
+          <div class='sections'>
+            <div class='section myinfo' v-if='on("myinfo")'>
+              <myinfo :session='session'></myinfo>
             </div>
 
-            <!-- <div class='bt' :class='{ selected: section=="suggest" }' @click='sectionize("suggest")'>
-              <b>스타일추천</b>
-            </div> -->
+            <div class='section related' v-if='on("related")'>
+              참여중인 이벤트
+            </div>
+
+            <div class='section collection' v-else-if='on("collection")'>
+              <colib :boo='boo' :collections='collections' :session='session' ref='colib'></colib>
+            </div>
           </div>
-        </template>
-
-      </div>
-
-      <div class='container'>
-        <div class='section collection' v-show='section=="collection" || !is_myboo'>
-          <colib :boo='boo' :collections='collections' :session='session' ref='colib'></colib>
         </div>
       </div>
     </template>
-
   </page>
 </script>
 
@@ -252,8 +319,9 @@
     props: ['session'],
     data: function() {
       return {
-        section: "collection",
-        // section: "styleprofile",
+        // section: 'related',
+        // section: 'collection',
+        section: 'myinfo'
       }
     },
 
@@ -266,22 +334,10 @@
     },
 
     computed: {
-      hide_close: function() {
-        if (this.is_myboo) {
-          return true
-        }
-      },
-
       boo: function() {
         const _b = this.session.page.agit.boo;
         if (_b) {
           return _b.load();
-        }
-      },
-
-      collections: function() {
-        if (this.boo) {
-          return this.boo.collections
         }
       },
 
@@ -291,50 +347,103 @@
         }
       },
 
+      hide_close: function() {
+        if (this.is_myboo) {
+          return true
+        }
+      },
+
+      profilecard_ready: function() {
+        if (this.is_myboo) {
+          return this.profilepix_ready && this.rewards_loaded
+
+        } else {
+          return this.profilepix_ready
+        }
+      },
+
+      profilepix_ready: function() {
+        if (this.boo) {
+          return this.boo.profile && this.boo.id
+        }
+      },
+
+      profilepix: function() {
+        if (this.profilepix_ready) {
+          return this.boo.profile.pix
+        }
+      },
+
+      nick: function() {
+        if (this.boo) {
+          return this.boo.nick
+        }
+      },
+
+      text: function() {
+        if (this.boo) {
+          return this.boo.text
+        }
+      },
+
+      collections: function() {
+        if (this.boo) {
+          return this.boo.collections
+        }
+      },
+
       rewards_loaded: function() {
-        return this.boo.profiling_ready
+        if (this.boo) {
+          return this.boo.profiling_ready
+        }
       },
 
       reward_total: function() {
         if (this.rewards_loaded) {
           return this.boo.rewarder.rewards.total.reward
-          // const _total = this.boo.rewarder.rewards.total.reward;
-          // return _total ? _total : 0
 
         } else {
           return 0
+        }
+      },
+
+      reward_total_p: function() {
+        if (this.reward_total) {
+          return this.reward_total.toLocaleString() + 'P'
         }
       },
 
       reward_to_levelup: function() {
         if (this.rewards_loaded) {
           return this.boo.rewarder.reward_to_levelup
-          // const _levelup = this.boo.rewarder.reward_to_levelup;
-          // return _levelup ? _levelup : 0
 
         } else {
           return 0
         }
       },
 
-      pbar_filler_style: function() {
-        let pct;
-
-        if (this.rewards_loaded) {
-          pct = this.reward_total / this.reward_to_levelup * 100;
-        } else {
-          pct = 0;
+      reward_to_levelup_p: function() {
+        if (this.reward_to_levelup) {
+          return this.reward_to_levelup.toLocaleString() + 'P'
         }
-        // const pct = this.reward_total / this.boo.reward_to_levelup * 100;
-        return {
-          'width': pct + '%'
+      },
+
+      reward_remain: function() {
+        if (this.rewards_loaded) {
+          return this.reward_to_levelup - this.reward_total
+        }
+      },
+
+      reward_remain_p: function() {
+        if (this.reward_remain) {
+          return this.reward_remain.toLocaleString() + 'P'
         }
       },
     },
 
     methods: {
-      pixloaded: function(event) {
-        event.target.style.opacity = 1;
+      profilepix_loaded: function(event) {
+        event.target.classList.add('loaded');
       },
 
       go_profiler: function() {
@@ -342,19 +451,22 @@
           this.session.open_profiler();
       },
 
-      sectionize: function(to_what) {
-        this.section = to_what;
+      go_profileconfig: function() {
+        if (this.is_myboo && this.boo.profile && this.boo.id)
+          this.session.open_profileconfig();
       },
 
-      scroll: function(obj) {
-        this.session.scroll_direction = obj.scroll_direction;
-
-        if (obj.triggered && this.session.scroll_direction=='down') {
-          if (this.section=='collection' && this.collections && this.collections.list_onloading.every(p => p.onloading==false)) {
-            this.collections.load(4);
-          }
-        }
+      on: function(sec) {
+        return this.section == sec
       },
+
+      sectionize: function(sec) {
+        this.section = sec;
+      },
+
+      scroll: function() {
+
+      }
     }
   });
 </script>

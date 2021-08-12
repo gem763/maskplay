@@ -1,0 +1,334 @@
+<style>
+  .agit.vcomp .page-body {
+    background: var(--color-backgray);
+    color: var(--color-dark);
+  }
+
+  .agit.vcomp .page-body > .header {
+    height: var(--w-14);
+    background: white;
+  }
+
+  .agit.vcomp .page-body > .profile {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-top: 70px;
+    padding-bottom: var(--w-5);
+  }
+
+  .agit.vcomp .page-body > .profile > .profilepix {
+    position: relative;
+    background: rgba(0, 0, 0, 0.07);
+    width: var(--w-35);
+    height: var(--w-35);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+    overflow: hidden;
+  }
+
+  .agit.vcomp .page-body > .profile > .profilepix > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 0.5s;
+    filter: brightness(95%);
+    border-radius: 50%;
+  }
+
+  .agit.vcomp .page-body > .profile > .nick {
+    margin-top: 10px;
+    font-size: 20px;
+  }
+
+  .agit.vcomp .page-body > .profile > .level-title {
+    margin-top: 20px;
+    font-size: 35px;
+  }
+
+  .agit.vcomp .page-body > .profile > .level-score {
+    margin-top: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .agit.vcomp .page-body > .profile > .level-score > .remain {
+    font-size: 10px;
+    color: lightgray;
+  }
+
+  .agit.vcomp .page-body > .profile > .level-score > .message {
+    font-size: 10px;
+    color: gray;
+    margin-top: 20px;
+  }
+
+  .agit.vcomp .page-body > .profile > .pbar {
+    position: relative;
+    width: var(--w-35);
+    height: 10px;
+    background: white;
+    margin-top: -5px;
+    margin-bottom: -5px;
+    border-radius: 100px;
+  }
+
+  .agit.vcomp .page-body > .profile > .pbar > .pbar-core {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .agit.vcomp .page-body > .profile > .pbar > .pbar-core > .pbar-filler {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 30%;
+    background: var(--color-point);
+    transition: width 0.2s;
+    border-radius: 0 100px 100px 0;
+  }
+
+  .agit.vcomp .page-body > .profile > .actions {
+    width: 100%;
+    height: var(--w-10);
+    margin-top: var(--w-5);
+    /* background: lightpink; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .agit.vcomp .page-body > .profile > .actions > .bt {
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    /* margin: 15px; */
+    background: white;
+    border: 2px solid var(--color-dark);
+    color: var(--color-dark);
+    width: 25%;
+    height: var(--w-10);
+    font-size: 14px;
+    margin: 3px;
+  }
+
+  .agit.vcomp .page-body > .profile > .actions > .bt.selected {
+    background: var(--color-dark);
+    border: 2px solid var(--color-dark);
+    color: white;
+  }
+
+  .agit.vcomp .page-body > .container {
+    width: 100%;
+  }
+
+  .agit.vcomp .page-body > .container > .section {
+    width: 100%;
+    background: none;
+    padding-top: 20px;
+  }
+
+  .agit.vcomp .page-body > .container > .section.collection {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+
+<script type='text/x-template' id='agit-template'>
+  <page
+    v-if='boo'
+    class='agit vcomp'
+    :order='session.page.agit.order'
+    :open='session.page.agit.open'
+    :from='session.page.agit.from'
+    :hide_close='hide_close'
+    :trans_headerbar='true'
+    :hide_menu='true'
+    @scroll='scroll'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='header'></div>
+
+      <div class='profile'>
+        <div class='profilepix' @click='go_profiler'>
+          <i class="fa fa-spinner fa-spin"></i>
+          <img :src='boo.profile.pix' v-if='boo.profile && boo.id' @load='pixloaded'>
+        </div>
+
+        <div class='nick'><b>HI, @[[boo.nick]]!</b></div>
+
+
+        <template v-if='is_myboo'>
+          <div class='level-title'><b>Level - 001</b></div>
+          <div class='pbar'>
+            <div class='pbar-core'>
+              <div class='pbar-filler' :style='pbar_filler_style'></div>
+            </div>
+          </div>
+          <div class='level-score'>
+            <span class='score'><b>[[ reward_total ]] / [[ reward_to_levelup ]]</b></span>
+            <span class='remain'>레벨업까지 [[ reward_to_levelup - reward_total ]]토큰</span>
+            <span class='message'>[!] 레벨업을 하면 더 많은 리서치에 참여할 수 있어요</span>
+          </div>
+
+          <div class='actions'>
+            <!-- <div class='bt' :class='{ selected: section=="styleprofile" }' @click='sectionize("styleprofile")'>
+              <b>스타일분석</b>
+            </div> -->
+
+            <div class='bt' :class='{ selected: section=="collection" }' @click='sectionize("collection")'>
+              <b>내옷장</b>
+            </div>
+
+            <!-- <div class='bt' :class='{ selected: section=="suggest" }' @click='sectionize("suggest")'>
+              <b>스타일추천</b>
+            </div> -->
+          </div>
+        </template>
+
+      </div>
+
+      <!-- <div class='container'>
+        <div class='section collection' v-show='section=="collection" || !is_myboo'>
+          <colib :boo='boo' :collections='collections' :session='session' ref='colib'></colib>
+        </div>
+      </div> -->
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('agit', {
+    template: '#agit-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        section: "collection",
+      }
+    },
+
+    watch: {
+      is_myboo: function(_new, _old) {
+        if (!_new) {
+          this.section = 'collection';
+        }
+      }
+    },
+
+    computed: {
+      hide_close: function() {
+        if (this.is_myboo) {
+          return true
+        }
+      },
+
+      boo: function() {
+        const _b = this.session.page.agit.boo;
+        if (_b) {
+          return _b.load();
+        }
+      },
+
+      collections: function() {
+        if (this.boo) {
+          return this.boo.collections
+        }
+      },
+
+      is_myboo: function() {
+        if (this.boo) {
+          return this.session.user.is_myboo(this.boo)
+        }
+      },
+
+      rewards_loaded: function() {
+        return this.boo.profiling_ready
+      },
+
+      reward_total: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder.rewards.total.reward
+
+        } else {
+          return 0
+        }
+      },
+
+      reward_to_levelup: function() {
+        if (this.rewards_loaded) {
+          return this.boo.rewarder.reward_to_levelup
+
+        } else {
+          return 0
+        }
+      },
+
+      pbar_filler_style: function() {
+        let pct;
+
+        if (this.rewards_loaded) {
+          pct = this.reward_total / this.reward_to_levelup * 100;
+        } else {
+          pct = 0;
+        }
+
+        return {
+          'width': pct + '%'
+        }
+      },
+    },
+
+    methods: {
+      pixloaded: function(event) {
+        event.target.style.opacity = 1;
+      },
+
+      go_profiler: function() {
+        if (this.is_myboo && this.boo.profile && this.boo.id)
+          this.session.open_profiler();
+      },
+
+      sectionize: function(to_what) {
+        this.section = to_what;
+      },
+
+      scroll: function(obj) {
+        this.session.scroll_direction = obj.scroll_direction;
+
+        if (obj.triggered && this.session.scroll_direction=='down') {
+          if (this.section=='collection' && this.collections && this.collections.list_onloading.every(p => p.onloading==false)) {
+            this.collections.load(4);
+          }
+        }
+      },
+    }
+  });
+</script>

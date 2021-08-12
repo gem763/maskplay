@@ -370,6 +370,17 @@ def get_research(request, research_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def get_checkingame(request):
+    try:
+        _research = m.Research.objects.get(pk=13)
+        _checkin = _research.researchitem_set.order_by('?').first()
+        _checkin = m.ResearchItemSerializer(_checkin).data
+        return JsonResponse({'success':True, 'content':_checkin}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
 def get_iresearchitems(request, research_id):
     _research = m.Research.objects.get(pk=research_id)
     _iresitems = list(_research.iresearchitems)
@@ -406,6 +417,98 @@ def researchitem_answer(request, research_id, researchitem_id, answer):
     except:
         return JsonResponse({'success':False, 'message':'something wrong while answering'}, safe=False)
 
+
+# def get_isupportbrands(request):
+#     _ibrands = list(set(list(m.Brand.isupportbrands)))
+#     return JsonResponse({'success':True, 'ids':_ibrands}, safe=False)
+
+
+def get_brand(request, brand_id):
+    try:
+        _brand = m.Brand.objects.get(pk=brand_id)
+        _brand = m.BrandSerializer(_brand).data
+        return JsonResponse({'success':True, 'content':_brand}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+
+def get_icoffeecoupons(request):
+    _icc = list(m.Coffeecoupon.icoffeecoupons)
+    return JsonResponse({'success':True, 'ids':_icc}, safe=False)
+
+
+def get_coffeecoupon(request, coffeecoupon_id):
+    try:
+        _cc = m.Coffeecoupon.objects.get(pk=coffeecoupon_id)
+        _cc = m.CoffeecouponSerializer(_cc).data
+        return JsonResponse({'success':True, 'content':_cc}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+
+def get_ishoptems(request):
+    _ishoptems = list(m.Shoptem.ishoptems)
+    return JsonResponse({'success':True, 'ids':_ishoptems}, safe=False)
+
+
+def get_shoptem(request, shoptem_id):
+    try:
+        _shoptem = m.Shoptem.objects.get(pk=shoptem_id)
+        _shoptem = m.ShoptemSerializer(_shoptem).data
+        return JsonResponse({'success':True, 'content':_shoptem}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_iraffles(request):
+    _iraffles = list(m.Raffle.iraffles)
+    return JsonResponse({'success':True, 'ids':_iraffles}, safe=False)
+
+
+def get_raffle(request, raffle_id):
+    try:
+        _raffle = m.Raffle.objects.get(pk=raffle_id)
+        _raffle = m.RaffleSerializer(_raffle).data
+        return JsonResponse({'success':True, 'content':_raffle}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_item(request, item_id):
+    try:
+        _item = m.Item.objects.get(pk=item_id)
+        _item = m.ItemSerializer(_item).data
+        return JsonResponse({'success':True, 'content':_item}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_support(request, support_id):
+    try:
+        _support = m.Support.objects.get(pk=support_id)
+        _support = m.SupportSerializer(_support).data
+        return JsonResponse({'success':True, 'content':_support}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_isupports(request):
+    _isupports = list(m.Support.isupports)
+    return JsonResponse({'success':True, 'ids':_isupports}, safe=False)
+
+
+# def get_isupports(request, brand_id):
+#     _brand = m.Brand.objects.get(pk=brand_id)
+#     _isupports = list(_brand.isupports)
+#     return JsonResponse({'success':True, 'ids':_isupports}, safe=False)
 
 
 def _pix_combinations(n):
@@ -763,6 +866,31 @@ def link_delete(request, link_id):
 
     except:
         return JsonResponse({'success':False, 'message':'something wrong while link deleting'}, safe=False)
+
+
+def wallet_write(request):
+    try:
+        # _wallet = request.user.boo.wallet
+        _obj = request.GET.get('obj', None)
+        _obj_id = request.GET.get('obj_id', None)
+        _type = request.GET.get('type', None)
+        _amount = int(request.GET.get('amount', 0))
+
+        if _obj == 'support':
+            obj = m.Support.objects.get(pk=_obj_id)
+
+        elif _obj == 'raffle':
+            obj = m.Raffle.objects.get(pk=_obj_id)
+
+        elif _obj is None:
+            obj = request.user.boo
+
+        obj.wallet.write(type=_type, amount=_amount)
+        return JsonResponse({'success':True, 'message':'transacted successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while transaction'}, safe=False)
+
 
 
 def settle(request):

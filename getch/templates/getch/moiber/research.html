@@ -28,6 +28,24 @@
     background: white;
     color: var(--color-dark);
   }
+
+  .research.vcomp .page-body > .closer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .research.vcomp .page-body > .closer > img {
+    width: 12px;
+    height: 12px;
+    object-fit: cover;
+  }
 </style>
 
 
@@ -37,9 +55,9 @@
     :order='session.page.research.order'
     :open='session.page.research.open'
     :from='session.page.research.from'
-    :hide_close='false'
+    :hide_close='true'
     :hide_menu='true'
-    :hide_headerbar='false'
+    :hide_headerbar='true'
     :trans_headerbar='true'
     @close='session.close_page()'>
 
@@ -50,6 +68,7 @@
           <researchitem
             class='swiper-slide' v-if='intro'
             :researchitem='intro'
+            :research='research'
             :brand='brand'
             :session='session'
             :swiper='swiper'
@@ -59,6 +78,7 @@
           <researchitem
             class='swiper-slide' v-if='r' v-for='(r, idx) in mainstory'
             :researchitem='r'
+            :research='research'
             :brand='brand'
             :session='session'
             :swiper='swiper'
@@ -69,12 +89,17 @@
           <researchitem
             class='swiper-slide' v-if='outro'
             :researchitem='outro'
+            :research='research'
             :brand='brand'
             :session='session'
             :swiper='swiper'
           ></researchitem>
 
         </div>
+      </div>
+
+      <div class='closer' @click='session.close_page()'>
+        <img src='/static/materials/icons/icon_x.png'>
       </div>
 
       <div class='spinner' v-if='onloading'>
@@ -92,10 +117,12 @@
     props: ['session'],
     data: function() {
       return {
+        default_gender: 'F',
         onloading: true,
         swiper: undefined,
         swiper_options: {
-          direction: 'vertical',
+          direction: 'horizontal',
+          // direction: 'vertical',
           simulateTouch: true,
           observer: true,
           observeParents: true,
@@ -124,6 +151,37 @@
     },
 
     computed: {
+      boo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      genderlabels: function() {
+        if (this.boo) {
+          return this.boo.genderlabels
+        }
+      },
+
+      gender: function() {
+        if (this.genderlabels) {
+          if ((this.genderlabels.length == 0) || (this.genderlabels.length == 2)) {
+            return this.default_gender
+
+          } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(1))) {
+            return 'M'
+
+          } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(2))) {
+            return 'F'
+
+          } else {
+            return this.default_gender
+          }
+        } else {
+          return this.default_gender
+        }
+      },
+
       research: function() {
         return this.session.page.research.content
       },
@@ -141,6 +199,7 @@
       researchitems_list: function() {
         if (this.researchitems) {
           if (this.researchitems.list.length == 0) {
+            this.swiper.slideTo(0);
             this.researchitems.load_all();
           }
           return this.researchitems.list
@@ -161,7 +220,10 @@
 
       mainstory: function() {
         if (this.researchitems_list) {
-          let _mainstory = _.filter(this.researchitems_list, o => { return (o.type!='IN') && (o.type!='OUT') });
+          let _mainstory = _.filter(this.researchitems_list, o => {
+            return (o.type!='IN') && (o.type!='OUT') && ((o.gender=='X') || (o.gender==this.gender))
+            // return (o.type!='IN') && (o.type!='OUT') && (o.gender in ['X', this.gender])
+          });
           return _.sortBy(_mainstory, ['order'])
         }
       },

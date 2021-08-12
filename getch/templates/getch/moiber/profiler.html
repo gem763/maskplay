@@ -1,11 +1,15 @@
 <style>
+  .profiler.vcomp .page-body {
+    background: #f8f8f8;
+  }
+
   .profiler.vcomp .page-body > .profiler-body {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: white;
+    /* background: white; */
     overflow-y: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -226,6 +230,7 @@
     :onloading='on_creating'
     :hide_close='is_first_profiling'
     :hide_menu='true'
+    :trans_headerbar='true'
     @close='session.close_page()'>
 
     <template #headerbar-menu>

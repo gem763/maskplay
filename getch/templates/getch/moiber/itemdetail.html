@@ -1,0 +1,464 @@
+<style>
+  .itemdetail.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    background: none;
+  }
+
+  .itemdetail.vcomp::-webkit-scrollbar {
+    display: none;
+  }
+
+  .itemdetail.vcomp > .main {
+    position: relative;
+    width: 100%;
+    color: #333333;
+  }
+
+  .itemdetail.vcomp > .main > .pixes {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    /* background: orange; */
+  }
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    z-index: 0;
+    /* overflow: visible; */
+    /* overflow-y: visible; */
+  }
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    /* overflow: hidden;
+    padding-bottom: 5%; */
+  }
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper > .swiper-slide > img {
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    border-radius: 8px;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper > .swiper-slide > img.loaded {
+    opacity: 1;
+  }
+
+  /* .swiper-pagination-fraction, .swiper-pagination-custom, .swiper-container-horizontal > .swiper-pagination-bullets {
+      bottom: 25px;
+      left: 0;
+      width: 100%;
+  } */
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    /* background: gray; */
+    background: rgba(0,0,0,0.1);
+    opacity: 0;
+  }
+
+  .itemdetail.vcomp > .main > .pixes.paginated > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    opacity: 1;
+  }
+
+  .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    /* background: var(--color-dark); */
+    background: rgba(0,0,0,0.7);
+  }
+
+  .itemdetail.vcomp > .main > .txt {
+    width: 100%;
+    padding: 10px 16px;
+    box-sizing: border-box;
+    position: relative;
+    transition: all 0.5s;
+  }
+
+  .itemdetail.vcomp > .main > .txt.period {
+    /* background: orange; */
+    font-size: 14px;
+    padding-top: 10px;
+    padding-bottom: 0;
+  }
+
+  .itemdetail.vcomp > .main > .txt.name {
+    font-size: 16px;
+  }
+
+  .itemdetail.vcomp > .main > .txt.price {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .itemdetail.vcomp > .main > .txt.collected {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .itemdetail.vcomp > .main > .txt.desc {
+    /* background: lightyellow; */
+    font-size: 11px;
+    color: var(--color-gray);
+    line-height: 15px;
+    opacity: 0;
+    white-space: pre-line;
+  }
+
+  .itemdetail.vcomp > .main > .txt.noti {
+    /* background: lightgreen; */
+    font-size: 11px;
+    color: var(--color-gray);
+    line-height: 15px;
+    opacity: 0;
+  }
+
+  .itemdetail.vcomp > .main.loaded > .txt.desc,
+  .itemdetail.vcomp > .main.loaded > .txt.noti {
+    opacity: 1;
+  }
+
+  .itemdetail.vcomp > .main > .txt > .action {
+    position: absolute;
+    bottom: 10px;
+    right: 16px;
+    height: 36px;
+    width: 72px;
+    background: var(--color-point);
+    color: white;
+    border-radius: 15px;
+    font-size: 12px;
+    /* line-height: 36px;
+    text-align: center; */
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0.2;
+    pointer-events: none;
+    cursor: pointer;
+  }
+
+  .itemdetail.vcomp > .main > .txt > .action.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .itemdetail.vcomp > .main > .txt > .action.raffled {
+    background: var(--color-dark);
+    pointer-events: none;
+  }
+
+ .itemdetail.vcomp > .spinner {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 30px;
+   color: var(--color-dark);
+ }
+</style>
+
+<script type='text/x-template' id='itemdetail-template'>
+  <div class='itemdetail vcomp'>
+    <div class='main' :class='{ loaded:ready }'>
+
+      <div class='pixes' :class='{ paginated:paginated }'>
+        <div class='swiper-container' ref='swiper'>
+          <div class='swiper-wrapper'>
+            <div class="swiper-slide" v-for='i in 5' v-if='pix(i-1)'>
+              <img :src='pix(i-1)' @load='pix_loaded(i, $event)'>
+            </div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+
+      <div class='txt period'>[[ days_to_due ]]</div>
+
+      <div class='txt name'>[[ name ]]</div>
+
+      <div class='txt price' v-if='is_shoptem'>
+        [[ price_p ]]
+        <div class='action buy' :class='{ active: buyable }' @click='buy'>
+          구매하기
+        </div>
+      </div>
+
+      <div class='txt collected' v-if='is_raffle'>
+        [[ raffle_collected_p ]]
+        <!-- 25명 참여중, 4208P -->
+        <div class='action apply' :class='{ active: raffleable, raffled:raffled }' @click='apply_raffle'>
+          <span>[[ action_raffle_text ]]</span>
+          <span>[[ deduction_p ]]</span>
+        </div>
+      </div>
+
+      <div class='txt desc'>[[ desc ]]</div>
+
+      <div class='txt noti' v-if='is_raffle'>
+        <span>응모 기간 종료 후 3일 이내에 당첨자 추첨 및 발표가 진행 됩니다. 고객 실수로 인한 주소 오류 또는 연락처 미기재 등으로 인한 오발송 되는 경품은 재발송이 불가합니다.</span>
+      </div>
+    </div>
+
+    <div class='spinner' v-if='!ready'>
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('itemdetail', {
+    template: '#itemdetail-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'obj', 'session' ],
+    data: function() {
+      return {
+        swiper: undefined,
+        swiper_options: {
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          // loop: true, 이걸쓰면 슬라이드가 클릭이 안되는듯
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          },
+          // autoplay: {
+          //  delay: 5000,
+          // },
+        },
+
+        paginated: false
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    methods: {
+      pix_loaded: function(idx, event) {
+        event.target.classList.add('loaded');
+
+        if (idx != 1) {
+          this.paginated = true;
+        }
+      },
+
+      pix: function(idx) {
+        if (this.item) {
+          return this.item['pix_' + idx]
+        }
+      },
+
+      buy: function() {
+        console.log('사자')
+      },
+
+      apply_raffle: function() {
+        if (this.raffleable) {
+          const obj = 'raffle';
+          const obj_id = this.raffle.id;
+          const type = 'raffle';
+          const amount = this.deduction;
+
+          if (obj_id && amount) {
+            this.raffle.wallet.collected += amount;
+            this.raffle.wallet.raffled = true;
+
+            fetch(`wallet/write?obj=${obj}&obj_id=${obj_id}&type=${type}&amount=${amount}`)
+              .then(x => x.json())
+              .then(js => {
+                if (js.success) {
+                  console.log(js);
+                }
+              });
+
+            this.rewarder.settle_amount(-amount, 'bonus');
+          }
+        }
+      }
+    },
+
+    computed: {
+      item: function() {
+        if (this.obj && this.obj.item) {
+          return this.obj.item.load()
+        }
+      },
+
+      type: function() {
+        if (this.obj) {
+          return this.obj.constructor.name.toLowerCase()
+        }
+      },
+
+      is_raffle: function() {
+        return this.type == 'raffle'
+      },
+
+      is_shoptem: function() {
+        return (this.type == 'shoptem') || (this.type=='coffeecoupon')
+      },
+
+      ready: function() {
+        if (this.item) {
+          return this.item.loaded
+        }
+      },
+
+      name: function() {
+        if (this.item) {
+          return this.item.name
+        }
+      },
+
+      price: function() {
+        if (this.item) {
+          return this.item.price
+        }
+      },
+
+      price_p: function() {
+        if (this.price) {
+          return this.price.toLocaleString() + 'P'
+        }
+      },
+
+      deduction: function() {
+        if (this.obj) {
+          if (this.obj.deduction) {
+            return this.obj.deduction
+          }
+        }
+      },
+
+      deduction_p: function() {
+        if (this.deduction) {
+          return '-' + this.deduction.toLocaleString() + 'P'
+        }
+      },
+
+      days_to_due: function() {
+        if (this.obj && this.obj.due) {
+          return '마감 ' + Math.ceil( (new Date(this.obj.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+
+        } else {
+          return ''
+        }
+      },
+
+      desc: function() {
+        if (this.item) {
+          return this.item.desc
+        }
+      },
+
+      raffle: function() {
+        if (this.is_raffle) {
+          return this.obj
+        }
+      },
+
+      raffle_wallet: function() {
+        if (this.raffle) {
+          return this.raffle.wallet
+        }
+      },
+
+      raffled: function() {
+        if (this.raffle_wallet) {
+          return this.raffle_wallet.raffled
+        }
+      },
+
+      myboo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      rewarder: function() {
+        if (this.myboo) {
+          return this.myboo.rewarder
+        }
+      },
+
+      mywallet: function() {
+        if (this.rewarder) {
+          return this.rewarder.rewards
+        }
+      },
+
+      budget: function() {
+        if (this.mywallet) {
+          return this.mywallet.total.reward
+        }
+      },
+
+      raffleable: function() {
+        return this.budget >= this.deduction
+      },
+
+      buyable: function() {
+        return this.budget >= this.price
+      },
+
+      action_raffle_text: function() {
+        if (this.raffled) {
+          return '응모완료'
+
+        } else {
+          return '응모하기'
+        }
+      },
+
+      raffle_collected: function() {
+        if (this.raffle_wallet) {
+          return this.raffle_wallet.collected
+        }
+      },
+
+      raffle_collected_p: function() {
+        if (this.raffle_collected != undefined) {
+          return this.raffle_collected.toLocaleString() + 'P'
+        }
+      },
+    }
+  });
+</script>

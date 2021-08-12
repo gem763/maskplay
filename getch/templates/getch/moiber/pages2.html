@@ -15,6 +15,7 @@
 {% include "getch/moiber/pixeditor.html" %}
 {% include "getch/moiber/mbtiresult.html" %}
 {% include "getch/moiber/landing.html" %}
+{% include "getch/moiber/multichooser.html" %}
 {% include "getch/moiber/profiler.html" %}
 {% include "getch/moiber/infoboard.html" %}
 {% include "getch/moiber/pixchooser.html" %}
@@ -24,6 +25,9 @@
 {% include "getch/moiber/researcher.html" %}
 {% include "getch/moiber/research.html" %}
 {% include "getch/moiber/researchitem.html" %}
+{% include "getch/moiber/checkingame.html" %}
+{% include "getch/moiber/brander.html" %}
+{% include "getch/moiber/test.html" %}
 
 <style>
   .pages {
@@ -43,12 +47,15 @@
     <researcher :session='session'></researcher>
     <!-- <finder :session='session'></finder> -->
     <search :session='session'></search>
+    <brander :session='session'></brander>
     <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote>
     <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork>
     <research :session='session'></research>
+    <checkingame :session='session'></checkingame>
     <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult>
     <agit :session='session'></agit>
     <profiler :session='session' v-if='session.user.auth_ready'></profiler>
+    <multichooser :session='session'></multichooser>
     <!-- <profiler :session='session' v-if='session.user.has_auth'></profiler> -->
     <collector :session='session'></collector>
     <pixeditor :session='session'></pixeditor>
@@ -64,6 +71,8 @@
     <login :session='session'></login>
     <emailogin :session='session'></emailogin>
     <emailsignup :session='session'></emailsignup>
+
+    <test :session='session'></test>
   </div>
 </script>
 

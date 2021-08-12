@@ -1,0 +1,169 @@
+<style>
+  .myinfo.vcomp {
+    position: relative;
+    width: 100%;
+    /* background: lightpink; */
+  }
+
+  .myinfo.vcomp > .segment {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+  }
+
+  .myinfo.vcomp > .segment > .longbtn {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    background: var(--color-dark);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+
+  .myinfo.vcomp > .segment > .explain {
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    font-size: 12px;
+    color: #777777;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .myinfo.vcomp > .segment > .title {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .myinfo.vcomp > .segment > .infobox {
+    width: 100%;
+    /* height: 100px; */
+    font-size: 15px;
+    /* background: lightblue; */
+    border-radius: 8px;
+    border: 1px solid #e4e4e4;
+    box-sizing: border-box;
+  }
+
+  .myinfo.vcomp > .segment > .infobox > table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .myinfo.vcomp > .segment > .infobox > table td {
+    box-sizing: border-box;
+    position: relative;
+    text-align: left;
+    padding: 0;
+    height: 35px;
+  }
+
+  .myinfo.vcomp > .segment > .infobox > table td.head {
+    padding-left: 20px;
+    width: 100px;
+    box-sizing: border-box;
+    color: #777777;
+  }
+
+  .myinfo.vcomp > .segment > img.empty {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    filter: brightness(95%);
+  }
+</style>
+
+<script type='text/x-template' id='myinfo-template'>
+  <div class='myinfo vcomp'>
+
+    <div class='segment'>
+      <div class='longbtn'>
+        기본 프로필 정보 입력하고 100P 받기
+      </div>
+
+      <div class='explain'>
+        포인트 획득을 위해서는 기본 프로필 입력이 필수 입니다.
+      </div>
+
+      <div class='explain'>
+        프로필 정보는 참여 조건 확인 및 결과 리포트에 반영될 뿐 회원님을 구별할 수 있는 정보는 저장하지 않습니다.
+      </div>
+
+      <div class='explain'>
+        모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
+      </div>
+    </div>
+
+    <div class='segment baseinfo'>
+      <div class='title'>내 기본 프로파일 정보</div>
+      <div class='infobox'>
+        <table>
+          <tbody>
+            <tr>
+              <td class='head'>이름</td>
+              <td>강세진</td>
+            </tr>
+
+            <tr>
+              <td class='head'>국적</td>
+              <td>대한민국</td>
+            </tr>
+
+            <tr>
+              <td class='head'>성별</td>
+              <td>[[ gender ]]</td>
+            </tr>
+
+            <tr>
+              <td class='head'>생년월일</td>
+              <td>20100514</td>
+            </tr>
+
+            <tr>
+              <td class='head'>모바일</td>
+              <td>010-8818-0514</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class='segment style' @click='session.open_multichooser()'>
+      <div class='title'>내 관심 스타일</div>
+      <img class='empty' src='/static/materials/imgs/tag_game_style.png'>
+    </div>
+
+    <div class='segment item' @click='session.open_multichooser()'>
+      <div class='title'>내 관심 아이템</div>
+      <img class='empty' src='/static/materials/imgs/tag_game_item.png'>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('myinfo', {
+    template: '#myinfo-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    }
+  });
+</script>

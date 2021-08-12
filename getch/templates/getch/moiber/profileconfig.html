@@ -1,0 +1,298 @@
+<style>
+  .profileconfig.vcomp .page-body {
+    background: #f8f8f8;
+  }
+
+  .profileconfig.vcomp .page-body > .container {
+    position: relative;
+    width: 100%;
+    /* height: 100%; */
+    /* background: #f5f5f5; */
+    /* padding-top: 100px; */
+    box-sizing: border-box;
+    /* background: lightpink; */
+    padding-top: 100px;
+    padding-bottom: 200px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-left: 30px;
+    padding-right: 30px;
+    box-sizing: border-box;
+    margin-bottom: 30px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .profilepix {
+    width: 80px;
+    height: 80px;
+    border-radius: 100px;
+    overflow: hidden;
+    filter: brightness(95%);
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .profilepix > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: all 0.5s;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .nick {
+    font-size: 22px;
+    margin-top: 15px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .text {
+    font-size: 12px;
+    color: #777777;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .longbtn {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    background: var(--color-dark);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .explain {
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    font-size: 12px;
+    color: #777777;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment.baseinfo {
+    /* background: lightpink; */
+    /* height: 200px; */
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment.style {
+    /* background: lightblue; */
+    /* height: 200px; */
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .title {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .infobox {
+    width: 100%;
+    /* height: 100px; */
+    font-size: 15px;
+    /* background: lightblue; */
+    border-radius: 8px;
+    border: 1px solid #e4e4e4;
+    box-sizing: border-box;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .infobox > table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .infobox > table td {
+    box-sizing: border-box;
+    position: relative;
+    text-align: left;
+    padding: 0;
+    height: 35px;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > .infobox > table td.head {
+    padding-left: 20px;
+    width: 100px;
+    box-sizing: border-box;
+    color: #777777;
+  }
+
+  .profileconfig.vcomp .page-body > .container > .segment > img.empty {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    filter: brightness(95%);
+  }
+</style>
+
+<script type='text/x-template' id='profileconfig-template'>
+  <page
+    class='profileconfig vcomp'
+    :order='session.page.profileconfig.order'
+    :open='session.page.profileconfig.open'
+    :from='session.page.profileconfig.from'
+    :hide_close='false'
+    :trans_headerbar='true'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='container'>
+        <div class='segment profile' @click='go_profiler'>
+          <div class='profilepix'>
+            <img :src='profilepix'>
+          </div>
+
+          <div class='nick'>[[ nick ]]!</div>
+          <div class='text' v-if='text'>[[ text ]]</div>
+          <div class='text' v-else>프로파일 정보 입력하면 각각 포인트 지급!</div>
+
+          <div class='longbtn'>
+            기본 프로필 정보 입력하고 100P 받기
+          </div>
+
+          <div class='explain'>
+            포인트 획득을 위해서는 기본 프로필 입력이 필수 입니다.
+          </div>
+
+          <div class='explain'>
+            프로필 정보는 참여 조건 확인 및 결과 리포트에 반영될 뿐 회원님을 구별할 수 있는 정보는 저장하지 않습니다.
+          </div>
+
+          <div class='explain'>
+            모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
+          </div>
+        </div>
+
+        <div class='segment baseinfo'>
+          <div class='title'>내 기본 프로파일 정보</div>
+          <div class='infobox'>
+            <table>
+              <tbody>
+                <tr>
+                  <td class='head'>이름</td>
+                  <td>강세진</td>
+                </tr>
+
+                <tr>
+                  <td class='head'>국적</td>
+                  <td>대한민국</td>
+                </tr>
+
+                <tr>
+                  <td class='head'>성별</td>
+                  <td>[[ gender ]]</td>
+                </tr>
+
+                <tr>
+                  <td class='head'>생년월일</td>
+                  <td>20100514</td>
+                </tr>
+
+                <tr>
+                  <td class='head'>모바일</td>
+                  <td>010-8818-0514</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class='segment style'>
+          <div class='title'>내 관심 스타일</div>
+          <img class='empty' src='/static/materials/imgs/tag_game_style.png'>
+        </div>
+
+        <div class='segment item'>
+          <div class='title'>내 관심 아이템</div>
+          <img class='empty' src='/static/materials/imgs/tag_game_item.png'>
+        </div>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('profileconfig', {
+    template: '#profileconfig-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    methods: {
+      go_profiler: function() {
+        if (this.boo && this.boo.profile && this.boo.id)
+          this.session.open_profiler();
+      },
+    },
+
+    computed: {
+      boo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      genderlabels: function() {
+        if (this.boo) {
+          return this.boo.genderlabels
+        }
+      },
+
+      gender: function() {
+        if (this.genderlabels) {
+          if ((this.genderlabels.length == 0) || (this.genderlabels.length == 2)) {
+            return '-'
+
+          } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(1))) {
+            return '남성'
+
+          } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(2))) {
+            return '여성'
+
+          } else {
+            return '-'
+          }
+        } else {
+          return '-'
+        }
+      },
+
+      profilepix_ready: function() {
+        if (this.boo) {
+          return this.boo.profile && this.boo.id
+        }
+      },
+
+      profilepix: function() {
+        if (this.profilepix_ready) {
+          return this.boo.profile.pix
+        }
+      },
+
+      nick: function() {
+        if (this.boo) {
+          return this.boo.nick
+        }
+      },
+
+      text: function() {
+        if (this.boo) {
+          return this.boo.text
+        }
+      },
+    }
+  });
+</script>

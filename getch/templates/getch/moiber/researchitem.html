@@ -1,22 +1,23 @@
 <style>
   .researchitem {
-    /* background: white;
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
-    height: 100%; */
+    height: 100%;
     overflow: hidden;
+    background: #f8f8f8;
   }
 
   .researchitem > .backbone {
     position: relative;
     width: 100%;
     height: 100%;
+    padding-top: 60px;
+    box-sizing: border-box;
+    background: #f8f8f8;
   }
 
   .researchitem > .backbone > .section {
-    position: absolute;
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,23 +28,198 @@
     filter: grayscale(1);
   }
 
+  .researchitem > .backbone > .section td.outfocused {
+    opacity: 0.2;
+    filter: grayscale(1);
+  }
+
   .researchitem > .backbone > .section.full {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; */
+  }
+
+  .researchitem > .backbone > .section.full > .center {
+    position: relative;
+    width: calc(100% - 90px);
+    /* height: 434px; */
+    /* background: lightblue; */
+  }
+
+  .researchitem > .backbone > .section.full > .center > .pix {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    margin-bottom: 60px;
+    /* background: orange; */
+  }
+
+  .researchitem > .backbone > .section.full > .center > .pix > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .researchitem > .backbone > .section.full > .center > .qatext,
+  .researchitem > .backbone > .section.full > .center > .ox {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 1px #999999;
+    text-align: center;
+    line-height: 90px;
+    font-size: 12px;
+    color: #999999;
+  }
+
+  .researchitem > .backbone > .section.full > .center > .ox > table {
+    border-collapse: collapse;
     width: 100%;
     height: 100%;
   }
 
-  .researchitem > .backbone > .section.full.intro > img {
+  .researchitem > .backbone > .section.full > .center > .ox > table td {
+    width: 50%;
+    box-sizing: border-box;
+    position: relative;
+    text-align: center;
+    padding: 0;
+  }
+
+  .researchitem > .backbone > .section.full > .center > .ox > table td:first-child {
+    border-right: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .researchitem > .backbone > .section.full > .center > .ox > table td > img.ox {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
+    top: 0;
+    left: 50%;
+    height: 100%;
+    width: auto;
+    transform: translateX(-50%);
+  }
+
+  .researchitem > .backbone > .section.full.intro {
+    display: block;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.logo {
+    height: 100px;
+    /* background: orange; */
+    justify-content: flex-end;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.header {
+    height: 150px;
+    /* background: lightblue; */
+    justify-content: center;
+    padding-left: 10%;
+    padding-right: 10%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.action {
+    height: 75px;
+    /* background: lightpink; */
+    justify-content: flex-start;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.coverpix {
+    /* background: orange; */
+    justify-content: flex-start;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection > .logo {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 100px;
+    /* margin: 30px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    /* border: 1px solid var(--color-dark); */
+    box-shadow: 0px 0px 1px rgb(0, 0 ,0, 0.25);
+  }
+
+  .researchitem > .backbone > .section.full > .subsection > .logo > img {
+    width: 90%;
+    height: auto;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.coverpix > img {
     width: calc(100% - 32px);
-    height: 60%;
+    height: auto;
     object-fit: cover;
     box-sizing: border-box;
-    border-radius: var(--w-3);
-    opacity: 0;
+    border-radius: 8px;;
+    opacity: 1;
     transition: all 0.5s;
   }
+
+  .researchitem > .backbone > .section.full > .subsection.header > span.desc {
+    /* font-weight: bold; */
+    font-size: 12px;
+    color: #777777;
+    white-space: pre-line;
+    text-align: center;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.header > span.category {
+    /* font-weight: bold; */
+    font-size: 12px;
+    color: #777777;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.header > span.bname {
+    font-weight: bold;
+    font-size: 28px;
+    margin-top: 10px;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.header > span.title {
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 5px;
+  }
+
+  .researchitem > .backbone > .section.full > .subsection.action > span.gogo {
+    font-weight: bold;
+    font-size: 11px;
+    /* margin-top: 20px; */
+    background: #273B4A;
+    width: 60px;
+    height: 34px;
+    line-height: 34px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+  }
+
+
+
+
+
 
   .researchitem > .backbone > .section.full.outro > img {
     position: absolute;
@@ -70,7 +246,7 @@
     position: absolute;
     left: 0;
     width: 100%;
-    height: 50%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -102,7 +278,8 @@
     align-items: center;
     overflow: hidden;
     box-sizing: border-box;
-    border: 1px solid var(--color-dark);
+    /* border: 1px solid var(--color-dark); */
+    box-shadow: 0px 0px 1px rgb(0 0 0 / 25%);
   }
 
   .researchitem > .backbone > .section.full > .cover > .logo > img {
@@ -177,7 +354,7 @@
   }
 
   .researchitem > .backbone > .section.down > .mc {
-    top: var(--w-1);
+    top: 45px;
     transform: none;
   }
 
@@ -211,7 +388,8 @@
   }
 
   .researchitem > .backbone > .section > .mc > .square > .choice.chosen > img.mcpix {
-    opacity: 0.3;
+    /* opacity: 0.3; */
+    opacity: 0;
   }
 
   .researchitem > .backbone > .section > .mc > .square > .choice > img.mcpix {
@@ -229,7 +407,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 100%;
+    width: 80%;
     text-align: center;
     transform: translate(-50%, -50%);
   }
@@ -274,6 +452,7 @@
     transition: opacity 0.3s;
     border-radius: var(--w-3);
     filter: brightness(95%);
+    background: white;
   }
 
   .researchitem > .backbone > .section > img.ox {
@@ -305,20 +484,20 @@
   .researchitem > .backbone > .section.up > img.candidate {
     width: var(--square-size);
     height: var(--square-size);
-    bottom: var(--w-1);
+    bottom: 1px;
   }
 
   .researchitem > .backbone > .section.down > img.candidate {
     width: var(--square-size);
     height: var(--square-size);
-    top: var(--w-1);
+    top: 1px;
   }
 
   .researchitem > .backbone > .section > .label {
     text-align: center;
     position: absolute;
     /* width: calc(var(--square-size) * 0.8); */
-    left: 55px;
+    left: 53px;
     /* transform: translateX(-50%); */
     border-radius: 100px;
     white-space: pre-line;
@@ -334,35 +513,36 @@
   }
 
   .researchitem > .backbone > .section.up > .label {
-    bottom: calc(var(--w-1) + var(--square-size) - 40px);
+    bottom: calc(var(--square-size) - 38px);
   }
 
   .researchitem > .backbone > .section.down > .label {
-    top: calc(var(--w-1) + var(--square-size) - 40px);
+    top: calc(var(--square-size) - 38px);
   }
 
-  .researchitem > .backbone > .divider {
+  .researchitem > .backbone > .section.down > .divider {
     position: absolute;
+    top: 0;
     width: 100%;
     height: 0;
     background: white;
-    top: 50%;
-    transform: translateY(-50%);
+    /* top: 50%; */
+    /* transform: translateY(-50%); */
   }
 
-  .researchitem > .backbone > .divider > .vs {
+  .researchitem > .backbone > .section.down > .divider > .vs {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    border-radius: var(--w-20);
-    height: var(--w-10);
-    width: var(--w-10);
+    border-radius: 100px;
+    height: 45px;
+    width: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .researchitem > .header {
@@ -371,10 +551,11 @@
     left: 0;
     width: 100%;
     height: 60px;
-    /* background: rgba(255,255,255,0.9); */
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 0 0 1px rgb(0, 0, 0, 0.1);
+    border-radius: 0 0 15px 15px;
   }
 
   .researchitem > .header > .header-section {
@@ -385,18 +566,33 @@
   }
 
   .researchitem > .header > .header-section.logo {
-    width: 12%;
+    width: 60px;
+  }
+
+  .researchitem > .header > .header-section.logo > .headlogo {
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    border-radius: 100px;
+    overflow: hidden;
+    box-shadow: 0px 0px 1px #999999;
+  }
+
+  .researchitem > .header > .header-section.logo > .headlogo > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .researchitem > .header > .header-section.question {
-    width: 71%;
+    width: calc(100% - 120px);
     font-size: 13px;
     text-align: center;
     white-space: pre-line;
   }
 
   .researchitem > .header > .header-section.npage {
-    width: 12%;
+    width: 60px;
   }
 
   .researchitem > .header > .header-section.logo > img {
@@ -415,17 +611,25 @@
 
     <div class='backbone' v-if='is_intro'>
       <div class='section full intro'>
-        <img :src='researchitem.pix.pix_0' :class='{ loaded: pix_0_loaded }' @load='pix_0_loaded=true'>
-
-        <div class='cover' :class='{ loaded: pix_0_loaded }'>
+        <div class='subsection logo'>
           <div class='logo' v-if='brand'>
             <img :src='brand.logo'>
           </div>
+        </div>
 
-          <span class='bname'>[[ brand.name_en ]]</span>
-          <span class='category'>소비자리서치</span>
-          <span class='title'>[[ researchitem.text ]]</span>
+        <div class='subsection header'>
+          <span class='desc' v-if='research_desc'>[[ research_desc ]]</span>
+          <!-- <span class='category' v-if='brand'>[[ brand.name_kr ]] 브랜드 서베이</span> -->
+          <span class='bname' v-if='brand'>[[ brand.name_en ]]</span>
+          <span class='title' v-if='research_title'>[[ research_title ]]</span>
+        </div>
+
+        <div class='subsection action'>
           <span class='gogo' @click='start_research'>시작하기</span>
+        </div>
+
+        <div class='subsection coverpix'>
+          <img :src='researchitem.pix.pix_0' :class='{ loaded: pix_0_loaded }' @load='pix_0_loaded=true'>
         </div>
       </div>
     </div>
@@ -436,16 +640,12 @@
         <img :src='researchitem.pix.pix_0' :class='{ loaded: pix_0_loaded }' @load='pix_0_loaded=true'>
 
         <div class='cover' :class='{ loaded: pix_0_loaded }'>
-          <!-- <div class='logo' v-if='brand'>
-            <img :src='brand.logo'>
-          </div> -->
-
-          <span class='bname'>[[ brand.name_en ]]</span>
+          <span class='bname' v-if='brand'>[[ brand.name_en ]]</span>
           <!-- <span class='outment'>[[ outment ]]</span> -->
           <span class='outment'>[[ researchitem.text ]]</span>
-          <!-- <span class='more support'>후원 이벤트 참여</span> -->
-          <span class='more homepage' @click='go_homepage'>브랜드 공식 사이트</span>
-          <span class='more insta' @click='go_insta'>브랜드 공식 인스타</span>
+          <!-- <span class='more support' @click='go_brander'>후원 이벤트 참여</span> -->
+          <span class='more homepage' v-if='brand' @click='go_homepage'>브랜드 공식 사이트</span>
+          <span class='more insta' v-if='brand' @click='go_insta'>브랜드 공식 인스타</span>
         </div>
       </div>
     </div>
@@ -460,26 +660,53 @@
       <div class='section down' :class='outfocused(0)' @click='toggle_choose(1)'>
         <img class='candidate' :src='researchitem.pix.pix_1'>
         <div class='label' v-if='researchitem.pix.pixlabel_1'>[[ researchitem.pix.pixlabel_1 ]]</div>
+
+        <div class='divider'>
+          <div class='vs'>VS</div>
+        </div>
       </div>
 
       <div class='divider'>
-        <div class='vs'><b>VS</b></div>
+        <div class='vs'>VS</div>
       </div>
     </div>
 
 
     <div class='backbone' v-if='is_ox'>
-      <div class='section pix'>
+      <div class='section full'>
+        <div class='center'>
+          <div class='pix'>
+            <img class='candidate' :src='researchitem.pix.pix_0'>
+          </div>
+          <div class='ox'>
+            <table>
+              <tbody>
+                <tr>
+                  <td :class='outfocused(1)' @click='toggle_choose(0)'>
+                    <img class='ox' src='/static/materials/icons/O-button.png'>
+                  </td>
+
+                  <td :class='outfocused(0)' @click='toggle_choose(1)'>
+                    <img class='ox' src='/static/materials/icons/X-button.png'>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class='section pix'>
         <img class='candidate' :src='researchitem.pix.pix_0'>
       </div>
 
       <div class='section down-left' :class='outfocused(1)' @click='toggle_choose(0)'>
-        <img class='ox' src='/static/materials/icons/moiber_letter_o.png'>
+        <img class='ox' src='/static/materials/icons/O-button.png'>
       </div>
 
       <div class='section down-right' :class='outfocused(0)' @click='toggle_choose(1)'>
-        <img class='ox' src='/static/materials/icons/moiber_letter_x.png'>
-      </div>
+        <img class='ox' src='/static/materials/icons/X-button.png'>
+      </div> -->
     </div>
 
     <div class='backbone' v-if='is_mc_nopix'>
@@ -512,9 +739,27 @@
       </div>
     </div>
 
+    <div class='backbone' v-if='is_qa'>
+      <div class='section full'>
+        <div class='center'>
+          <div class='pix'>
+            <img class='candidate' :src='researchitem.pix.pix_0'>
+          </div>
+          <div class='qatext' @click='edit_qatext'>
+            <span class='qa_answer' v-if='answer[0]'>[[ answer[0] ]]</span>
+            <span class='placeholder' v-else>답변을 입력해 주세요</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <div class='header'>
-      <div class='header-section logo'></div>
+
+    <div class='header' v-if='on_mainstory'>
+      <div class='header-section logo'>
+        <div class='headlogo' v-if='brand'>
+          <img :src='brand.logo'>
+        </div>
+      </div>
 
       <div class='header-section question'>
         <span v-if='on_mainstory'>[[ researchitem.text ]]</span>
@@ -533,14 +778,14 @@
   Vue.component('researchitem', {
     template: '#researchitem-template',
     delimiters: ['[[', ']]'],
-    props: ['researchitem', 'brand', 'session', 'swiper', 'pagination'],
+    props: ['researchitem', 'research', 'brand', 'session', 'swiper', 'pagination'],
     data: function() {
       return {
         status: -1,
         pix_0_loaded: false,
         pix_1_loaded: false,
         headcover_loaded: false,
-        answer: [],
+        // qa_answer: ''
       }
     },
 
@@ -555,11 +800,13 @@
         }
       },
 
-      answer: function(_new, _old) {
-        const _answer = JSON.stringify(_new);
-        const _url = `research/${this.research_id}/item/${this.researchitem.id}/answer/${_answer}`;
-        fetch(_url).then(x=>x.json()).then(console.log)
-      }
+      // answer: function(_new, _old) {
+      //   console.log(_old, _new);
+      //   const _answer = JSON.stringify(_new);
+      //   const _url = `research/${this.research_id}/item/${this.researchitem.id}/answer/${_answer}`;
+      //   fetch(_url).then(x=>x.json()).then(console.log)
+      // }
+
       // vote_state: function(_new, _old) {
       //   this.status = this.vote_state;
       // }
@@ -567,17 +814,41 @@
 
 
     computed: {
-      research: function() {
-        if (this.session.page.research.content) {
-          return this.session.page.research.content
+      answers: function() {
+        if (this.research) {
+          return this.research.answers
         }
       },
 
-      research_id: function() {
-        if (this.research) {
-          return this.research.id
+      answer: function() {
+        if (this.answers) {
+          if (!(this.researchitem.id in this.answers)) {
+            this.$set(this.answers, this.researchitem.id, []);
+          }
+
+          return this.answers[this.researchitem.id]
         }
       },
+
+      // research: function() {
+      //   return this.session.page.research.content
+      // },
+
+
+      research_desc: function() {
+        if (this.research) {
+          return this.research.desc
+        }
+      },
+
+      research_title: function() {
+        if (this.research) {
+          return this.research.title
+        }
+      },
+      // research_id: function() {
+      //   return this.research.id
+      // },
 
       is_intro: function() {
         return this.researchitem.type == 'IN'
@@ -603,6 +874,10 @@
         return (this.researchitem.type == 'MC') && (this.researchitem.pix != undefined)
       },
 
+      is_qa: function() {
+        return this.researchitem.type == 'QA'
+      },
+
       on_mainstory: function() {
         return !this.is_intro && !this.is_outro
       }
@@ -621,6 +896,10 @@
 
 
     methods: {
+      go_brander: function() {
+        this.session.open_brander(this.brand);
+      },
+
       go_homepage: function() {
         window.open(this.brand.homepage);
       },
@@ -634,37 +913,48 @@
       },
 
       outfocused: function(act) {
-        if (this.answer.includes(act)) {
+        if (this.answer && this.answer.includes(act)) {
           return 'outfocused'
         }
       },
 
       choice_class: function(c, act) {
         return {
-          chosen: this.answer.includes(act),
+          chosen: this.answer ? this.answer.includes(act) : false,
           nopix: !c.mcpix
         }
       },
 
-      // chosen: function(act) {
-      //   if (this.answer.includes(act)) {
-      //     return 'chosen'
-      //   }
-      // },
-      //
-      // nopix: function(pix) {
-      //   if (!pix) {
-      //     return 'nopix'
-      //   }
-      // },
+      answering: function() {
+        const _answer = JSON.stringify(this.answer);
+        const _url = `research/${this.research.id}/item/${this.researchitem.id}/answer/${_answer}`;
+        fetch(_url).then(x=>x.json()).then(console.log)
+      },
+
+      edit_qatext: function() {
+        this.session.open_texteditor(this.answer[0], '답변을 입력해 주세요', 1, txt_done => {
+          if (txt_done == '') {
+            this.answer.splice(0);
+
+          } else {
+            this.answer.splice(0, 1, txt_done);
+          }
+
+          this.answering();
+        });
+      },
 
       multi_choose: function(act) {
-        if (this.answer.includes(act)) {
-          const where = this.answer.indexOf(act);
-          this.answer.splice(where, 1);
+        if (this.answer) {
+          if (his.answer.includes(act)) {
+            const where = this.answer.indexOf(act);
+            this.answer.splice(where, 1);
 
-        } else {
-          this.answer.push(act);
+          } else {
+            this.answer.push(act);
+          }
+
+          this.answering();
         }
       },
 
@@ -682,14 +972,18 @@
       // },
 
       toggle_choose: function(act) {
-        if (this.answer.includes(act)) {
-          this.answer.splice(0); // 완전히 비우기
-          // const where = this.answer.indexOf(act);
-          // this.answer.splice(where, 1);
+        if (this.answer) {
+          if (this.answer.includes(act)) {
+            this.answer.splice(0); // 완전히 비우기
+            // const where = this.answer.indexOf(act);
+            // this.answer.splice(where, 1);
 
-        } else {
-          this.answer.splice(0); // 완전히 비우기
-          this.answer.push(act);
+          } else {
+            this.answer.splice(0); // 완전히 비우기
+            this.answer.push(act);
+          }
+
+          this.answering();
         }
       }
     }

@@ -53,7 +53,7 @@
     bottom: 10px;
     right: 10px;
     color: white;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
   }
 
@@ -91,7 +91,7 @@
 
   .researchcard.vcomp > .content > .title {
     margin-bottom: 10px;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: bold;
   }
 
@@ -106,8 +106,9 @@
     justify-content: space-between;
   }
 
-  .researchcard.vcomp > .info > span.due {
-    color: var(--color-gray);
+  .researchcard.vcomp > .content > .info > span.due {
+    /* color: var(--color-gray); */
+    color: #999999;
   }
 </style>
 
@@ -201,6 +202,9 @@
       bname: function() {
         if (this.brand) {
           return this.brand.name_en
+
+        } else {
+          return 'MOIBER LAB'
         }
       },
 
@@ -225,6 +229,9 @@
       due: function() {
         if (this.research) {
           return this.research.due
+
+        } else {
+          return '2021-10-31'
         }
       },
 
@@ -259,7 +266,16 @@
         } else {
           return '모이버'
         }
-      }
+      },
+
+      // bname: function() {
+      //   if (this.bname) {
+      //     return this.bname
+      //
+      //   } else {
+      //     return 'MOIBER LAB'
+      //   }
+      // }
     }
   });
 </script>

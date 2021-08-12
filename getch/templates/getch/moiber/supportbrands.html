@@ -1,0 +1,124 @@
+<style>
+  .supportbrands.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 12px;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .supportbrands.vcomp::-webkit-scrollbar {
+    display: none;
+  }
+
+  .supportbrands > .brands {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    padding-top: 0;
+    /* padding-top: 200px; */
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
+  .supportbrands > .brands > .brand {
+    position: relative;
+    width: calc(100% / 3);
+    padding-top: calc(100% / 3);
+    background: white;
+    cursor: pointer;
+  }
+
+  .supportbrands > .brands > .brand > img.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 100px;
+    object-fit: cover;
+    box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .supportbrands > .brands > .brand > img.logo.loaded {
+    opacity: 1;
+  }
+
+
+  .supportbrands.vcomp > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+</style>
+
+<script type='text/x-template' id='supportbrands-template'>
+  <div class='supportbrands vcomp'>
+    <div class='brands'>
+      <div class='brand' v-for='b in supportbrands' @click='open_brander(b)'>
+        <img class='logo' :src='b.logo' @load='logo_loaded'>
+      </div>
+
+      <div class='spinner' v-if='!ready'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+    </div>
+
+    <div class='spinner' v-if='!ready'>
+      <i class="fa fa-spinner fa-spin"></i>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('supportbrands', {
+    template: '#supportbrands-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        ready: false
+      }
+    },
+
+    methods: {
+      logo_loaded: function(event) {
+        this.ready = true;
+        event.target.classList.add('loaded');
+      },
+
+      open_brander: function(b) {
+        this.session.dasher_control = 'close';
+        this.session.open_brander(b);
+      }
+    },
+
+    computed: {
+      supportbrands: function() {
+        return _.filter(this.session.store.brandstore, b => b.supports.length>0)
+      }
+    }
+  });
+</script>

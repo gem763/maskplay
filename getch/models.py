@@ -6,7 +6,7 @@ from siteflags.models import ModelWithFlag, FlagBase
 from datetime import datetime, date, timedelta
 from django.conf import settings
 from django_currentuser.middleware import get_current_user, get_current_authenticated_user
-from django.db.models import F, Q, Sum, Count, Case, When
+from django.db.models import F, Q, Sum, Count, Case, When, IntegerField, Value
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.utils.functional import classproperty
@@ -127,9 +127,16 @@ class Flager(FlagBase):
             pass
 
 
+def _labelpix_path(instance, fname):
+    _fname = str(datetime.now()) + '__' + fname
+    fmt = 'label/{fname}'
+    return fmt.format(fname=_fname)
+
+
 class Label(BigIdAbstract):
     label = models.CharField(max_length=20, null=False, blank=False)
     key = models.IntegerField(default=0)
+    pix = models.ImageField(upload_to=_labelpix_path, max_length=500, null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -256,6 +263,126 @@ class Link(BigIdAbstract):
 
 
 
+IN_CHECKIN_BALANCE_GAME = 0
+IN_DAILY_BALANCE_GAME = 1
+IN_DAILY_COLLECTING = 2
+IN_RESEARCH = 3
+IN_INTERVIEW = 4
+IN_WELCOME = 5
+
+OUT_SUPPORT = 100
+OUT_RAFFLE = 101
+OUT_SHOPPING = 102
+
+class Wallet(BigIdAbstract):
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def write(self, type=None, amount=None):
+        user = get_current_user()
+        if not user.is_authenticated:
+            return
+
+        if type == 'checkin_balance_game':
+            _type = IN_CHECKIN_BALANCE_GAME
+
+        elif type == 'daily_balance_game':
+            _type = IN_DAILY_BALANCE_GAME
+
+        elif type == 'daily_collecting':
+            _type = IN_DAILY_COLLECTING
+
+        elif type == 'research':
+            _type = IN_RESEARCH
+
+        elif type == 'interview':
+            _type = IN_INTERVIEW
+
+        elif type == 'support':
+            _type = OUT_SUPPORT
+
+        elif type == 'raffle':
+            _type = OUT_RAFFLE
+
+        elif type == 'shopping':
+            _type = OUT_SHOPPING
+
+        Transaction.objects.create(wallet=self, type=_type, amount=amount, who=user.boo)
+
+    def __str__(self):
+        # if (self.boo):
+        #     return str(self.boo) + ' | ' + str(self.created_at)
+        #
+        # else:
+        try:
+            return str(self.boo) + ' | ' + str(self.created_at)
+
+        except:
+            try:
+                return str(self.support) + ' | ' + str(self.created_at)
+
+            except:
+                try:
+                    return str(self.raffle) + ' | ' + str(self.created_at)
+                except:
+                    return str(self.created_at)
+
+    @property
+    def count_total(self):
+        return self.transaction_set.count()
+
+    @property
+    def point_total(self):
+        agg = self.transaction_set.aggregate(total=Sum('amount'))
+        return agg['total']
+
+    @property
+    def point_in(self):
+        agg = self.transaction_set.aggregate(
+            total=Sum(Case(
+                When(amount__gt=0, then=F('amount')),
+                default=Value(0),
+                output_field=IntegerField()
+            ))
+        )
+        return agg['total']
+
+    @property
+    def point_out(self):
+        agg = self.transaction_set.aggregate(
+            total=Sum(Case(
+                When(amount__lt=0, then=F('amount')),
+                default=Value(0),
+                output_field=IntegerField()
+            ))
+        )
+        return agg['total']
+
+
+class Transaction(BigIdAbstract):
+    wallet = models.ForeignKey(Wallet, blank=True, null=True, on_delete=models.SET_NULL)
+    when = models.DateTimeField(default=timezone.now, null=False)
+    who = models.ForeignKey('Boo', blank=True, null=True, on_delete=models.SET_NULL)
+
+    TRANSACTION_TYPES = (
+        (IN_CHECKIN_BALANCE_GAME, '출첵밸런스게임'),
+        (IN_DAILY_BALANCE_GAME, '매일밸런스게임'),
+        (IN_DAILY_COLLECTING, '옷장넣기'),
+        (IN_RESEARCH, '리서치참여'),
+        (IN_INTERVIEW, '인터뷰참여'),
+        (IN_WELCOME, '첫방문환영'),
+        (OUT_SUPPORT, '후원'),
+        (OUT_RAFFLE, '래플'),
+        (OUT_SHOPPING, '쇼핑')
+    )
+
+    type = models.IntegerField(choices=TRANSACTION_TYPES, default=0, null=False, blank=False)
+    amount = models.IntegerField(default=0)
+
+    def __str__(self):
+        if self.wallet:
+            return str(self.wallet) + ' | ' + str(self.when)
+
+
 class Boo(BigIdAbstract, ModelWithFlag):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nick = models.CharField(max_length=100, blank=True, null=True)
@@ -284,6 +411,8 @@ class Boo(BigIdAbstract, ModelWithFlag):
     researched = models.JSONField(default=list, blank=True, null=True)
     answers = models.JSONField(default=dict, blank=True, null=True)
 
+    wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
+
 
     def __str__(self):
         return self.nick + ' | ' + self.user.email
@@ -300,6 +429,12 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def is_guestboo(self):
         return self.id == GUESTBOO
+
+    def answers_of(self, research_id):
+        if str(research_id) in self.answers:
+            return self.answers[str(research_id)]
+        else:
+            return {}
 
     @property
     def icollections(self):
@@ -560,6 +695,37 @@ class Boo(BigIdAbstract, ModelWithFlag):
         self.save()
 
 
+def _itempix_path(instance, fname):
+    # _id = instance.id  # instance 생성 전이기 때문에 id = None
+    _fname = str(datetime.now()) + '__' + fname
+    _date = str(instance.created_at.date())
+    fmt = 'item/{date}/{fname}'
+    return fmt.format(date=_date, fname=_fname)
+
+
+
+class Item(BigIdAbstract):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    price = models.IntegerField(null=False, blank=False, default=0)
+    pix_0 = models.ImageField(upload_to=_itempix_path, max_length=500, null=False, blank=False)
+    pix_1 = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
+    pix_2 = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
+    pix_3 = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
+    pix_4 = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
+    pix_wide = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
+    desc = models.TextField(max_length=1000, blank=True, null=True)
+    out_of_stock = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return str(self.name) + ' - ' + str(self.price)
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'pix_1', 'pix_2', 'pix_3', 'pix_4', 'desc']
+        read_only_fields = fields
 
 
 def _brandpix_path(instance, fname):
@@ -592,11 +758,213 @@ class Brand(BigIdAbstract):
         return self.name_en + ' | ' + self.name_kr
 
     @property
+    def isupports(self):
+        return self.support_set.values_list('id', flat=True)
+
+    # @classproperty
+    # def isupportbrands(cls):
+    #     return Support.objects.values_list('brand', flat=True)
+
+    @property
     def logo_preview(self):
         if self.logo:
             return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(self.logo.url))
         return ""
 
+
+class BrandSerializer(serializers.ModelSerializer):
+    # supports = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Brand
+        # fields = ['id', 'coverpix_0', 'coverpix_1', 'coverpix_2', 'coverpix_3', 'coverpix_4', 'established', 'origin', 'desc', 'name_en', 'name_kr', 'logo']#, 'supports']
+        fields = ['id', 'coverpix_0', 'coverpix_1', 'coverpix_2', 'coverpix_3', 'coverpix_4', 'established', 'origin', 'desc']
+        read_only_fields = fields
+
+    # def get_supports(self, obj):
+    #     return list(obj.support_set.values_list('id', flat=True))
+
+
+class Raffle(BigIdAbstract):
+    item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
+    deduction = models.IntegerField(null=False, blank=False, default=0)
+    listing = models.BooleanField(default=False)
+    due = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return str(self.item) + ' | ' + str(self.created_at)
+
+    @classproperty
+    def iraffles(cls):
+        return cls.objects.filter(listing=True).order_by('due').values_list('id', flat=True)
+
+
+class RaffleSerializer(serializers.ModelSerializer):
+    item = serializers.SerializerMethodField()
+    wallet = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Raffle
+        fields = ['id', 'item', 'deduction', 'due', 'wallet']
+        read_only_fields = fields
+
+    def get_wallet(self, obj):
+        if not obj.wallet:
+            obj.wallet = Wallet.objects.create()
+            obj.save()
+
+        point_total = obj.wallet.point_total
+        count_total = obj.wallet.count_total
+
+        user = get_current_user()
+        if user.is_authenticated:
+            raffled = obj.wallet.transaction_set.filter(who=user.boo).exists()
+        else:
+            raffled = False
+
+        return {
+            'collected': point_total if point_total else 0,
+            'count': count_total if count_total else 0,
+            'raffled': raffled
+        }
+
+    def get_item(self, obj):
+        return {
+            'id': obj.item.id,
+            'name': obj.item.name,
+            'pix_wide': obj.item.pix_wide.url if obj.item.pix_wide else None,
+            'pix_0': obj.item.pix_0.url,
+            'price': obj.item.price,
+            'out_of_stock': obj.item.out_of_stock
+        }
+
+
+
+class Coffeecoupon(BigIdAbstract):
+    item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
+    listing = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return str(self.item) + ' | ' + str(self.created_at)
+
+    @classproperty
+    def icoffeecoupons(cls):
+        return cls.objects.filter(listing=True).order_by('item__price').values_list('id', flat=True)
+
+
+class CoffeecouponSerializer(serializers.ModelSerializer):
+    item = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Coffeecoupon
+        fields = ['id', 'item']
+        read_only_fields = fields
+
+    def get_item(self, obj):
+        return {'id': obj.item.id, 'name': obj.item.name, 'pix_0': obj.item.pix_0.url, 'price': obj.item.price, 'out_of_stock': obj.item.out_of_stock}
+
+
+class Shoptem(BigIdAbstract):
+    item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
+    listing = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return str(self.item) + ' | ' + str(self.created_at)
+
+    @classproperty
+    def ishoptems(cls):
+        return cls.objects.filter(listing=True).order_by('item__price').values_list('id', flat=True)
+
+
+class ShoptemSerializer(serializers.ModelSerializer):
+    item = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Shoptem
+        fields = ['id', 'item']
+        read_only_fields = fields
+
+    def get_item(self, obj):
+        return {'id': obj.item.id, 'name': obj.item.name, 'pix_0': obj.item.pix_0.url, 'price': obj.item.price, 'out_of_stock': obj.item.out_of_stock}
+
+
+class Support(BigIdAbstract):
+    brand = models.ForeignKey(Brand, blank=True, null=True, on_delete=models.SET_NULL)
+    gift = models.ForeignKey(Item, blank=True, null=True, on_delete=models.SET_NULL)
+    ticketsize = models.IntegerField(null=True, blank=True)
+    target = models.IntegerField(null=True, blank=True)
+    desc = models.TextField(max_length=200, blank=True, null=True)
+    due = models.DateTimeField(null=True, blank=True)
+    active = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return str(self.brand) + ' | ' + str(self.created_at)
+
+    @classproperty
+    def isupports(cls):
+        return cls.objects.order_by('due').values_list('id', flat=True)
+
+
+class SupportSerializer(serializers.ModelSerializer):
+    brand = serializers.SerializerMethodField()
+    gift = serializers.SerializerMethodField()
+    wallet = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Support
+        fields = ['id', 'brand', 'active', 'ticketsize', 'target', 'desc', 'due', 'gift', 'wallet']
+        read_only_fields = fields
+
+    def get_brand(self, obj):
+        if obj.brand:
+            return {
+                'id': obj.brand.id,
+                'logo': obj.brand.logo.url if obj.brand.logo else None,
+                'name_en': obj.brand.name_en,
+                'name_kr': obj.brand.name_kr,
+                'homepage': obj.brand.homepage,
+                'insta': obj.brand.insta
+            }
+
+    def get_wallet(self, obj):
+        if not obj.wallet:
+            obj.wallet = Wallet.objects.create()
+            obj.save()
+
+        point_total = obj.wallet.point_total
+        count_total = obj.wallet.count_total
+
+        user = get_current_user()
+        if user.is_authenticated:
+            supported = obj.wallet.transaction_set.filter(who=user.boo).exists()
+        else:
+            supported = False
+
+        return {
+            'collected': point_total if point_total else 0,
+            'count': count_total if count_total else 0,
+            'supported': supported
+        }
+
+    def get_gift(self, obj):
+        return {
+            'name': obj.gift.name,
+            'price': obj.gift.price,
+            'pix_0': obj.gift.pix_0.url if obj.gift.pix_0 else None,
+            'pix_1': obj.gift.pix_1.url if obj.gift.pix_1 else None,
+            'pix_2': obj.gift.pix_2.url if obj.gift.pix_2 else None,
+            'pix_3': obj.gift.pix_3.url if obj.gift.pix_3 else None,
+            'pix_4': obj.gift.pix_4.url if obj.gift.pix_4 else None,
+            'desc': obj.gift.desc
+        }
 
 
 def _coverpix_path(instance, fname):
@@ -622,7 +990,6 @@ class Research(BigIdAbstract):
     due = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, null=False)
 
-
     def __str__(self):
         return self.title
 
@@ -631,13 +998,6 @@ class Research(BigIdAbstract):
         if self.coverpix:
             return mark_safe('<img src="{}" style="height:100px;width:170px;object-fit:cover;" />'.format(self.coverpix.url))
         return ""
-
-    # @classmethod
-    # def iresearches(cls, published_only=True):
-    #     if published_only:
-    #         return cls.objects.filter(published=True).order_by('-id').values_list('id', flat=True)
-    #     else:
-    #         return cls.objects.order_by('-id').values_list('id', flat=True)
 
     @classproperty
     def iresearches(cls):
@@ -653,23 +1013,32 @@ class Research(BigIdAbstract):
         return self.researchitem_set.order_by('order').values_list('id', flat=True)
 
 
+
 class ResearchSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     brand = serializers.SerializerMethodField()
+    answers = serializers.SerializerMethodField()
 
     class Meta:
         model = Research
-        fields = ['id', 'owner', 'brand', 'title', 'published', 'coverpix', 'reward', 'due', 'created_at']
+        fields = ['id', 'owner', 'brand', 'title', 'desc', 'published', 'coverpix', 'reward', 'due', 'created_at', 'answers']
         read_only_fields = fields
 
     def get_owner(self, obj):
         return {'id': obj.owner.id, 'nick': obj.owner.nick}
 
+    def get_answers(self, obj):
+        user = get_current_user()
+        if user.is_authenticated:
+            return user.boo.answers_of(obj.id)
+        else:
+            return {}
+
     def get_brand(self, obj):
         if obj.brand:
             return {
                 'id': obj.brand.id,
-                'logo': obj.brand.logo.url,
+                'logo': obj.brand.logo.url if obj.brand.logo else None,
                 'name_en': obj.brand.name_en,
                 'name_kr': obj.brand.name_kr,
                 'homepage': obj.brand.homepage,
@@ -886,6 +1255,7 @@ class Postage(BigIdAbstract, ModelWithFlag):
         # clear
         else:
             Flager.vote_clear(self, boo, note)
+
 
 
 class Reward(BigIdAbstract):
@@ -1121,6 +1491,9 @@ class Pix(BigIdAbstract):
     outlink = models.URLField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    TYPE_KEYS = ( ('X', '없음'), ('M', '남자착장'), ('F', '여자착장'), ('T', '아이템') )
+    type = models.CharField(max_length=1, choices=TYPE_KEYS, default='F', null=False, blank=False)
+
     @classmethod
     def ipixs(cls):
         excl = Q(owner__hidden=True)
@@ -1129,6 +1502,12 @@ class Pix(BigIdAbstract):
 
     def __str__(self):
         return self.desc
+
+    @property
+    def preview(self):
+        if self.src:
+            return mark_safe('<img src="{}" style="height:150px;width:150px;object-fit:cover;" />'.format(self.src.url))
+        return ""
 
 
 class PixSerializer(serializers.ModelSerializer):
@@ -1325,15 +1704,8 @@ class BooSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'followees_id', 'voting_record', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'rewards', 'researched']#, 'contentwork_result']#, 'styleprofile']
-        read_only_fields = ['id', 'followees_id', 'voting_record', 'rewards']#, 'styleprofile']
-
-        # fields = ['id', 'nick', 'text', 'profile', 'active', 'followees_id', 'nfollowers', 'voting_record', 'ilikes_comment', 'nposts', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'links', 'styleprofile', 'rewards']
-        # read_only_fields = ['id', 'active', 'followees_id', 'voting_record', 'ilikes_comment', 'nposts', 'links', 'styleprofile', 'rewards']
-
-    # def get_collections(self, obj):
-    #     return list(obj.collection_set.order_by('-order').values('id', 'name'))
-
+        fields = ['id', 'nick', 'text', 'profile', 'followees_id', 'voting_record', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'rewards', 'researched']
+        read_only_fields = ['id', 'followees_id', 'voting_record', 'rewards']
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)

@@ -22,9 +22,10 @@
     left: 0;
     width: 100%;
     height: 77px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.98);
     /* outline: 1px solid #333333; */
-    box-shadow: 0 0 0 0.5px #333 inset;
+    box-shadow: 0 0 0 1px #333;
+    /* box-shadow: 0 0 0 0.5px #333 inset; */
     border-radius: 15px 15px 0 0;
     pointer-events: auto;
     transition: all 0.3s;
@@ -60,13 +61,14 @@
   .dasher.vcomp > .panel > .sections > .head {
     position: relative;
     width: 100%;
-    height: 70px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     border-bottom: 0.2px solid var(--color-dark);
     box-sizing: border-box;
+    pointer-events: none;
   }
 
   .dasher.vcomp > .panel > .sections > .head > .title {
@@ -76,8 +78,8 @@
   }
 
   .dasher.vcomp > .panel > .sections > .head > .desc {
-    font-size: 12px;
-    color: var(--color-gray);
+    font-size: 10px;
+    color: #999999;
   }
 
   .dasher.vcomp > .panel > .sections > .content {
@@ -133,7 +135,7 @@
 
   .dasher.vcomp > .panel > .monitor > .point-total {
     position: absolute;
-    top: 16px;
+    top: 13px;
     left: 16px;
     font-size: 20px;
     font-weight: bold;
@@ -142,10 +144,10 @@
 
   .dasher.vcomp > .panel > .monitor > .point-today {
     position: absolute;
-    bottom: 20px;
+    bottom: 28px;
     left: 16px;
     font-size: 10px;
-    color: gray;
+    color: #888888;
   }
 
   .dasher.vcomp > .panel > .monitor > .action {
@@ -160,6 +162,7 @@
     background: #f9f9f9;
     border-radius: 100px;
     cursor: pointer;
+    box-shadow: 0 0 0 0.2px #999999 inset;
   }
 
   .dasher.vcomp.show.open > .panel.pointget > .monitor > .action.pointget,
@@ -190,7 +193,7 @@
     border-radius: 100px;
     /* border: 0.2px solid #828282; */
     /* border: 1px solid black; */
-    box-shadow: 0 0 0 0.3px #828282 inset;
+    box-shadow: 0 0 0 0.3px #888888 inset;
     box-sizing: border-box;
     /* overflow: hidden; */
   }
@@ -236,7 +239,7 @@
     <div class='panel' :class='section' @click.stop>
       <div class='sections'>
         <div class='head'>
-          <span class='title'>Level - 001</span>
+          <span class='title'>LEVEL 1</span>
           <span class='desc'>스타일 레벨을 올리면 리서치/인터뷰 참여 폭이 넓어집니다</span>
         </div>
 
@@ -246,14 +249,15 @@
           </div>
 
           <div class='section pointuse'>
-            <pointuse></pointuse>
+            <pointuse :session='session'></pointuse>
           </div>
         </div>
       </div>
 
+
       <div class='monitor' :class='{ show: !rewards_onloading }'>
         <div class='point-total'>[[ reward_total ]]P</div>
-        <div class='point-today'>매일획득 [[ reward_today ]] / [[ reward_amount_max_daily ]]</div>
+        <div class='point-today'>매일보너스 [[ reward_today ]]P / [[ reward_amount_max_daily ]]P</div>
         <div class='action pointget' :class='{ rightmost: !is_superuser }' @click='toggle_section("pointget")'>포인트획득</div>
         <div class='action pointuse' @click='toggle_section("pointuse")' v-if='is_superuser'>포인트사용</div>
         <div class='pbar'>
@@ -283,6 +287,24 @@
     },
 
     watch: {
+      dasher_control: function(_new, _old) {
+        if (_new == 'close') {
+          this.close();
+          this.session.dasher_control = undefined;
+
+        } else if (_new == 'open_pointuse') {
+          this.toggle_section('pointuse');
+          this.session.dasher_control = undefined;
+        }
+      },
+
+      // dasher_close: function(_new, _old) {
+      //   if (_new) {
+      //     this.close();
+      //     this.session.dasher_close = false;
+      //   }
+      // },
+
       rewards_loaded: function(_new, _old) {
         if (_new) {
           if (this.rewards_history) {
@@ -323,10 +345,18 @@
     },
 
     computed: {
+      dasher_control: function() {
+        return this.session.dasher_control
+      },
+
+      // dasher_close: function() {
+      //   return this.session.dasher_close
+      // },
+
       status: function() {
         return {
           // show: this.rewards_onloading || (true && this.session.on('research', 'stylevote', 'search')),
-          show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search')),
+          show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search', 'brander')),
           open: this.open
         }
       },
@@ -369,6 +399,7 @@
 
       rewards_onloading: function() {
         return this.session.user.has_auth && !this.rewards_loaded
+        // return false
       },
 
       reward_total: function() {

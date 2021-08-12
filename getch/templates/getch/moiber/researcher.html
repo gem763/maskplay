@@ -1,6 +1,7 @@
 <style>
   .researcher.vcomp .page-body {
-    background: white;
+    /* background: white; */
+    background: #f8f8f8;
   }
 
   .researcher.vcomp .page-body > .spacer {
@@ -24,7 +25,8 @@
     :open='session.page.researcher.open'
     :from='session.page.researcher.from'
     :hide_close='true'
-    :hide_headerbar='true'>
+    :hide_headerbar='true'
+    @scroll='scroll'>
 
     <template #headerbar-menu>
     </template>
@@ -54,6 +56,12 @@
     props: ['session'],
     data: function() {
       return {}
+    },
+
+    methods: {
+      scroll: function(obj) {
+        this.session.scroll_direction = obj.scroll_direction;
+      }
     },
 
     computed: {

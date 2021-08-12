@@ -17,15 +17,18 @@ class Session {
       emailsignup:  { order: 0, instant: false, open: false, from: 'left', email: undefined },
       texteditor:   { order: 0, instant: false, open: false, from: 'left', basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
       pixeditor:    { order: 0, instant: false, open: false, from: 'left', src: undefined, pixloader: undefined, type: undefined },
+      profileconfig:{ order: 0, instant: false, open: false, from: 'left' },
       profiler:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
 
       // mbti:         { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
       contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
+      checkingame:  { order: 0, instant: false, open: false, from: 'top', researchitem: Checkingame.build(this) },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
+      brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
       about:        { order: 0, instant: true, open: false, from: 'left' },
       recruit:      { order: 0, instant: true, open: false, from: 'left' },
@@ -33,6 +36,8 @@ class Session {
       privacy:      { order: 0, instant: true, open: false, from: 'left' },
       landing:      { order: 0, instant: true, open: false, from: 'left' },
       infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
+
+      test:         { order: 0, instant: false, open: false, from: 'right' },
     };
 
     this.home = 'researcher';
@@ -53,9 +58,23 @@ class Session {
     this.entry = undefined;
     this.show_notice = undefined;
     this.researches = new Researches(this);
+    this.supports = new Supports(this);
+    this.shoptems = undefined;
+    this.coffeecoupons = undefined;
+    this.raffles = undefined;
+    // this.checkingame = Checkingame.build(this);
     this.user = new User(this);
+
+    this.dasher_control = undefined;
+    // this.dasher_close = false;
     // setTimeout(()=>{this.user = new User(this);}, 10);
     // this.keyset_sampling();
+
+    // this.open_brander(Brand.init(this, {id:2}));
+    // this.open_test();
+    // this.open_my();
+    // this.open_profileconfig();
+    // this.open_checkingame();
   }
 
   // keyset_sampling() {
@@ -212,6 +231,7 @@ class Session {
 
   open_my() {
     if (this.user.auth) {
+      // this.open_page('my');
       this.open_agit(this.user.boo);
 
     } else {
@@ -244,6 +264,16 @@ class Session {
   open_research(content) {
     this.page.research.content = content;
     this.open_page('research');
+  }
+
+  open_checkingame() {
+    this.open_page('checkingame');
+  }
+
+  open_brander(brand) {
+    this.page.brander.brand = brand;
+    // this.page.brander.ready = false;
+    this.open_page('brander');
   }
 
   open_stylevote() {
@@ -293,6 +323,10 @@ class Session {
     this.open_page('mbtiresult');
   }
 
+  open_profileconfig() {
+    this.open_page('profileconfig');
+  }
+
   open_profiler(type) {
     if (type) {
       this.page.profiler.type = type;
@@ -304,8 +338,24 @@ class Session {
     this.open_page('profiler');
   }
 
+  open_test() {
+    this.open_page('test');
+  }
+
   contact() {
     window.open('mailto:contact@moiber.com')
+  }
+
+  load_shoptems() {
+    this.shoptems = new Shoptems(this);
+  }
+
+  load_raffles() {
+    this.raffles = new Raffles(this);
+  }
+
+  load_coffeecoupons() {
+    this.coffeecoupons = new Coffeecoupons(this);
   }
 }
 
@@ -665,6 +715,149 @@ class ResearchItem extends Loader {
 }
 
 
+class Checkingame extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/research/checkingame`;
+    this.order = undefined;
+    this.type = undefined;
+    this.gender = undefined;
+    this.preq = undefined;
+    this.question = undefined;
+    this.pix = undefined;
+    this.mc = undefined;
+  }
+}
+
+
+class Item extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/item/${baseobj.id}`;
+    // this.name = undefined;
+    // this.price = undefined;
+    // this.pix_0 = undefined;
+    this.pix_1 = undefined;
+    this.pix_2 = undefined;
+    this.pix_3 = undefined;
+    this.pix_4 = undefined;
+    this.desc = undefined;
+    // this.out_of_stock = undefined;
+  }
+
+  static init(session, baseobj) {
+    if (baseobj.id in session.store.itemstore) {
+      return session.store.itemstore[baseobj.id]
+
+    } else {
+      const item = super.init(session, baseobj);
+      Vue.set(session.store.itemstore, item.id, item);
+      return item
+    }
+  }
+}
+
+
+class Raffle extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/raffle/${baseobj.id}`;
+    this.item = undefined;
+    this.deduction = undefined;
+    this.due = undefined;
+    this.wallet = undefined;
+  }
+
+  assign(obj) {
+    this.item = Item.init(this.session, obj.item);
+    this.deduction = obj.deduction;
+    this.due = obj.due;
+    this.wallet = obj.wallet;
+  }
+}
+
+
+class Coffeecoupon extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/coffeecoupon/${baseobj.id}`;
+    this.item = undefined;
+  }
+
+  assign(obj) {
+    this.item = Item.init(this.session, obj.item);
+  }
+}
+
+
+class Shoptem extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/shoptem/${baseobj.id}`;
+    this.item = undefined;
+  }
+
+  assign(obj) {
+    this.item = Item.init(this.session, obj.item);
+  }
+}
+
+// class Support extends Loader {
+//   constructor(session, baseobj) {
+//     super(session, baseobj);
+//     this.url = `/support/${baseobj.id}`;
+//     this.ticketsize = undefined;
+//     this.target = undefined;
+//     this.desc = undefined;
+//     this.due = undefined;
+//     this.gift = undefined;
+//     this.active = undefined;
+//   }
+// }
+
+
+class Brand extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/brand/${baseobj.id}`;
+    // this.name_en = undefined;
+    // this.name_kr = undefined;
+    // this.logo = undefined;
+    // this.homepage = undefined;
+    // this.insta = undefined;
+    // this.facebook = undefined;
+    // this.youtube = undefined;
+    this.origin = undefined;
+    this.established = undefined;
+    this.desc = undefined;
+    this.coverpix_0 = undefined;
+    this.coverpix_1 = undefined;
+    this.coverpix_2 = undefined;
+    this.coverpix_3 = undefined;
+    this.coverpix_4 = undefined;
+    // this.supports = undefined;
+    this.researches = [];
+    this.supports = [];
+  }
+
+  // assign(obj) {
+  //   Object.assign(this, obj);
+  //   this.supports = new Supports(this.session, this.id);
+  // }
+
+  static init(session, baseobj) {
+    if (baseobj.id in session.store.brandstore) {
+      return session.store.brandstore[baseobj.id]
+
+    } else {
+      const brand = super.init(session, baseobj);
+      Vue.set(session.store.brandstore, brand.id, brand);
+      return brand
+    }
+  }
+}
+
+
 class Research extends Loader {
   constructor(session, baseobj) {
     super(session, baseobj);
@@ -672,23 +865,57 @@ class Research extends Loader {
     this.owner = undefined;
     this.brand = undefined;
     this.title = undefined;
+    this.desc = undefined;
     this.published = undefined;
     this.coverpix = undefined;
     this.reward = undefined;
     this.due = undefined;
     this.created_at = undefined;
+    this.answers = undefined;
     this.researchitems = new ResearchItems(session, baseobj.id);
   }
 
   assign(obj) {
     this.owner = Baseboo.init(this.session, obj.owner);
-    this.brand = obj.brand;
+    // this.brand = obj.brand ? Brand.init(this.session, obj.brand) : obj.brand;
+    // this.brand = obj.brand;
     this.title = obj.title;
+    this.desc = obj.desc;
     this.published = obj.published;
     this.coverpix = obj.coverpix;
     this.reward = obj.reward;
     this.due = obj.due;
     this.created_at = obj.created_at;
+    this.answers = obj.answers;
+
+    if (obj.brand) {
+      this.brand = Brand.init(this.session, obj.brand);
+      this.brand.researches.push(this);
+    }
+  }
+}
+
+class Support extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/support/${baseobj.id}`;
+    this.brand = undefined;
+    this.ticketsize = undefined;
+    this.target = undefined;
+    this.desc = undefined;
+    this.due = undefined;
+    this.gift = undefined;
+    this.active = undefined;
+    this.wallet = undefined;
+  }
+
+  assign(obj) {
+    Object.assign(this, obj);
+    // this.brand = obj.brand ? Brand.init(this.session, obj.brand) : obj.brand;
+    if (obj.brand) {
+      this.brand = Brand.init(this.session, obj.brand);
+      this.brand.supports.push(this);
+    }
   }
 }
 
@@ -718,7 +945,7 @@ class Multiloader {
       // const content = this.contentype.build(this.session, { id:_id })
 
       if (_.findIndex(this.list, ['id', _id]) == -1) {
-        const content = this.contentype.build(this.session, { id:_id })
+        const content = this.contentype.build(this.session, { id:_id });
         this.list.push(content);
         this.list_onloading.push(content);
       }
@@ -743,6 +970,69 @@ class Multiloader {
 }
 
 
+class Raffles extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Raffle;
+    this.nloads_init = 10;
+    this.ids_url = `/raffle/iraffles`;
+    this.load_ids();
+  }
+}
+
+
+class Coffeecoupons extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Coffeecoupon;
+    this.nloads_init = 10;
+    this.ids_url = `/coffeecoupon/icoffeecoupons`;
+    this.load_ids();
+  }
+}
+
+
+class Shoptems extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Shoptem;
+    this.nloads_init = 10;
+    this.ids_url = `/shoptem/ishoptems`;
+    this.load_ids();
+  }
+}
+
+// class Supportbrands extends Multiloader {
+//   constructor(session) {
+//     super(session);
+//     this.contentype = Brand;
+//     this.nloads_init = 10;
+//     this.ids_url = `/brand/isupportbrands`;
+//     this.load_ids();
+//   }
+// }
+
+class Supports extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Support;
+    this.nloads_init = 100; // 우선 많이 받아오는데,, 나중에 이걸 바꿔야한다
+    this.ids_url = `/support/isupports`;
+    this.load_ids();
+  }
+}
+
+// class Supports extends Multiloader {
+//   constructor(session, brand_id) {
+//     super(session);
+//     this.contentype = Support;
+//     this.nloads_init = 0;
+//     this.ids_url = `/brand/${brand_id}/isupports`;
+//     this.load_ids();
+//   }
+// }
+
+
 class ResearchItems extends Multiloader {
   constructor(session, research_id) {
     super(session);
@@ -762,25 +1052,24 @@ class Researches extends Multiloader {
   constructor(session) {
     super(session);
     this.contentype = Research;
-    this.nloads_init = 10;
+    this.nloads_init = 100;
     this.ids_url = `/research/iresearches`;
     this.load_ids();
   }
 
-  load_onworks() {
-    this.onloading = true;
-    fetch('/research/iresearches/onwork')
-      .then(x => x.json())
-      .then(js => {
-        this.onloading = false;
-
-        if (js.success) {
-          this.ids = js.ids.concat(this.ids);
-          // console.log(this.ids);
-          this.load(js.ids.length);
-        }
-      });
-  }
+  // load_onworks() {
+  //   this.onloading = true;
+  //   fetch('/research/iresearches/onwork')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       this.onloading = false;
+  //
+  //       if (js.success) {
+  //         this.ids = js.ids.concat(this.ids);
+  //         this.load(js.ids.length);
+  //       }
+  //     });
+  // }
 }
 
 
@@ -896,6 +1185,8 @@ class Store {
   constructor() {
     this.pixstore = {};
     this.boostore = {};
+    this.brandstore = {};
+    this.itemstore = {};
   }
 }
 
@@ -916,11 +1207,11 @@ class User {
       .then(js => {
         if (js.success) {
           this.auth = new Auth(js.user, this.session);
+          // this.session.open_profileconfig();
 
-          if (js.user.is_superuser) {
-            // console.log(11111);
-            this.session.researches.load_onworks();
-          }
+          // if (js.user.is_superuser) {
+          //   this.session.researches.load_onworks();
+          // }
         }
 
         this.guest = { boo: JSON.parse(js.guestboo) };

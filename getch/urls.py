@@ -111,6 +111,7 @@ urlpatterns = [
     # path('stylevote/<int:ipix_pos>/<int:ipix_neg>/', v.stylevote, name='stylevote'),
     path('stylevote/', v.stylevote, name='stylevote'),
     path('settle/', v.settle, name='settle'),
+    path('wallet/write/', v.wallet_write, name='wallet_write'),
 
     path('postage/<int:postage_id>/', v.get_postage, name='get_postage'),
     # path('contentwork/<str:agenda>/', v.get_contentwork, name='get_contentwork'),
@@ -130,4 +131,22 @@ urlpatterns = [
     path('research/<int:research_id>/iresearchitems/', v.get_iresearchitems, name='get_iresearchitems'),
     path('research/item/<int:researchitem_id>/', v.get_researchitem, name='get_researchitem'),
     path('research/<int:research_id>/item/<int:researchitem_id>/answer/<answer>/', v.researchitem_answer, name='researchitem_answer'),
+    path('research/checkingame/', v.get_checkingame, name='get_checkingame'),
+
+    # path('brand/isupportbrands/', v.get_isupportbrands, name='get_isupportbrands'),
+    path('brand/<int:brand_id>/', v.get_brand, name='get_brand'),
+    # path('brand/<int:brand_id>/isupports/', v.get_isupports, name='get_isupports'),
+    path('support/<int:support_id>/', v.get_support, name='get_support'),
+    path('support/isupports/', v.get_isupports, name='get_isupports'),
+
+    path('coffeecoupon/<int:coffeecoupon_id>/', v.get_coffeecoupon, name='get_coffeecoupon'),
+    path('coffeecoupon/icoffeecoupons/', v.get_icoffeecoupons, name='get_icoffeecoupons'),
+
+    path('shoptem/<int:shoptem_id>/', v.get_shoptem, name='get_shoptem'),
+    path('shoptem/ishoptems/', v.get_ishoptems, name='get_ishoptems'),
+
+    path('raffle/<int:raffle_id>/', v.get_raffle, name='get_raffle'),
+    path('raffle/iraffles/', v.get_iraffles, name='get_iraffles'),
+
+    path('item/<int:item_id>/', v.get_item, name='get_item'),
 ]

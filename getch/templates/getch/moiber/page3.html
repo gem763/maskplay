@@ -75,10 +75,10 @@
 
   .page > .content > .close {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 40px;
-    height: 40px;
+    top: 0;
+    left: 0;
+    width: 45px;
+    height: 45px;
     /* top: var(--w-2);
     left: var(--w-2);
     width: var(--w-10);
@@ -91,9 +91,9 @@
   }
 
   .page > .content > .close img {
-    width: 40%;
+    width: 100%;
     height: auto;
-    transform: rotate(270deg) translateY(-10%);
+    /* transform: rotate(270deg) translateY(-10%); */
     pointer-events: none;
   }
 
@@ -254,7 +254,7 @@
         </transition>
 
         <div class='close' @click='$emit("close")' v-show='!hide_close'>
-          <img src='/static/materials/icons/backicon.png'>
+          <img src='/static/materials/icons/button-backward.png'>
         </div>
       </div>
     </transition>

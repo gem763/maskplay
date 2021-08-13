@@ -6,9 +6,6 @@
   .agit.vcomp .page-body > .container {
     position: relative;
     width: 100%;
-    /* height: 100%; */
-    /* background: #f5f5f5; */
-    /* padding-top: 100px; */
     box-sizing: border-box;
     padding-bottom: 200px;
   }
@@ -20,39 +17,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .agit.vcomp .page-body > .container > .segment.topspacer {
-    height: 70px;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard {
-    position: relative;
-    /* width: 100%; */
-    height: 200px;
-    background: white;
-    margin-top: 60px;
-    border-radius: 8px;
-    /* margin-left: 16px; */
-    /* margin-right: 16px; */
-    /* box-sizing: border-box; */
-    width: calc(100% - 32px);
     overflow: hidden;
-    cursor: pointer;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard.other {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
   }
 
   .agit.vcomp .page-body > .container > .segment > .menu {
     position: relative;
-    /* width: 100%; */
     height: 60px;
-    /* background: lightblue; */
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -100,8 +70,29 @@
     justify-content: center;
   }
 
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    width: calc(100% - 32px);
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard.my {
+    margin-top: 116px;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard.other {
+    margin-top: 60px;
+  }
+
   .agit.vcomp .page-body > .container > .segment > .profilecard > .spinner {
-  /* .agit.vcomp .page-body > .container > .segment > .spinner { */
     position: absolute;
     top: 0;
     left: 0;
@@ -124,16 +115,7 @@
   }
 
 
-  .agit.vcomp .page-body > .container > .segment > .profilecard.me > .profilepix {
-    position: absolute;
-    top: 30px;
-    left: 16px;
-  }
-
   .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix > img {
-    /* position: absolute;
-    top: 0;
-    left: 0; */
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -146,86 +128,62 @@
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .nick {
-    font-size: 22px;
-    margin-top: 15px;
+    font-size: 18px;
+    margin-top: 16px;
+    margin-bottom: 10px;
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .text {
     font-size: 12px;
     color: #777777;
+    margin: 10px;
   }
 
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 70%;
-    height: 100%;
-    /* background: lightgreen; */
-    padding-top: 30px;
-    padding-right: 16px;
-    padding-bottom: 30px;
-    box-sizing: border-box;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .right {
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail {
+    /* background: lightblue; */
+    width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    flex-direction: row;
   }
 
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .nick.right {
-    font-size: 18px;
-    height: 20%;
-    /* background: orange; */
-    align-items: flex-start;
-  }
 
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .styleprofile.right {
-    font-size: 20px;
-    height: 25%;
-    color: #828282;
-    align-items: flex-end;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .level.right {
-    font-size: 24px;
-    height: 25%;
-    /* background: orange; */
-    font-weight: bold;
-    align-items: flex-start;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .wallet.right {
-    font-size: 18px;
-    height: 20%;
-    font-weight: bold;
-    align-items: flex-end;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .profileinfo > .levelup-remain.right {
-    font-size: 10px;
-    height: 10%;
-    /* background: orange; */
-    color: #cecece;
-    align-items: flex-start;
-  }
-
-  .agit.vcomp .page-body > .container > .segment > .profilecard > .message {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail {
     width: 50%;
-    height: 40%;
-    /* background: orange; */
-    padding-bottom: 30px;
-    padding-left: 16px;
+    padding: 0 16px 16px 16px;
     box-sizing: border-box;
     display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+  }
+
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail.left {
+    /* background: lightblue; */
+    align-items: flex-start;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail.right {
+    /* background: lightpink; */
     align-items: flex-end;
-    justify-content: flex-start;
-    font-size: 12px;
-    color: #555555;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail > .lv {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail > .lv-message {
+    font-size: 10px;
+    color: #999999;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail > .point {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .tail > .subtail > .remain {
+    font-size: 16px;
   }
 </style>
 
@@ -243,23 +201,28 @@
 
     <template #page-body>
       <div class='container'>
-        <div class='segment topspacer' v-if='is_myboo'></div>
 
         <div class='segment'>
-          <div class='profilecard me' v-if='is_myboo' @click='go_profileconfig'>
+          <div class='profilecard my' v-if='is_myboo' @click='go_profiler'>
+            <div class='nick'>HI, @[[ nick ]]</div>
+
             <div class='profilepix'>
               <img :src='profilepix' @load='profilepix_loaded'>
             </div>
 
-            <div class='profileinfo'>
-              <div class='right nick'>HI, @[[ nick ]]!</div>
-              <div class='right styleprofile'>Style profile</div>
-              <div class='right level'>LEVEL 1</div>
-              <div class='right wallet'>[[ reward_total ]] / [[ reward_to_levelup ]]</div>
-              <div class='right levelup-remain'>레벨업까지 [[ reward_remain ]] 포인트</div>
-            </div>
+            <div class='text'>[[ text ]]</div>
 
-            <div class='message'>[!] 레벨업을 하면 더 많은 리서치에 참여할 수 있어요</div>
+            <div class='tail'>
+              <div class='subtail left'>
+                <div class='lv'>LEVEL 1</div>
+                <div class='lv-message'>[!] 레벨업을 하면 더 많은 리서치에 참여할 수 있어요</div>
+              </div>
+
+              <div class='subtail right'>
+                <div class='point'>누적 [[ reward_total ]]P</div>
+                <div class='remain'>레벨업까지 [[ reward_remain ]]P</div>
+              </div>
+            </div>
 
             <div class='spinner' v-if='!profilecard_ready'>
               <i class="fa fa-spinner fa-spin"></i>
@@ -301,9 +264,9 @@
               참여중인 이벤트
             </div>
 
-            <div class='section collection' v-else-if='on("collection")'>
+            <!-- <div class='section collection' v-else-if='on("collection")'>
               <colib :boo='boo' :collections='collections' :session='session' ref='colib'></colib>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -320,8 +283,8 @@
     data: function() {
       return {
         // section: 'related',
-        // section: 'collection',
-        section: 'myinfo'
+        section: 'collection',
+        // section: 'myinfo'
       }
     },
 
@@ -407,11 +370,11 @@
         }
       },
 
-      reward_total_p: function() {
-        if (this.reward_total) {
-          return this.reward_total.toLocaleString() + 'P'
-        }
-      },
+      // reward_total_p: function() {
+      //   if (this.reward_total) {
+      //     return this.reward_total.toLocaleString() + 'P'
+      //   }
+      // },
 
       reward_to_levelup: function() {
         if (this.rewards_loaded) {
@@ -422,23 +385,26 @@
         }
       },
 
-      reward_to_levelup_p: function() {
-        if (this.reward_to_levelup) {
-          return this.reward_to_levelup.toLocaleString() + 'P'
-        }
-      },
+      // reward_to_levelup_p: function() {
+      //   if (this.reward_to_levelup) {
+      //     return this.reward_to_levelup.toLocaleString() + 'P'
+      //   }
+      // },
 
       reward_remain: function() {
         if (this.rewards_loaded) {
           return this.reward_to_levelup - this.reward_total
+
+        } else {
+          return 0
         }
       },
 
-      reward_remain_p: function() {
-        if (this.reward_remain) {
-          return this.reward_remain.toLocaleString() + 'P'
-        }
-      },
+      // reward_remain_p: function() {
+      //   if (this.reward_remain) {
+      //     return this.reward_remain.toLocaleString() + 'P'
+      //   }
+      // },
     },
 
     methods: {
@@ -449,11 +415,6 @@
       go_profiler: function() {
         if (this.is_myboo && this.boo.profile && this.boo.id)
           this.session.open_profiler();
-      },
-
-      go_profileconfig: function() {
-        if (this.is_myboo && this.boo.profile && this.boo.id)
-          this.session.open_profileconfig();
       },
 
       on: function(sec) {

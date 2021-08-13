@@ -119,6 +119,15 @@ class BrandAdmin(admin.ModelAdmin):
 #         return mark_safe(u''.join(output))
 
 
+@admin.register(m.Flashgame)
+class Flashgame(admin.ModelAdmin):
+    list_display = ['type', 'gender', 'text', 'published', 'pub_date']
+    list_editable = ['published']
+    exclude = ['created_at']
+    formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
+
+
+
 @admin.register(m.ResearchItem)
 class ResearchItemAdmin(admin.ModelAdmin):
     list_display = ['research', 'order', 'type', 'gender', 'preq', 'text']
@@ -188,8 +197,8 @@ class ResearchAdmin(admin.ModelAdmin):
         return obj.coverpix_preview
 
     inlines = ( ResearchItemInline, )
-    list_display = ['title', 'owner', 'brand', 'published', 'reward', 'due', 'coverpix_preview']
-    list_editable = ['published']
+    list_display = ['title', 'owner', 'brand', 'published', 'reward', 'due', 'priority', 'coverpix_preview']
+    list_editable = ['published', 'priority']
     raw_id_fields = ('owner', 'brand', )
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
     # readonly_fields = ('coverpix_thumbnail',)

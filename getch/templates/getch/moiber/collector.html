@@ -368,12 +368,12 @@
         </div>
       </div>
 
-      <div class='container-shadow' :class='{ show: show_collect }'></div>
+      <!-- <div class='container-shadow' :class='{ show: show_collect }'></div>
 
       <div class='collect-message' :class='{ show: show_collect }'>
         <img src='/static/materials/icons/hanger_white.png'>
         <span><b>옷장에 넣었어요!</b></span>
-      </div>
+      </div> -->
     </template>
   </page>
 </script>
@@ -387,7 +387,7 @@
     data: function() {
       return {
         icol: 0,
-        show_collect: false
+        // show_collect: false
       }
     },
 
@@ -463,8 +463,9 @@
         }
 
         if (this.collection && this.collection.picks) {
-          this.show_collect = true;
-          setTimeout(() => { this.show_collect = false; }, 1000);
+          alert('옷장에 넣었어요!')
+          // this.show_collect = true;
+          // setTimeout(() => { this.show_collect = false; }, 1000);
 
           this.collection.pixids.unshift(this.pix.id);
           const pick = { id: undefined, pix: this.pix };

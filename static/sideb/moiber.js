@@ -17,8 +17,9 @@ class Session {
       emailsignup:  { order: 0, instant: false, open: false, from: 'left', email: undefined },
       texteditor:   { order: 0, instant: false, open: false, from: 'left', basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
       pixeditor:    { order: 0, instant: false, open: false, from: 'left', src: undefined, pixloader: undefined, type: undefined },
-      profileconfig:{ order: 0, instant: false, open: false, from: 'left' },
+      // profileconfig:{ order: 0, instant: false, open: false, from: 'left' },
       profiler:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
+      multichooser: { order: 0, instant: false, open: false, from: 'left', univ: undefined },
 
       // mbti:         { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
@@ -62,6 +63,8 @@ class Session {
     this.shoptems = undefined;
     this.coffeecoupons = undefined;
     this.raffles = undefined;
+    this.stylelabels = undefined; //new Stylelabels(this);
+    this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
     this.user = new User(this);
 
@@ -75,6 +78,7 @@ class Session {
     // this.open_my();
     // this.open_profileconfig();
     // this.open_checkingame();
+    // this.open_multichooser();
   }
 
   // keyset_sampling() {
@@ -262,8 +266,13 @@ class Session {
   }
 
   open_research(content) {
-    this.page.research.content = content;
-    this.open_page('research');
+    if (this.user.has_auth) {
+      this.page.research.content = content;
+      this.open_page('research');
+
+    } else {
+      alert('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다')
+    }
   }
 
   open_checkingame() {
@@ -323,8 +332,13 @@ class Session {
     this.open_page('mbtiresult');
   }
 
-  open_profileconfig() {
-    this.open_page('profileconfig');
+  // open_profileconfig() {
+  //   this.open_page('profileconfig');
+  // }
+
+  open_multichooser(univ) {
+    this.page.multichooser.univ = univ;
+    this.open_page('multichooser');
   }
 
   open_profiler(type) {
@@ -356,6 +370,14 @@ class Session {
 
   load_coffeecoupons() {
     this.coffeecoupons = new Coffeecoupons(this);
+  }
+
+  load_stylelabels() {
+    this.stylelabels = new Stylelabels(this);
+  }
+
+  load_itemlabels() {
+    this.itemlabels = new Itemlabels(this);
   }
 }
 
@@ -715,6 +737,25 @@ class ResearchItem extends Loader {
 }
 
 
+class Stylelabel extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/label/style/${baseobj.id}`;
+    this.label = undefined;
+    this.pix = undefined;
+  }
+}
+
+class Itemlabel extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/label/item/${baseobj.id}`;
+    this.label = undefined;
+    this.pix = undefined;
+  }
+}
+
+
 class Checkingame extends Loader {
   constructor(session, baseobj) {
     super(session, baseobj);
@@ -966,6 +1007,27 @@ class Multiloader {
           this.load(this.nloads_init);
         }
       });
+  }
+}
+
+
+class Stylelabels extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Stylelabel;
+    this.nloads_init = 20;
+    this.ids_url = `/label/istylelabels`;
+    this.load_ids();
+  }
+}
+
+class Itemlabels extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Itemlabel;
+    this.nloads_init = 20;
+    this.ids_url = `/label/iitemlabels`;
+    this.load_ids();
   }
 }
 

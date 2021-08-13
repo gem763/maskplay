@@ -11,45 +11,37 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding-left: 16px;
-    padding-right: 16px;
+    /* padding-left: 16px;
+    padding-right: 16px; */
     box-sizing: border-box;
     margin-bottom: 30px;
   }
 
-  .myinfo.vcomp > .segment > .longbtn {
-    width: 100%;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    background: var(--color-dark);
-    color: white;
-    border-radius: 8px;
-    font-size: 14px;
+  .myinfo.vcomp > .segment:first-child {
     margin-top: 20px;
-    margin-bottom: 30px;
-  }
-
-  .myinfo.vcomp > .segment > .explain {
-    padding-left: 20px;
-    padding-right: 20px;
-    box-sizing: border-box;
-    font-size: 12px;
-    color: #777777;
-    width: 100%;
-    margin-bottom: 10px;
   }
 
   .myinfo.vcomp > .segment > .title {
     width: 100%;
     height: 35px;
     line-height: 35px;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
     font-size: 15px;
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .myinfo.vcomp > .segment > .title > span.reward {
+    font-size: 12px;
+    font-weight: normal;
   }
 
   .myinfo.vcomp > .segment > .infobox {
-    width: 100%;
+    width: calc(100% - 32px);
     /* height: 100px; */
     font-size: 15px;
     /* background: lightblue; */
@@ -79,19 +71,117 @@
     color: #777777;
   }
 
-  .myinfo.vcomp > .segment > img.empty {
+  .myinfo.vcomp > .segment > .empty {
+    position: relative;
+    width: calc(100% - 32px);
+    height: 100px;
+    border-radius: 8px;
+    filter: brightness(80%);
+    overflow: hidden;
+  }
+
+  .myinfo.vcomp > .segment > .empty > img {
     width: 100%;
     height: 100px;
     object-fit: cover;
+  }
+
+  .myinfo.vcomp > .segment > .empty > .guide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: wrap;
+    color: white;
+  }
+
+
+  .myinfo.vcomp > .segment > .candidates {
+    position: relative;
+    width: 100%;
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    box-sizing: border-box;
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate {
+    position: relative;
+    width: calc(100% / 3);
+    padding-top: calc(100% / 3);
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background: rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     border-radius: 8px;
-    filter: brightness(95%);
+    overflow: hidden;
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 0.5s;
+    filter: brightness(80%);
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix.chosen > img {
+    display: none;
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > img.loaded {
+    opacity: 1;
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > .label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > img.loaded + .label {
+    opacity: 1;
+  }
+
+  .myinfo.vcomp > .segment > .candidates > .candidate > .pix.chosen > .label {
+    background: orange;
   }
 </style>
 
 <script type='text/x-template' id='myinfo-template'>
   <div class='myinfo vcomp'>
 
-    <div class='segment'>
+    <!-- <div class='segment'>
       <div class='longbtn'>
         기본 프로필 정보 입력하고 100P 받기
       </div>
@@ -107,21 +197,20 @@
       <div class='explain'>
         모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
       </div>
-    </div>
+    </div> -->
 
     <div class='segment baseinfo'>
-      <div class='title'>내 기본 프로파일 정보</div>
+      <div class='title'>
+        <span>내 기본 프로파일 정보</span>
+        <span class='reward'>+100P</span>
+      </div>
+
       <div class='infobox'>
         <table>
           <tbody>
             <tr>
               <td class='head'>이름</td>
               <td>강세진</td>
-            </tr>
-
-            <tr>
-              <td class='head'>국적</td>
-              <td>대한민국</td>
             </tr>
 
             <tr>
@@ -138,19 +227,48 @@
               <td class='head'>모바일</td>
               <td>010-8818-0514</td>
             </tr>
+
+            <tr>
+              <td class='head'>주소</td>
+              <td>서울시 종로구</td>
+            </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <div class='segment style' @click='session.open_multichooser()'>
-      <div class='title'>내 관심 스타일</div>
-      <img class='empty' src='/static/materials/imgs/tag_game_style.png'>
+    <div class='segment style' @click='goto_stylechooser'>
+      <div class='title'>
+        <span>내 관심 스타일</span>
+        <span class='reward'>+50P</span>
+      </div>
+
+      <div class='empty'>
+        <img src='/static/materials/imgs/tag_game_style.png'>
+        <!-- <div class='guide'>클릭하고 관심 스타일 선택하면 포인트 지급!</div> -->
+      </div>
+
+      <div class='candidates'>
+        <div class='candidate' v-for='id in my_stylelabels'>
+          <div class='pix'>
+            <i class="fa fa-spinner fa-spin"></i>
+            <img :src='stylelabel_pix_of(id)' @load='pix_loaded'>
+            <div class='label'>[[ stylelabel_label_of(id) ]]</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class='segment item' @click='session.open_multichooser()'>
-      <div class='title'>내 관심 아이템</div>
-      <img class='empty' src='/static/materials/imgs/tag_game_item.png'>
+    <div class='segment item' @click='goto_itemchooser'>
+      <div class='title'>
+        <span>내 관심 아이템</span>
+        <span class='reward'>+50P</span>
+      </div>
+
+      <div class='empty'>
+        <img src='/static/materials/imgs/tag_game_item.png'>
+        <!-- <div class='guide'>클릭하고 관심 아이템 선택하면 포인트 지급!</div> -->
+      </div>
     </div>
 
   </div>
@@ -164,6 +282,94 @@
     props: [ 'session' ],
     data: function() {
       return { }
+    },
+
+    created: function() {
+      if (!this.session.stylelabels) {
+        this.session.load_stylelabels()
+      }
+
+      if (!this.session.itemlabels) {
+        this.session.load_itemlabels()
+      }
+    },
+
+    computed: {
+      myboo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      my_stylelabels: function() {
+        if (this.myboo) {
+          return this.myboo.stylelabels
+        }
+      },
+
+      my_itemlabels: function() {
+        if (this.myboo) {
+          return this.myboo.itemlabels
+        }
+      },
+
+      stylelabels: function() {
+        if (this.session.stylelabels) {
+          return this.session.stylelabels.list
+        }
+      },
+
+      itemlabels: function() {
+        if (this.session.itemlabels) {
+          return this.session.itemlabels.list
+        }
+      },
+    },
+
+    methods: {
+      pix_loaded: function(event) {
+        event.target.classList.add('loaded');
+      },
+
+      stylelabel_of: function(id) {
+        if (this.stylelabels) {
+          return _.find(this.stylelabels, ['id', id])
+        }
+      },
+
+      stylelabel_pix_of: function(id) {
+        const _label = this.stylelabel_of(id);
+        if (_label) {
+          return _label.pix
+        }
+      },
+
+      stylelabel_label_of: function(id) {
+        const _label = this.stylelabel_of(id);
+        if (_label) {
+          return _label.label
+        }
+      },
+
+      itemlabel_of: function(id) {
+        if (this.stylelabels) {
+          return _.find(this.stylelabels, ['id', id])
+        }
+      },
+
+      goto_stylechooser: function() {
+        // if (!this.session.stylelabels) {
+        //   this.session.load_stylelabels()
+        // }
+        this.session.open_multichooser(this.session.stylelabels);
+      },
+
+      goto_itemchooser: function() {
+        // if (!this.session.itemlabels) {
+        //   this.session.load_itemlabels()
+        // }
+        this.session.open_multichooser(this.session.itemlabels);
+      }
     }
   });
 </script>

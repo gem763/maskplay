@@ -39,7 +39,7 @@
 
     <template #page-body>
       <div class='spacer head'></div>
-      <researchcard :session='session'></researchcard>
+      <!-- <researchcard :session='session'></researchcard> -->
       <researchcard :session='session' :research='r' v-for='r in researches_list' :key='r.id'></researchcard>
       <!-- <researchcard :session='session' :research='r' v-for='r in researches.list' :key='r.id'></researchcard> -->
       <div class='spacer tail'></div>

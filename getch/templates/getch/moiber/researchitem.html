@@ -652,13 +652,13 @@
 
 
     <div class='backbone' v-if='is_ab'>
-      <div class='section up' :class='outfocused(1)' @click='toggle_choose(0)'>
-        <img class='candidate' :src='researchitem.pix.pix_0'>
+      <div class='section up' :class='outfocused(1)'>
+        <img class='candidate' :src='researchitem.pix.pix_0' @click='toggle_choose(0)'>
         <div class='label' v-if='researchitem.pix.pixlabel_0'>[[ researchitem.pix.pixlabel_0 ]]</div>
       </div>
 
-      <div class='section down' :class='outfocused(0)' @click='toggle_choose(1)'>
-        <img class='candidate' :src='researchitem.pix.pix_1'>
+      <div class='section down' :class='outfocused(0)'>
+        <img class='candidate' :src='researchitem.pix.pix_1' @click='toggle_choose(1)'>
         <div class='label' v-if='researchitem.pix.pixlabel_1'>[[ researchitem.pix.pixlabel_1 ]]</div>
 
         <div class='divider'>
@@ -778,7 +778,7 @@
   Vue.component('researchitem', {
     template: '#researchitem-template',
     delimiters: ['[[', ']]'],
-    props: ['researchitem', 'research', 'brand', 'session', 'swiper', 'pagination'],
+    props: ['researchitem', 'research', 'brand', 'session', 'swiper', 'pagination', 'idx'],
     data: function() {
       return {
         status: -1,
@@ -800,6 +800,72 @@
         }
       },
 
+      'swiper.realIndex': function(_new, _old) {
+        // console.log('88888888', this.swiper.isBi)
+        // if (_new == 0 && this.is_intro) {
+        if (this.swiper.isBeginning && this.is_intro) {
+          this.release_slide();
+          console.log('인트로');
+
+        } else if (this.swiper.isEnd && this.is_outro) {
+          // this.release_slide();
+          if (!this.answers.finished && this.rewarder) {
+            this.rewarder.settle_amount(this.research_reward, 'bonus');
+
+            fetch(`research/${this.research.id}/done`).then(x=>x.json()).then(console.log);
+            this.answers.finished = true;
+
+            setTimeout(() => { alert(this.research_reward + 'P가 지급되었습니다'); }, 500); 
+          }
+
+          console.log('아웃트로');
+
+        } else if (_new == this.idx+1) {
+          if (this.answered) {
+            this.release_slide();
+            console.log('답변완료');
+
+          } else {
+            this.hold_slide();
+            console.log('답변해주세요');
+          }
+        }
+      },
+
+      answered: function(_new, _old) {
+        if (this.swiper) {
+          if (this.swiper.realIndex == this.idx + 1) {
+            if (_new) {
+              this.release_slide();
+              console.log('답변완료');
+
+            } else {
+              this.hold_slide();
+              console.log('답변해주세요');
+            }
+          }
+        }
+      }
+
+      // answered: {
+      //   handler: function(_new, _old) {
+      //     if (!_new && this.swiper) {
+      //       if (this.swiper.realIndex == this.idx + 1) {
+      //         console.log(1234324);
+      //       }
+      //     }
+      //
+      //   }, immediate: true
+      // }
+
+      // idx: function(_new, _old) {
+        // if (this.swiper.realIndex == _new+1) {
+        //   console.log(this.idx)
+        // }
+        // console.log(_new, this.idx);
+      // },
+
+
       // answer: function(_new, _old) {
       //   console.log(_old, _new);
       //   const _answer = JSON.stringify(_new);
@@ -814,6 +880,24 @@
 
 
     computed: {
+      myboo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      rewards_loaded: function() {
+        if (this.myboo) {
+          return this.myboo.profiling_ready
+        }
+      },
+
+      rewarder: function() {
+        if (this.rewards_loaded) {
+          return this.myboo.rewarder
+        }
+      },
+
       answers: function() {
         if (this.research) {
           return this.research.answers
@@ -827,6 +911,23 @@
           }
 
           return this.answers[this.researchitem.id]
+        }
+      },
+
+      // not_answered: function() {
+      //   if (this.answer) {
+      //     return this.on_mainstory && (this.answer[0] == undefined)
+      //   }
+      // },
+
+      answered: function() {
+        if (this.answer) {
+          if (this.on_mainstory) {
+            return this.answer[0] != undefined
+
+          } else {
+            return true
+          }
         }
       },
 
@@ -849,6 +950,15 @@
       // research_id: function() {
       //   return this.research.id
       // },
+
+      research_reward: function() {
+        if (this.research && this.research.reward) {
+          return this.research.reward
+
+        } else {
+          return 0
+        }
+      },
 
       is_intro: function() {
         return this.researchitem.type == 'IN'
@@ -896,6 +1006,14 @@
 
 
     methods: {
+      hold_slide: function() {
+        this.swiper.allowSlideNext = false;
+      },
+
+      release_slide: function() {
+        this.swiper.allowSlideNext = true
+      },
+
       go_brander: function() {
         this.session.open_brander(this.brand);
       },
@@ -946,7 +1064,7 @@
 
       multi_choose: function(act) {
         if (this.answer) {
-          if (his.answer.includes(act)) {
+          if (this.answer.includes(act)) {
             const where = this.answer.indexOf(act);
             this.answer.splice(where, 1);
 

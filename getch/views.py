@@ -32,24 +32,14 @@ from django.utils import timezone
 labels = {
     'gender': list(m.Genderlabel.objects.order_by('key').values('id', 'label')),
     'age': list(m.Agelabel.objects.order_by('key').values('id', 'label')),
-    'body': list(m.Bodylabel.objects.order_by('key').values('id', 'label')),
+    # 'body': list(m.Bodylabel.objects.order_by('key').values('id', 'label')),
     'style': list(m.Stylelabel.objects.order_by('key').values('id', 'label')),
     'item': list(m.Itemlabel.objects.order_by('key').values('id', 'label'))
 }
 
-# stats = {
-#     'total_nboos': m.Boo.objects.count(),
-#     'total_nposts': m.Post.objects.count(),
-#     'total_nfollowers': m.Flager.objects.filter(status=m.FOLLOW).count(),
-# }
-
+# print('***************', labels)
 # anonyboo = m.Boo.objects.get(pk=m.BOO_DELETED)
 context = { 'labels':labels }
-# print(timezone.now().date())
-# model_path = os.path.join(settings.BASE_DIR, 'data', 'doc2vec.model')
-# d2v = Doc2Vec.load(model_path)
-# identities = m.Identity.objects.all()
-
 
 def redirect_params(url, params=None):
     response = redirect(url)
@@ -360,6 +350,20 @@ def get_iresearches(request):
 #     return JsonResponse({'success':True, 'ids':_ires}, safe=False)
 
 
+def research_done(request, research_id):
+    try:
+        if request.user.is_authenticated:
+            boo = request.user.boo
+            research_id = str(research_id)
+            boo.answers[research_id]['finished'] = True
+            boo.save()
+            return JsonResponse({'success':True, 'message':'research done successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while research done'}, safe=False)
+
+
+
 def get_research(request, research_id):
     try:
         _research = m.Research.objects.get(pk=research_id)
@@ -428,6 +432,37 @@ def get_brand(request, brand_id):
         _brand = m.Brand.objects.get(pk=brand_id)
         _brand = m.BrandSerializer(_brand).data
         return JsonResponse({'success':True, 'content':_brand}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+
+def get_istylelabels(request):
+    _ilabels = list(m.Stylelabel.istylelabels)
+    return JsonResponse({'success':True, 'ids':_ilabels}, safe=False)
+
+
+def get_iitemlabels(request):
+    _ilabels = list(m.Itemlabel.iitemlabels)
+    return JsonResponse({'success':True, 'ids':_ilabels}, safe=False)
+
+
+def get_stylelabel(request, label_id):
+    try:
+        _label = m.Stylelabel.objects.get(pk=label_id)
+        _label = m.StylelabelSerializer(_label).data
+        return JsonResponse({'success':True, 'content':_label}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_itemlabel(request, label_id):
+    try:
+        _label = m.Itemlabel.objects.get(pk=label_id)
+        _label = m.ItemlabelSerializer(_label).data
+        return JsonResponse({'success':True, 'content':_label}, safe=False)
 
     except:
         return JsonResponse({'success':False}, safe=False)

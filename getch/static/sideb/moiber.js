@@ -63,6 +63,8 @@ class Session {
     this.shoptems = undefined;
     this.coffeecoupons = undefined;
     this.raffles = undefined;
+    this.stylelabels = undefined; //new Stylelabels(this);
+    this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
     this.user = new User(this);
 
@@ -76,7 +78,7 @@ class Session {
     // this.open_my();
     // this.open_profileconfig();
     // this.open_checkingame();
-    this.open_multichooser();
+    this.open_my();
   }
 
   // keyset_sampling() {
@@ -264,8 +266,13 @@ class Session {
   }
 
   open_research(content) {
-    this.page.research.content = content;
-    this.open_page('research');
+    if (this.user.has_auth) {
+      this.page.research.content = content;
+      this.open_page('research');
+
+    } else {
+      alert('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다')
+    }
   }
 
   open_checkingame() {
@@ -363,6 +370,14 @@ class Session {
 
   load_coffeecoupons() {
     this.coffeecoupons = new Coffeecoupons(this);
+  }
+
+  load_stylelabels() {
+    this.stylelabels = new Stylelabels(this);
+  }
+
+  load_itemlabels() {
+    this.itemlabels = new Itemlabels(this);
   }
 }
 
@@ -484,10 +499,10 @@ class Boo extends Baseboo {
   constructor(session, baseobj) {
     super(session, baseobj);
     this.voting_record = undefined;
-    this.genderlabels = [];
-    this.agelabels = [];
-    this.stylelabels = [];
-    this.itemlabels = [];
+    this.genderlabels = undefined;
+    this.agelabels = undefined;
+    this.stylelabels = undefined;
+    this.itemlabels = undefined;
     this.styleprofile = {};
     // this.contentwork_result = {};
     this.rewarder = undefined;
@@ -589,7 +604,7 @@ class Rewarder {
     this.reward_per_collect = 1;
     this.reward_per_checkin = 10;
     this.reward_welcome = 500;
-    this.reward_to_levelup = 2500;
+    this.reward_to_levelup = 5000;
   }
 
   settle(n, by) {
@@ -718,6 +733,25 @@ class ResearchItem extends Loader {
     // this.pixlabel_0 = undefined;
     // this.pix_1 = undefined;
     // this.pixlabel_1 = undefined;
+  }
+}
+
+
+class Stylelabel extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/label/style/${baseobj.id}`;
+    this.label = undefined;
+    this.pix = undefined;
+  }
+}
+
+class Itemlabel extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/label/item/${baseobj.id}`;
+    this.label = undefined;
+    this.pix = undefined;
   }
 }
 
@@ -977,6 +1011,27 @@ class Multiloader {
 }
 
 
+class Stylelabels extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Stylelabel;
+    this.nloads_init = 20;
+    this.ids_url = `/label/istylelabels`;
+    this.load_ids();
+  }
+}
+
+class Itemlabels extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Itemlabel;
+    this.nloads_init = 20;
+    this.ids_url = `/label/iitemlabels`;
+    this.load_ids();
+  }
+}
+
+
 class Raffles extends Multiloader {
   constructor(session) {
     super(session);
@@ -1214,7 +1269,7 @@ class User {
       .then(js => {
         if (js.success) {
           this.auth = new Auth(js.user, this.session);
-          // this.session.open_profileconfig();
+          // this.session.open_my();
 
           // if (js.user.is_superuser) {
           //   this.session.researches.load_onworks();

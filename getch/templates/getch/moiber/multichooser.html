@@ -7,8 +7,105 @@
     position: relative;
     width: 100%;
     box-sizing: border-box;
-    padding-top: 100px;
+    padding-top: 60px;
     padding-bottom: 200px;
+  }
+
+  .multichooser.vcomp .page-body > .container > .header {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .multichooser.vcomp .page-body > .container > .header > .title {
+    font-size: 14px;
+  }
+
+  .multichooser.vcomp .page-body > .container > .header > .desc {
+    font-size: 12px;
+    color: #777777;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates {
+    position: relative;
+    width: 100%;
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    box-sizing: border-box;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate {
+    position: relative;
+    width: calc(100% / 3);
+    padding-top: calc(100% / 3);
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background: rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    opacity: 0;
+    transition: all 0.5s;
+    filter: brightness(80%);
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix.chosen > img {
+    display: none;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > img.loaded {
+    opacity: 1;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > .label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > img.loaded + .label {
+    opacity: 1;
+  }
+
+  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix.chosen > .label {
+    background: orange;
   }
 </style>
 
@@ -25,7 +122,20 @@
 
     <template #page-body>
       <div class='container'>
-        AAAA
+        <div class='header'>
+          <div class='title'>[[ title ]]</div>
+          <div class='desc'>관심있는 패션 [[ title ]]을 모두 선택하세요</div>
+        </div>
+
+        <div class='candidates'>
+          <div class='candidate' v-for='l in labels_list'>
+            <div class='pix' :class='pix_class(l.id)' @click='toggle_choose(l.id)'>
+              <i class="fa fa-spinner fa-spin"></i>
+              <img :src='l.pix' @load='pix_loaded'>
+              <div class='label'>[[ l.label ]]</div>
+            </div>
+          </div>
+        </div>
       </div>
     </template>
   </page>
@@ -39,6 +149,82 @@
     props: ['session'],
     data: function() {
       return {}
+    },
+
+    methods: {
+      pix_loaded: function(event) {
+        event.target.classList.add('loaded');
+      },
+
+      toggle_choose: function(label_id) {
+        if (this.myboo_labels) {
+          if (this.myboo_labels.includes(label_id)) {
+            const idx = this.myboo_labels.indexOf(label_id);
+            this.myboo_labels.splice(idx, 1);
+
+          } else {
+            this.myboo_labels.push(label_id);
+          }
+        }
+      },
+
+      pix_class: function(label_id) {
+        if (this.myboo_labels && this.myboo_labels.includes(label_id)) {
+          return 'chosen'
+        }
+      },
+    },
+
+    watch: {
+      myboo_labels: function() {}
+    },
+
+    computed: {
+      myboo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      myboo_labels: function() {
+        if (this.myboo) {
+          return this.myboo[this.label_type]
+        }
+      },
+
+      labels: function() {
+        // return this.session.stylelabels
+        return this.session.page.multichooser.univ
+      },
+
+      label_type: function() {
+        if (this.labels) {
+          return this.labels.constructor.name.toLowerCase()
+        }
+      },
+
+      is_stylelabels: function() {
+        return this.label_type == 'stylelabels'
+      },
+
+      is_itemlabels: function() {
+        return this.label_type == 'itemlabels'
+      },
+
+      labels_list: function() {
+        if (this.labels) {
+          return this.labels.list
+        }
+      },
+
+      title: function() {
+        if (this.is_stylelabels) {
+          return '스타일'
+
+        } else if (this.is_itemlabels) {
+          return '아이템'
+        }
+      }
     }
   });
 </script>

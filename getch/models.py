@@ -154,14 +154,37 @@ class Bodylabel(Label):
     pass
 
 class Stylelabel(Label):
-    pass
+    @classproperty
+    def istylelabels(cls):
+        return cls.objects.order_by('key').values_list('id', flat=True)
 
 class Itemlabel(Label):
-    pass
+    @classproperty
+    def iitemlabels(cls):
+        return cls.objects.order_by('key').values_list('id', flat=True)
+
+class StylelabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stylelabel
+        fields = ['id', 'label', 'pix']
+        read_only_fields = fields
+
+class ItemlabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Itemlabel
+        fields = ['id', 'label', 'pix']
+        read_only_fields = fields
+
 
 
 class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        #
+        #
+        super().save(*args, **kwargs)
+
 
     @classmethod
     def guest(cls):
@@ -988,6 +1011,7 @@ class Research(BigIdAbstract):
     coverpix = models.ImageField(upload_to=_coverpix_path, max_length=500, null=True, blank=True)
     reward = models.IntegerField(default=0)
     due = models.DateTimeField(null=True, blank=True)
+    priority = models.IntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now, null=False)
 
     def __str__(self):
@@ -1001,7 +1025,7 @@ class Research(BigIdAbstract):
 
     @classproperty
     def iresearches(cls):
-        return cls.objects.order_by('due').values_list('id', flat=True)
+        return cls.objects.order_by('-priority').values_list('id', flat=True)
         # return cls.objects.filter(published=True).order_by('due').values_list('id', flat=True)
 
     # @classproperty
@@ -1185,6 +1209,31 @@ class ResearchItemSerializer(serializers.ModelSerializer):
                     # _mc['mcpix_' + str(i)] = __mcpix.url
 
             return _mc
+
+
+class Flashgame(BigIdAbstract, ModelWithFlag):
+    TYPE_KEYS = ( ('AB', 'AB타입'), )
+    type = models.CharField(max_length=3, choices=TYPE_KEYS, default='AB', null=False, blank=False)
+    text = models.TextField(max_length=100, blank=True, null=True)
+
+    published = models.BooleanField(default=False)
+    reward = models.IntegerField(default=10)
+
+    GENDER_KEYS = ( ('X', 'X'), ('M', 'M'), ('F', 'F') )
+    gender = models.CharField(max_length=1, choices=GENDER_KEYS, default='X', null=False, blank=False)
+
+    pix_0 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    pixlabel_0 = models.CharField(max_length=20, blank=True, null=True)
+
+    pix_1 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
+    pixlabel_1 = models.CharField(max_length=20, blank=True, null=True)
+
+    pub_date = models.DateField(default=timezone.now, null=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return self.type + ((' | ' + str(self.text)) if self.text else '')
+
 
 
 class Contentwork(BigIdAbstract):

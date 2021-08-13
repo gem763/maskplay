@@ -128,6 +128,7 @@ urlpatterns = [
     path('research/iresearches/', v.get_iresearches, name='get_iresearches'),
     # path('research/iresearches/onwork', v.get_iresearches_onwork, name='get_iresearches_onwork'),
     path('research/<int:research_id>/', v.get_research, name='get_research'),
+    path('research/<int:research_id>/done/', v.research_done, name='research_done'),
     path('research/<int:research_id>/iresearchitems/', v.get_iresearchitems, name='get_iresearchitems'),
     path('research/item/<int:researchitem_id>/', v.get_researchitem, name='get_researchitem'),
     path('research/<int:research_id>/item/<int:researchitem_id>/answer/<answer>/', v.researchitem_answer, name='researchitem_answer'),
@@ -149,4 +150,9 @@ urlpatterns = [
     path('raffle/iraffles/', v.get_iraffles, name='get_iraffles'),
 
     path('item/<int:item_id>/', v.get_item, name='get_item'),
+
+    path('label/style/<int:label_id>/', v.get_stylelabel, name='get_stylelabel'),
+    path('label/item/<int:label_id>/', v.get_itemlabel, name='get_itemlabel'),
+    path('label/istylelabels/', v.get_istylelabels, name='get_istylelabels'),
+    path('label/iitemlabels/', v.get_iitemlabels, name='get_iitemlabels'),
 ]

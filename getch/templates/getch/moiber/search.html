@@ -448,7 +448,7 @@
 
       is_my_collection: function() {
         if (this.session.user.has_auth && this.on_collection) {
-          return _.findIndex(this.session.user.boo.collections, ['id', this.collection.id]) > -1
+          return _.findIndex(this.session.user.boo.collections.list, ['id', this.collection.id]) > -1
         }
       },
 
@@ -602,6 +602,7 @@
         });
 
         this.session.editing.selected = [];
+        this.cancel_edit();
       },
 
       cancel_edit: function() {

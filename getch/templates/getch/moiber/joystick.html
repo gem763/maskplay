@@ -208,7 +208,7 @@
         <img src='/static/materials/icons/setting_line.png'>
         <div class='dimmer' v-if='on_menu'></div>
         <div class='setting-menu' v-if='on_menu'>
-          <div class='item' @click='session.open_profiler()'>내 프로필 편집</div>
+          <!-- <div class='item' @click='session.open_profiler()'>내 프로필 편집</div> -->
           <div class='item' @click='make_collection'>옷장 만들기</div>
           <div class='item logout' @click='session.logout()'>로그아웃</div>
         </div>
@@ -251,9 +251,10 @@
           minimized: (this.session.scroll_direction=='down' && this.session.on('search'))
                       || (this.session.scroll_direction=='down' && this.session.on('stylevote'))
                       || (this.session.scroll_direction=='down' && this.session.on('researcher'))
-                      || (this.session.scroll_direction=='down' && this.session.on('agit')),
+                      || (this.session.scroll_direction=='down' && this.session.on('agit'))
+                      || (this.session.scroll_direction=='down' && this.session.on('brander')),
 
-          hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'signup', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research', 'checkingame')
+          hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'baseinfo', 'signup', 'signupper', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research', 'checkingame', 'flashgames')
                   || this.on_agit
         }
       },

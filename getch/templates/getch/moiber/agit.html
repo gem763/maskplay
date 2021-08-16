@@ -59,10 +59,10 @@
     /* height: 300px; */
   }
 
-  .agit.vcomp .page-body > .container > .segment > .sections > .section.related {
+  /* .agit.vcomp .page-body > .container > .segment > .sections > .section.related {
     padding-top: 100px;
     background: lightpink;
-  }
+  } */
 
   .agit.vcomp .page-body > .container > .segment > .sections > .section {
     display: flex;
@@ -90,6 +90,14 @@
 
   .agit.vcomp .page-body > .container > .segment > .profilecard.other {
     margin-top: 60px;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard.other > .profilepix {
+    margin-top: 16px;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard.other > .nick {
+    margin-bottom: 16px;
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .spinner {
@@ -203,7 +211,7 @@
       <div class='container'>
 
         <div class='segment'>
-          <div class='profilecard my' v-if='is_myboo' @click='go_profiler'>
+          <div class='profilecard my' v-if='is_myboo' @click=''>
             <div class='nick'>HI, @[[ nick ]]</div>
 
             <div class='profilepix'>
@@ -219,8 +227,8 @@
               </div>
 
               <div class='subtail right'>
-                <div class='point'>누적 [[ reward_total ]]P</div>
-                <div class='remain'>레벨업까지 [[ reward_remain ]]P</div>
+                <div class='point'>누적 [[ amount ]]P</div>
+                <div class='remain'>레벨업까지 [[ amount_remain ]]P</div>
               </div>
             </div>
 
@@ -244,11 +252,10 @@
         </div>
 
         <div class='segment'>
-          <!-- <div class='menu' v-if='false'> -->
           <div class='menu' v-if='is_myboo'>
-            <span class='item' :class='{ on: on("myinfo") }' @click='sectionize("myinfo")'>내정보</span>
-            <!-- <span class='item' :class='{ on: on("related") }' @click='sectionize("related")'>참여 중인 이벤트</span> -->
+            <span class='item' :class='{ on: on("related") }' @click='sectionize("related")'>참여 중인 이벤트</span>
             <span class='item' :class='{ on: on("collection") }' @click='sectionize("collection")'>내옷장</span>
+            <span class='item' :class='{ on: on("myinfo") }' @click='sectionize("myinfo")'>내프로필</span>
           </div>
 
           <div class='spacer' v-else></div>
@@ -261,12 +268,12 @@
             </div>
 
             <div class='section related' v-if='on("related")'>
-              참여중인 이벤트
+              <myevents :session='session'></myevents>
             </div>
 
-            <!-- <div class='section collection' v-else-if='on("collection")'>
+            <div class='section collection' v-else-if='on("collection")'>
               <colib :boo='boo' :collections='collections' :session='session' ref='colib'></colib>
-            </div> -->
+            </div>
           </div>
         </div>
       </div>
@@ -282,8 +289,8 @@
     props: ['session'],
     data: function() {
       return {
-        // section: 'related',
-        section: 'collection',
+        section: 'related',
+        // section: 'collection',
         // section: 'myinfo'
       }
     },
@@ -318,7 +325,7 @@
 
       profilecard_ready: function() {
         if (this.is_myboo) {
-          return this.profilepix_ready && this.rewards_loaded
+          return this.profilepix_ready && this.wallet_loaded
 
         } else {
           return this.profilepix_ready
@@ -355,56 +362,38 @@
         }
       },
 
-      rewards_loaded: function() {
+      wallet_loaded: function() {
         if (this.boo) {
-          return this.boo.profiling_ready
+          return this.boo.wallet != undefined
         }
       },
 
-      reward_total: function() {
-        if (this.rewards_loaded) {
-          return this.boo.rewarder.rewards.total.reward
+      amount: function() {
+        if (this.wallet_loaded) {
+          return this.boo.wallet.amount
 
         } else {
           return 0
         }
       },
 
-      // reward_total_p: function() {
-      //   if (this.reward_total) {
-      //     return this.reward_total.toLocaleString() + 'P'
-      //   }
-      // },
-
-      reward_to_levelup: function() {
-        if (this.rewards_loaded) {
-          return this.boo.rewarder.reward_to_levelup
+      amount_to_levelup: function() {
+        if (this.wallet_loaded) {
+          return this.boo.wallet.amount_to_levelup
 
         } else {
           return 0
         }
       },
 
-      // reward_to_levelup_p: function() {
-      //   if (this.reward_to_levelup) {
-      //     return this.reward_to_levelup.toLocaleString() + 'P'
-      //   }
-      // },
-
-      reward_remain: function() {
-        if (this.rewards_loaded) {
-          return this.reward_to_levelup - this.reward_total
+      amount_remain: function() {
+        if (this.wallet_loaded) {
+          return this.amount_to_levelup - this.amount
 
         } else {
           return 0
         }
-      },
-
-      // reward_remain_p: function() {
-      //   if (this.reward_remain) {
-      //     return this.reward_remain.toLocaleString() + 'P'
-      //   }
-      // },
+      }
     },
 
     methods: {
@@ -412,10 +401,10 @@
         event.target.classList.add('loaded');
       },
 
-      go_profiler: function() {
-        if (this.is_myboo && this.boo.profile && this.boo.id)
-          this.session.open_profiler();
-      },
+      // go_profiler: function() {
+      //   if (this.is_myboo && this.boo.profile && this.boo.id)
+      //     this.session.open_profiler();
+      // },
 
       on: function(sec) {
         return this.section == sec
@@ -425,8 +414,8 @@
         this.section = sec;
       },
 
-      scroll: function() {
-
+      scroll: function(obj) {
+        this.session.scroll_direction = obj.scroll_direction;
       }
     }
   });

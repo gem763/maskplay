@@ -32,13 +32,13 @@ class AdminpixPreviewWidget(AdminFileWidget):
 
 @admin.register(m.Wallet)
 class WalletAdmin(admin.ModelAdmin):
-    list_display = ['boo', 'raffle', 'support', 'point_in', 'point_out', 'point_total']
+    list_display = ['whose_type', 'whose', 'n_transaction', 'inflow', 'outflow', 'amount']
 
 
 @admin.register(m.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['wallet', 'when', 'who', 'type', 'amount']
-    raw_id_fields = ('who', )
+    list_display = ['sender', 'receiver', 'when', 'type', 'amount']
+    # raw_id_fields = ('client', )
 
 
 @admin.register(m.Support)
@@ -47,9 +47,13 @@ class SupportAdmin(admin.ModelAdmin):
     list_editable = ['active']
 
     def gift_preview(self, obj):
-        if obj.gift and obj.gift.pix_0:
-            return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.gift.pix_0.url))
-        return ""
+        if obj.gift.pix_wide:
+            return mark_safe('<img src="{}" style="height:33px;width:100px;object-fit:cover;" />'.format(obj.gift.pix_wide.url))
+        return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.gift.pix_0.url))
+
+        # if obj.gift and obj.gift.pix_0:
+        #     return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.gift.pix_0.url))
+        # return ""
 
 
 @admin.register(m.Raffle)
@@ -269,9 +273,9 @@ class UserAdmin(admin.ModelAdmin):
         fk_name = 'user'
 
     inlines = ( BooInline, )
-    list_display = ['email', 'is_superuser', 'boo_selected', 'boo']
+    list_display = ['email', 'is_superuser', 'is_staff', 'boo_selected', 'boo']
     list_display_links = ['email']
-    list_editable = ['boo_selected', 'is_superuser']
+    list_editable = ['boo_selected', 'is_superuser', 'is_staff']
 
 
 @admin.register(m.Profile)

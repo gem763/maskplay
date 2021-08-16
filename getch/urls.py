@@ -101,6 +101,8 @@ urlpatterns = [
 
     path('signup/email/', v.email_signup, name='email_signup'),
     path('signup/email/check/', v.signup_email_check, name='signup_email_check'),
+    path('signup/setbase/', v.signup_setbase, name='signup_setbase'),
+    path('signup/setbase/change/', v.signup_setbase_change, name='signup_setbase_change'),
     path('login/email/', v.email_login, name='email_login'),
     path('login/social/kakaotalk/', v.kakaotalk_login, name='kakaotalk_login'),
 
@@ -111,7 +113,8 @@ urlpatterns = [
     # path('stylevote/<int:ipix_pos>/<int:ipix_neg>/', v.stylevote, name='stylevote'),
     path('stylevote/', v.stylevote, name='stylevote'),
     path('settle/', v.settle, name='settle'),
-    path('wallet/write/', v.wallet_write, name='wallet_write'),
+    # path('wallet/write/', v.wallet_write, name='wallet_write'),
+    path('transact/', v.transact, name='transact'),
 
     path('postage/<int:postage_id>/', v.get_postage, name='get_postage'),
     # path('contentwork/<str:agenda>/', v.get_contentwork, name='get_contentwork'),
@@ -139,6 +142,7 @@ urlpatterns = [
     # path('brand/<int:brand_id>/isupports/', v.get_isupports, name='get_isupports'),
     path('support/<int:support_id>/', v.get_support, name='get_support'),
     path('support/isupports/', v.get_isupports, name='get_isupports'),
+    path('support/isupports/my/', v.get_isupports_my, name='get_isupports_my'),
 
     path('coffeecoupon/<int:coffeecoupon_id>/', v.get_coffeecoupon, name='get_coffeecoupon'),
     path('coffeecoupon/icoffeecoupons/', v.get_icoffeecoupons, name='get_icoffeecoupons'),
@@ -148,6 +152,7 @@ urlpatterns = [
 
     path('raffle/<int:raffle_id>/', v.get_raffle, name='get_raffle'),
     path('raffle/iraffles/', v.get_iraffles, name='get_iraffles'),
+    path('raffle/iraffles/my/', v.get_iraffles_my, name='get_iraffles_my'),
 
     path('item/<int:item_id>/', v.get_item, name='get_item'),
 
@@ -155,4 +160,8 @@ urlpatterns = [
     path('label/item/<int:label_id>/', v.get_itemlabel, name='get_itemlabel'),
     path('label/istylelabels/', v.get_istylelabels, name='get_istylelabels'),
     path('label/iitemlabels/', v.get_iitemlabels, name='get_iitemlabels'),
+    path('label/edit/', v.edit_mylabels, name='edit_mylabels'),
+
+    path('flashgame/<int:flashgame_id>/', v.get_flashgame, name='get_flashgame'),
+    path('flashgame/iflashgames/', v.get_iflashgames, name='get_iflashgames'),
 ]

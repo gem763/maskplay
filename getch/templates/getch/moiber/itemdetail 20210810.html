@@ -216,6 +216,7 @@
 
       <div class='txt collected' v-if='is_raffle'>
         [[ raffle_collected_p ]]
+        <!-- 25명 참여중, 4208P -->
         <div class='action apply' :class='{ active: raffleable, raffled:raffled }' @click='apply_raffle'>
           <span>[[ action_raffle_text ]]</span>
           <span>[[ deduction_p ]]</span>
@@ -291,14 +292,27 @@
 
       apply_raffle: function() {
         if (this.raffleable) {
+          const receiver = 'raffle';
           const receiver_id = this.raffle.id;
+          const type = 'raffle';
           const amount = this.deduction;
 
           if (receiver_id && amount) {
             this.raffle.wallet.collected += amount;
             this.raffle.wallet.raffled = true;
-            this.myboo.wallet.send('raffle', amount, receiver_id);
-            this.myboo.raffles.list.push(this.obj);
+
+            // fetch(`wallet/write?obj=${obj}&obj_id=${obj_id}&type=${type}&amount=${amount}`)
+            fetch(`transact?receiver=${receiver}&receiver_id=${receiver_id}&type=${type}&amount=${amount}`)
+              .then(x => x.json())
+              .then(js => {
+                if (js.success) {
+                  console.log(js);
+                }
+              });
+
+            // this.rewarder.settle_amount(-amount, 'bonus');
+            this.myboo.wallet.amount -= amount;
+            this.myboo.wallet.amount_today -= amount;
           }
         }
       }
@@ -402,15 +416,21 @@
         }
       },
 
-      mywallet: function() {
+      rewarder: function() {
         if (this.myboo) {
-          return this.myboo.wallet
+          return this.myboo.rewarder
+        }
+      },
+
+      mywallet: function() {
+        if (this.rewarder) {
+          return this.rewarder.rewards
         }
       },
 
       budget: function() {
         if (this.mywallet) {
-          return this.mywallet.amount
+          return this.mywallet.total.reward
         }
       },
 

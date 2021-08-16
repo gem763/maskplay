@@ -34,6 +34,7 @@ VOTE_DOWN = 1
 FOLLOW = 10
 LIKE_COMMENT = 100
 
+MOIBER_BOO = 97
 BOO_DELETED = 97
 GUESTBOO = 363
 
@@ -178,6 +179,13 @@ class ItemlabelSerializer(serializers.ModelSerializer):
 
 
 class User(AbstractEmailUser):
+    name = models.CharField(max_length=30, blank=True, null=True)
+
+    GENDER_TYPES = ( (0, '남성'), (1, '여성'), )
+    gender = models.IntegerField(choices=GENDER_TYPES, default=0, null=False, blank=False)
+    birth = models.DateField(auto_now=False, null=True, blank=True)
+    address = models.CharField(max_length=100, blank=True, null=True)
+    mobile = models.CharField(max_length=30, blank=True, null=True)
     boo_selected = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
@@ -221,19 +229,18 @@ class User(AbstractEmailUser):
 
     @property
     def serialized2(self):
-        # _user = UserSerializer2(self).data
-        _user = {
+        return {
             'id': self.id,
             'email': self.email,
+            'name': self.name,
+            'gender': self.gender,
+            'birth': self.birth,
+            'mobile': self.mobile,
+            'address': self.address,
             'is_superuser': self.is_superuser,
             'boo_selected': self.boo_selected,
             'boo': {'id':self.boo.id, 'nick':self.boo.nick }
-            # 'boo': {'id':self.boo.id, 'nick':self.boo.nick, 'collections':self.boo.collections }
-            # 'boo': {'id':self.boo.id, 'nick':self.boo.nick, 'collections':self.boo.collections, 'styleprofile':self.boo.styleprofile }
         }
-
-        return _user
-        # return json.dumps(_user)
 
     def create_default_boo(self):
         boo = Boo.objects.create(user=self)
@@ -249,7 +256,6 @@ class User(AbstractEmailUser):
         boo.active = False
         boo.save()
         boos_id = self.boo_set.filter(active=True).values_list('id', flat=True)
-        # boos_id = Boo.objects.filter(user=self, active=True).values_list('id', flat=True)
         self.set_boo(max(boos_id))
 
 
@@ -286,12 +292,15 @@ class Link(BigIdAbstract):
 
 
 
-IN_CHECKIN_BALANCE_GAME = 0
+IN_CHECKIN_GAME = 0
 IN_DAILY_BALANCE_GAME = 1
 IN_DAILY_COLLECTING = 2
 IN_RESEARCH = 3
 IN_INTERVIEW = 4
 IN_WELCOME = 5
+IN_BASEINFO_INPUT = 6
+IN_STYLELABELS_INPUT = 7
+IN_ITEMLABELS_INPUT = 8
 
 OUT_SUPPORT = 100
 OUT_RAFFLE = 101
@@ -300,13 +309,9 @@ OUT_SHOPPING = 102
 class Wallet(BigIdAbstract):
     created_at = models.DateTimeField(default=timezone.now, null=False)
 
-    def write(self, type=None, amount=None):
-        user = get_current_user()
-        if not user.is_authenticated:
-            return
-
-        if type == 'checkin_balance_game':
-            _type = IN_CHECKIN_BALANCE_GAME
+    def send(self, to=None, type=None, amount=None):
+        if type == 'checkin_game':
+            _type = IN_CHECKIN_GAME
 
         elif type == 'daily_balance_game':
             _type = IN_DAILY_BALANCE_GAME
@@ -320,6 +325,18 @@ class Wallet(BigIdAbstract):
         elif type == 'interview':
             _type = IN_INTERVIEW
 
+        elif type == 'welcome':
+            _type = IN_WELCOME
+
+        elif type == 'baseinfo_input':
+            _type = IN_BASEINFO_INPUT
+
+        elif type == 'stylelabels_input':
+            _type = IN_STYLELABELS_INPUT
+
+        elif type == 'itemlabels_input':
+            _type = IN_ITEMLABELS_INPUT
+
         elif type == 'support':
             _type = OUT_SUPPORT
 
@@ -329,70 +346,185 @@ class Wallet(BigIdAbstract):
         elif type == 'shopping':
             _type = OUT_SHOPPING
 
-        Transaction.objects.create(wallet=self, type=_type, amount=amount, who=user.boo)
+        Transaction.objects.create(sender=self, receiver=to, type=_type, amount=amount)
+
+
+
+    # def write(self, type=None, amount=None):
+    #     user = get_current_user()
+    #     if not user.is_authenticated:
+    #         return
+    #
+    #     if type == 'checkin_game':
+    #         _type = IN_CHECKIN_GAME
+    #
+    #     elif type == 'daily_balance_game':
+    #         _type = IN_DAILY_BALANCE_GAME
+    #
+    #     elif type == 'daily_collecting':
+    #         _type = IN_DAILY_COLLECTING
+    #
+    #     elif type == 'research':
+    #         _type = IN_RESEARCH
+    #
+    #     elif type == 'interview':
+    #         _type = IN_INTERVIEW
+    #
+    #     elif type == 'welcome':
+    #         _type = IN_WELCOME
+    #
+    #     elif type == 'base_input':
+    #         _type = IN_BASE_INPUT
+    #
+    #     elif type == 'style_input':
+    #         _type = IN_STYLE_INPUT
+    #
+    #     elif type == 'item_input':
+    #         _type = IN_ITEM_INPUT
+    #
+    #     elif type == 'support':
+    #         _type = OUT_SUPPORT
+    #
+    #     elif type == 'raffle':
+    #         _type = OUT_RAFFLE
+    #
+    #     elif type == 'shopping':
+    #         _type = OUT_SHOPPING
+    #
+    #     Transaction.objects.create(wallet=self, type=_type, amount=amount, client=user.boo)
+
+    @property
+    def whose(self):
+        if hasattr(self, 'boo'):
+            return self.boo
+
+        elif hasattr(self, 'raffle'):
+            return self.raffle
+
+        elif hasattr(self, 'support'):
+            return self.support
+
+    @property
+    def whose_type(self):
+        _whose = self.whose
+        if _whose:
+            return _whose.__class__.__name__.lower()
 
     def __str__(self):
-        # if (self.boo):
-        #     return str(self.boo) + ' | ' + str(self.created_at)
-        #
-        # else:
-        try:
-            return str(self.boo) + ' | ' + str(self.created_at)
-
-        except:
-            try:
-                return str(self.support) + ' | ' + str(self.created_at)
-
-            except:
-                try:
-                    return str(self.raffle) + ' | ' + str(self.created_at)
-                except:
-                    return str(self.created_at)
+        return str(self.whose)
 
     @property
-    def count_total(self):
-        return self.transaction_set.count()
+    def n_transaction(self):
+        return self.sender_transaction_set.count() + self.receiver_transaction_set.count()
+        # return self.transaction_set.count()
 
     @property
-    def point_total(self):
-        agg = self.transaction_set.aggregate(total=Sum('amount'))
-        return agg['total']
+    def amount(self):
+        return self.inflow - self.outflow
+        # agg = self.transaction_set.aggregate(total=Sum('amount'))
+        # return agg['total'] if agg['total'] else 0
 
     @property
-    def point_in(self):
-        agg = self.transaction_set.aggregate(
-            total=Sum(Case(
-                When(amount__gt=0, then=F('amount')),
-                default=Value(0),
-                output_field=IntegerField()
-            ))
-        )
-        return agg['total']
+    def amount_today(self):
+        return self.inflow_today - self.outflow_today
+        # agg = self.transaction_set.filter(when__date=datetime.now().date()).aggregate(total=Sum('amount'))
+        # return agg['total'] if agg['total'] else 0
 
     @property
-    def point_out(self):
-        agg = self.transaction_set.aggregate(
-            total=Sum(Case(
-                When(amount__lt=0, then=F('amount')),
-                default=Value(0),
-                output_field=IntegerField()
-            ))
-        )
-        return agg['total']
+    def amount_daybonus(self):
+        q = Q(type=IN_DAILY_BALANCE_GAME) | Q(type=IN_DAILY_COLLECTING)
+        agg = self.receiver_transaction_set.filter(q, when__date=datetime.now().date()).aggregate(total=Sum('amount'))
+        return agg['total'] if agg['total'] else 0
+
+
+    @property
+    def checkin_today(self):
+        return self.receiver_transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
+        # return self.transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
+
+    @property
+    def welcomed(self):
+        return self.receiver_transaction_set.filter(type=IN_WELCOME).exists()
+        # return self.transaction_set.filter(type=IN_WELCOME).exists()
+
+    @property
+    def baseinfo_inputed(self):
+        agg = self.receiver_transaction_set.filter(type=IN_BASEINFO_INPUT).aggregate(total=Sum('amount'))
+        return agg['total'] > 0 if agg['total'] else False
+        # return self.receiver_transaction_set.filter(type=IN_BASEINFO_INPUT).exists()
+        # return self.transaction_set.filter(type=IN_BASE_INPUT).exists()
+
+    @property
+    def stylelabels_inputed(self):
+        agg = self.receiver_transaction_set.filter(type=IN_STYLELABELS_INPUT).aggregate(total=Sum('amount'))
+        return agg['total'] > 0 if agg['total'] else False
+        # return self.receiver_transaction_set.filter(type=IN_STYLELABELS_INPUT).exists()
+        # return self.transaction_set.filter(type=IN_STYLE_INPUT).exists()
+
+    @property
+    def itemlabels_inputed(self):
+        agg = self.receiver_transaction_set.filter(type=IN_ITEMLABELS_INPUT).aggregate(total=Sum('amount'))
+        return agg['total'] > 0 if agg['total'] else False
+        # return self.receiver_transaction_set.filter(type=IN_ITEMLABELS_INPUT).exists()
+        # return self.transaction_set.filter(type=IN_ITEM_INPUT).exists()
+
+    # @property
+    # def stats(self):
+    #     agg = self.transaction_set.values('type').annotate(total=Sum('amount'))
+    #     return list(agg)
+
+    @property
+    def inflow(self):
+        agg = self.receiver_transaction_set.aggregate(total=Sum('amount'))
+        # agg = self.transaction_set.aggregate(
+        #     total=Sum(Case(
+        #         When(amount__gt=0, then=F('amount')),
+        #         default=Value(0),
+        #         output_field=IntegerField()
+        #     ))
+        # )
+        return agg['total'] if agg['total'] else 0
+
+    @property
+    def outflow(self):
+        agg = self.sender_transaction_set.aggregate(total=Sum('amount'))
+        # agg = self.transaction_set.aggregate(
+        #     total=Sum(Case(
+        #         When(amount__lt=0, then=F('amount')),
+        #         default=Value(0),
+        #         output_field=IntegerField()
+        #     ))
+        # )
+        return agg['total'] if agg['total'] else 0
+
+    @property
+    def inflow_today(self):
+        agg = self.receiver_transaction_set.filter(when__date=datetime.now().date()).aggregate(total=Sum('amount'))
+        return agg['total'] if agg['total'] else 0
+
+    @property
+    def outflow_today(self):
+        agg = self.sender_transaction_set.filter(when__date=datetime.now().date()).aggregate(total=Sum('amount'))
+        return agg['total'] if agg['total'] else 0
 
 
 class Transaction(BigIdAbstract):
-    wallet = models.ForeignKey(Wallet, blank=True, null=True, on_delete=models.SET_NULL)
+    sender = models.ForeignKey(Wallet, related_name='sender_transaction_set', related_query_name='sender_transaction', blank=True, null=True, on_delete=models.SET_NULL)
+    receiver = models.ForeignKey(Wallet, related_name='receiver_transaction_set', related_query_name='receiver_transaction', blank=True, null=True, on_delete=models.SET_NULL)
     when = models.DateTimeField(default=timezone.now, null=False)
-    who = models.ForeignKey('Boo', blank=True, null=True, on_delete=models.SET_NULL)
+    # client = models.ForeignKey('Boo', blank=True, null=True, on_delete=models.SET_NULL)
 
     TRANSACTION_TYPES = (
-        (IN_CHECKIN_BALANCE_GAME, '출첵밸런스게임'),
+        (IN_CHECKIN_GAME, '출첵게임'),
         (IN_DAILY_BALANCE_GAME, '매일밸런스게임'),
         (IN_DAILY_COLLECTING, '옷장넣기'),
         (IN_RESEARCH, '리서치참여'),
         (IN_INTERVIEW, '인터뷰참여'),
         (IN_WELCOME, '첫방문환영'),
+        (IN_BASEINFO_INPUT, '기본정보입력'),
+        (IN_STYLELABELS_INPUT, '관심스타일입력'),
+        (IN_ITEMLABELS_INPUT, '관심아이템입력'),
+
         (OUT_SUPPORT, '후원'),
         (OUT_RAFFLE, '래플'),
         (OUT_SHOPPING, '쇼핑')
@@ -402,8 +534,16 @@ class Transaction(BigIdAbstract):
     amount = models.IntegerField(default=0)
 
     def __str__(self):
-        if self.wallet:
-            return str(self.wallet) + ' | ' + str(self.when)
+        sender = '-'
+        receiver = '-'
+
+        if self.sender:
+            sender = str(self.sender)
+
+        if self.receiver:
+            receiver = str(self.receiver)
+
+        return sender + ' > ' + receiver
 
 
 class Boo(BigIdAbstract, ModelWithFlag):
@@ -435,6 +575,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
     answers = models.JSONField(default=dict, blank=True, null=True)
 
     wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
+    help = models.BooleanField(default=True)
 
 
     def __str__(self):
@@ -784,10 +925,6 @@ class Brand(BigIdAbstract):
     def isupports(self):
         return self.support_set.values_list('id', flat=True)
 
-    # @classproperty
-    # def isupportbrands(cls):
-    #     return Support.objects.values_list('brand', flat=True)
-
     @property
     def logo_preview(self):
         if self.logo:
@@ -796,16 +933,10 @@ class Brand(BigIdAbstract):
 
 
 class BrandSerializer(serializers.ModelSerializer):
-    # supports = serializers.SerializerMethodField()
-
     class Meta:
         model = Brand
-        # fields = ['id', 'coverpix_0', 'coverpix_1', 'coverpix_2', 'coverpix_3', 'coverpix_4', 'established', 'origin', 'desc', 'name_en', 'name_kr', 'logo']#, 'supports']
         fields = ['id', 'coverpix_0', 'coverpix_1', 'coverpix_2', 'coverpix_3', 'coverpix_4', 'established', 'origin', 'desc']
         read_only_fields = fields
-
-    # def get_supports(self, obj):
-    #     return list(obj.support_set.values_list('id', flat=True))
 
 
 class Raffle(BigIdAbstract):
@@ -820,9 +951,13 @@ class Raffle(BigIdAbstract):
     def __str__(self):
         return str(self.item) + ' | ' + str(self.created_at)
 
-    @classproperty
-    def iraffles(cls):
-        return cls.objects.filter(listing=True).order_by('due').values_list('id', flat=True)
+    @classmethod
+    def iraffles(cls, boo=None):
+        if (boo):
+            return cls.objects.filter(listing=True, wallet__receiver_transaction__sender=boo.wallet).order_by('due').values_list('id', flat=True)
+
+        else:
+            return cls.objects.filter(listing=True).order_by('due').values_list('id', flat=True)
 
 
 class RaffleSerializer(serializers.ModelSerializer):
@@ -839,18 +974,18 @@ class RaffleSerializer(serializers.ModelSerializer):
             obj.wallet = Wallet.objects.create()
             obj.save()
 
-        point_total = obj.wallet.point_total
-        count_total = obj.wallet.count_total
+        amount = obj.wallet.amount
+        n_transaction = obj.wallet.n_transaction
 
         user = get_current_user()
         if user.is_authenticated:
-            raffled = obj.wallet.transaction_set.filter(who=user.boo).exists()
+            raffled = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).exists()
         else:
             raffled = False
 
         return {
-            'collected': point_total if point_total else 0,
-            'count': count_total if count_total else 0,
+            'collected': amount, # if amount else 0,
+            'n_transaction': n_transaction, # if n_transaction else 0,
             'raffled': raffled
         }
 
@@ -931,9 +1066,13 @@ class Support(BigIdAbstract):
     def __str__(self):
         return str(self.brand) + ' | ' + str(self.created_at)
 
-    @classproperty
-    def isupports(cls):
-        return cls.objects.order_by('due').values_list('id', flat=True)
+    @classmethod
+    def isupports(cls, boo=None):
+        if (boo):
+            return cls.objects.filter(wallet__receiver_transaction__sender=boo.wallet).order_by('due').values_list('id', flat=True)
+        else:
+            return cls.objects.order_by('due').values_list('id', flat=True)
+
 
 
 class SupportSerializer(serializers.ModelSerializer):
@@ -962,18 +1101,18 @@ class SupportSerializer(serializers.ModelSerializer):
             obj.wallet = Wallet.objects.create()
             obj.save()
 
-        point_total = obj.wallet.point_total
-        count_total = obj.wallet.count_total
+        amount = obj.wallet.amount
+        n_transaction = obj.wallet.n_transaction
 
         user = get_current_user()
         if user.is_authenticated:
-            supported = obj.wallet.transaction_set.filter(who=user.boo).exists()
+            supported = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).exists()
         else:
             supported = False
 
         return {
-            'collected': point_total if point_total else 0,
-            'count': count_total if count_total else 0,
+            'collected': amount, # if amount else 0,
+            'n_transaction': n_transaction, # if n_transaction else 0,
             'supported': supported
         }
 
@@ -1184,9 +1323,7 @@ class ResearchItemSerializer(serializers.ModelSerializer):
 
     def get_mc(self, obj):
         if obj.type == 'MC':
-            _mc = []#{}
-            # _obj = obj.__dict__
-            # print(_obj['mcpix_0']['url'])
+            _mc = []
 
             for i in range(12):
                 __mclabel = getattr(obj, 'mclabel_' + str(i))
@@ -1205,8 +1342,6 @@ class ResearchItemSerializer(serializers.ModelSerializer):
                         __mcpix = None
 
                     _mc.append({ 'mclabel': __mclabel, 'mcpix': __mcpix})
-                    # _mc['mclabel_' + str(i)] = __mclabel
-                    # _mc['mcpix_' + str(i)] = __mcpix.url
 
             return _mc
 
@@ -1234,6 +1369,22 @@ class Flashgame(BigIdAbstract, ModelWithFlag):
     def __str__(self):
         return self.type + ((' | ' + str(self.text)) if self.text else '')
 
+    @classproperty
+    def iflashgames(cls):
+        return cls.objects.filter(published=True, pub_date__lte=datetime.now().date()).order_by('-pub_date').values_list('id', flat=True)
+
+
+class FlashgameSerializer(serializers.ModelSerializer):
+    pix = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Flashgame
+        fields = ['id', 'type', 'gender', 'text', 'pix', 'reward', 'pub_date']
+        read_only_fields = fields
+
+    def get_pix(self, obj):
+        if obj.type == 'AB':
+            return { 'pix_0': obj.pix_0.url, 'pixlabel_0': obj.pixlabel_0, 'pix_1': obj.pix_1.url, 'pixlabel_1': obj.pixlabel_1 }
 
 
 class Contentwork(BigIdAbstract):
@@ -1749,12 +1900,31 @@ class GuestbooSerializer(serializers.ModelSerializer):
 
 class BooSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(required=False)
-    # collections = serializers.SerializerMethodField()
+    wallet = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'followees_id', 'voting_record', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'rewards', 'researched']
-        read_only_fields = ['id', 'followees_id', 'voting_record', 'rewards']
+        fields = ['id', 'nick', 'text', 'profile', 'genderlabels', 'stylelabels', 'itemlabels', 'researched', 'wallet']
+        # fields = ['id', 'nick', 'text', 'profile', 'genderlabels', 'stylelabels', 'itemlabels', 'rewards', 'researched', 'wallet']
+        # fields = ['id', 'nick', 'text', 'profile', 'followees_id', 'voting_record', 'genderlabels', 'agelabels', 'bodylabels', 'stylelabels', 'itemlabels', 'rewards', 'researched']
+        read_only_fields = ['id']
+
+    def get_wallet(self, obj):
+        if not obj.wallet:
+            obj.wallet = Wallet.objects.create()
+            obj.save()
+
+        return {
+            'id': obj.wallet.id,
+            'amount': obj.wallet.amount,
+            'amount_daybonus': obj.wallet.amount_daybonus,
+            # 'amount_today': obj.wallet.amount_today,
+            'checkin_today': obj.wallet.checkin_today,
+            'welcomed': obj.wallet.welcomed,
+            'baseinfo_inputed': obj.wallet.baseinfo_inputed,
+            'stylelabels_inputed': obj.wallet.stylelabels_inputed,
+            'itemlabels_inputed': obj.wallet.itemlabels_inputed,
+        }
 
     def update(self, instance, validated_data):
         profile_data = self.initial_data.pop('profile', None)

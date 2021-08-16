@@ -520,9 +520,10 @@
     top: calc(var(--square-size) - 38px);
   }
 
-  .researchitem > .backbone > .section.down > .divider {
+  .researchitem > .backbone > .divider {
     position: absolute;
-    top: 0;
+    /* top: 0; */
+    bottom: calc((100% - 60px) / 2);
     width: 100%;
     height: 0;
     background: white;
@@ -530,7 +531,7 @@
     /* transform: translateY(-50%); */
   }
 
-  .researchitem > .backbone > .section.down > .divider > .vs {
+  .researchitem > .backbone > .divider > .vs {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -603,6 +604,50 @@
   .researchitem > .header > .header-section.npage > .pagination {
     font-size: 12px;
   }
+
+  .researchitem > .arrows {
+    position: absolute;
+    bottom: calc((100% - 60px) / 2);
+    height: 0;
+    left: 0;
+    width: 100%;
+    background: orange;
+  }
+
+  .researchitem > .arrows > .arrow {
+    position: absolute;
+    top: 50%;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .researchitem > .arrows > .arrow.left {
+    left: 0;
+  }
+
+  .researchitem > .arrows > .arrow.right {
+    right: 0;
+    transition: all 0.2s;
+  }
+
+  .researchitem > .arrows > .arrow.right.holded {
+    right: -45px;
+  }
+
+  .researchitem > .arrows > .arrow > img {
+    width: 100%;
+    height: auto;
+  }
+
+  .researchitem > .arrows > .arrow.right > img {
+    transform: rotate(180deg);
+  }
 </style>
 
 
@@ -625,7 +670,7 @@
         </div>
 
         <div class='subsection action'>
-          <span class='gogo' @click='start_research'>시작하기</span>
+          <span class='gogo' @click='go_next'>시작하기</span>
         </div>
 
         <div class='subsection coverpix'>
@@ -660,10 +705,6 @@
       <div class='section down' :class='outfocused(0)'>
         <img class='candidate' :src='researchitem.pix.pix_1' @click='toggle_choose(1)'>
         <div class='label' v-if='researchitem.pix.pixlabel_1'>[[ researchitem.pix.pixlabel_1 ]]</div>
-
-        <div class='divider'>
-          <div class='vs'>VS</div>
-        </div>
       </div>
 
       <div class='divider'>
@@ -770,6 +811,18 @@
       </div>
     </div>
 
+    <div class='arrows'>
+      <!-- <div class='arrow left' v-if='!is_intro' @click.stop='go_prev'> -->
+      <div class='arrow left' v-if='!is_beginning' @click.stop='go_prev'>
+        <img src='/static/materials/icons/button-backward.png'>
+      </div>
+
+      <!-- <div class='arrow right' :class='{ holded: slide_holded }' v-if='on_mainstory' @click.stop='go_next'> -->
+      <div class='arrow right' :class='{ holded: slide_holded }' v-if='!is_end' @click.stop='go_next'>  
+        <img src='/static/materials/icons/button-backward.png'>
+      </div>
+    </div>
+
   </div>
 </script>
 
@@ -801,21 +854,19 @@
       },
 
       'swiper.realIndex': function(_new, _old) {
-        // console.log('88888888', this.swiper.isBi)
-        // if (_new == 0 && this.is_intro) {
         if (this.swiper.isBeginning && this.is_intro) {
           this.release_slide();
           console.log('인트로');
 
         } else if (this.swiper.isEnd && this.is_outro) {
           // this.release_slide();
-          if (!this.answers.finished && this.rewarder) {
-            this.rewarder.settle_amount(this.research_reward, 'bonus');
+          if (!this.answers.finished && this.wallet) {
+            this.wallet.receive('research', this.research_reward);
 
             fetch(`research/${this.research.id}/done`).then(x=>x.json()).then(console.log);
             this.answers.finished = true;
 
-            setTimeout(() => { alert(this.research_reward + 'P가 지급되었습니다'); }, 500); 
+            setTimeout(() => { alert(this.research_reward + 'P가 지급되었습니다'); }, 500);
           }
 
           console.log('아웃트로');
@@ -838,6 +889,7 @@
             if (_new) {
               this.release_slide();
               console.log('답변완료');
+              setTimeout(() => { this.go_next() }, 300);
 
             } else {
               this.hold_slide();
@@ -886,15 +938,15 @@
         }
       },
 
-      rewards_loaded: function() {
+      wallet_loaded: function() {
         if (this.myboo) {
-          return this.myboo.profiling_ready
+          return this.myboo.wallet != undefined
         }
       },
 
-      rewarder: function() {
-        if (this.rewards_loaded) {
-          return this.myboo.rewarder
+      wallet: function() {
+        if (this.wallet_loaded) {
+          return this.myboo.wallet
         }
       },
 
@@ -990,19 +1042,26 @@
 
       on_mainstory: function() {
         return !this.is_intro && !this.is_outro
+      },
+
+      slide_holded: function() {
+        if (this.swiper) {
+          return this.swiper.allowSlideNext == false
+        }
+      },
+
+      is_beginning: function() {
+        if (this.swiper) {
+          return this.swiper.isBeginning
+        }
+      },
+
+      is_end: function() {
+        if (this.swiper) {
+          return this.swiper.isEnd
+        }
       }
     },
-
-    // computed: {
-    //   vote_state: function() {
-    //     if (this.post) {
-    //       return this.session.user.has_voted_as(this.post.id)
-    //
-    //     } else {
-    //       return -1
-    //     }
-    //   }
-    // },
 
 
     methods: {
@@ -1026,8 +1085,16 @@
         window.open(this.brand.insta);
       },
 
-      start_research: function() {
-        this.swiper.slideNext();
+      go_next: function() {
+        if (this.swiper) {
+          this.swiper.slideNext();
+        }
+      },
+
+      go_prev: function() {
+        if (this.swiper) {
+          this.swiper.slidePrev();
+        }
       },
 
       outfocused: function(act) {

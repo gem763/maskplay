@@ -14,7 +14,7 @@
     /* padding-left: 16px;
     padding-right: 16px; */
     box-sizing: border-box;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 
   .myinfo.vcomp > .segment:first-child {
@@ -40,11 +40,16 @@
     font-weight: normal;
   }
 
+  .myinfo.vcomp > .segment > .title > span.reward.rewarded {
+    color: #999999;
+  }
+
   .myinfo.vcomp > .segment > .infobox {
+    position: relative;
     width: calc(100% - 32px);
     /* height: 100px; */
     font-size: 15px;
-    /* background: lightblue; */
+    background: white;
     border-radius: 8px;
     border: 1px solid #e4e4e4;
     box-sizing: border-box;
@@ -61,32 +66,58 @@
     position: relative;
     text-align: left;
     padding: 0;
-    height: 35px;
+    height: 40px;
   }
 
   .myinfo.vcomp > .segment > .infobox > table td.head {
-    padding-left: 20px;
+    padding-left: 15px;
     width: 100px;
     box-sizing: border-box;
     color: #777777;
   }
 
-  .myinfo.vcomp > .segment > .empty {
+  .myinfo.vcomp > .segment > .infobox > .edit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 45px;
+    height: 40px;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999999;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .myinfo.vcomp > .segment > .spinner {
+    position: relative;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--color-dark);
+  }
+
+  .myinfo.vcomp > .segment > .default {
     position: relative;
     width: calc(100% - 32px);
     height: 100px;
     border-radius: 8px;
-    filter: brightness(80%);
+    /* filter: brightness(80%); */
     overflow: hidden;
   }
 
-  .myinfo.vcomp > .segment > .empty > img {
+  .myinfo.vcomp > .segment > .default > img {
     width: 100%;
     height: 100px;
     object-fit: cover;
+    filter: blur(2px) brightness(0.8);
   }
 
-  .myinfo.vcomp > .segment > .empty > .guide {
+  .myinfo.vcomp > .segment > .default > .guide {
     position: absolute;
     top: 0;
     left: 0;
@@ -100,10 +131,10 @@
   }
 
 
-  .myinfo.vcomp > .segment > .candidates {
+  .myinfo.vcomp > .segment > .labels {
     position: relative;
     width: 100%;
-    padding: 12px;
+    padding: 0 12px 12px 12px;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
@@ -112,19 +143,19 @@
     box-sizing: border-box;
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate {
+  .myinfo.vcomp > .segment > .labels > .label {
     position: relative;
     width: calc(100% / 3);
     padding-top: calc(100% / 3);
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix {
+  .myinfo.vcomp > .segment > .labels > .label > .pix {
     position: absolute;
     top: 4px;
     left: 4px;
     right: 4px;
     bottom: 4px;
-    background: rgba(0,0,0,0.1);
+    background: rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,7 +164,7 @@
     overflow: hidden;
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > img {
+  .myinfo.vcomp > .segment > .labels > .label > .pix > img {
     position: absolute;
     top: 0;
     left: 0;
@@ -146,20 +177,23 @@
     filter: brightness(80%);
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix.chosen > img {
+  .myinfo.vcomp > .segment > .labels > .label > .pix.chosen > img {
     display: none;
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > img.loaded {
+  .myinfo.vcomp > .segment > .labels > .label > .pix > img.loaded {
     opacity: 1;
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > .label {
+  .myinfo.vcomp > .segment > .labels > .label > .pix > .label {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    padding: 10%;
+    box-sizing: border-box;
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -169,11 +203,11 @@
     transition: all 0.5s;
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix > img.loaded + .label {
+  .myinfo.vcomp > .segment > .labels > .label > .pix > img.loaded + .label {
     opacity: 1;
   }
 
-  .myinfo.vcomp > .segment > .candidates > .candidate > .pix.chosen > .label {
+  .myinfo.vcomp > .segment > .labels > .label > .pix.chosen > .label {
     background: orange;
   }
 </style>
@@ -181,28 +215,10 @@
 <script type='text/x-template' id='myinfo-template'>
   <div class='myinfo vcomp'>
 
-    <!-- <div class='segment'>
-      <div class='longbtn'>
-        기본 프로필 정보 입력하고 100P 받기
-      </div>
-
-      <div class='explain'>
-        포인트 획득을 위해서는 기본 프로필 입력이 필수 입니다.
-      </div>
-
-      <div class='explain'>
-        프로필 정보는 참여 조건 확인 및 결과 리포트에 반영될 뿐 회원님을 구별할 수 있는 정보는 저장하지 않습니다.
-      </div>
-
-      <div class='explain'>
-        모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
-      </div>
-    </div> -->
-
-    <div class='segment baseinfo'>
+    <div class='segment'>
       <div class='title'>
         <span>내 기본 프로파일 정보</span>
-        <span class='reward'>+100P</span>
+        <span class='reward' :class='{ rewarded: baseinfo_inputed }'>[[ baseinfo_reward_txt ]]</span>
       </div>
 
       <div class='infobox'>
@@ -210,66 +226,93 @@
           <tbody>
             <tr>
               <td class='head'>이름</td>
-              <td>강세진</td>
+              <td><b>[[ name ]]</b></td>
             </tr>
 
             <tr>
               <td class='head'>성별</td>
-              <td>[[ gender ]]</td>
+              <td><b>[[ gender ]]</b></td>
             </tr>
 
             <tr>
               <td class='head'>생년월일</td>
-              <td>20100514</td>
+              <td><b>[[ birth ]]</b></td>
             </tr>
 
             <tr>
               <td class='head'>모바일</td>
-              <td>010-8818-0514</td>
+              <td><b>[[ mobile ]]</b></td>
             </tr>
 
             <tr>
               <td class='head'>주소</td>
-              <td>서울시 종로구</td>
+              <td><b>[[ address ]]</b></td>
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
 
-    <div class='segment style' @click='goto_stylechooser'>
-      <div class='title'>
-        <span>내 관심 스타일</span>
-        <span class='reward'>+50P</span>
-      </div>
-
-      <div class='empty'>
-        <img src='/static/materials/imgs/tag_game_style.png'>
-        <!-- <div class='guide'>클릭하고 관심 스타일 선택하면 포인트 지급!</div> -->
-      </div>
-
-      <div class='candidates'>
-        <div class='candidate' v-for='id in my_stylelabels'>
-          <div class='pix'>
-            <i class="fa fa-spinner fa-spin"></i>
-            <img :src='stylelabel_pix_of(id)' @load='pix_loaded'>
-            <div class='label'>[[ stylelabel_label_of(id) ]]</div>
-          </div>
+        <div class='edit' @click='open_baseinfo'>
+          수정
         </div>
       </div>
     </div>
 
-    <div class='segment item' @click='goto_itemchooser'>
+    <div class='segment' @click='goto_labelchooser("stylelabels")'>
       <div class='title'>
-        <span>내 관심 아이템</span>
-        <span class='reward'>+50P</span>
+        <span>내 관심 스타일</span>
+        <span class='reward' :class='{ rewarded: stylelabels_inputed }'>[[ stylelabels_reward_txt ]]</span>
+        <!-- <span class='reward' :class='{ rewarded: has_mylabels("stylelabels") }'>[[ reward_txt('stylelabels') ]]</span> -->
       </div>
 
-      <div class='empty'>
-        <img src='/static/materials/imgs/tag_game_item.png'>
-        <!-- <div class='guide'>클릭하고 관심 아이템 선택하면 포인트 지급!</div> -->
+      <div class='spinner' v-if='mylabels_onloading("stylelabels")'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+
+      <div class='labels' v-else-if='has_mylabels("stylelabels")'>
+        <div class='label' v-for='id in mylabels("stylelabels")'>
+          <div class='pix'>
+            <i class="fa fa-spinner fa-spin"></i>
+            <img :src='labelpix("stylelabels", id)' @load='pix_loaded'>
+            <div class='label'>[[ label('stylelabels', id) ]]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class='default' v-else>
+        <img src='/static/materials/imgs/tag_game_style.png'>
+        <div class='guide'>클릭하고 관심 스타일 선택하면 포인트 지급!</div>
       </div>
     </div>
+
+
+    <div class='segment' @click='goto_labelchooser("itemlabels")'>
+      <div class='title'>
+        <span>내 관심 아이템</span>
+        <span class='reward' :class='{ rewarded: itemlabels_inputed }'>[[ itemlabels_reward_txt ]]</span>
+      </div>
+
+      <div class='spinner' v-if='mylabels_onloading("itemlabels")'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+
+      <div class='labels' v-else-if='has_mylabels("itemlabels")'>
+        <div class='label' v-for='id in mylabels("itemlabels")'>
+          <div class='pix'>
+            <i class="fa fa-spinner fa-spin"></i>
+            <img :src='labelpix("itemlabels", id)' @load='pix_loaded'>
+            <div class='label'>[[ label('itemlabels', id) ]]</div>
+          </div>
+        </div>
+      </div>
+
+      <div class='default' v-else>
+        <img src='/static/materials/imgs/tag_game_item.png'>
+        <div class='guide'>클릭하고 관심 아이템 선택하면 포인트 지급!</div>
+      </div>
+    </div>
+
+
+
 
   </div>
 </script>
@@ -285,6 +328,7 @@
     },
 
     created: function() {
+      // console.log('kkkkkkkk')
       if (!this.session.stylelabels) {
         this.session.load_stylelabels()
       }
@@ -301,28 +345,70 @@
         }
       },
 
-      my_stylelabels: function() {
+      name: function() {
         if (this.myboo) {
-          return this.myboo.stylelabels
+          return this.session.user.auth.name
         }
       },
 
-      my_itemlabels: function() {
+      gender: function() {
         if (this.myboo) {
-          return this.myboo.itemlabels
+          return this.session.user.auth.gender
         }
       },
 
-      stylelabels: function() {
-        if (this.session.stylelabels) {
-          return this.session.stylelabels.list
+      birth: function() {
+        if (this.myboo) {
+          return this.session.user.auth.birth
         }
       },
 
-      itemlabels: function() {
-        if (this.session.itemlabels) {
-          return this.session.itemlabels.list
+      mobile: function() {
+        if (this.myboo) {
+          return this.session.user.auth.mobile
         }
+      },
+
+      address: function() {
+        if (this.myboo) {
+          return this.session.user.auth.address
+        }
+      },
+
+      wallet: function() {
+        if (this.myboo) {
+          return this.myboo.wallet
+        }
+      },
+
+      baseinfo_inputed: function() {
+        if (this.wallet) {
+          return this.wallet.baseinfo_inputed
+        }
+      },
+
+      stylelabels_inputed: function() {
+        if (this.wallet) {
+          return this.wallet.stylelabels_inputed
+        }
+      },
+
+      itemlabels_inputed: function() {
+        if (this.wallet) {
+          return this.wallet.itemlabels_inputed
+        }
+      },
+
+      baseinfo_reward_txt: function() {
+        return '+100P' + (this.baseinfo_inputed ? ' (지급완료)' : '')
+      },
+
+      stylelabels_reward_txt: function() {
+        return '+50P' + (this.stylelabels_inputed ? ' (지급완료)' : '')
+      },
+
+      itemlabels_reward_txt: function() {
+        return '+50P' + (this.itemlabels_inputed ? ' (지급완료)' : '')
       },
     },
 
@@ -331,44 +417,55 @@
         event.target.classList.add('loaded');
       },
 
-      stylelabel_of: function(id) {
-        if (this.stylelabels) {
-          return _.find(this.stylelabels, ['id', id])
+      labels: function(type) {
+        if (this.session[type]) {
+          return this.session[type].list
         }
       },
 
-      stylelabel_pix_of: function(id) {
-        const _label = this.stylelabel_of(id);
-        if (_label) {
-          return _label.pix
+      mylabels: function(type) {
+        if (this.myboo) {
+          return this.myboo[type]
         }
       },
 
-      stylelabel_label_of: function(id) {
-        const _label = this.stylelabel_of(id);
+      mylabels_onloading: function(type) {
+        return this.mylabels(type) == undefined
+      },
+
+      has_mylabels: function(type) {
+        const _mylabels = this.mylabels(type);
+        if (_mylabels) {
+          return _mylabels.length > 0
+        }
+      },
+
+      label: function(type, id) {
+        const _label = _.find(this.labels(type), ['id', id]);
         if (_label) {
           return _label.label
         }
       },
 
-      itemlabel_of: function(id) {
-        if (this.stylelabels) {
-          return _.find(this.stylelabels, ['id', id])
+      labelpix: function(type, id) {
+        const _label = _.find(this.labels(type), ['id', id]);
+        if (_label) {
+          return _label.pix
         }
       },
 
-      goto_stylechooser: function() {
-        // if (!this.session.stylelabels) {
-        //   this.session.load_stylelabels()
-        // }
-        this.session.open_multichooser(this.session.stylelabels);
+      // reward_txt: function(type) {
+      //   return '+50P' + (this.has_mylabels(type) ? ' (지급완료)' : '')
+      // },
+
+      goto_labelchooser: function(type) {
+        this.session.open_multichooser(this.session[type]);
       },
 
-      goto_itemchooser: function() {
-        // if (!this.session.itemlabels) {
-        //   this.session.load_itemlabels()
-        // }
-        this.session.open_multichooser(this.session.itemlabels);
+      open_baseinfo: function() {
+        if (this.myboo) {
+          this.session.open_baseinfo();
+        }
       }
     }
   });

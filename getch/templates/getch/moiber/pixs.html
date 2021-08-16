@@ -98,7 +98,12 @@
     methods: {
       is_owned: function(pix) {
         if (this.session.user.has_auth) {
-          return this.session.user.boo.has_pix(pix.id)
+          try {
+            return this.session.user.boo.has_pix(pix.id)
+
+          } catch(e) {
+            return false
+          }
         }
       },
 

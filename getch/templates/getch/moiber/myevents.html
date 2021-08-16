@@ -1,0 +1,324 @@
+<style>
+  .myevents.vcomp {
+    position: relative;
+    width: 100%;
+    /* background: lightpink; */
+  }
+
+  .myevents.vcomp > .segment {
+    position: relative;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .myevents.vcomp > .segment > .title {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    /* padding-left: 16px; */
+    /* padding-right: 16px; */
+    box-sizing: border-box;
+    font-size: 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .myevents.vcomp > .segment > .event {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+    height: 135px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: all 0.5s;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+  .myevents.vcomp > .segment > .event.loaded {
+    opacity: 1;
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix {
+    position: relative;
+    width: 100%;
+    height: 110px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(80%);
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix > .name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80%;
+    /* background: orange; */
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0 0 5px 10px;
+    box-sizing: border-box;
+    color: white;
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix > .deduction {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20%;
+    /* background: lightblue; */
+    font-size: 16px;
+    /* font-weight: bold; */
+    padding: 0 10px 5px 0;
+    box-sizing: border-box;
+    text-align: right;
+    color: white;
+  }
+
+  .myevents.vcomp > .segment > .event > .due {
+    position: relative;
+    width: 100%;
+    text-align: right;
+    box-sizing: border-box;
+    flex-grow: 1;
+    font-size: 13px;
+    color: #999999;
+  }
+
+  .myevents.vcomp > .segment > .event > .due > span {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 100%;
+    transform: translateY(-50%);
+  }
+
+  .myevents.vcomp > .segment > .spinner {
+    position: relative;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--color-dark);
+  }
+
+  .myevents.vcomp > .segment > .no-event {
+    position: relative;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--color-dark);
+  }
+</style>
+
+<script type='text/x-template' id='myevents-template'>
+  <div class='myevents vcomp'>
+
+    <div class='segment'>
+      <div class='title'>래플</div>
+
+      <div class='spinner' v-if='raffles_onloading'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+
+      <template v-else-if='has_raffles'>
+        <div class='event' v-for='(r, idx) in raffles_list' @click='open_raffle(r)'>
+          <div class='coverpix'>
+            <img :src='coverpix(r)' @load='coverpix_loaded'>
+            <div class='name'>[[ name(r) ]]</div>
+            <div class='deduction'>[[ deduction(r) ]]</div>
+          </div>
+
+          <div class='due'><span>[[ days_to_due(r) ]]</span></div>
+        </div>
+      </template>
+
+      <div class='no-event' v-else>
+        참여 중인 래플이 없습니다
+      </div>
+    </div>
+
+
+    <div class='segment'>
+      <div class='title'>후원</div>
+
+      <div class='spinner' v-if='supports_onloading'>
+        <i class="fa fa-spinner fa-spin"></i>
+      </div>
+
+      <template v-else-if='has_supports'>
+        <div class='event' v-for='(r, idx) in supports_list' @click='open_support(r)'>
+          <div class='coverpix'>
+            <img :src='coverpix(r)' @load='coverpix_loaded'>
+            <div class='name'>[[ name(r) ]]</div>
+            <div class='deduction'>[[ deduction(r) ]]</div>
+          </div>
+
+          <div class='due'><span>[[ collected(r) ]]</span></div>
+        </div>
+      </template>
+
+      <div class='no-event' v-else>
+        참여 중인 후원이 없습니다
+      </div>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('myevents', {
+    template: '#myevents-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      myboo: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.boo
+        }
+      },
+
+      supports: function() {
+        if (this.myboo) {
+          return this.myboo.supports
+        }
+      },
+
+      supports_list: function() {
+        if (this.supports) {
+          return this.supports.list
+        }
+      },
+
+      raffles: function() {
+        if (this.myboo) {
+          return this.myboo.raffles
+        }
+      },
+
+      raffles_list: function() {
+        if (this.raffles) {
+          return this.raffles.list
+        }
+      },
+
+      raffles_onloading: function() {
+        if (!this.myboo) {
+          return true
+
+        } else if (this.myboo && this.myboo.onloading) {
+          return true
+
+        } else if (this.raffles) {
+          return this.raffles.onloading
+        }
+      },
+
+      has_raffles: function() {
+        if (this.raffles_list) {
+          return this.raffles_list.length > 0
+        }
+      },
+
+      supports_onloading: function() {
+        if (!this.myboo) {
+          return true
+
+        } else if (this.myboo && this.myboo.onloading) {
+          return true
+
+        } else if (this.supports) {
+          return this.supports.onloading
+        }
+      },
+
+      has_supports: function() {
+        if (this.supports_list) {
+          return this.supports_list.length > 0
+        }
+      }
+    },
+
+    methods: {
+      coverpix: function(e) {
+        if (e.item) {
+          return e.item.pix_wide ? e.item.pix_wide : e.item.pix_0
+
+        } else if (e.gift) {
+          return e.gift.pix_wide ? e.gift.pix_wide : e.gift.pix_0
+        }
+      },
+
+      coverpix_loaded: function(event) {
+        this.ready = true;
+        event.target.closest('.event').classList.add('loaded');
+      },
+
+      name: function(e) {
+        if (e.item) {
+          return e.item.name
+
+        } else if (e.gift) {
+          return e.gift.name
+        }
+      },
+
+      deduction: function(e) {
+        if (e.deduction) {
+          return '-' + e.deduction + 'P'
+
+        } else if (e.ticketsize) {
+          return '-' + e.ticketsize + 'P'
+        }
+      },
+
+      days_to_due: function(e) {
+        if (e.due) {
+          return '마감 ' + Math.ceil( (new Date(e.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+
+        } else {
+          return ''
+        }
+      },
+
+      collected: function(e) {
+        if (e.wallet) {
+          return '현재까지 ' + e.wallet.collected + 'P 모집'
+        }
+      },
+
+      open_raffle: function(raffle) {
+        const dasher_control = this.session.mode.dasher_control;
+        dasher_control.section = 'pointuse';
+        dasher_control.phase = 'detail';
+        dasher_control.content = 1;
+        dasher_control.detail_obj = raffle;
+        setTimeout(() => { dasher_control.open = true; }, 100);
+      },
+
+      open_support: function(support) {
+        this.session.open_brander(support.brand);
+      }
+    }
+  });
+</script>

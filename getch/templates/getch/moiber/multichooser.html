@@ -24,6 +24,7 @@
 
   .multichooser.vcomp .page-body > .container > .header > .title {
     font-size: 14px;
+    font-weight: bold;
   }
 
   .multichooser.vcomp .page-body > .container > .header > .desc {
@@ -31,7 +32,7 @@
     color: #777777;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates {
+  .multichooser.vcomp .page-body > .container > .labels {
     position: relative;
     width: 100%;
     padding: 12px;
@@ -43,13 +44,13 @@
     box-sizing: border-box;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate {
+  .multichooser.vcomp .page-body > .container > .labels > .label {
     position: relative;
     width: calc(100% / 3);
     padding-top: calc(100% / 3);
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix {
     position: absolute;
     top: 4px;
     left: 4px;
@@ -64,7 +65,7 @@
     overflow: hidden;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > img {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix > img {
     position: absolute;
     top: 0;
     left: 0;
@@ -77,34 +78,38 @@
     filter: brightness(80%);
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix.chosen > img {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix.chosen > img {
     display: none;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > img.loaded {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix > img.loaded {
     opacity: 1;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > .label {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix > .label {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    padding: 10%;
+    box-sizing: border-box;
+    text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     font-weight: bold;
+    border-radius: 8px;
     opacity: 0;
     transition: all 0.5s;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix > img.loaded + .label {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix > img.loaded + .label {
     opacity: 1;
   }
 
-  .multichooser.vcomp .page-body > .container > .candidates > .candidate > .pix.chosen > .label {
+  .multichooser.vcomp .page-body > .container > .labels > .label > .pix.chosen > .label {
     background: orange;
   }
 </style>
@@ -127,8 +132,8 @@
           <div class='desc'>관심있는 패션 [[ title ]]을 모두 선택하세요</div>
         </div>
 
-        <div class='candidates'>
-          <div class='candidate' v-for='l in labels_list'>
+        <div class='labels'>
+          <div class='label' v-for='l in labels_list'>
             <div class='pix' :class='pix_class(l.id)' @click='toggle_choose(l.id)'>
               <i class="fa fa-spinner fa-spin"></i>
               <img :src='l.pix' @load='pix_loaded'>
@@ -161,11 +166,18 @@
           if (this.myboo_labels.includes(label_id)) {
             const idx = this.myboo_labels.indexOf(label_id);
             this.myboo_labels.splice(idx, 1);
+            this.save('remove', label_id);
 
           } else {
             this.myboo_labels.push(label_id);
+            this.save('add', label_id);
           }
         }
+      },
+
+      save: function(action, id) {
+        const _url = `label/edit?type=${this.label_type}&action=${action}&id=${id}`;
+        fetch(_url).then(x=>x.json()).then(console.log);
       },
 
       pix_class: function(label_id) {
@@ -176,7 +188,32 @@
     },
 
     watch: {
-      myboo_labels: function() {}
+      myboo_labels: function(_new, _old) {
+        // console.log(_new, _old)
+      },
+
+      'session.page.multichooser.open': function(_new, _old) {
+        if (_old) {
+          if (!this.rewarded && this.has_labels) {
+            setTimeout(() => {
+              const transaction_type = this.label_type + '_input';
+              const amount = this.wallet['amount_' + transaction_type];
+              this.wallet.receive(transaction_type, amount);
+              this.wallet[this.label_type + '_inputed'] = true;
+              alert(amount + 'P를 지급했습니다');
+            }, 600);
+
+          } else if (this.rewarded && !this.has_labels) {
+            setTimeout(() => {
+              const transaction_type = this.label_type + '_input';
+              const amount = this.wallet['amount_' + transaction_type];
+              this.wallet.receive(transaction_type, -amount);
+              this.wallet[this.label_type + '_inputed'] = false;
+              alert(amount + 'P가 차감됩니다');
+            }, 600);
+          }
+        }
+      }
     },
 
     computed: {
@@ -186,9 +223,27 @@
         }
       },
 
+      wallet: function() {
+        if (this.myboo) {
+          return this.myboo.wallet
+        }
+      },
+
+      rewarded: function() {
+        if (this.wallet) {
+          return this.wallet[this.label_type + '_inputed']
+        }
+      },
+
       myboo_labels: function() {
         if (this.myboo) {
           return this.myboo[this.label_type]
+        }
+      },
+
+      has_labels: function() {
+        if (this.myboo_labels) {
+          return this.myboo_labels.length > 0
         }
       },
 
@@ -203,13 +258,13 @@
         }
       },
 
-      is_stylelabels: function() {
-        return this.label_type == 'stylelabels'
-      },
-
-      is_itemlabels: function() {
-        return this.label_type == 'itemlabels'
-      },
+      // is_stylelabels: function() {
+      //   return this.label_type == 'stylelabels'
+      // },
+      //
+      // is_itemlabels: function() {
+      //   return this.label_type == 'itemlabels'
+      // },
 
       labels_list: function() {
         if (this.labels) {
@@ -218,10 +273,10 @@
       },
 
       title: function() {
-        if (this.is_stylelabels) {
+        if (this.label_type == 'stylelabels') {
           return '스타일'
 
-        } else if (this.is_itemlabels) {
+        } else if (this.label_type == 'itemlabels') {
           return '아이템'
         }
       }

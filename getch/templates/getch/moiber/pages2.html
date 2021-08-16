@@ -3,7 +3,9 @@
 {% include "getch/moiber/collector.html" %}
 {% include "getch/moiber/agit.html" %}
 {% include "getch/moiber/accountcheck.html" %}
+{% include "getch/moiber/baseinfo.html" %}
 {% include "getch/moiber/signup.html" %}
+{% include "getch/moiber/signupper.html" %}
 {% include "getch/moiber/login.html" %}
 {% include "getch/moiber/emailogin.html" %}
 {% include "getch/moiber/emailsignup.html" %}
@@ -26,6 +28,7 @@
 {% include "getch/moiber/research.html" %}
 {% include "getch/moiber/researchitem.html" %}
 {% include "getch/moiber/checkingame.html" %}
+{% include "getch/moiber/flashgames.html" %}
 {% include "getch/moiber/brander.html" %}
 {% include "getch/moiber/test.html" %}
 
@@ -45,16 +48,15 @@
 <script type='text/x-template' id='pages-template'>
   <div class='pages'>
     <researcher :session='session'></researcher>
-    <!-- <finder :session='session'></finder> -->
     <search :session='session'></search>
     <brander :session='session'></brander>
     <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote>
-    <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork>
+    <!-- <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork> -->
     <research :session='session'></research>
     <checkingame :session='session'></checkingame>
-    <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult>
+    <flashgames :session='session'></flashgames>
+    <!-- <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult> -->
     <agit :session='session'></agit>
-    <profiler :session='session' v-if='session.user.auth_ready'></profiler>
     <multichooser :session='session'></multichooser>
     <!-- <profiler :session='session' v-if='session.user.has_auth'></profiler> -->
     <collector :session='session'></collector>
@@ -66,7 +68,9 @@
     <policy :session='session'></policy>
     <privacy :session='session'></privacy>
     <infoboard :session='session'></infoboard>
+    <baseinfo :session='session' v-if='session.user.has_auth'></baseinfo>
     <signup :session='session'></signup>
+    <signupper :session='session'></signupper>
     <accountcheck :session='session'></accountcheck>
     <login :session='session'></login>
     <emailogin :session='session'></emailogin>

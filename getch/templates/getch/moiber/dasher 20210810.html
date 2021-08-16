@@ -258,10 +258,8 @@
       <div class='monitor' :class='{ show: !wallet_onloading }'>
         <div class='point-total'>[[ amount ]]P</div>
         <div class='point-today'>매일보너스 [[ amount_daybonus ]]P / [[ amount_daybonus_max ]]P</div>
-        <div class='action pointget' @click='toggle_section("pointget")'>포인트획득</div>
-        <div class='action pointuse' @click='toggle_section("pointuse")'>포인트사용</div>
-        <!-- <div class='action pointget' :class='{ rightmost: !is_superuser }' @click='toggle_section("pointget")'>포인트획득</div>
-        <div class='action pointuse' @click='toggle_section("pointuse")' v-if='is_superuser'>포인트사용</div> -->
+        <div class='action pointget' :class='{ rightmost: !is_superuser }' @click='toggle_section("pointget")'>포인트획득</div>
+        <div class='action pointuse' @click='toggle_section("pointuse")' v-if='is_superuser'>포인트사용</div>
         <div class='pbar'>
           <div class='core' :style='pbar_core_style'></div>
         </div>
@@ -271,6 +269,22 @@
         <i class="fa fa-spinner fa-spin"></i>
         포인트 확인 중 입니다...
       </div>
+
+
+      <!-- <div class='monitor' :class='{ show: !rewards_onloading }'>
+        <div class='point-total'>[[ reward_total ]]P</div>
+        <div class='point-today'>매일보너스 [[ reward_today ]]P / [[ reward_amount_max_daily ]]P</div>
+        <div class='action pointget' :class='{ rightmost: !is_superuser }' @click='toggle_section("pointget")'>포인트획득</div>
+        <div class='action pointuse' @click='toggle_section("pointuse")' v-if='is_superuser'>포인트사용</div>
+        <div class='pbar'>
+          <div class='core' :style='pbar_core_style'></div>
+        </div>
+      </div>
+
+      <div class='spinner' :class='{ show: rewards_onloading }'>
+        <i class="fa fa-spinner fa-spin"></i>
+        포인트 확인 중 입니다...
+      </div> -->
     </div>
   </div>
 </script>
@@ -286,14 +300,6 @@
     },
 
     watch: {
-      wallet_loaded: function(_new, _old) {
-        if (_new) {
-          // if (!this.wallet.welcomed) {
-          //   this.wallet.receive('welcome', this.wallet.amount_welcome);
-          //   alert('첫방문 기념으로 ' + this.wallet.amount_welcome + 'P가 지급되었습니다')
-          // }
-        }
-      }
       // rewards_loaded: function(_new, _old) {
       //   if (_new) {
       //     if (this.rewards_history) {
@@ -340,9 +346,7 @@
       status: function() {
         return {
           // show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search', 'brander', 'agit')),
-          show: this.wallet_onloading
-                || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'brander', 'agit'))
-                || (!this.session.editing.on && this.session.on('search')),
+          show: this.wallet_onloading || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'search', 'brander', 'agit')),
           open: this.control.open
         }
       },
@@ -405,6 +409,73 @@
           }
         }
       },
+
+
+
+
+
+      // rewards_loaded: function() {
+      //   if (this.boo) {
+      //     return this.boo.profiling_ready
+      //   }
+      // },
+      //
+      // rewarder: function() {
+      //   if (this.rewards_loaded) {
+      //     return this.boo.rewarder
+      //   }
+      // },
+      //
+      // rewards: function() {
+      //   if (this.rewarder) {
+      //     return this.rewarder.rewards
+      //   }
+      // },
+      //
+      // rewards_history: function() {
+      //   if (this.rewards) {
+      //     return this.rewards.history
+      //   }
+      // },
+      //
+      // rewards_onloading: function() {
+      //   return this.session.user.has_auth && !this.rewards_loaded
+      // },
+      //
+      // reward_total: function() {
+      //   if (this.rewards_loaded) {
+      //     return this.boo.rewarder.rewards.total.reward
+      //
+      //   } else {
+      //     return 0
+      //   }
+      // },
+      //
+      // reward_today: function() {
+      //   if (this.rewards_loaded) {
+      //     return this.boo.rewarder.rewards.today.reward
+      //
+      //   } else {
+      //     return 0
+      //   }
+      // },
+      //
+      // reward_amount_max_daily: function() {
+      //   if (this.rewards_loaded) {
+      //     return this.boo.rewarder.reward_amount_max_daily
+      //   } else {
+      //     return '--'
+      //   }
+      // },
+      //
+      // pbar_core_style: function() {
+      //   if (this.rewards_loaded) {
+      //     const pct = this.boo.rewarder.rewards.today.reward / this.reward_amount_max_daily * 100;
+      //     return {
+      //       'width': pct + '%'
+      //     }
+      //   }
+      // },
 
     }
   });

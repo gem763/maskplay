@@ -29,6 +29,12 @@ from datetime import datetime, date, timedelta
 # from gensim.models import Doc2Vec
 from django.utils import timezone
 
+
+# test = m.Support.objects.filter(wallet__receiver_transaction__when__date=datetime.now().date())
+# print(test)
+# print(m.Support.objects.filter(wallet__transaction__who=638))
+# print()
+
 labels = {
     'gender': list(m.Genderlabel.objects.order_by('key').values('id', 'label')),
     'age': list(m.Agelabel.objects.order_by('key').values('id', 'label')),
@@ -296,6 +302,56 @@ def email_signup(request):
             return JsonResponse({'success':False, 'message':'something wrong while signing-up'}, safe=False)
 
 
+def signup_setbase(request):
+    try:
+        user = request.user
+        if user.is_authenticated:
+            _data = json.loads(request.GET.get('data', None))
+            user.name = _data['name']
+            user.gender = 0 if _data['gender']=='남성' else 1
+            user.birth = _data['birth']
+            user.mobile = _data['mobile']
+            user.address = _data['address']
+            user.save()
+            return JsonResponse({'success':True, 'message':'signup setbased successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while signup-setbase'}, safe=False)
+
+
+def signup_setbase_change(request):
+    try:
+        user = request.user
+        if user.is_authenticated:
+            _name = request.POST.get('name', None)
+            _gender = request.POST.get('gender', None)#; print(_gender)
+            _birth = request.POST.get('birth', None)
+            _mobile = request.POST.get('mobile', None)
+            _address = request.POST.get('address', None)
+
+            # print(_name, '***********')
+            if _name is not None:
+                user.name = _name
+
+            if _gender is not None:
+                user.gender = 0 if _gender=='남성' else 1
+
+            if _birth is not None:
+                user.birth = _birth
+
+            if _mobile is not None:
+                user.mobile = _mobile
+
+            if _address is not None:
+                user.address = _address
+
+            user.save()
+            return JsonResponse({'success':True, 'message':'signup setbase changed successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while signup-setbase change'}, safe=False)
+
+
 
 def get_user(request):
     sessionkey = request.session.session_key
@@ -468,6 +524,26 @@ def get_itemlabel(request, label_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def edit_mylabels(request):
+    try:
+        if request.user.is_authenticated:
+            _boo = request.user.boo
+            _type = request.GET.get('type', None)
+            _action = request.GET.get('action', None)
+            _id = request.GET.get('id', None)
+
+            if _action == 'add':
+                getattr(_boo, _type).add(int(_id))
+
+            elif _action == 'remove':
+                getattr(_boo, _type).remove(int(_id))
+
+        return JsonResponse({'success':True, 'message':'mylabels edited successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
 
 def get_icoffeecoupons(request):
     _icc = list(m.Coffeecoupon.icoffeecoupons)
@@ -500,8 +576,19 @@ def get_shoptem(request, shoptem_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def get_iraffles_my(request):
+    try:
+        if request.user.is_authenticated:
+            _boo = request.user.boo
+            _iraffles = list(m.Raffle.iraffles(_boo))
+            return JsonResponse({'success':True, 'ids':_iraffles}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
 def get_iraffles(request):
-    _iraffles = list(m.Raffle.iraffles)
+    _iraffles = list(m.Raffle.iraffles())
     return JsonResponse({'success':True, 'ids':_iraffles}, safe=False)
 
 
@@ -513,6 +600,23 @@ def get_raffle(request, raffle_id):
 
     except:
         return JsonResponse({'success':False}, safe=False)
+
+
+
+def get_iflashgames(request):
+    _iflashgames = list(m.Flashgame.iflashgames)
+    return JsonResponse({'success':True, 'ids':_iflashgames}, safe=False)
+
+
+def get_flashgame(request, flashgame_id):
+    try:
+        _flashgame = m.Flashgame.objects.get(pk=flashgame_id)
+        _flashgame = m.FlashgameSerializer(_flashgame).data
+        return JsonResponse({'success':True, 'content':_flashgame}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
 
 
 def get_item(request, item_id):
@@ -535,8 +639,19 @@ def get_support(request, support_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def get_isupports_my(request):
+    try:
+        if request.user.is_authenticated:
+            _boo = request.user.boo
+            _isupports = list(m.Support.isupports(_boo))
+            return JsonResponse({'success':True, 'ids':_isupports}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
 def get_isupports(request):
-    _isupports = list(m.Support.isupports)
+    _isupports = list(m.Support.isupports())
     return JsonResponse({'success':True, 'ids':_isupports}, safe=False)
 
 
@@ -903,28 +1018,56 @@ def link_delete(request, link_id):
         return JsonResponse({'success':False, 'message':'something wrong while link deleting'}, safe=False)
 
 
-def wallet_write(request):
+
+def transact(request):
     try:
-        # _wallet = request.user.boo.wallet
-        _obj = request.GET.get('obj', None)
-        _obj_id = request.GET.get('obj_id', None)
-        _type = request.GET.get('type', None)
-        _amount = int(request.GET.get('amount', 0))
+        if request.user.is_authenticated:
+            # _receiver = request.GET.get('receiver', None)
+            _receiver_id = request.GET.get('receiver_id', None)
+            _type = request.GET.get('type', None)
+            _amount = int(request.GET.get('amount', 0))
 
-        if _obj == 'support':
-            obj = m.Support.objects.get(pk=_obj_id)
+            if _receiver_id is None:
+                _sender = m.Boo.objects.get(pk=m.MOIBER_BOO).wallet
+                _receiver = request.user.boo.wallet
 
-        elif _obj == 'raffle':
-            obj = m.Raffle.objects.get(pk=_obj_id)
+            elif _type == 'support':
+                _sender = request.user.boo.wallet
+                _receiver = m.Support.objects.get(pk=_receiver_id).wallet
 
-        elif _obj is None:
-            obj = request.user.boo
+            elif _type == 'raffle':
+                _sender = request.user.boo.wallet
+                _receiver = m.Raffle.objects.get(pk=_receiver_id).wallet
 
-        obj.wallet.write(type=_type, amount=_amount)
-        return JsonResponse({'success':True, 'message':'transacted successfully'}, safe=False)
+            _sender.send(to=_receiver, type=_type, amount=_amount)
+            return JsonResponse({'success':True, 'message':'transacted successfully'}, safe=False)
 
     except:
         return JsonResponse({'success':False, 'message':'something wrong while transaction'}, safe=False)
+
+
+
+# def wallet_write(request):
+#     try:
+#         _obj = request.GET.get('obj', None)
+#         _obj_id = request.GET.get('obj_id', None)
+#         _type = request.GET.get('type', None)
+#         _amount = int(request.GET.get('amount', 0))
+#
+#         if _obj == 'support':
+#             obj = m.Support.objects.get(pk=_obj_id)
+#
+#         elif _obj == 'raffle':
+#             obj = m.Raffle.objects.get(pk=_obj_id)
+#
+#         elif _obj is None:
+#             obj = request.user.boo
+#
+#         obj.wallet.write(type=_type, amount=_amount)
+#         return JsonResponse({'success':True, 'message':'transacted successfully'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False, 'message':'something wrong while transaction'}, safe=False)
 
 
 

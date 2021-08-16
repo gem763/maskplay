@@ -16,12 +16,13 @@
   }
 
   .signup.vcomp .page-body > .section.top {
-    height: 20%;
+    /* height: 20%; */
   }
 
   .signup.vcomp .page-body > .section.middle {
-    height: 60%;
+    height: 80%;
     background: none;
+    justify-content: flex-end;
   }
 
   .signup.vcomp .page-body > .section.bottom {
@@ -44,7 +45,7 @@
   }
 
   .signup.vcomp .page-body > .section.middle > .agree.desc {
-    margin-top: 10%;
+    margin: 20px;
     color: #CCCCCC;
   }
 
@@ -55,35 +56,27 @@
   }
 
   .signup.vcomp .page-body > .section.middle > .action {
-    width: var(--w-50);
-    height: var(--w-10);
-    border-radius: var(--w-3);
+    width: calc(100% - 64px);
+    height: 50px;
+    border-radius: 8px;
     box-sizing: border-box;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    margin-top: 20px;
   }
 
-  .signup.vcomp .page-body > .section.middle > .action.login-kakao {
-    background: #FFE810;
-    margin-bottom: 4%;
-    color: var(--color-dark);
-  }
-
-  .signup.vcomp .page-body > .section.middle > .action.login-naver {
-    background: #04C75A;
-    margin-bottom: 4%;
-  }
-
-  .signup.vcomp .page-body > .section.middle > .action.login-facebook {
-    background: #0095F6;
-    margin-bottom: 4%;
-  }
-
-  .signup.vcomp .page-body > .section.middle > .action.login-email {
+  .signup.vcomp .page-body > .section.middle > .action.signup {
     background: var(--color-dark);
+    pointer-events: none;
+    opacity: 0.2;
+  }
+
+  .signup.vcomp .page-body > .section.middle > .action.signup.active {
+    pointer-events: auto;
+    opacity: 1;
   }
 
   .signup.vcomp .page-body > .section.bottom > .tail {
@@ -99,10 +92,128 @@
     margin-right: 5px;
     cursor: pointer;
   }
+
+
+  .signup.vcomp .page-body > .section > .infobox {
+    width: calc(100% - 64px);
+    /* height: 100px; */
+    font-size: 15px;
+    /* background: lightblue; */
+    border-radius: 8px;
+    border: 1px solid #e4e4e4;
+    box-sizing: border-box;
+    margin: 10px;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td {
+    box-sizing: border-box;
+    position: relative;
+    text-align: left;
+    padding: 0;
+    height: 40px;
+    border-bottom: 1px solid #e4e4e4;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table tr:last-child > td {
+    border-bottom: none;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td > input {
+    width: 100%;
+    height: 100%;
+    font-weight: bold;
+    border: none;
+    box-sizing: border-box;
+    padding-right: 10px;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td > input:focus {
+    outline: none;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td > input::placeholder {
+    font-weight: normal;
+    color: #333333;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td.head {
+    padding-left: 15px;
+    width: 120px;
+    box-sizing: border-box;
+    color: #777777;
+  }
+
+  .signup.vcomp .page-body > .section > .explain {
+    font-size: 12px;
+    color: #777777;
+    width: 100%;
+    /* text-align: center; */
+    padding-left: 50px;
+    padding-right: 50px;
+    box-sizing: border-box;
+    margin-top: 10px;
+    line-height: 20px;
+  }
+
+  .signup.vcomp .page-body > .section > .conversation {
+    position: relative;
+    /* background: lightblue; */
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: row;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    margin-top: 20px
+  }
+
+  .signup.vcomp .page-body > .section > .conversation > .who {
+    width: 40px;
+    height: 40px;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .signup.vcomp .page-body > .section > .conversation > .who > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 100px;
+  }
+
+  .signup.vcomp .page-body > .section > .conversation > .txt {
+    /* background: lightgreen; */
+    padding-left: 10px;
+    width: calc(100% - 40px);
+    box-sizing: border-box;
+  }
+
+  .signup.vcomp .page-body > .section > .conversation > .txt > .bubble {
+    white-space: pre-line;
+    padding: 10px;
+    background: white;
+    border-radius: 20px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 2px rgba(50, 50, 71, 0.08), 0px 4px 8px rgba(50, 50, 71, 0.06);
+  }
+
+  .signup.vcomp .page-body > .section > .conversation > .txt > .bubble > div {
+    padding: 2px;
+    box-sizing: border-box;
+  }
 </style>
 
 
-{% load socialaccount %}
 <script type='text/x-template' id='signup-template'>
   <page
     class='signup vcomp'
@@ -117,12 +228,71 @@
 
       <div class='section middle'>
         <div class='desc title'><b>회원가입</b></div>
-        <div class='desc subtitle'>가입하고 더 많은 활동을 해보세요</div>
-        <!-- <div class='action login-kakao' @click='action_login_kakao'>카카오로 가입하기</div>
-        <div class='action login-naver' @click='action_login_naver'>네이버로 가입하기</div> -->
-        <!-- <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 가입하기</div> -->
-        <div class='action login-email' @click='session.open_emailsignup()'>이메일로 가입하기</div>
+        <!-- <div class='desc subtitle'>가입하고 더 많은 활동을 해보세요</div> -->
+
+        <div class='infobox'>
+          <table>
+            <tbody>
+              <tr>
+                <td class='head'>이름</td>
+                <td><input v-model.trim='name' placeholder='' spellcheck='false'></td>
+              </tr>
+
+              <tr>
+                <td class='head'>성별</td>
+                <td>
+                  <label><input type="radio" value="남성" v-model="gender"><b>남성</b></label>
+                  <label><input type="radio" value="여성" v-model="gender"><b>여성</b></label>
+                </td>
+              </tr>
+
+              <tr>
+                <td class='head'>생년월일</td>
+                <td><input v-model.trim='birth' placeholder='' spellcheck='false' type='date'></td>
+              </tr>
+
+              <tr>
+                <td class='head'>휴대번호(선택)</td>
+                <td><input v-model.trim='mobile' placeholder='' spellcheck='false' @keyup='mobilenumber'></td>
+              </tr>
+
+              <tr>
+                <td class='head'>주소(선택)</td>
+                <td><input v-model.trim='address' placeholder='' spellcheck='false'></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div>
         <div class='desc agree'>약관에 동의하고 가입합니다.</div>
+
+        <div class='explain'>
+          포인트 획득을 위해서는 기본 프로필 입력이 필수 입니다.
+        </div>
+
+        <div class='explain'>
+          프로필 정보는 참여 조건 확인 및 결과 리포트에 반영될 뿐 회원님을 구별할 수 있는 정보는 저장하지 않습니다.
+        </div>
+
+        <div class='explain'>
+          모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
+        </div>
+
+        <div class='conversation'>
+          <div class='who'>
+            <img src='/static/materials/characters/avatar.jpg'>
+          </div>
+          <div class='txt'>
+            <div class='bubble'>
+              <div>패션 서베이 참여를 위해서 내 기본정보 입력이 필요해요.</div>
+              <div>👉🏻 이름/성별/생년월일은 필수!
+              👉🏻 전화번호/주소는 선택이지만 래플참여나 포인트쇼핑 시는 당연히 필수니까 미리미리 입력해 두는 센스!!</div>
+              <div>💋 입력하면 100P를 즉시 지급합니다!</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class='section bottom'>
@@ -147,30 +317,40 @@
     props: [ 'session' ],
     data: function() {
       return {
-        facebook_login_url: "{% provider_login_url 'facebook' method='oauth2' %}",
-        google_login_url: "{% provider_login_url 'google' method='oauth2' %}",
-        kakao_login_url: "{% provider_login_url 'kakao' method='oauth2' %}",
-        naver_login_url: "{% provider_login_url 'naver' method='oauth2' %}"
+        name: '',
+        gender: '',
+        birth: '',
+        mobile: '',
+        address: '',
+      }
+    },
+
+    computed: {
+      nextable: function() {
+        return (this.name != '') && (this.gender != '') && (this.birth != '')
       }
     },
 
     methods: {
-      action_login_facebook: function() {
-        window.location.assign(this.facebook_login_url);
+      mobilenumber: function() {
+        this.mobile = this.mobile.replace(/[^0-9]/g, "").replace(/(^02|^0505|^1[0-9]{3}|^0[0-9]{2})([0-9]+)?([0-9]{4})$/,"$1-$2-$3").replace("--", "-");
       },
 
-      action_login_google: function() {
-        // this.session.open_bridge('browser_guide', 'top');
-        // return
-        window.location.assign(this.google_login_url);
-      },
-
-      action_login_kakao: function() {
-        window.location.assign(this.kakao_login_url);
-      },
-
-      action_login_naver: function() {
-        window.location.assign(this.naver_login_url);
+      goto_signupper: function() {
+        const signupinfo = {
+          name: this.name,
+          gender: this.gender,
+          birth: this.birth,
+          mobile: this.mobile,
+          address: this.address
+        }
+        // sessionStorage.setItem('name', this.name);
+        // sessionStorage.setItem('gender', this.gender);
+        // sessionStorage.setItem('birth', this.birth);
+        // sessionStorage.setItem('mobile', this.mobile);
+        // sessionStorage.setItem('address', this.address);
+        sessionStorage.setItem('signupinfo', JSON.stringify(signupinfo));
+        this.session.open_signupper();
       }
     }
   });

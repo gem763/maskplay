@@ -47,11 +47,11 @@
 <script type='text/x-template' id='pointget-template'>
   <pointguider
     class='pointget vcomp'
-    :phase='phase'
+    :phase='control.phase'
     @backto_menu='backto_menu'>
 
     <template #menu>
-      <div class='item' @click='session.open_checkingame()' v-if='is_superuser'>
+      <div class='item' @click='session.open_checkingame()'>
         <img src='/static/materials/imgs/menu/pointget-choolcheck-game.jpg'>
         <div class='title'>
           <span>출쳌게임</span>
@@ -83,7 +83,7 @@
         </div>
       </div>
 
-      <div class='item' @click='goto_researcher' v-if='is_superuser'>
+      <div class='item' @click='goto_researcher'>
         <img src='/static/materials/imgs/menu/pointget-brand-survey.png'>
         <div class='title'>
           <span>브랜드</span>
@@ -91,7 +91,7 @@
         </div>
       </div>
 
-      <div class='item' @click='goto_interview' v-if='is_superuser'>
+      <div class='item' @click='goto_interview'>
         <img src='/static/materials/imgs/menu/pointget-interview.jpg'>
         <div class='title'>
           <span>인터뷰</span>
@@ -101,8 +101,8 @@
     </template>
 
     <template #content>
-      <template v-if='content==0'>
-        <div class='explain'>
+      <template v-if='control.content==0'>
+        <!-- <div class='explain'>
           <span class='title'></span>
           <span class='subtitle'></span>
           <span class='desc'></span>
@@ -110,10 +110,10 @@
 
         <div class='illust'>
           출석체크 밸런스게임
-        </div>
+        </div> -->
       </template>
 
-      <template v-else-if='content==1'>
+      <template v-else-if='control.content==1'>
         <div class='explain'>
           <span class='title'><b>밸런스게임 참여</b>로 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
           <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
@@ -125,7 +125,7 @@
         </div>
       </template>
 
-      <template v-else-if='content==2'>
+      <template v-else-if='control.content==2'>
         <div class='explain'>
           <span class='title'><b>옷장넣기</b>를 통해서도 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
           <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
@@ -137,8 +137,8 @@
         </div>
       </template>
 
-      <template v-else-if='content==3'>
-        <div class='explain'>
+      <template v-else-if='control.content==3'>
+        <!-- <div class='explain'>
           <span class='title'></span>
           <span class='subtitle'></span>
           <span class='desc'></span>
@@ -146,11 +146,11 @@
 
         <div class='illust'>
           스타일유형 뱃지
-        </div>
+        </div> -->
       </template>
 
-      <template v-else-if='content==4'>
-        <div class='explain'>
+      <template v-else-if='control.content==4'>
+        <!-- <div class='explain'>
           <span class='title'></span>
           <span class='subtitle'></span>
           <span class='desc'></span>
@@ -158,11 +158,11 @@
 
         <div class='illust'>
           브랜드리서치 참여
-        </div>
+        </div> -->
       </template>
 
-      <template v-else-if='content==5'>
-        <div class='explain'>
+      <template v-else-if='control.content==5'>
+        <!-- <div class='explain'>
           <span class='title'></span>
           <span class='subtitle'></span>
           <span class='desc'></span>
@@ -170,7 +170,7 @@
 
         <div class='illust'>
           인터뷰 참여
-        </div>
+        </div> -->
       </template>
     </template>
   </pointguider>
@@ -181,11 +181,11 @@
   Vue.component('pointget', {
     template: '#pointget-template',
     delimiters: ['[[', ']]'],
-    props: [ 'session' ],
+    props: [ 'session', 'control' ],
     data: function() {
       return {
-        phase: 'menu',
-        content: undefined
+        // phase: 'menu',
+        // content: undefined
       }
     },
 
@@ -199,12 +199,12 @@
 
     methods: {
       backto_menu: function() {
-        this.phase = 'menu';
+        this.control.phase = 'menu';
       },
 
       go_content: function(what) {
-        this.phase = 'content';
-        this.content = what;
+        this.control.phase = 'content';
+        this.control.content = what;
       },
 
       goto_researcher: function() {

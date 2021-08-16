@@ -1,0 +1,143 @@
+<style>
+  .guider.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: rgba(255,255,255,0.8); */
+    transition: all 0.3s;
+    z-index: 200;
+    display: block;
+  }
+
+  .guider.vcomp.hidden {
+    display: none;
+  }
+
+  .guider.vcomp > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .guider.vcomp > .swiper-container > .exit {
+    width: 30%;
+    /* height: 50px; */
+    background: var(--color-dark);
+    color: white;
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    text-align: center;
+    z-index: 1;
+  }
+
+  .guider.vcomp > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .guider.vcomp > .swiper-container > .swiper-wrapper > .swiper-slide > .cover {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 100px);
+    background: rgba(255,255,255,0.8);
+  }
+</style>
+
+<script type='text/x-template' id='guider-template'>
+  <div class='guider vcomp' :class='{ hidden:hidden }'>
+    <div class='swiper-container' ref='swiper'>
+      <div class='swiper-wrapper'>
+        <div class='swiper-slide'><div class='cover'></div></div>
+        <div class='swiper-slide'><div class='cover'></div></div>
+        <div class='swiper-slide'><div class='cover'></div></div>
+        <div class='swiper-slide'><div class='cover'></div></div>
+      </div>
+
+      <div class='exit' @click='exit'>나가기</div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('guider', {
+    template: '#guider-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        swiper: undefined,
+        swiper_options: {
+          direction: 'horizontal',
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          },
+        }
+      }
+    },
+
+    watch: {
+      idx: function(_new, _old) {
+        switch (_new) {
+          case 0:
+            this.session.open_home();
+            break;
+
+          case 1:
+            this.session.open_stylevote();
+            break;
+
+          case 2:
+            this.session.open_search();
+            break;
+
+          case 3:
+            this.session.open_my();
+            break;
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    computed: {
+      idx: function() {
+        if (this.swiper) {
+          return this.swiper.realIndex
+        }
+      },
+
+      hidden: function() {
+        return !this.session.show_guider
+      }
+    },
+
+    methods: {
+      exit: function() {
+        this.session.show_guider = false;
+      }
+    }
+  });
+</script>

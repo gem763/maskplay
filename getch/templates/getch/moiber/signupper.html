@@ -1,0 +1,177 @@
+<style>
+  .signupper.vcomp .page-body {
+    width: 100%;
+    height: 100%;
+    background: white;
+    font-size: 12px;
+  }
+
+  .signupper.vcomp .page-body > .section {
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .signupper.vcomp .page-body > .section.top {
+    height: 20%;
+  }
+
+  .signupper.vcomp .page-body > .section.middle {
+    height: 60%;
+    background: none;
+  }
+
+  .signupper.vcomp .page-body > .section.bottom {
+    height: 20%;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .desc {
+    width: 100%;
+    text-align: center;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .title.desc {
+    margin-bottom: 2%;
+    font-size: 20px;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .subtitle.desc {
+    margin-bottom: 10%;
+    color: #CCCCCC;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .agree.desc {
+    margin-top: 10%;
+    color: #CCCCCC;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .signup.desc {
+    margin-top: 9%;
+    color: var(--color-dark);
+    text-decoration: underline;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .action {
+    width: var(--w-50);
+    height: var(--w-10);
+    border-radius: var(--w-3);
+    box-sizing: border-box;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .action.login-kakao {
+    background: #FFE810;
+    margin-bottom: 4%;
+    color: var(--color-dark);
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .action.login-naver {
+    background: #04C75A;
+    margin-bottom: 4%;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .action.login-facebook {
+    background: #0095F6;
+    margin-bottom: 4%;
+  }
+
+  .signupper.vcomp .page-body > .section.middle > .action.login-email {
+    background: var(--color-dark);
+  }
+
+  .signupper.vcomp .page-body > .section.bottom > .tail {
+    width: 100%;
+    background: none;
+    font-size: 11px;
+    color: #CCCCCC;
+    text-align: center;
+  }
+
+  .signupper.vcomp .page-body > .section.bottom > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+</style>
+
+
+{% load socialaccount %}
+<script type='text/x-template' id='signupper-template'>
+  <page
+    class='signupper vcomp'
+    :order='session.page.signupper.order'
+    :open='session.page.signupper.open'
+    :from='session.page.signupper.from'
+    :hide_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='section top'></div>
+
+      <div class='section middle'>
+        <!-- <div class='desc title'><b>회원가입</b></div> -->
+        <!-- <div class='desc subtitle'>가입하고 더 많은 활동을 해보세요</div> -->
+        <!-- <div class='action login-kakao' @click='action_login_kakao'>카카오로 연결하기</div>
+        <div class='action login-naver' @click='action_login_naver'>네이버로 연결하기</div> -->
+        <!-- <div class='action login-facebook' @click='action_login_facebook'>페이스북으로 가입하기</div> -->
+        <div class='action login-email' @click='session.open_emailsignup()'>이메일로 연결하기</div>
+        <!-- <div class='desc agree'>약관에 동의하고 가입합니다.</div> -->
+      </div>
+
+      <div class='section bottom'>
+        <div class='tail'>
+          <span class='item' @click='session.open_about()'>회사소개</span>
+          <span class='item' @click='session.open_landing()'>서비스소개</span>
+          <span class='item' @click='session.open_recruit()'>채용</span>
+          <span class='item' @click='session.open_policy()'>약관</span>
+          <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+          <span class='item' @click='session.contact()'>문의</span>
+        </div>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('signupper', {
+    template: '#signupper-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        facebook_login_url: "{% provider_login_url 'facebook' method='oauth2' %}",
+        google_login_url: "{% provider_login_url 'google' method='oauth2' %}",
+        kakao_login_url: "{% provider_login_url 'kakao' method='oauth2' %}",
+        naver_login_url: "{% provider_login_url 'naver' method='oauth2' %}"
+      }
+    },
+
+    methods: {
+      action_login_facebook: function() {
+        window.location.assign(this.facebook_login_url);
+      },
+
+      action_login_google: function() {
+        // this.session.open_bridge('browser_guide', 'top');
+        // return
+        window.location.assign(this.google_login_url);
+      },
+
+      action_login_kakao: function() {
+        window.location.assign(this.kakao_login_url);
+      },
+
+      action_login_naver: function() {
+        window.location.assign(this.naver_login_url);
+      }
+    }
+  });
+</script>

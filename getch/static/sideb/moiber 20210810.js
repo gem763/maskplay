@@ -7,9 +7,7 @@ class Session {
       agit:         { order: 0, instant: false, open: false, boo: undefined, from: 'left' },
       researcher:     { order: 0, instant: false, open: false, from: 'left' },
       collector:    { order: 0, instant: false, open: false, from: 'bottom', pix: undefined },
-      baseinfo:     { order: 0, instant: false, open: false, from: 'left' },
       signup:       { order: 0, instant: false, open: false, from: 'left' },
-      signupper:    { order: 0, instant: false, open: false, from: 'left' },
       login:        { order: 0, instant: false, open: false, from: 'left' },
       accountcheck: { order: 0, instant: false, open: false, from: 'left', existing: undefined },
       emailogin:    { order: 0, instant: false, open: false, from: 'left', email: undefined },
@@ -23,7 +21,6 @@ class Session {
       // contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
       checkingame:  { order: 0, instant: false, open: false, from: 'top', researchitem: Checkingame.build(this) },
-      flashgames:   { order: 0, instant: false, open: false, from: 'top', content: new Flashgames(this) },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
@@ -41,8 +38,6 @@ class Session {
 
     this.home = 'researcher';
     this.page[this.home].open = true;
-
-    this.show_guider = false;
 
     // this.contentworks = {
     //   '동네스타일': Contentwork.build(this, { id: 1})
@@ -74,8 +69,7 @@ class Session {
     // this.open_my();
     // this.open_profileconfig();
     // this.open_checkingame();
-    // this.open_flashgames();
-    // this.open_signup();
+    // this.open_my();
   }
 
   get dasher_control() {
@@ -214,16 +208,8 @@ class Session {
     this.open_page('landing');
   }
 
-  open_baseinfo() {
-    this.open_page('baseinfo');
-  }
-
   open_signup() {
     this.open_page('signup');
-  }
-
-  open_signupper() {
-    this.open_page('signupper');
   }
 
   open_login() {
@@ -293,10 +279,6 @@ class Session {
 
   open_checkingame() {
     this.open_page('checkingame');
-  }
-
-  open_flashgames() {
-    this.open_page('flashgames');
   }
 
   open_brander(brand) {
@@ -529,6 +511,7 @@ class Boo extends Baseboo {
     this.itemlabels = undefined;
     this.styleprofile = {};
     // this.contentwork_result = {};
+    // this.rewarder = undefined;
     this.wallet = undefined;
     this.researched = [];
     this.supports = undefined;
@@ -543,33 +526,21 @@ class Boo extends Baseboo {
 
   assign(obj) {
     Object.assign(this, obj);
+    // this.rewarder = new Rewarder(obj.rewards);
     this.collections = new Collections(this.session, this.id);
     this.supports = new MySupports(this.session);
     this.raffles = new MyRaffles(this.session);
     this.wallet = new Wallet(obj.wallet, this.session);
-    this.signup_check();
+    // delete this['rewards'];
   }
 
-  signup_check() {
-    const signupinfo = sessionStorage.getItem('signupinfo');
-    if (signupinfo && (this.wallet.baseinfo_inputed==false)) {
-      fetch(`/signup/setbase?data=${signupinfo}`)
-        .then(res => res.json())
-        .then(js => { console.log(js); });
 
-      Object.assign(this.session.user.auth, JSON.parse(signupinfo));
-      sessionStorage.removeItem('signupinfo');
-
-      this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
-      this.wallet.baseinfo_inputed = true;
-      alert(`기본정보 입력으로 ${this.wallet.amount_baseinfo_input}P가 지급되었습니다`);
-
-      this.session.show_guider = true;
-    }
-  }
-
+  // get profiling_ready() {
+  //   return this.rewarder!=undefined
+  // }
 
   stylevote(ipix_pos, ipix_neg, type) {
+    // if (!this.rewarder) {
     if (!this.wallet) {
       return
     }
@@ -585,9 +556,11 @@ class Boo extends Baseboo {
 
       if (type == 'clear') {
         this.wallet.receive_daybonus('daily_balance_game', -this.wallet.per_vote);
+        // this.rewarder.settle(-1, 'vote');
 
       } else if (type == 'new') {
         this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
+        // this.rewarder.settle(1, 'vote');
       }
   }
 
@@ -645,9 +618,9 @@ class Wallet {
   // 3 research
   // 4 interview
   // 5 welcome
-  // 6 baseinfo_input
-  // 7 stylelabels_input
-  // 8 itemlabels_input
+  // 6 base_input
+  // 7 style_input
+  // 8 item_input
   // 100 support
   // 101 raffle
   // 102 shopping
@@ -660,9 +633,6 @@ class Wallet {
     this.per_collect = 1;
     this.per_checkin = 10;
     this.amount_welcome = 500;
-    this.amount_baseinfo_input = 100;
-    this.amount_stylelabels_input = 50;
-    this.amount_itemlabels_input = 50;
     this.amount_to_levelup = 5000;
   }
 
@@ -691,16 +661,81 @@ class Wallet {
   }
 
   receive_daybonus(type, amount) {
-    // amount = 10;
-    amount = Math.min(this.amount_daybonus + amount, this.amount_daybonus_max) - this.amount_daybonus;
-    if (amount > 0) {
-      // console.log(1)
-      this.receive(type, amount);
-      this.amount_daybonus += amount;
-    }
+    this.receive(type, amount);
+    this.amount_daybonus += amount;
   }
 }
 
+
+// class Rewarder {
+//   constructor(rewards) {
+//     this.rewards = rewards;
+//     this.on_settling = false;
+//     this.reward_amount_max_daily = 100;
+//     this.reward_per_vote = 1;
+//     this.reward_per_collect = 1;
+//     this.reward_per_checkin = 10;
+//     this.reward_welcome = 500;
+//     this.reward_to_levelup = 5000;
+//   }
+//
+//   settle(n, by) {
+//     let reward_change;
+//     let param_n, param_reward;
+//
+//     if (by == 'vote') {
+//       reward_change = n * this.reward_per_vote;
+//       param_n = 'n_voted';
+//       param_reward = 'vote_reward';
+//
+//     } else if (by == 'collect') {
+//       reward_change = n * this.reward_per_collect;
+//       param_n = 'n_collected';
+//       param_reward = 'collect_reward';
+//     }
+//
+//     reward_change = Math.min(this.rewards.today.reward + reward_change, this.reward_amount_max_daily) - this.rewards.today.reward;
+//
+//     this.rewards.today.n_action += n;
+//     this.rewards.total.n_action += n;
+//     this.rewards.today.reward += reward_change;
+//     this.rewards.total.reward += reward_change;
+//     this.on_settling = true;
+//
+//     fetch(`settle?${param_n}=${n}&${param_reward}=${reward_change}`)
+//       .then(x => x.json())
+//       .then(js => {
+//         if (js.success) {
+//           this.on_settling = false;
+//           console.log(js);
+//         }
+//       });
+//   }
+//
+//   settle_amount(amount, by) {
+//     this.on_settling = true;
+//     // this.rewards.today.reward += amount;
+//     this.rewards.total.reward += amount;
+//
+//     let param_reward;
+//
+//     if (by == 'checkin') {
+//       param_reward = 'checkin_reward';
+//
+//     } else if (by == 'bonus') {
+//       param_reward = 'bonus_reward';
+//     }
+//
+//     fetch(`settle?${param_reward}=${amount}`)
+//       .then(x => x.json())
+//       .then(js => {
+//         if (js.success) {
+//           this.on_settling = false;
+//           console.log(js);
+//         }
+//       });
+//   }
+// }
 
 
 class Contentwork extends Loader {
@@ -804,19 +839,6 @@ class Checkingame extends Loader {
     this.question = undefined;
     this.pix = undefined;
     this.mc = undefined;
-  }
-}
-
-class Flashgame extends Loader {
-  constructor(session, baseobj) {
-    super(session, baseobj);
-    this.url = `/flashgame/${baseobj.id}`;
-    this.type = undefined;
-    this.gender = undefined;
-    this.text = undefined;
-    this.pix = undefined;
-    this.reward = undefined;
-    this.pub_date = undefined;
   }
 }
 
@@ -1167,17 +1189,6 @@ class Shoptems extends Multiloader {
 }
 
 
-class Flashgames extends Multiloader {
-  constructor(session) {
-    super(session);
-    this.contentype = Flashgame;
-    this.nloads_init = 1;
-    this.ids_url = `/flashgame/iflashgames`;
-    this.load_ids();
-  }
-}
-
-
 
 class ResearchItems extends Multiloader {
   constructor(session, research_id) {
@@ -1492,11 +1503,6 @@ class Auth {
   // constructor(cuser, store) {
   constructor(cuser, session) {
     this.id = Number(cuser.id);
-    this.name = cuser.name;
-    this.gender = cuser.gender==0 ? '남성' : '여성';
-    this.birth = cuser.birth;
-    this.mobile = cuser.mobile;
-    this.address = cuser.address;
     // this.store = store;
     this.session = session;
     this.email = cuser.email;
@@ -1508,21 +1514,7 @@ class Auth {
     this.boos_fully_loaded = false;
     // this.links = cuser.links;
     // this.load_other_boos();
-    // this.signup_check();
   }
-
-  // signup_check() {
-  //   const signupinfo = sessionStorage.getItem('signupinfo');
-  //   if (signupinfo) {
-  //     fetch(`/signup/setbase?data=${signupinfo}`)
-  //       .then(res => res.json())
-  //       .then(js => { console.log(js); });
-  //
-  //     Object.assign(this, JSON.parse(signupinfo));
-  //     sessionStorage.removeItem('signupinfo');
-  //     alert('기본정보 입력으로 100P가 지급되었습니다')
-  //   }
-  // }
 
   is_myboo(boo) {
     return boo.id == this.boo_selected

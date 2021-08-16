@@ -132,60 +132,45 @@
     opacity: 0;
   }
 
-  /* .pixchooser.vcomp.loaded > .loginplz {
+
+  .pixchooser.vcomp > .arrows {
     position: absolute;
-    top: 0;
+    bottom: 50%;
+    height: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: orange;
   }
 
-  .pixchooser.vcomp.loaded > .loginplz > .logger {
-    width: 260px;
-    height: 120px;
-    background: white;
-    border-radius: var(--w-3);
+  .pixchooser.vcomp > .arrows > .arrow {
+    position: absolute;
+    top: 50%;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    transform: translateY(-50%);
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    overflow: hidden;
+    cursor: pointer;
   }
 
-  .pixchooser.vcomp.loaded > .loginplz > .logger > .title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
+  .pixchooser.vcomp > .arrows > .arrow.left {
+    left: 0;
+  }
+
+  .pixchooser.vcomp > .arrows > .arrow.right {
+    right: 0;
+  }
+
+  .pixchooser.vcomp > .arrows > .arrow > img {
     width: 100%;
-    font-size: 16px;
-    font-weight: bold;
+    height: auto;
   }
 
-  .pixchooser.vcomp.loaded > .loginplz > .logger > .actions {
-    position: relative;
-    width: 100%;
-    height: calc(33px + 20px);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+  .pixchooser.vcomp > .arrows > .arrow.right > img {
+    transform: rotate(180deg);
   }
-
-  .pixchooser.vcomp.loaded > .loginplz > .logger > .actions > .action {
-    width: 50%;
-    height: calc(100% - 20px);
-    background: var(--color-point);
-    border-radius: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 15px;
-  } */
 </style>
 
 <script type='text/x-template' id='pixchooser-template'>
@@ -206,14 +191,15 @@
       <div class='vs'>VS</div>
     </div>
 
-    <!-- <div class='loginplz' v-if='on_loginplz' @click='dismiss_loginplz'>
-      <div class='logger'>
-        <div class='title'>로그인이 필요합니다</div>
-        <div class='actions'>
-          <div class='action' @click.stop='go_login'>로그인하기</div>
-        </div>
+    <div class='arrows'>
+      <div class='arrow left' v-if='!is_first' @click.stop='go_prev'>
+        <img src='/static/materials/icons/button-backward.png'>
       </div>
-    </div> -->
+
+      <div class='arrow right' @click.stop='go_next'>
+        <img src='/static/materials/icons/button-backward.png'>
+      </div>
+    </div>
   </div>
 </script>
 
@@ -228,17 +214,34 @@
         status: -1,
         imgloaded_0: false,
         imgloaded_1: false,
-        // on_loginplz: false
       }
     },
 
     computed: {
       loaded: function() {
         return this.imgloaded_0 && this.imgloaded_1
+      },
+
+      is_first: function() {
+        if (this.swiper) {
+          return this.swiper.isBeginning
+        }
       }
     },
 
     methods: {
+      go_next: function() {
+        if (this.swiper) {
+          this.swiper.slideNext();
+        }
+      },
+
+      go_prev: function() {
+        if (this.swiper) {
+          this.swiper.slidePrev();
+        }
+      },
+
       toggle_choose: function(act) {
         if (!this.session.user.has_auth) {
           this.$emit('show_loginplz');
@@ -247,16 +250,10 @@
           // setTimeout(() => { this.session.user.loginplz = false; }, 3000);
           return
 
-        } else if (!this.session.user.boo.profiling_ready) {
-          console.log('프로파일링 정보 로딩중');
+        } else if (!this.session.user.boo.loaded) {
+          alert('사용자 데이터를 로딩 중입니다');
           return
         }
-        // 리워드의 concurrency를 어떻게 해결할까
-        // 리워드 관련 객체를 만들어서, 업데이트가 하나 완료되면 다음 fetch를 진행하는 방식으로 해보자
-        // } else if (this.session.user.boo.on_settling) {
-        //   console.log('리워드 업데이트 중');
-        //   return
-        // }
 
         let ipix_pos, ipix_neg;
         let type;

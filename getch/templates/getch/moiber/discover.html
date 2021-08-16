@@ -124,7 +124,7 @@
 
       /* --height: -webkit-fill-available; */
       /* --square-size: calc(min(var(--width), var(--height)/2) * 0.75); */
-      --square-size: calc(min(var(--width) - 90px, var(--height)/2));
+      --square-size: calc(min(var(--width) - 90px, (var(--height) - 70px) / 2));
       /* --square-size: calc(min(100vw, 45vh) * 0.95); */
     }
 
@@ -248,6 +248,7 @@
       <pages :session='session'></pages>
       <joystick :session='session'></joystick>
       <dasher :session='session'></dasher>
+      <guider :session='session'></guider>
       <!-- <notice :session='session'></notice> -->
     </div>
 
@@ -304,6 +305,8 @@
   {% include "getch/moiber/itemdetail.html" %}
   {% include "getch/moiber/supportbrands.html" %}
   {% include "getch/moiber/myinfo.html" %}
+  {% include "getch/moiber/myevents.html" %}
+  {% include "getch/moiber/guider.html" %}
 
   {% include "getch/pixloader.html" %}
   {% include "getch/editext.html" %}
@@ -411,28 +414,28 @@
       // Then we set the value in the --vh custom property to the root of the document
       document.documentElement.style.setProperty('--vh', `${vh}px`);
 
-      // history.pushState(null, null, document.URL);
-      // window.addEventListener('popstate', function () {
-      //   history.pushState(null, null, document.URL);
-      //
-      //   const session = sideb.session;
-      //
-      //   try {
-      //     if ((session.mode.on == 'posts') && (!session.page.posts.swiper.isBeginning)) {
-      //       session.page.posts.swiper.slidePrev();
-      //
-      //     } else if ((session.mode.on == 'booposts') && (!session.page.booposts.swiper.isBeginning)) {
-      //       session.page.booposts.swiper.slidePrev();
-      //
-      //     } else if (session.mode.prev) {
-      //       session.close_page();
-      //
-      //     } else {
-      //       window.history.back();
-      //     }
-      //
-      //   } catch {  }
-      // });
+      history.pushState(null, null, document.URL);
+      window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+
+        const session = moiber.session;
+
+        try {
+          // if ((session.mode.on == 'posts') && (!session.page.posts.swiper.isBeginning)) {
+          //   session.page.posts.swiper.slidePrev();
+          //
+          // } else if ((session.mode.on == 'booposts') && (!session.page.booposts.swiper.isBeginning)) {
+          //   session.page.booposts.swiper.slidePrev();
+
+          if (session.mode.prev) {
+            session.close_page();
+
+          } else {
+            // window.history.back();
+          }
+
+        } catch {  }
+      });
     });
   </script>
 

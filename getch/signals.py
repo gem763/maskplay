@@ -51,3 +51,6 @@ def allauth_user_pre_social_login(request, sociallogin, **kwargs):
         perform_login(request, users[0], email_verification='optional')
         raise ImmediateHttpResponse(redirect(settings.LOGIN_REDIRECT_URL))
         # raise ImmediateHttpResponse(redirect(sociallogin.get_redirect_url(request)))
+
+    # else:
+    #     print('***********************')

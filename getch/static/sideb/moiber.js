@@ -6,26 +6,24 @@ class Session {
       my:           { order: 0, instant: false, open: false },
       agit:         { order: 0, instant: false, open: false, boo: undefined, from: 'left' },
       researcher:     { order: 0, instant: false, open: false, from: 'left' },
-      // finder:       { order: 0, instant: false, open: false, from: 'left', collections: undefined },
       collector:    { order: 0, instant: false, open: false, from: 'bottom', pix: undefined },
+      baseinfo:     { order: 0, instant: false, open: false, from: 'left' },
       signup:       { order: 0, instant: false, open: false, from: 'left' },
-      // signup_email: { order: 0, instant: false, open: false, from: 'left', email: undefined },
-      // signup_pw:    { order: 0, instant: false, open: false, from: 'left', email: undefined },
+      signupper:    { order: 0, instant: false, open: false, from: 'left' },
       login:        { order: 0, instant: false, open: false, from: 'left' },
       accountcheck: { order: 0, instant: false, open: false, from: 'left', existing: undefined },
       emailogin:    { order: 0, instant: false, open: false, from: 'left', email: undefined },
       emailsignup:  { order: 0, instant: false, open: false, from: 'left', email: undefined },
       texteditor:   { order: 0, instant: false, open: false, from: 'left', basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
       pixeditor:    { order: 0, instant: false, open: false, from: 'left', src: undefined, pixloader: undefined, type: undefined },
-      // profileconfig:{ order: 0, instant: false, open: false, from: 'left' },
       profiler:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
       multichooser: { order: 0, instant: false, open: false, from: 'left', univ: undefined },
 
-      // mbti:         { order: 0, instant: false, open: false, from: 'left', contents: undefined },
-      mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
-      contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
+      // mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
+      // contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
       checkingame:  { order: 0, instant: false, open: false, from: 'top', researchitem: Checkingame.build(this) },
+      flashgames:   { order: 0, instant: false, open: false, from: 'top', content: new Flashgames(this) },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
@@ -44,16 +42,18 @@ class Session {
     this.home = 'researcher';
     this.page[this.home].open = true;
 
-    this.contentworks = {
-      '동네스타일': Contentwork.build(this, { id: 1})
-      // '동네스타일': Contentwork.build(this, { agenda: '동네스타일'})
-    }
+    this.show_guider = false;
+
+    // this.contentworks = {
+    //   '동네스타일': Contentwork.build(this, { id: 1})
+    //   // '동네스타일': Contentwork.build(this, { agenda: '동네스타일'})
+    // }
 
     this.store = new Store();
     this.editing = { on: false, selected:[] };
     this.pixtory = [{ pixs: new Pixs(this) }];
     this.scroll_direction = 'up';
-    this.mode = { on: this.home, order: 0, prev: undefined };
+    this.mode = { on: this.home, order: 0, prev: undefined, dasher_control: this.dasher_control };
     this.ikeyset = undefined;
     this.labels = undefined;
     this.entry = undefined;
@@ -67,10 +67,6 @@ class Session {
     this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
     this.user = new User(this);
-
-    this.dasher_control = undefined;
-    // this.dasher_close = false;
-    // setTimeout(()=>{this.user = new User(this);}, 10);
     // this.keyset_sampling();
 
     // this.open_brander(Brand.init(this, {id:2}));
@@ -78,7 +74,18 @@ class Session {
     // this.open_my();
     // this.open_profileconfig();
     // this.open_checkingame();
-    this.open_my();
+    // this.open_flashgames();
+    // this.open_signup();
+  }
+
+  get dasher_control() {
+    return {
+      open: false,
+      section: undefined,
+      phase: 'menu',
+      content: undefined,
+      detail_obj: undefined
+    }
   }
 
   // keyset_sampling() {
@@ -160,6 +167,7 @@ class Session {
     this.mode.prev = {...this.mode};
     this.mode.on = on;
     this.mode.order = this.mode.prev.order + 1;
+    this.mode.dasher_control = this.dasher_control;
   }
 
   checkout() {
@@ -206,8 +214,16 @@ class Session {
     this.open_page('landing');
   }
 
+  open_baseinfo() {
+    this.open_page('baseinfo');
+  }
+
   open_signup() {
     this.open_page('signup');
+  }
+
+  open_signupper() {
+    this.open_page('signupper');
   }
 
   open_login() {
@@ -277,6 +293,10 @@ class Session {
 
   open_checkingame() {
     this.open_page('checkingame');
+  }
+
+  open_flashgames() {
+    this.open_page('flashgames');
   }
 
   open_brander(brand) {
@@ -403,20 +423,24 @@ class Loader {
   }
 
   load() {
-    if (!this.loaded) {
-      this.onloading = true;
-
-      fetch(this.url)
-        .then(x => x.json())
-        .then(js => {
-          this.onloading = false;
-          this.loaded = true;
-
-          if (js.success) {
-            this.assign(js.content);
-          }
-        });
+    if (this.loaded || this.onloading) {
+      return this
     }
+
+    // if (!this.loaded && !this.onloading) {
+    this.onloading = true;
+
+    fetch(this.url)
+      .then(x => x.json())
+      .then(js => {
+        this.onloading = false;
+        this.loaded = true;
+
+        if (js.success) {
+          this.assign(js.content);
+        }
+      });
+    // }
 
     return this
   }
@@ -498,38 +522,55 @@ class Baseboo extends Loader {
 class Boo extends Baseboo {
   constructor(session, baseobj) {
     super(session, baseobj);
-    this.voting_record = undefined;
+    // this.voting_record = undefined;
     this.genderlabels = undefined;
-    this.agelabels = undefined;
+    // this.agelabels = undefined;
     this.stylelabels = undefined;
     this.itemlabels = undefined;
     this.styleprofile = {};
     // this.contentwork_result = {};
-    this.rewarder = undefined;
+    this.wallet = undefined;
     this.researched = [];
+    this.supports = undefined;
+    this.raffles = undefined;
   }
 
   static init(session, baseobj) {
     const boo = super.init(session, baseobj);
-    Vue.set(session.store.boostore, boo.id, boo);
+    // Vue.set(session.store.boostore, boo.id, boo);
     return boo
   }
 
   assign(obj) {
     Object.assign(this, obj);
-    this.rewarder = new Rewarder(obj.rewards);
     this.collections = new Collections(this.session, this.id);
-    delete this['rewards'];
+    this.supports = new MySupports(this.session);
+    this.raffles = new MyRaffles(this.session);
+    this.wallet = new Wallet(obj.wallet, this.session);
+    this.signup_check();
   }
 
+  signup_check() {
+    const signupinfo = sessionStorage.getItem('signupinfo');
+    if (signupinfo && (this.wallet.baseinfo_inputed==false)) {
+      fetch(`/signup/setbase?data=${signupinfo}`)
+        .then(res => res.json())
+        .then(js => { console.log(js); });
 
-  get profiling_ready() {
-    return this.rewarder!=undefined
+      Object.assign(this.session.user.auth, JSON.parse(signupinfo));
+      sessionStorage.removeItem('signupinfo');
+
+      this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
+      this.wallet.baseinfo_inputed = true;
+      alert(`기본정보 입력으로 ${this.wallet.amount_baseinfo_input}P가 지급되었습니다`);
+
+      this.session.show_guider = true;
+    }
   }
 
 
   stylevote(ipix_pos, ipix_neg, type) {
-    if (!this.rewarder) {
+    if (!this.wallet) {
       return
     }
 
@@ -543,10 +584,10 @@ class Boo extends Baseboo {
       });
 
       if (type == 'clear') {
-        this.rewarder.settle(-1, 'vote');
+        this.wallet.receive_daybonus('daily_balance_game', -this.wallet.per_vote);
 
       } else if (type == 'new') {
-        this.rewarder.settle(1, 'vote');
+        this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
       }
   }
 
@@ -595,75 +636,71 @@ class Boo extends Baseboo {
   }
 }
 
-class Rewarder {
-  constructor(rewards) {
-    this.rewards = rewards;
-    this.on_settling = false;
-    this.reward_amount_max_daily = 100;
-    this.reward_per_vote = 1;
-    this.reward_per_collect = 1;
-    this.reward_per_checkin = 10;
-    this.reward_welcome = 500;
-    this.reward_to_levelup = 5000;
+
+class Wallet {
+  // types ###
+  // 0 checkin_game
+  // 1 daily_balance_game
+  // 2 daily_collecting
+  // 3 research
+  // 4 interview
+  // 5 welcome
+  // 6 baseinfo_input
+  // 7 stylelabels_input
+  // 8 itemlabels_input
+  // 100 support
+  // 101 raffle
+  // 102 shopping
+
+  constructor(wallet, session) {
+    Object.assign(this, wallet);
+    this.session = session;
+    this.amount_daybonus_max = 100;
+    this.per_vote = 1;
+    this.per_collect = 1;
+    this.per_checkin = 10;
+    this.amount_welcome = 500;
+    this.amount_baseinfo_input = 100;
+    this.amount_stylelabels_input = 50;
+    this.amount_itemlabels_input = 50;
+    this.amount_to_levelup = 5000;
   }
 
-  settle(n, by) {
-    let reward_change;
-    let param_n, param_reward;
-
-    if (by == 'vote') {
-      reward_change = n * this.reward_per_vote;
-      param_n = 'n_voted';
-      param_reward = 'vote_reward';
-
-    } else if (by == 'collect') {
-      reward_change = n * this.reward_per_collect;
-      param_n = 'n_collected';
-      param_reward = 'collect_reward';
-    }
-
-    reward_change = Math.min(this.rewards.today.reward + reward_change, this.reward_amount_max_daily) - this.rewards.today.reward;
-
-    this.rewards.today.n_action += n;
-    this.rewards.total.n_action += n;
-    this.rewards.today.reward += reward_change;
-    this.rewards.total.reward += reward_change;
-    this.on_settling = true;
-
-    fetch(`settle?${param_n}=${n}&${param_reward}=${reward_change}`)
+  send(type, amount, receiver_id) {
+    fetch(`transact?receiver_id=${receiver_id}&type=${type}&amount=${amount}`)
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          this.on_settling = false;
           console.log(js);
         }
       });
+
+    this.amount -= amount;
   }
 
-  settle_amount(amount, by) {
-    this.on_settling = true;
-    // this.rewards.today.reward += amount;
-    this.rewards.total.reward += amount;
-
-    let param_reward;
-
-    if (by == 'checkin') {
-      param_reward = 'checkin_reward';
-
-    } else if (by == 'bonus') {
-      param_reward = 'bonus_reward';
-    }
-
-    fetch(`settle?${param_reward}=${amount}`)
+  receive(type, amount) {
+    fetch(`transact?type=${type}&amount=${amount}`)
       .then(x => x.json())
       .then(js => {
         if (js.success) {
-          this.on_settling = false;
           console.log(js);
         }
       });
+
+    this.amount += amount;
+  }
+
+  receive_daybonus(type, amount) {
+    // amount = 10;
+    amount = Math.min(this.amount_daybonus + amount, this.amount_daybonus_max) - this.amount_daybonus;
+    if (amount > 0) {
+      // console.log(1)
+      this.receive(type, amount);
+      this.amount_daybonus += amount;
+    }
   }
 }
+
 
 
 class Contentwork extends Loader {
@@ -770,6 +807,19 @@ class Checkingame extends Loader {
   }
 }
 
+class Flashgame extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/flashgame/${baseobj.id}`;
+    this.type = undefined;
+    this.gender = undefined;
+    this.text = undefined;
+    this.pix = undefined;
+    this.reward = undefined;
+    this.pub_date = undefined;
+  }
+}
+
 
 class Item extends Loader {
   constructor(session, baseobj) {
@@ -815,6 +865,17 @@ class Raffle extends Loader {
     this.due = obj.due;
     this.wallet = obj.wallet;
   }
+
+  static init(session, baseobj) {
+    if (baseobj.id in session.store.rafflestore) {
+      return session.store.rafflestore[baseobj.id]
+
+    } else {
+      const raffle = super.init(session, baseobj);
+      Vue.set(session.store.rafflestore, raffle.id, raffle);
+      return raffle
+    }
+  }
 }
 
 
@@ -842,19 +903,6 @@ class Shoptem extends Loader {
     this.item = Item.init(this.session, obj.item);
   }
 }
-
-// class Support extends Loader {
-//   constructor(session, baseobj) {
-//     super(session, baseobj);
-//     this.url = `/support/${baseobj.id}`;
-//     this.ticketsize = undefined;
-//     this.target = undefined;
-//     this.desc = undefined;
-//     this.due = undefined;
-//     this.gift = undefined;
-//     this.active = undefined;
-//   }
-// }
 
 
 class Brand extends Loader {
@@ -958,6 +1006,17 @@ class Support extends Loader {
       this.brand.supports.push(this);
     }
   }
+
+  static init(session, baseobj) {
+    if (baseobj.id in session.store.supportstore) {
+      return session.store.supportstore[baseobj.id]
+
+    } else {
+      const support = super.init(session, baseobj);
+      Vue.set(session.store.supportstore, support.id, support);
+      return support
+    }
+  }
 }
 
 
@@ -1032,12 +1091,55 @@ class Itemlabels extends Multiloader {
 }
 
 
+// class Supportbrands extends Multiloader {
+//   constructor(session) {
+//     super(session);
+//     this.contentype = Brand;
+//     this.nloads_init = 10;
+//     this.ids_url = `/brand/isupportbrands`;
+//     this.load_ids();
+//   }
+// }
+
+class Supports extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Support;
+    this.nloads_init = 100; // 우선 많이 받아오는데,, 나중에 이걸 바꿔야한다
+    this.ids_url = `/support/isupports`;
+    this.load_ids();
+  }
+}
+
+
 class Raffles extends Multiloader {
   constructor(session) {
     super(session);
     this.contentype = Raffle;
     this.nloads_init = 10;
     this.ids_url = `/raffle/iraffles`;
+    this.load_ids();
+  }
+}
+
+
+class MySupports extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Support;
+    this.nloads_init = 10;
+    this.ids_url = `/support/isupports/my`;
+    this.load_ids();
+  }
+}
+
+
+class MyRaffles extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Raffle;
+    this.nloads_init = 10;
+    this.ids_url = `/raffle/iraffles/my`;
     this.load_ids();
   }
 }
@@ -1064,35 +1166,17 @@ class Shoptems extends Multiloader {
   }
 }
 
-// class Supportbrands extends Multiloader {
-//   constructor(session) {
-//     super(session);
-//     this.contentype = Brand;
-//     this.nloads_init = 10;
-//     this.ids_url = `/brand/isupportbrands`;
-//     this.load_ids();
-//   }
-// }
 
-class Supports extends Multiloader {
+class Flashgames extends Multiloader {
   constructor(session) {
     super(session);
-    this.contentype = Support;
-    this.nloads_init = 100; // 우선 많이 받아오는데,, 나중에 이걸 바꿔야한다
-    this.ids_url = `/support/isupports`;
+    this.contentype = Flashgame;
+    this.nloads_init = 1;
+    this.ids_url = `/flashgame/iflashgames`;
     this.load_ids();
   }
 }
 
-// class Supports extends Multiloader {
-//   constructor(session, brand_id) {
-//     super(session);
-//     this.contentype = Support;
-//     this.nloads_init = 0;
-//     this.ids_url = `/brand/${brand_id}/isupports`;
-//     this.load_ids();
-//   }
-// }
 
 
 class ResearchItems extends Multiloader {
@@ -1249,6 +1333,8 @@ class Store {
     this.boostore = {};
     this.brandstore = {};
     this.itemstore = {};
+    this.supportstore = {};
+    this.rafflestore = {};
   }
 }
 
@@ -1335,21 +1421,21 @@ class User {
     }
   }
 
-  contentvote(postage_id, action) {
-    if (!this.boo) {
-      return
-    }
-
-    const feed_act = {};
-    feed_act[postage_id] = action;
-    this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
-
-    fetch(`/postage/${postage_id}/contentvote?action=${action}`)
-      .then(x => x.json())
-      .then(js => {
-        console.log(js);
-      });
-  }
+  // contentvote(postage_id, action) {
+  //   if (!this.boo) {
+  //     return
+  //   }
+  //
+  //   const feed_act = {};
+  //   feed_act[postage_id] = action;
+  //   this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
+  //
+  //   fetch(`/postage/${postage_id}/contentvote?action=${action}`)
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       console.log(js);
+  //     });
+  // }
 
 
   // vote(post_id, action) {
@@ -1368,20 +1454,20 @@ class User {
   //     });
   // }
 
-  has_voted_as(postage_id) {
-    if (!this.boo)
-      return -1
-
-    if (!this.boo.voting_record)
-      return -1
-
-    if (postage_id in this.boo.voting_record) {
-      return this.boo.voting_record[postage_id]
-
-    } else {
-      return -1
-    }
-  }
+  // has_voted_as(postage_id) {
+  //   if (!this.boo)
+  //     return -1
+  //
+  //   if (!this.boo.voting_record)
+  //     return -1
+  //
+  //   if (postage_id in this.boo.voting_record) {
+  //     return this.boo.voting_record[postage_id]
+  //
+  //   } else {
+  //     return -1
+  //   }
+  // }
 
   has_liked_comment(comment_id) {
     if (this.boo)
@@ -1406,6 +1492,11 @@ class Auth {
   // constructor(cuser, store) {
   constructor(cuser, session) {
     this.id = Number(cuser.id);
+    this.name = cuser.name;
+    this.gender = cuser.gender==0 ? '남성' : '여성';
+    this.birth = cuser.birth;
+    this.mobile = cuser.mobile;
+    this.address = cuser.address;
     // this.store = store;
     this.session = session;
     this.email = cuser.email;
@@ -1417,7 +1508,21 @@ class Auth {
     this.boos_fully_loaded = false;
     // this.links = cuser.links;
     // this.load_other_boos();
+    // this.signup_check();
   }
+
+  // signup_check() {
+  //   const signupinfo = sessionStorage.getItem('signupinfo');
+  //   if (signupinfo) {
+  //     fetch(`/signup/setbase?data=${signupinfo}`)
+  //       .then(res => res.json())
+  //       .then(js => { console.log(js); });
+  //
+  //     Object.assign(this, JSON.parse(signupinfo));
+  //     sessionStorage.removeItem('signupinfo');
+  //     alert('기본정보 입력으로 100P가 지급되었습니다')
+  //   }
+  // }
 
   is_myboo(boo) {
     return boo.id == this.boo_selected
@@ -1431,16 +1536,16 @@ class Auth {
       });
   }
 
-  load_other_boos() {
-    fetch('/user2/other_boos')
-      .then(x => x.json())
-      .then(js => {
-        if (js.success) {
-          this.boos = { ...this.boos, ...js.other_boos };
-          this.boos_fully_loaded = true;
-        }
-      })
-  }
+  // load_other_boos() {
+  //   fetch('/user2/other_boos')
+  //     .then(x => x.json())
+  //     .then(js => {
+  //       if (js.success) {
+  //         this.boos = { ...this.boos, ...js.other_boos };
+  //         this.boos_fully_loaded = true;
+  //       }
+  //     })
+  // }
 
   set boo(boo_id) {
     if (this.boo) {

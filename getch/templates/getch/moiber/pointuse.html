@@ -26,7 +26,7 @@
 <script type='text/x-template' id='pointuse-template'>
   <pointguider
     class='pointuse vcomp'
-    :phase='phase'
+    :phase='control.phase'
     @backto_menu='backto_menu'
     @backto_content='backto_content'>
 
@@ -80,42 +80,42 @@
 
 
     <template #content>
-      <template v-if='content==0'>
+      <template v-if='control.content==0'>
         <div class='title'>후원 이벤트 진행 중인 브랜드</div>
         <div class='body'>
           <supportbrands :session='session'></supportbrands>
         </div>
       </template>
 
-      <template v-else-if='content==1'>
+      <template v-else-if='control.content==1'>
         <div class='title'>진행 중인 래플</div>
         <div class='body'>
           <raffler :session='session' @go_detail='go_detail'></raffler>
         </div>
       </template>
 
-      <template v-else-if='content==2'>
+      <template v-else-if='control.content==2'>
         <div class='title'>취향이 다 했다! 포인트 쇼핑</div>
         <div class='body'>
           <shop :session='session' @go_detail='go_detail'></shop>
         </div>
       </template>
 
-      <template v-else-if='content==3'>
-        <div class='title'>건의하기</div>
-        <div class='body'>11</div>
+      <template v-else-if='control.content==3'>
+        <!-- <div class='title'>건의하기</div>
+        <div class='body'>건의하기</div> -->
       </template>
 
-      <template v-else-if='content==4'>
+      <template v-else-if='control.content==4'>
         <div class='title'>스타벅스쿠폰</div>
         <div class='body'>
           <itemdetail :obj='starbucks_coupon' :session='session'></itemdetail>
         </div>
       </template>
 
-      <template v-else-if='content==5'>
-        <div class='title'>건의하기</div>
-        <div class='body'>11</div>
+      <template v-else-if='control.content==5'>
+        <!-- <div class='title'>질문하기</div>
+        <div class='body'>질문하기</div> -->
       </template>
     </template>
 
@@ -124,14 +124,14 @@
       <template v-if='detail_type=="raffle"'>
         <div class='title'>진행 중인 래플</div>
         <div class='body'>
-          <itemdetail :obj='detail_obj' :session='session'></itemdetail>
+          <itemdetail :obj='control.detail_obj' :session='session'></itemdetail>
         </div>
       </template>
 
       <template v-else-if='detail_type=="shoptem"'>
         <div class='title'>취향이 다 했다! 포인트 쇼핑</div>
         <div class='body'>
-          <itemdetail :obj='detail_obj' :session='session'></itemdetail>
+          <itemdetail :obj='control.detail_obj' :session='session'></itemdetail>
         </div>
       </template>
     </template>
@@ -143,19 +143,19 @@
   Vue.component('pointuse', {
     template: '#pointuse-template',
     delimiters: ['[[', ']]'],
-    props: [ 'session' ],
+    props: [ 'session', 'control' ],
     data: function() {
       return {
-        phase: 'menu',
-        content: undefined,
-        detail_obj: undefined,
+        // phase: 'menu',
+        // content: undefined,
+        // detail_obj: undefined,
       }
     },
 
     computed: {
       detail_type: function() {
-        if (this.detail_obj) {
-          return this.detail_obj.constructor.name.toLowerCase()
+        if (this.control.detail_obj) {
+          return this.control.detail_obj.constructor.name.toLowerCase()
         }
       },
 
@@ -174,21 +174,21 @@
 
     methods: {
       backto_menu: function() {
-        this.phase = 'menu';
+        this.control.phase = 'menu';
       },
 
       backto_content: function() {
-        this.phase = 'content';
+        this.control.phase = 'content';
       },
 
       go_content: function(what) {
-        this.phase = 'content';
-        this.content = what;
+        this.control.phase = 'content';
+        this.control.content = what;
       },
 
       go_detail: function(obj) {
-        this.phase = 'detail';
-        this.detail_obj = obj;
+        this.control.phase = 'detail';
+        this.control.detail_obj = obj;
       },
 
       go_starbucks_coupon: function() {

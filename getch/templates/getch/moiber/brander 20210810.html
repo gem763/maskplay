@@ -381,14 +381,27 @@
 
       buy_ticket: function() {
         if (this.supportable) {
+          const receiver = 'support';
           const receiver_id = this.support.id;
+          const type = 'support';
           const amount = this.support_ticketsize;
 
           if (receiver_id && amount) {
             this.support.wallet.collected += amount;
             this.support.wallet.supported = true;
-            this.myboo.wallet.send('support', amount, receiver_id);
-            this.myboo.supports.list.push(this.support);
+
+            // fetch(`wallet/write?obj=${obj}&obj_id=${obj_id}&type=${type}&amount=${amount}`)
+            fetch(`transact?receiver=${receiver}&receiver_id=${receiver_id}&type=${type}&amount=${amount}`)
+              .then(x => x.json())
+              .then(js => {
+                if (js.success) {
+                  console.log(js);
+                }
+              });
+
+            // this.rewarder.settle_amount(-amount, 'bonus');
+            this.myboo.wallet.amount -= amount;
+            this.myboo.wallet.amount_today -= amount;
           }
         }
       },
@@ -416,15 +429,27 @@
         }
       },
 
-      mywallet: function() {
+      // myboo_id: function() {
+      //   if (this.myboo) {
+      //     return this.myboo.id
+      //   }
+      // },
+
+      rewarder: function() {
         if (this.myboo) {
-          return this.myboo.wallet
+          return this.myboo.rewarder
+        }
+      },
+
+      mywallet: function() {
+        if (this.rewarder) {
+          return this.rewarder.rewards
         }
       },
 
       budget: function() {
         if (this.mywallet) {
-          return this.mywallet.amount
+          return this.mywallet.total.reward
         }
       },
 

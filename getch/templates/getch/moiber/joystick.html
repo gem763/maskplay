@@ -100,6 +100,15 @@
     cursor: pointer;
   }
 
+  .joystick.vcomp > .body > span.menu.logo {
+
+  }
+
+  .joystick.vcomp > .body > span.menu.logo > img {
+    height: 36px;
+    width: auto;
+  }
+
   .joystick.vcomp > .body > span.menu.on {
     background: var(--color-dark);
     color: white;
@@ -188,6 +197,9 @@
 <script type='text/x-template' id='joystick-template'>
   <div class='joystick vcomp' :class='phase'>
     <div class='body'>
+      <span class='menu logo'>
+        <img src='/static/materials/logos/logo.png'>
+      </span>
       <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>서베이</span>
       <span class='menu' :class='{ on: session.on("stylevote") }' @click='session.open_stylevote()'>밸런스게임</span>
       <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>검색</span>

@@ -74,11 +74,13 @@
     width: 100%;
     height: 90px;
     border-radius: 8px;
-    box-shadow: 0px 0px 1px #999999;
+    /* box-shadow: 0px 0px 1px #999999; */
     text-align: center;
     line-height: 90px;
-    font-size: 12px;
-    color: #999999;
+    font-size: 24px;
+    color: #666666;
+    border: 1px solid #f1f1f1;
+    background: #fcfcfc;
   }
 
   .researchitem > .backbone > .section.full > .center > .ox > table {
@@ -96,7 +98,7 @@
   }
 
   .researchitem > .backbone > .section.full > .center > .ox > table td:first-child {
-    border-right: 1px solid rgba(0,0,0,0.1);
+    border-right: 1px solid #f1f1f1;
   }
 
   .researchitem > .backbone > .section.full > .center > .ox > table td > img.ox {
@@ -126,7 +128,7 @@
   }
 
   .researchitem > .backbone > .section.full > .subsection.header {
-    height: 150px;
+    height: 180px;
     /* background: lightblue; */
     justify-content: center;
     padding-left: 10%;
@@ -162,12 +164,12 @@
   }
 
   .researchitem > .backbone > .section.full > .subsection > .logo > img {
-    width: 90%;
+    width: 100%;
     height: auto;
   }
 
   .researchitem > .backbone > .section.full > .subsection.coverpix > img {
-    width: calc(100% - 32px);
+    width: calc(100% - 90px);
     height: auto;
     object-fit: cover;
     box-sizing: border-box;
@@ -193,13 +195,13 @@
   .researchitem > .backbone > .section.full > .subsection.header > span.bname {
     font-weight: bold;
     font-size: 28px;
-    margin-top: 10px;
+    /* margin-top: 10px; */
   }
 
   .researchitem > .backbone > .section.full > .subsection.header > span.title {
     font-weight: bold;
-    font-size: 24px;
-    margin-top: 5px;
+    font-size: 20px;
+    margin-top: 16px;
   }
 
   .researchitem > .backbone > .section.full > .subsection.action > span.gogo {
@@ -544,6 +546,8 @@
     justify-content: center;
     align-items: center;
     font-size: 18px;
+    padding-top: 5px;
+    box-sizing: border-box;
   }
 
   .researchitem > .header {
@@ -557,6 +561,7 @@
     align-items: center;
     box-shadow: 0 0 0 1px rgb(0, 0, 0, 0.1);
     border-radius: 0 0 15px 15px;
+    background: white;
   }
 
   .researchitem > .header > .header-section {
@@ -587,9 +592,13 @@
 
   .researchitem > .header > .header-section.question {
     width: calc(100% - 120px);
-    font-size: 13px;
+    font-size: 15px;
     text-align: center;
     white-space: pre-line;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    line-height: 16px;
   }
 
   .researchitem > .header > .header-section.npage {
@@ -818,7 +827,7 @@
       </div>
 
       <!-- <div class='arrow right' :class='{ holded: slide_holded }' v-if='on_mainstory' @click.stop='go_next'> -->
-      <div class='arrow right' :class='{ holded: slide_holded }' v-if='!is_end' @click.stop='go_next'>  
+      <div class='arrow right' :class='{ holded: slide_holded }' v-if='!is_end' @click.stop='go_next'>
         <img src='/static/materials/icons/button-backward.png'>
       </div>
     </div>

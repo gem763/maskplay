@@ -115,15 +115,15 @@
 
   .search.vcomp .page-body > .goback {
     position: absolute;
-    top: 225px;
-    left: var(--w-2);
-    width: var(--w-10);
-    height: var(--w-10);
+    top: 153px;
+    left: 3px;
+    width: 39px;
+    height: 39px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    border-radius: 100px;
     transition: all 0.3s;
     transition-delay: 0.3s;
   }
@@ -133,9 +133,9 @@
   }
 
   .search.vcomp .page-body > .goback > img {
-    width: 50%;
+    width: 6px;
     height: auto;
-    transform: rotate(270deg) translateY(-10%);
+    transform: rotate(180deg);
   }
 
   .search.vcomp .page-body > .agenda > .owner {
@@ -185,17 +185,17 @@
   }
 
   .search.vcomp .page-body > .agenda > .actions > .action {
-    width: var(--w-20);
-    height: var(--w-10);
-    border-radius: var(--w-5);
+    width: 70px;
+    height: 34px;
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     /* font-size: 14px; */
-    margin-right: var(--w-2);
+    margin-right: 8px;
     box-sizing: border-box;
-    box-shadow: 0 4px 6px rgb(0, 0, 0, 0.1);
-    font-size: 14px;
+    /* box-shadow: 0 4px 6px rgb(0, 0, 0, 0.1); */
+    font-size: 12px;
   }
 
   .search.vcomp .page-body > .agenda > .actions > .action > * {
@@ -403,7 +403,7 @@
         </div>
 
         <div class='goback' :class='goback_status' v-if='backable' @click='goback'>
-          <img src='/static/materials/icons/backicon.png'>
+          <img src='/static/materials/icons/button-backward.png'>
         </div>
 
         <div class='edit-actions' :class='{ editable: session.editing.on }'>

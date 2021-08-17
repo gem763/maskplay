@@ -253,9 +253,9 @@
 
         <div class='segment'>
           <div class='menu' v-if='is_myboo'>
+            <span class='item' :class='{ on: on("myinfo") }' @click='sectionize("myinfo")'>프로필</span>
             <span class='item' :class='{ on: on("related") }' @click='sectionize("related")'>참여 중인 이벤트</span>
             <span class='item' :class='{ on: on("collection") }' @click='sectionize("collection")'>북마크</span>
-            <span class='item' :class='{ on: on("myinfo") }' @click='sectionize("myinfo")'>프로필</span>
           </div>
 
           <div class='spacer' v-else></div>

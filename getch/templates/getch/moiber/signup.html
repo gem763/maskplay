@@ -116,7 +116,7 @@
     position: relative;
     text-align: left;
     padding: 0;
-    height: 40px;
+    height: 48px;
     border-bottom: 1px solid #e4e4e4;
   }
 
@@ -159,6 +159,7 @@
     box-sizing: border-box;
     margin-top: 10px;
     line-height: 20px;
+    display: none;
   }
 
   .signup.vcomp .page-body > .section > .conversation {
@@ -166,7 +167,7 @@
     /* background: lightblue; */
     width: 100%;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     flex-direction: row;
     padding-left: 16px;
@@ -194,17 +195,20 @@
   .signup.vcomp .page-body > .section > .conversation > .txt {
     /* background: lightgreen; */
     padding-left: 10px;
+    padding-right: 35px;
     width: calc(100% - 40px);
     box-sizing: border-box;
   }
 
   .signup.vcomp .page-body > .section > .conversation > .txt > .bubble {
     white-space: pre-line;
-    padding: 10px;
+    padding: 16px;
     background: white;
     border-radius: 20px;
     box-sizing: border-box;
-    box-shadow: 0px 0px 2px rgba(50, 50, 71, 0.08), 0px 4px 8px rgba(50, 50, 71, 0.06);
+    box-shadow: 0 0 1px #9999;
+    background: #fbf9f3;
+    white-space: pre-line;
   }
 
   .signup.vcomp .page-body > .section > .conversation > .txt > .bubble > div {
@@ -241,8 +245,8 @@
               <tr>
                 <td class='head'>성별</td>
                 <td>
-                  <label><input type="radio" value="남성" v-model="gender"><b>남성</b></label>
-                  <label><input type="radio" value="여성" v-model="gender"><b>여성</b></label>
+                  <label><input type="radio" value="남성" v-model="gender"><b> 남성</b></label>
+                  <label><input type="radio" value="여성" v-model="gender"><b> 여성</b></label>
                 </td>
               </tr>
 
@@ -286,10 +290,12 @@
           </div>
           <div class='txt'>
             <div class='bubble'>
-              <div>패션 서베이 참여를 위해서 내 기본정보 입력이 필요해요.</div>
-              <div>👉🏻 이름/성별/생년월일은 필수!
-              👉🏻 전화번호/주소는 선택이지만 래플참여나 포인트쇼핑 시는 당연히 필수니까 미리미리 입력해 두는 센스!!</div>
-              <div>💋 입력하면 100P를 즉시 지급합니다!</div>
+              <div>패션 서베이 참여를 위해서
+                 기본정보 입력이 필요해요.</div>
+              <div>👉🏻 전화번호/주소는 선택사항이지만
+                래플 참여나 포인트 쇼핑 시에는 필수이니
+                미리미리 입력해 두는 센스!!</div>
+              <div>💋 입력하면 100P가 즉시 지급됩니다!</div>
             </div>
           </div>
         </div>

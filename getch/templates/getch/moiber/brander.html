@@ -224,6 +224,14 @@
     color: #777777;
   }
 
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-desc {
+    font-size: 11px;
+    color: var(--color-gray);
+    line-height: 15px;
+    white-space: pre-line;
+    margin-top: 25px;
+  }
+
   .brander.vcomp .page-body > .goback {
     position: absolute;
     top: 105px;
@@ -318,6 +326,7 @@
               <img :src='gift_pix_0' @load='giftpix_loaded'>
               <div class='gift-name'>[[ gift_name ]]</div>
               <div class='gift-price'>[[ gift_price ]]</div>
+              <div class='gift-desc'>[[ gift_desc ]]</div>
             </div>
           </div>
 
@@ -604,7 +613,13 @@
 
       gift_price: function() {
         if (this.gift) {
-          return '소비자가: ' + this.gift.price.toLocaleString() + '원 상당'
+          return 'KRW ' + this.gift.price.toLocaleString()
+        }
+      },
+
+      gift_desc: function() {
+        if (this.gift) {
+          return this.gift.desc
         }
       }
     }

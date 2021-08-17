@@ -213,13 +213,13 @@
   }
 
   .collector.vcomp .page-body > .container > .section.actions > .action {
-    width: var(--w-20);
-    height: var(--w-10);
-    border-radius: var(--w-5);
+    width: 70px;
+    height: 34px;
+    border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     margin-right: var(--w-2);
     box-sizing: border-box;
   }
@@ -322,7 +322,7 @@
 
       <div class='container'>
         <div class='section title'>
-          <span><b>내 옷장에 넣기</b></span>
+          <span><b>북마크 하기</b></span>
           <div class='close' @click='session.close_page()'>
             <img src='/static/materials/icons/close.png'>
           </div>
@@ -343,7 +343,7 @@
 
         <div class='section picks'>
           <div class='picks-container' v-if='picks'>
-            <div class='empty' v-if='is_empty && !picks.onloading'>옷장이 비었습니다</div>
+            <div class='empty' v-if='is_empty && !picks.onloading'>컬렉션이 비었습니다</div>
 
             <div class='spinner' v-if='picks.onloading'>
               <i class="fa fa-spinner fa-spin"></i>
@@ -363,7 +363,7 @@
         <div class='section actions'>
           <span class='action collect' v-if='myboo' @click='collect' :class='{ active: !has_pix }'>
             <img src='/static/materials/icons/hanger_white.png'>
-            <b>넣기</b>
+            북마크
           </span>
         </div>
       </div>

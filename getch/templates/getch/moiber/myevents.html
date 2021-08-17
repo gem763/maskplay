@@ -323,7 +323,8 @@
 
       collected: function(e) {
         if (e.wallet) {
-          return '현재까지 ' + e.wallet.collected + 'P 모집'
+          // return '현재까지 ' + e.wallet.collected + 'P 모집'
+          return '현재 달성률 ' + Math.round(e.wallet.collected / e.target * 100) + '%'
         }
       },
 

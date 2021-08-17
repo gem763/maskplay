@@ -613,7 +613,7 @@ class Boo extends Baseboo {
       return
     }
 
-    this.session.open_texteditor('', '옷장이름을 입력해주세요', 1, txt_done => {
+    this.session.open_texteditor('', '컬렉션 이름을 입력해주세요', 1, txt_done => {
       const col = {
         id: undefined,
         name: txt_done,

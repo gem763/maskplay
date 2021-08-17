@@ -70,19 +70,29 @@
     /* opacity: 0.5; */
   }
 
+
+  /* .joystick.vcomp > .logo {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 45%;
+  } */
+
   .joystick.vcomp > .body {
     position: absolute;
     bottom: 0;
-    /* left: 0;
-    width: 100%; */
-    left: 16px;
-    right: 16px;
+    left: 0;
+    right: 0;
     height: 45%;
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-direction: row;
     /* padding-bottom: 5px; */
+    transition: all 0.3s;
   }
 
   .joystick.vcomp > .body > span.menu {
@@ -100,18 +110,32 @@
     cursor: pointer;
   }
 
-  .joystick.vcomp > .body > span.menu.logo {
-
-  }
-
-  .joystick.vcomp > .body > span.menu.logo > img {
+  /* .joystick.vcomp > .body > span.menu.logo > img {
     height: 36px;
     width: auto;
-  }
+  } */
 
   .joystick.vcomp > .body > span.menu.on {
     background: var(--color-dark);
     color: white;
+  }
+
+  .joystick.vcomp > .body > .logo {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    width: 45px;
+    background: orange;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .joystick.vcomp > .body > .logo > img {
+    height: 100%;
+    width: 45px;
+    object-fit: cover;
   }
 
   .joystick.vcomp > .tail {
@@ -197,13 +221,14 @@
 <script type='text/x-template' id='joystick-template'>
   <div class='joystick vcomp' :class='phase'>
     <div class='body'>
-      <span class='menu logo'>
-        <img src='/static/materials/logos/logo.png'>
-      </span>
       <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>서베이</span>
       <span class='menu' :class='{ on: session.on("stylevote") }' @click='session.open_stylevote()'>밸런스게임</span>
       <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>검색</span>
-      <span class='menu' :class='{ on: on_my }' @click='session.open_my()'>내프로파일</span>
+      <span class='menu' :class='{ on: on_my }' @click='session.open_my()'>마이페이지</span>
+
+      <!-- <span class='logo'>
+        <img src='/static/materials/logos/logo.png'>
+      </span> -->
     </div>
 
     <div class='tail' :class='{ show: session.on("search") }'>
@@ -260,10 +285,12 @@
 
       phase: function() {
         return {
-          minimized: (this.session.scroll_direction=='down' && this.session.on('search'))
-                      || (this.session.scroll_direction=='down' && this.session.on('stylevote'))
+          minimized: (this.session.scroll_direction=='down' && this.session.on('agit'))
+                      || this.session.on('search')
+                      || this.session.on('stylevote')
+                      // || (this.session.scroll_direction=='down' && this.session.on('search'))
+                      // || (this.session.scroll_direction=='down' && this.session.on('stylevote'))
                       || (this.session.scroll_direction=='down' && this.session.on('researcher'))
-                      || (this.session.scroll_direction=='down' && this.session.on('agit'))
                       || (this.session.scroll_direction=='down' && this.session.on('brander')),
 
           hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'baseinfo', 'signup', 'signupper', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research', 'checkingame', 'flashgames')

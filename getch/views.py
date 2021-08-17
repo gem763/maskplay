@@ -29,6 +29,12 @@ from datetime import datetime, date, timedelta
 # from gensim.models import Doc2Vec
 from django.utils import timezone
 
+import base64
+import hashlib
+import hmac
+import time
+import requests
+
 
 # test = m.Support.objects.filter(wallet__receiver_transaction__when__date=datetime.now().date())
 # print(test)
@@ -168,6 +174,53 @@ def testfeed(request):
 #
 #         else:
 #             return JsonResponse({'success':False, 'message':'something wrong while checking signup'}, safe=False)
+
+
+def make_signature(string):
+    secret_key = bytes("0erEPaknjXM1AnKBWW0r0WHKYeFnxsdhewWkbHoC", 'UTF-8')
+    string = bytes(string, 'UTF-8')
+    string_hmac = hmac.new(secret_key, string, digestmod=hashlib.sha256).digest()
+    string_base64 = base64.b64encode(string_hmac).decode('UTF-8')
+    return string_base64
+
+
+def mobile_check(request):
+    number = request.GET.get('number', None)
+
+    url = "https://sens.apigw.ntruss.com"
+    uri = "/sms/v2/services/" + "ncp:sms:kr:270782467605:auth" + "/messages"
+    api_url = url + uri
+    timestamp = str(int(time.time() * 1000))
+    access_key = "uhp30EUaIfhXwU4sB74a"
+    string_to_sign = "POST " + uri + "\n" + timestamp + "\n" + access_key
+    signature = make_signature(string_to_sign)
+
+    headers = {
+        'Content-Type': "application/json; charset=UTF-8",
+        'x-ncp-apigw-timestamp': timestamp,
+        'x-ncp-iam-access-key': access_key,
+        'x-ncp-apigw-signature-v2': signature
+    }
+
+    auth_num = random.randint(1000, 10000)
+    message = f"인증 번호는 {auth_num}입니다. 정확하게 입력해주세요."		# 메세지 내용을 저장
+    phone = number		                                        	# 핸드폰 번호를 저장
+
+    body = {
+        "type": "SMS",
+        "contentType": "COMM",
+        "from": "01049103793",
+        "content": message,
+        "messages": [{"to": phone}]
+    }
+
+    body = json.dumps(body)
+
+    # 문자 전송
+    response = requests.post(api_url, headers=headers, data=body)
+    
+    return JsonResponse({'success':True, 'number':number, 'message':'잘 받았어요'}, safe=False)
+
 
 def signup_email_check(request):
     if request.method == 'POST':

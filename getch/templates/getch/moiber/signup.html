@@ -264,7 +264,8 @@
           </table>
         </div>
 
-        <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div>
+        <!-- <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div> -->
+        <div class='action signup' :class='{ active: nextable }' @click='mobile_check'>가입하고 100P 받기</div>
         <div class='desc agree'>약관에 동의하고 가입합니다.</div>
 
         <div class='explain'>
@@ -351,6 +352,11 @@
         // sessionStorage.setItem('address', this.address);
         sessionStorage.setItem('signupinfo', JSON.stringify(signupinfo));
         this.session.open_signupper();
+      },
+
+      mobile_check: function() {
+        const _mobile = this.mobile.replaceAll('-', '');
+        fetch(`mobile/check?number=${_mobile}`).then(x=>x.json()).then(console.log);
       }
     }
   });

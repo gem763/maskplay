@@ -184,8 +184,11 @@ def make_signature(string):
     return string_base64
 
 
-def mobile_check(request):
+def send_mobile_authkey(request):
     number = request.GET.get('number', None)
+
+    if number == '':
+        return JsonResponse({'success':False, 'message':'휴대번호를 입력해주세요'}, safe=False)
 
     url = "https://sens.apigw.ntruss.com"
     uri = "/sms/v2/services/" + "ncp:sms:kr:270782467605:auth" + "/messages"
@@ -218,8 +221,45 @@ def mobile_check(request):
 
     # 문자 전송
     response = requests.post(api_url, headers=headers, data=body)
-    
-    return JsonResponse({'success':True, 'number':number, 'message':'잘 받았어요'}, safe=False)
+
+    m.MobileVerifier.objects.create(mobile=number, authkey=auth_num)
+    return JsonResponse({'success':True, 'number':number, 'message':'send authkey message successfully'}, safe=False)
+
+
+def mobile_verify(request):
+    mobile = request.GET.get('mobile', None)
+    authkey = request.GET.get('authkey', None)
+
+    try:
+        _verifier = m.MobileVerifier.objects.filter(mobile=mobile).last()
+        # print(_verifier.authkey)
+
+        if _verifier.authkey == int(authkey):
+            print(authkey)
+            return JsonResponse({'code':0, 'message':'verified successfully'}, safe=False)
+
+        else:
+            return JsonResponse({'code':1, 'message':'not verified'}, safe=False)
+
+    except:
+        return JsonResponse({'code':2, 'message':'something wrong while verifying authkey'}, safe=False)
+
+
+def mobile_verify_save(request):
+    try:
+        user = request.user
+        if user.is_authenticated:
+            user.mobile_verified = True
+            user.save()
+            return JsonResponse({'success':True, 'message':'mobile_verified saved successfully'}, safe=False)
+
+        else:
+            pass
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while saving mobile_verified'}, safe=False)
+
+
 
 
 def signup_email_check(request):
@@ -360,11 +400,13 @@ def signup_setbase(request):
         user = request.user
         if user.is_authenticated:
             _data = json.loads(request.GET.get('data', None))
+            # print(_data)
             user.name = _data['name']
             user.gender = 0 if _data['gender']=='남성' else 1
             user.birth = _data['birth']
-            user.mobile = _data['mobile']
             user.address = _data['address']
+            user.mobile = _data['mobile']
+            user.mobile_verified = _data['mobile_verified']
             user.save()
             return JsonResponse({'success':True, 'message':'signup setbased successfully'}, safe=False)
 
@@ -394,6 +436,7 @@ def signup_setbase_change(request):
 
             if _mobile is not None:
                 user.mobile = _mobile
+                user.mobile_verified = False
 
             if _address is not None:
                 user.address = _address

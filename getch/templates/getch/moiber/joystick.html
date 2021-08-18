@@ -246,7 +246,8 @@
         <div class='dimmer' v-if='on_menu'></div>
         <div class='setting-menu' v-if='on_menu'>
           <!-- <div class='item' @click='session.open_profiler()'>내 프로필 편집</div> -->
-          <div class='item' @click='make_collection'>옷장 만들기</div>
+          <div class='item' @click='make_collection'>컬렉션 만들기</div>
+          <div class='item' @click='help'>도움말 보기</div>
           <div class='item logout' @click='session.logout()'>로그아웃</div>
         </div>
       </div>
@@ -320,7 +321,13 @@
         if (this.boo) {
           this.boo.make_collection();
         }
-      }
+      },
+
+      help: function() {
+        if (this.boo) {
+          this.boo.help();
+        }
+      },
     }
   });
 </script>

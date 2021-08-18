@@ -266,6 +266,11 @@ class PostQAAdmin(admin.ModelAdmin):
     list_display = ['boo', 'text', 'pix', 'created_at']
 
 
+@admin.register(m.MobileVerifier)
+class MobileVerifierAdmin(admin.ModelAdmin):
+    list_display = ['mobile', 'authkey']
+
+
 @admin.register(m.User)
 class UserAdmin(admin.ModelAdmin):
     class BooInline(admin.TabularInline):
@@ -273,9 +278,10 @@ class UserAdmin(admin.ModelAdmin):
         fk_name = 'user'
 
     inlines = ( BooInline, )
-    list_display = ['email', 'is_superuser', 'is_staff', 'boo_selected', 'boo']
+    list_display = ['email', 'name', 'gender', 'birth', 'mobile', 'mobile_verified', 'address', 'is_superuser', 'is_staff', 'help', 'boo_selected', 'boo']
     list_display_links = ['email']
-    list_editable = ['boo_selected', 'is_superuser', 'is_staff']
+    list_editable = ['boo_selected', 'is_superuser', 'is_staff', 'mobile_verified', 'help']
+    list_per_page = 20
 
 
 @admin.register(m.Profile)

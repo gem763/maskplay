@@ -107,6 +107,7 @@
     border: none;
     box-sizing: border-box;
     padding-right: 10px;
+    background: none;
   }
 
   .baseinfo.vcomp .page-body > .section > .infobox > table td > input:focus {
@@ -116,6 +117,12 @@
   .baseinfo.vcomp .page-body > .section > .infobox > table td > input::placeholder {
     font-weight: normal;
     color: #333333;
+  }
+
+  .baseinfo.vcomp .page-body > .section > .infobox > table td.birth > input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
   }
 
   .baseinfo.vcomp .page-body > .section > .infobox > table td.head {
@@ -159,7 +166,7 @@
 
               <tr>
                 <td class='head'>생년월일</td>
-                <td><input v-model.trim='birth' placeholder='' spellcheck='false' type='date'></td>
+                <td class='birth'><input v-model.trim='birth' placeholder='' spellcheck='false' type='date'></td>
               </tr>
 
               <tr>
@@ -192,7 +199,7 @@
       return {
         name: '',
         gender: '',
-        birth: '',
+        birth: '2010-01-01',
         mobile: '',
         address: '',
       }
@@ -203,8 +210,9 @@
         if (_new) {
           this.name = this.auth_name;
           this.gender = this.auth_gender;
-          this.birth = this.auth_birth;
+          this.birth = this.auth_birth=='' ? '2010-01-01' : this.auth_birth;
           this.mobile = this.auth_mobile;
+          this.mobile_verified = this.auth_mobile_verified;
           this.address = this.auth_address;
         }
       }
@@ -249,6 +257,10 @@
         return this.session.user.auth.mobile
       },
 
+      auth_mobile_verified: function() {
+        return this.session.user.auth.mobile_verified
+      },
+
       auth_address: function() {
         return this.session.user.auth.address
       },
@@ -289,6 +301,7 @@
         if (this.mobile!=this.auth_mobile) {
           formdata.append('mobile', this.mobile);
           this.session.user.auth.mobile = this.mobile;
+          this.session.user.auth.mobile_verified = false;
         }
 
         if (this.address!=this.auth_address) {

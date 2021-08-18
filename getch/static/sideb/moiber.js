@@ -25,7 +25,7 @@ class Session {
       checkingame:  { order: 0, instant: false, open: false, from: 'top', researchitem: Checkingame.build(this) },
       flashgames:   { order: 0, instant: false, open: false, from: 'top', content: new Flashgames(this) },
 
-      stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: undefined },
+      stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
@@ -292,7 +292,27 @@ class Session {
   }
 
   open_checkingame() {
-    this.open_page('checkingame');
+    // alert('출첵게임');
+    // this.open_page('checkingame');
+    if (this.user.has_auth) {
+      if (this.user.boo.wallet) {
+        if (!this.user.boo.wallet.checkin_today) {
+          this.user.boo.wallet.receive('checkin_game', this.user.boo.wallet.per_checkin);
+          this.user.boo.wallet.checkin_today = true;
+          alert('<출첵> 지금 ' + this.user.boo.wallet.per_checkin + 'P가 지급되었습니다');
+
+        } else {
+          alert('출첵 포인트가 이미 지급되었습니다')
+        }
+
+      } else {
+        // alert('')
+      }
+
+    } else {
+      alert('로그인 해주세요')
+    }
+
   }
 
   open_flashgames() {
@@ -306,11 +326,12 @@ class Session {
   }
 
   open_stylevote() {
-    if (!this.page.stylevote.contents) {
-      this.page.stylevote.contents = new PixpairSet(this, 1000);
-    }
+    // if (!this.page.stylevote.contents) {
+    //   this.page.stylevote.contents = new PixpairSet(this, 200);
+    // }
 
-    setTimeout(() => { this.open_page('stylevote'); }, 10);
+    // setTimeout(() => { this.open_page('stylevote'); }, 10);
+    this.open_page('stylevote');
   }
 
   open_collector(pix) {
@@ -548,6 +569,7 @@ class Boo extends Baseboo {
     this.raffles = new MyRaffles(this.session);
     this.wallet = new Wallet(obj.wallet, this.session);
     this.signup_check();
+    // this.help();
   }
 
   signup_check() {
@@ -563,7 +585,12 @@ class Boo extends Baseboo {
       this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
       this.wallet.baseinfo_inputed = true;
       alert(`기본정보 입력으로 ${this.wallet.amount_baseinfo_input}P가 지급되었습니다`);
+      this.help();
+    }
+  }
 
+  help() {
+    if (this.session.user.auth.help) {
       this.session.show_guider = true;
     }
   }
@@ -1320,7 +1347,7 @@ class PixpairSet extends Multiloader {
   constructor(session, n) {
     super(session);
     this.contentype = Pixpair;
-    this.nloads_init = 10;
+    this.nloads_init = 3;
     this.ids_url = `/pix/ipixs/comb/${n}`;
     this.load_ids();
   }
@@ -1495,12 +1522,14 @@ class Auth {
     this.name = cuser.name;
     this.gender = cuser.gender==0 ? '남성' : '여성';
     this.birth = cuser.birth;
-    this.mobile = cuser.mobile;
     this.address = cuser.address;
+    this.mobile = cuser.mobile;
+    this.mobile_verified = cuser.mobile_verified;
     // this.store = store;
     this.session = session;
     this.email = cuser.email;
     this.is_superuser = cuser.is_superuser;
+    this.help = cuser.help;
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(session, cuser.boo)} : {};
     // this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(cuser.boo.id, store)} : {};

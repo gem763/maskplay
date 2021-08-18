@@ -1,0 +1,120 @@
+<style>
+  .robo.vcomp {
+    position: relative;
+    /* background: lightblue; */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    padding-left: 16px;
+    /* padding-right: 16px; */
+    box-sizing: border-box;
+    /* margin-top: 20px */
+  }
+
+  .robo.vcomp > .who {
+    width: 40px;
+    height: 40px;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .robo.vcomp > .who > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 100px;
+  }
+
+  .robo.vcomp > .txt {
+    /* background: lightgreen; */
+    padding-left: 10px;
+    /* padding-right: 35px; */
+    width: calc(100% - 40px - 45px);
+    box-sizing: border-box;
+    font-size: 13px;
+  }
+
+  .robo.vcomp > .txt > .bubble {
+    white-space: pre-line;
+    padding: 16px;
+    background: white;
+    border-radius: 20px;
+    box-sizing: border-box;
+    box-shadow: 0 0 1px #9999;
+    background: #fbf9f3;
+    white-space: pre-line;
+  }
+
+  .robo.vcomp > .txt > .bubble > div {
+    padding: 2px;
+    box-sizing: border-box;
+  }
+
+  .robo.vcomp > .action {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .robo.vcomp > .action > img.x {
+    width: 12px;
+    height: auto;
+  }
+
+  .robo.vcomp > .action > img.next {
+    width: 6px;
+    height: auto;
+  }
+</style>
+
+<script type='text/x-template' id='robo-template'>
+  <div class='robo vcomp'>
+
+    <div class='who'>
+      <img src='/static/materials/characters/ai.png'>
+    </div>
+
+    <div class='txt'>
+      <div class='bubble'>
+        <slot></slot>
+      </div>
+    </div>
+
+    <div class='action' @click='$emit("action")'>
+      <img class='x' v-if='x_type' src='/static/materials/icons/icon_x.png'>
+      <img class='next' v-else-if='next_type' src='/static/materials/icons/button-backward.png'>
+    </div>
+
+  </div>
+</script>
+
+
+<script>
+  Vue.component('robo', {
+    template: '#robo-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session', 'type' ],
+    data: function() {
+      return { }
+    },
+
+    computed: {
+      x_type: function() {
+        return this.type == 'x'
+      },
+
+      next_type: function() {
+        return this.type == 'next'
+      }
+    }
+  });
+</script>

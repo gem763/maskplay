@@ -69,6 +69,7 @@
     text-align: left;
     padding: 0;
     height: 40px;
+    position: relative;
   }
 
   .myinfo.vcomp > .segment > .infobox > table td.head {
@@ -76,6 +77,32 @@
     width: 100px;
     box-sizing: border-box;
     color: #777777;
+  }
+
+  .myinfo.vcomp > .segment > .infobox > table td > span.verify {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: var(--color-point);
+    color: white;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 10px;
+    cursor: pointer;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .myinfo.vcomp > .segment > .infobox > table td > span.verify.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .myinfo.vcomp > .segment > .infobox > table td > span.verify.verified {
+    opacity: 1;
+    pointer-events: none;
+    background: var(--color-dark);
   }
 
   .myinfo.vcomp > .segment > .infobox > .edit {
@@ -243,7 +270,10 @@
 
             <tr>
               <td class='head'>모바일</td>
-              <td><b>[[ mobile ]]</b></td>
+              <td>
+                <b>[[ mobile ]]</b>
+                <span class='verify' :class='{ active: mobile, verified: mobile_verified }' @click='mobile_verify'>[[ mobile_verified ? '인증완료' : '인증하기' ]]</span>
+              </td>
             </tr>
 
             <tr>
@@ -371,6 +401,12 @@
         }
       },
 
+      mobile_verified: function() {
+        if (this.myboo) {
+          return this.session.user.auth.mobile_verified
+        }
+      },
+
       address: function() {
         if (this.myboo) {
           return this.session.user.auth.address
@@ -468,6 +504,31 @@
         if (this.myboo) {
           this.session.open_baseinfo();
         }
+      },
+
+      mobile_verify: function() {
+        const _mobile = this.mobile.replaceAll('-', '');
+        fetch(`mobile/send_authkey?number=${_mobile}`)
+          .then(x => x.json())
+          .then(j => {
+            const authkey = prompt('전송받은 인증번호를 정확히 입력해주세요', '');
+
+            fetch(`mobile/verify?mobile=${_mobile}&authkey=${authkey}`)
+              .then(x => x.json())
+              .then(j => {
+                if (j.code == 0) {
+                  this.session.user.auth.mobile_verified = true;
+                  fetch(`/mobile/verify/save`).then(res => res.json()).then(js => { console.log(js); });
+                  alert('인증완료 되었습니다!')
+
+                } else if (j.code == 1) {
+                  alert('인증번호가 잘못 입력되었습니다. 다시 시도해 주세요');
+
+                } else {
+                  alert('잠시후에 다시 시도해 주세요');
+                }
+              });
+          });
       }
     }
   });

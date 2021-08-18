@@ -45,7 +45,7 @@
   }
 
   .signup.vcomp .page-body > .section.middle > .agree.desc {
-    margin: 20px;
+    margin: 20px 0;
     color: #CCCCCC;
   }
 
@@ -112,6 +112,7 @@
   }
 
   .signup.vcomp .page-body > .section > .infobox > table td {
+    position: relative;
     box-sizing: border-box;
     position: relative;
     text-align: left;
@@ -131,6 +132,7 @@
     border: none;
     box-sizing: border-box;
     padding-right: 10px;
+    background: none;
   }
 
   .signup.vcomp .page-body > .section > .infobox > table td > input:focus {
@@ -142,11 +144,43 @@
     color: #333333;
   }
 
+  .signup.vcomp .page-body > .section > .infobox > table td.birth > input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: none;
+  }
+
   .signup.vcomp .page-body > .section > .infobox > table td.head {
     padding-left: 15px;
     width: 120px;
     box-sizing: border-box;
     color: #777777;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td > span.verify {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: var(--color-point);
+    color: white;
+    padding: 5px;
+    border-radius: 8px;
+    font-size: 10px;
+    cursor: pointer;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td > span.verify.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .signup.vcomp .page-body > .section > .infobox > table td > span.verify.verified {
+    opacity: 1;
+    pointer-events: none;
+    background: var(--color-dark);
   }
 
   .signup.vcomp .page-body > .section > .explain {
@@ -162,58 +196,14 @@
     display: none;
   }
 
-  .signup.vcomp .page-body > .section > .conversation {
-    position: relative;
-    /* background: lightblue; */
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: row;
-    padding-left: 16px;
-    padding-right: 16px;
-    box-sizing: border-box;
-    margin-top: 20px
+  .signup.vcomp .page-body > .section > .robo {
+    margin-top: 20px;
+    opacity: 1;
+    transition: all 0.3s;
   }
 
-  .signup.vcomp .page-body > .section > .conversation > .who {
-    width: 40px;
-    height: 40px;
-    /* background: orange; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .signup.vcomp .page-body > .section > .conversation > .who > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 100px;
-  }
-
-  .signup.vcomp .page-body > .section > .conversation > .txt {
-    /* background: lightgreen; */
-    padding-left: 10px;
-    padding-right: 35px;
-    width: calc(100% - 40px);
-    box-sizing: border-box;
-  }
-
-  .signup.vcomp .page-body > .section > .conversation > .txt > .bubble {
-    white-space: pre-line;
-    padding: 16px;
-    background: white;
-    border-radius: 20px;
-    box-sizing: border-box;
-    box-shadow: 0 0 1px #9999;
-    background: #fbf9f3;
-    white-space: pre-line;
-  }
-
-  .signup.vcomp .page-body > .section > .conversation > .txt > .bubble > div {
-    padding: 2px;
-    box-sizing: border-box;
+  .signup.vcomp .page-body > .section > .robo.hidden {
+    opacity: 0;
   }
 </style>
 
@@ -252,12 +242,16 @@
 
               <tr>
                 <td class='head'>생년월일</td>
-                <td><input v-model.trim='birth' placeholder='' spellcheck='false' type='date'></td>
+                <td class='birth'><input v-model.trim='birth' placeholder='' spellcheck='false' type='date'></td>
+                <!-- <td><input v-model.trim='birth' placeholder='' spellcheck='false' type='date' value='2021-01-01'></td> -->
               </tr>
 
               <tr>
                 <td class='head'>휴대번호(선택)</td>
-                <td><input v-model.trim='mobile' placeholder='' spellcheck='false' @keyup='mobilenumber'></td>
+                <td>
+                  <input v-model.trim='mobile' placeholder='' spellcheck='false' @keyup='mobilenumber'>
+                  <span class='verify' :class='{ active: mobile, verified: mobile_verified }' @click='mobile_verify'>[[ mobile_verified ? '인증완료' : '인증하기' ]]</span>
+                </td>
               </tr>
 
               <tr>
@@ -268,8 +262,8 @@
           </table>
         </div>
 
-        <!-- <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div> -->
-        <div class='action signup' :class='{ active: nextable }' @click='mobile_check'>가입하고 100P 받기</div>
+        <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div>
+        <!-- <div class='action signup' :class='{ active: nextable }' @click='mobile_check'>가입하고 100P 받기</div> -->
         <div class='desc agree'>약관에 동의하고 가입합니다.</div>
 
         <div class='explain'>
@@ -284,21 +278,14 @@
           모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
         </div>
 
-        <div class='conversation'>
-          <div class='who'>
-            <img src='/static/materials/characters/avatar.jpg'>
-          </div>
-          <div class='txt'>
-            <div class='bubble'>
-              <div>패션 서베이 참여를 위해서
-                 기본정보 입력이 필요해요.</div>
-              <div>👉🏻 전화번호/주소는 선택사항이지만
-                래플 참여나 포인트 쇼핑 시에는 필수이니
-                미리미리 입력해 두는 센스!!</div>
-              <div>💋 입력하면 100P가 즉시 지급됩니다!</div>
-            </div>
-          </div>
-        </div>
+        <robo :class='{ hidden: robo_hidden }' :session='session' type='x' @action='close_robo'>
+          <div>패션 서베이 참여를 위해서
+             기본정보 입력이 필요해요.</div>
+          <div>👉🏻 전화번호/주소는 선택사항이지만
+            래플 참여나 포인트 쇼핑 시에는 필수이니
+            미리미리 입력해 두는 센스!!</div>
+          <div>💋 입력하면 100P가 즉시 지급됩니다!</div>
+        </robo>
 
       </div>
 
@@ -326,9 +313,12 @@
       return {
         name: '',
         gender: '',
-        birth: '',
-        mobile: '',
+        birth: '2010-01-01',
         address: '',
+        mobile: '',
+        mobile_verified: false,
+
+        robo_hidden: false,
       }
     },
 
@@ -339,8 +329,13 @@
     },
 
     methods: {
+      close_robo: function() {
+        this.robo_hidden = true;
+      },
+
       mobilenumber: function() {
         this.mobile = this.mobile.replace(/[^0-9]/g, "").replace(/(^02|^0505|^1[0-9]{3}|^0[0-9]{2})([0-9]+)?([0-9]{4})$/,"$1-$2-$3").replace("--", "-");
+        this.mobile_verified = false;
       },
 
       goto_signupper: function() {
@@ -349,20 +344,36 @@
           gender: this.gender,
           birth: this.birth,
           mobile: this.mobile,
-          address: this.address
+          address: this.address,
+          mobile_verified: this.mobile_verified
         }
-        // sessionStorage.setItem('name', this.name);
-        // sessionStorage.setItem('gender', this.gender);
-        // sessionStorage.setItem('birth', this.birth);
-        // sessionStorage.setItem('mobile', this.mobile);
-        // sessionStorage.setItem('address', this.address);
+
         sessionStorage.setItem('signupinfo', JSON.stringify(signupinfo));
         this.session.open_signupper();
       },
 
-      mobile_check: function() {
+      mobile_verify: function() {
         const _mobile = this.mobile.replaceAll('-', '');
-        fetch(`mobile/check?number=${_mobile}`).then(x=>x.json()).then(console.log);
+        fetch(`mobile/send_authkey?number=${_mobile}`)
+          .then(x => x.json())
+          .then(j => {
+            const authkey = prompt('전송받은 인증번호를 정확히 입력해주세요', '');
+
+            fetch(`mobile/verify?mobile=${_mobile}&authkey=${authkey}`)
+              .then(x => x.json())
+              .then(j => {
+                if (j.code == 0) {
+                  this.mobile_verified = true;
+                  alert('인증완료 되었습니다!')
+
+                } else if (j.code == 1) {
+                  alert('인증번호가 잘못 입력되었습니다. 다시 시도해 주세요');
+
+                } else {
+                  alert('잠시후에 다시 시도해 주세요');
+                }
+              });
+          });
       }
     }
   });

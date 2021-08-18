@@ -103,6 +103,7 @@ urlpatterns = [
     path('signup/email/check/', v.signup_email_check, name='signup_email_check'),
     path('signup/setbase/', v.signup_setbase, name='signup_setbase'),
     path('signup/setbase/change/', v.signup_setbase_change, name='signup_setbase_change'),
+    # path('signup/setbase/mobile_verify_only/', v.signup_setbase_mobile_verify_only, name='signup_setbase_mobile_verify_only'),
     path('login/email/', v.email_login, name='email_login'),
     path('login/social/kakaotalk/', v.kakaotalk_login, name='kakaotalk_login'),
 
@@ -165,5 +166,7 @@ urlpatterns = [
     path('flashgame/<int:flashgame_id>/', v.get_flashgame, name='get_flashgame'),
     path('flashgame/iflashgames/', v.get_iflashgames, name='get_iflashgames'),
 
-    path('mobile/check/', v.mobile_check, name='mobile_check'),
+    path('mobile/send_authkey/', v.send_mobile_authkey, name='send_mobile_authkey'),
+    path('mobile/verify/', v.mobile_verify, name='mobile_verify'),
+    path('mobile/verify/save/', v.mobile_verify_save, name='mobile_verify_save'),
 ]

@@ -177,6 +177,13 @@ class ItemlabelSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class MobileVerifier(BigIdAbstract):
+    mobile = models.CharField(max_length=20, blank=False, null=False)
+    authkey = models.IntegerField(blank=False, null=False)
+
+    def __str__(self):
+        return self.mobile
+
 
 class User(AbstractEmailUser):
     name = models.CharField(max_length=30, blank=True, null=True)
@@ -186,7 +193,9 @@ class User(AbstractEmailUser):
     birth = models.DateField(auto_now=False, null=True, blank=True)
     address = models.CharField(max_length=100, blank=True, null=True)
     mobile = models.CharField(max_length=30, blank=True, null=True)
+    mobile_verified = models.BooleanField(default=False)
     boo_selected = models.IntegerField(default=0)
+    help = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         #
@@ -235,10 +244,12 @@ class User(AbstractEmailUser):
             'name': self.name,
             'gender': self.gender,
             'birth': self.birth,
-            'mobile': self.mobile,
             'address': self.address,
+            'mobile': self.mobile,
+            'mobile_verified': self.mobile_verified,
             'is_superuser': self.is_superuser,
             'boo_selected': self.boo_selected,
+            'help': self.help,
             'boo': {'id':self.boo.id, 'nick':self.boo.nick }
         }
 
@@ -575,7 +586,6 @@ class Boo(BigIdAbstract, ModelWithFlag):
     answers = models.JSONField(default=dict, blank=True, null=True)
 
     wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
-    help = models.BooleanField(default=True)
 
 
     def __str__(self):

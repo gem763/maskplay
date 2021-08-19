@@ -98,25 +98,27 @@
     transition: all 0.5s;
   }
 
-  .itemdetail.vcomp > .main > .txt.period {
-    /* background: orange; */
+  /* .itemdetail.vcomp > .main > .txt.period {
     font-size: 14px;
     padding-top: 10px;
     padding-bottom: 0;
-  }
+  } */
 
   .itemdetail.vcomp > .main > .txt.name {
     font-size: 16px;
+    padding-top: 16px;
   }
 
   .itemdetail.vcomp > .main > .txt.price {
     font-size: 18px;
     font-weight: bold;
+    padding-top: 0;
   }
 
-  .itemdetail.vcomp > .main > .txt.collected {
+  .itemdetail.vcomp > .main > .txt.period {
     font-size: 18px;
     font-weight: bold;
+    padding-top: 0;
   }
 
   .itemdetail.vcomp > .main > .txt.desc {
@@ -203,7 +205,7 @@
         </div>
       </div>
 
-      <div class='txt period'>[[ days_to_due ]]</div>
+      <!-- <div class='txt period'>[[ days_to_due ]]</div> -->
 
       <div class='txt name'>[[ name ]]</div>
 
@@ -214,8 +216,9 @@
         </div>
       </div>
 
-      <div class='txt collected' v-if='is_raffle'>
-        [[ raffle_collected_p ]]
+      <div class='txt period' v-if='is_raffle'>
+        [[ days_to_due ]]
+        <!-- [[ raffle_collected_p ]] -->
         <div class='action apply' :class='{ active: raffleable, raffled:raffled }' @click='apply_raffle'>
           <span>[[ action_raffle_text ]]</span>
           <span>[[ deduction_p ]]</span>

@@ -369,7 +369,7 @@
 
             <span class='action collect' @click='go_collector(agenda)'>
               <img src='/static/materials/icons/hanger_white.png'>
-              <span>넣기</span>
+              <span>북마크</span>
             </span>
           </div>
 
@@ -379,7 +379,7 @@
         <div class='collection' v-else-if='collection' ref='top'>
           <div class='name'><b>[[collection.name]]</b></div>
           <div class='actions' :class='{ inactive: session.editing.on }'>
-            <div class='action' :class='{ active: on_collection }' @click='back_to_collection'><b>옷장</b></div>
+            <div class='action' :class='{ active: on_collection }' @click='back_to_collection'><b>컬렉션</b></div>
             <div class='action' :class='{ active: on_suggest }' @click='suggest_on_collection'><b>추천</b></div>
           </div>
 

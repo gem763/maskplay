@@ -31,7 +31,7 @@
 
   .research.vcomp .page-body > .closer {
     position: absolute;
-    bottom: 0;
+    bottom: var(--iphone-bottom);
     right: 0;
     width: 45px;
     height: 45px;
@@ -158,30 +158,48 @@
         }
       },
 
-      genderlabels: function() {
+      // genderlabels: function() {
+      //   if (this.boo) {
+      //     return this.boo.genderlabels
+      //   }
+      // },
+
+      auth_gender: function() {
         if (this.boo) {
-          return this.boo.genderlabels
+          return this.session.user.auth.gender
         }
       },
 
       gender: function() {
-        if (this.genderlabels) {
-          if ((this.genderlabels.length == 0) || (this.genderlabels.length == 2)) {
-            return this.default_gender
+        if (this.auth_gender == '남성') {
+          return 'M'
 
-          } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(1))) {
-            return 'M'
-
-          } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(2))) {
-            return 'F'
-
-          } else {
-            return this.default_gender
-          }
+        } else if (this.auth_gender == '여성') {
+          return 'F'
+          
         } else {
           return this.default_gender
         }
       },
+
+      // gender: function() {
+      //   if (this.genderlabels) {
+      //     if ((this.genderlabels.length == 0) || (this.genderlabels.length == 2)) {
+      //       return this.default_gender
+      //
+      //     } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(1))) {
+      //       return 'M'
+      //
+      //     } else if ((this.genderlabels.length == 1) && (this.genderlabels.includes(2))) {
+      //       return 'F'
+      //
+      //     } else {
+      //       return this.default_gender
+      //     }
+      //   } else {
+      //     return this.default_gender
+      //   }
+      // },
 
       research: function() {
         return this.session.page.research.content

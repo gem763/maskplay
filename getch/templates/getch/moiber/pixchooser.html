@@ -5,6 +5,9 @@
     height: 100%;
     /* background: white; */
     background: #f8f8f8;
+    padding-top: 45px;
+    padding-bottom: var(--dasher-height);
+    box-sizing: border-box;
   }
 
   .pixchooser.vcomp > .divider {
@@ -12,7 +15,8 @@
     width: 100%;
     height: 0;
     background: white;
-    top: 50%;
+    /* top: 50%; */
+    top: calc((100% - 45px - var(--dasher-height))/2 + 45px);
     transform: translateY(-50%);
   }
 
@@ -37,7 +41,8 @@
   }
 
   .pixchooser.vcomp > .section {
-    position: absolute;
+    /* position: absolute; */
+    position: relative;
     width: 100%;
     height: 50%;
     pointer-events: none;
@@ -54,12 +59,12 @@
   }
 
   .pixchooser.vcomp > .section.up {
-    bottom: 50%;
+    /* bottom: 50%; */
     /* background: white; */
   }
 
   .pixchooser.vcomp > .section.down {
-    top: 50%;
+    /* top: 50%; */
     /* background: white; */
   }
 
@@ -135,7 +140,8 @@
 
   .pixchooser.vcomp > .arrows {
     position: absolute;
-    bottom: 50%;
+    /* bottom: 50%; */
+    top: calc((100% - 45px - var(--dasher-height))/2 + 45px);
     height: 0;
     left: 0;
     width: 100%;
@@ -244,7 +250,13 @@
 
       toggle_choose: function(act) {
         if (!this.session.user.has_auth) {
-          this.$emit('show_loginplz');
+          const answer = confirm('로그인이 필요합니다');
+          if (answer) {
+            this.session.open_login();
+          }
+
+          // this.$emit('show_loginplz');
+
           // this.session.user.loginplz = true;
           // this.on_loginplz = true;
           // setTimeout(() => { this.session.user.loginplz = false; }, 3000);

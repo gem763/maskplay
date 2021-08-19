@@ -99,6 +99,11 @@
     pointer-events: auto;
   }
 
+  .myinfo.vcomp > .segment > .infobox > table td > span.verify.onwork {
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
   .myinfo.vcomp > .segment > .infobox > table td > span.verify.verified {
     opacity: 1;
     pointer-events: none;
@@ -272,7 +277,7 @@
               <td class='head'>모바일</td>
               <td>
                 <b>[[ mobile ]]</b>
-                <span class='verify' :class='{ active: mobile, verified: mobile_verified }' @click='mobile_verify'>[[ mobile_verified ? '인증완료' : '인증하기' ]]</span>
+                <span class='verify' :class='{ active: mobile, onwork: on_verifying, verified: mobile_verified }' @click='mobile_verify'>[[ mobile_verified ? '인증완료' : '인증하기' ]]</span>
               </td>
             </tr>
 
@@ -356,7 +361,9 @@
     delimiters: ['[[', ']]'],
     props: [ 'session' ],
     data: function() {
-      return { }
+      return {
+        on_verifying: false
+      }
     },
 
     created: function() {
@@ -507,6 +514,8 @@
       },
 
       mobile_verify: function() {
+        this.on_verifying = true;
+
         const _mobile = this.mobile.replaceAll('-', '');
         fetch(`mobile/send_authkey?number=${_mobile}`)
           .then(x => x.json())
@@ -527,6 +536,8 @@
                 } else {
                   alert('잠시후에 다시 시도해 주세요');
                 }
+
+                this.on_verifying = false;
               });
           });
       }

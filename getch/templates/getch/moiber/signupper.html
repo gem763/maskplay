@@ -166,7 +166,15 @@
       },
 
       action_login_kakao: function() {
-        window.location.assign(this.kakao_login_url);
+        if(navigator.userAgent.toLowerCase().indexOf('iosapp') != -1){
+          //앱인경우
+          var param = { action: 'kakaologin' };
+          webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(param));
+
+        } else {
+          //웹인경우
+          window.location.assign(this.kakao_login_url);
+        }
       },
 
       action_login_naver: function() {

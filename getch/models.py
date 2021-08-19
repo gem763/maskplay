@@ -1135,6 +1135,7 @@ class SupportSerializer(serializers.ModelSerializer):
             'pix_2': obj.gift.pix_2.url if obj.gift.pix_2 else None,
             'pix_3': obj.gift.pix_3.url if obj.gift.pix_3 else None,
             'pix_4': obj.gift.pix_4.url if obj.gift.pix_4 else None,
+            'pix_wide': obj.gift.pix_wide.url if obj.gift.pix_wide else None,
             'desc': obj.gift.desc
         }
 

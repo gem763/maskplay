@@ -287,7 +287,10 @@ class Session {
       this.open_page('research');
 
     } else {
-      alert('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다')
+      const answer = confirm('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다');
+      if (answer) {
+        this.open_login();
+      }
     }
   }
 

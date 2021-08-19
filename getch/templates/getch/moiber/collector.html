@@ -17,11 +17,11 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 50%;
+    height: calc(50% + var(--iphone-bottom));
     background: white;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     border-radius: var(--w-3) var(--w-3) 0 0;
   }
@@ -120,7 +120,8 @@
     /* background: lightgreen; */
     /* flex-grow: 1; */
     display: block;
-    height: calc(100% - var(--w-40) - var(--discover-img-padding));
+    /* height: calc(100% - var(--w-40) - var(--discover-img-padding)); */
+    height: calc(100% - var(--w-40) - var(--discover-img-padding) - var(--iphone-bottom));
     overflow-y: auto;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
@@ -285,13 +286,16 @@
 
   .collector.vcomp .page-body > .container > .section.picks > .login-guide > .login {
     background: var(--color-point);
-    width: var(--w-30);
+    width: 90px;
+    height: 34px;
+    border-radius: 15px;
+    /* width: var(--w-30);
     height: var(--w-10);
-    border-radius: var(--w-5);
+    border-radius: var(--w-5); */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     /* margin-right: var(--w-2); */
     box-sizing: border-box;
     margin: 15px;
@@ -463,7 +467,7 @@
         }
 
         if (this.collection && this.collection.picks) {
-          alert('옷장에 넣었어요!')
+          alert('컬렉션에 북마크했어요!')
           // this.show_collect = true;
           // setTimeout(() => { this.show_collect = false; }, 1000);
 

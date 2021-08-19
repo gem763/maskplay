@@ -121,12 +121,15 @@
       아래처럼 height를 js로 새로 정의하고, var(--height) 방식으로 보정했다
       https://stackoverflow.com/questions/23223157/how-to-fix-vhviewport-unit-css-in-mobile-safari */
       --height: 100vh; /* Fallback for browsers that do not support Custom Properties */
-      --height: calc(var(--vh, 1vh) * 100);
+      /* --height: calc(var(--vh, 1vh) * 100); */
 
       /* --height: -webkit-fill-available; */
       /* --square-size: calc(min(var(--width), var(--height)/2) * 0.75); */
       --square-size: calc(min(var(--width) - 90px, (var(--height) - 70px) / 2));
       /* --square-size: calc(min(100vw, 45vh) * 0.95); */
+
+      --iphone-bottom: 0px;
+      --dasher-height: calc(77px + var(--iphone-bottom));
     }
 
     @font-face {
@@ -161,7 +164,7 @@
       top: 0;
       left: 50%;
       width: var(--width);
-      height: 100%;
+      height: var(--height);
       background: white;
       transform: translateX(-50%);
       /* margin: auto; */
@@ -228,6 +231,15 @@
       #moiber > .sider {
         display: block;
       }
+    }
+
+    @supports (-webkit-touch-callout: none) {
+      /* CSS specific to iOS devices */
+    }
+
+    @supports not (-webkit-touch-callout: none) {
+      /* CSS for other than iOS devices */
+
     }
   </style>
 </head>
@@ -412,9 +424,20 @@
       //   headers: { "X-CSRFToken": '{{csrf_token}}' }
       // });
 
-      let vh = window.innerHeight * 0.01;
-      // Then we set the value in the --vh custom property to the root of the document
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+      if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
+        document.documentElement.style.setProperty('--iphone-bottom', `30px`);
+
+      } else {
+        document.documentElement.style.setProperty('--iphone-bottom', `0px`);
+      }
+
+
+      // let vh = window.innerHeight * 0.01;
+      //
+      // // let vh = window.innerHeight * 0.01;
+      // // Then we set the value in the --vh custom property to the root of the document
+      // document.documentElement.style.setProperty('--vh', `${vh}px`);
 
       history.pushState(null, null, document.URL);
       window.addEventListener('popstate', function () {

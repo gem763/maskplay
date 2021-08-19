@@ -177,6 +177,11 @@
     pointer-events: auto;
   }
 
+  .signup.vcomp .page-body > .section > .infobox > table td > span.verify.onwork {
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
   .signup.vcomp .page-body > .section > .infobox > table td > span.verify.verified {
     opacity: 1;
     pointer-events: none;
@@ -250,7 +255,7 @@
                 <td class='head'>휴대번호(선택)</td>
                 <td>
                   <input v-model.trim='mobile' placeholder='' spellcheck='false' @keyup='mobilenumber'>
-                  <span class='verify' :class='{ active: mobile, verified: mobile_verified }' @click='mobile_verify'>[[ mobile_verified ? '인증완료' : '인증하기' ]]</span>
+                  <span class='verify' :class='{ active: mobile, onwork: on_verifying, verified: mobile_verified }' @click='mobile_verify'>[[ mobile_verified ? '인증완료' : '인증하기' ]]</span>
                 </td>
               </tr>
 
@@ -319,6 +324,7 @@
         mobile_verified: false,
 
         robo_hidden: false,
+        on_verifying: false,
       }
     },
 
@@ -353,6 +359,8 @@
       },
 
       mobile_verify: function() {
+        this.on_verifying = true;
+
         const _mobile = this.mobile.replaceAll('-', '');
         fetch(`mobile/send_authkey?number=${_mobile}`)
           .then(x => x.json())
@@ -372,6 +380,8 @@
                 } else {
                   alert('잠시후에 다시 시도해 주세요');
                 }
+
+                this.on_verifying = false;
               });
           });
       }

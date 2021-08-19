@@ -697,9 +697,9 @@
           <span class='bname' v-if='brand'>[[ brand.name_en ]]</span>
           <!-- <span class='outment'>[[ outment ]]</span> -->
           <span class='outment'>[[ researchitem.text ]]</span>
-          <span class='more support' @click='go_brander'>후원 이벤트 참여</span>
-          <span class='more homepage' v-if='brand' @click='go_homepage'>브랜드 공식 사이트</span>
-          <span class='more insta' v-if='brand' @click='go_insta'>브랜드 공식 인스타</span>
+          <span class='more support' v-if='has_support' @click='go_brander'>후원 이벤트 참여</span>
+          <span class='more homepage' v-if='has_homepage' @click='go_homepage'>브랜드 공식 사이트</span>
+          <span class='more insta' v-if='has_insta' @click='go_insta'>브랜드 공식 인스타</span>
         </div>
       </div>
     </div>
@@ -1068,6 +1068,24 @@
       is_end: function() {
         if (this.swiper) {
           return this.swiper.isEnd
+        }
+      },
+
+      has_insta: function() {
+        if (this.brand) {
+          return this.brand.insta != undefined
+        }
+      },
+
+      has_homepage: function() {
+        if (this.brand) {
+          return this.brand.homepage != undefined
+        }
+      },
+
+      has_support: function() {
+        if (this.brand) {
+          return this.brand.supports.length > 0
         }
       }
     },

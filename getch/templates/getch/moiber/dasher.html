@@ -1,4 +1,9 @@
 <style>
+  /* :root {
+    --iphone-bottom: 30px;
+    --dasher-height: calc(77px + var(--iphone-bottom));
+  } */
+
   .dasher.vcomp {
     position: absolute;
     top: 0;
@@ -18,10 +23,12 @@
 
   .dasher.vcomp > .panel {
     position: absolute;
-    bottom: -77px;
+    /* bottom: -77px; */
+    bottom: calc(var(--dasher-height) * (-1));
     left: 0;
     width: 100%;
-    height: 77px;
+    /* height: 77px; */
+    height: var(--dasher-height);
     background: rgba(255,255,255,0.98);
     /* outline: 1px solid #333333; */
     box-shadow: 0 0 0 1px #333;
@@ -29,10 +36,12 @@
     border-radius: 15px 15px 0 0;
     pointer-events: auto;
     transition: all 0.3s;
+    /* opacity: 0; */
   }
 
   .dasher.vcomp.show > .panel {
     bottom: 0;
+    /* opacity: 1; */
   }
 
   .dasher.vcomp.show.open > .panel {
@@ -45,7 +54,8 @@
     top: 0;
     left: 0;
     width: 100%;
-    bottom: 77px;
+    /* bottom: 77px; */
+    bottom: var(--dasher-height);
     opacity: 0;
     display: flex;
     align-items: center;
@@ -121,10 +131,12 @@
 
   .dasher.vcomp > .panel > .monitor {
     position: absolute;
-    bottom: -77px;
+    /* bottom: -77px; */
+    bottom: calc(var(--dasher-height) * (-1));
     left: 0;
     width: 100%;
-    height: 77px;
+    /* height: 77px; */
+    height: var(--dasher-height);
     box-sizing: border-box;
     transition: all 0.3s;
   }
@@ -144,7 +156,8 @@
 
   .dasher.vcomp > .panel > .monitor > .point-today {
     position: absolute;
-    bottom: 28px;
+    /* bottom: 28px; */
+    bottom: calc(28px + var(--iphone-bottom));
     left: 16px;
     font-size: 10px;
     color: #888888;
@@ -187,7 +200,8 @@
     position: absolute;
     left: 16px;
     right: 16px;
-    bottom: 12px;
+    /* bottom: 12px; */
+    bottom: calc(10px + var(--iphone-bottom));
     height: 5px;
     background: white;
     border-radius: 100px;
@@ -210,10 +224,12 @@
 
   .dasher.vcomp > .panel > .spinner {
     position: absolute;
-    bottom: -77px;
+    /* bottom: -77px; */
+    bottom: calc(var(--dasher-height) * (-1));
     left: 0;
     width: 100%;
-    height: 77px;
+    /* height: 77px; */
+    height: var(--dasher-height);
     /* background: orange; */
     display: flex;
     align-items: center;
@@ -285,6 +301,15 @@
       return {}
     },
 
+    created: function() {
+      // if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
+      //   document.documentElement.style.setProperty('--iphone-bottom', `30px`);
+      //
+      // } else {
+      //   document.documentElement.style.setProperty('--iphone-bottom', `0px`);
+      // }
+    },
+
     watch: {
       wallet_loaded: function(_new, _old) {
         if (_new) {
@@ -341,7 +366,8 @@
         return {
           // show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search', 'brander', 'agit')),
           show: this.wallet_onloading
-                || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'brander', 'agit'))
+                // || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'brander', 'agit'))
+                || (this.session.on('researcher', 'stylevote', 'brander', 'agit'))
                 || (!this.session.editing.on && this.session.on('search')),
           open: this.control.open
         }

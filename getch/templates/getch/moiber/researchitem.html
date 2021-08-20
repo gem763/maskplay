@@ -386,7 +386,8 @@
   }
 
   .researchitem > .backbone > .section > .mc > .square > .choice.chosen {
-    background: orange;
+    /* background: orange; */
+    background: var(--color-dark);
   }
 
   .researchitem > .backbone > .section > .mc > .square > .choice.chosen > img.mcpix {
@@ -898,7 +899,10 @@
             if (_new) {
               this.release_slide();
               console.log('답변완료');
-              setTimeout(() => { this.go_next() }, 300);
+
+              if (!this.is_mc_pix && !this.is_mc_nopix) {
+                setTimeout(() => { this.go_next() }, 300);
+              }
 
             } else {
               this.hold_slide();

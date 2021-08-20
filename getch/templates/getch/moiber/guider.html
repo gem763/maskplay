@@ -7,12 +7,18 @@
     height: 100%;
     /* background: rgba(255,255,255,0.8); */
     transition: all 0.3s;
+    transition-delay: 0.3s;
     z-index: 200;
     display: block;
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .guider.vcomp.hidden {
-    display: none;
+    /* display: none; */
+    /* left: -100%; */
+    opacity: 0;
+    pointer-events: none;
   }
 
   .guider.vcomp > .swiper-container {
@@ -74,6 +80,7 @@
     position: absolute;
     left: 0;
     right: 0;
+    bottom: 0;
     background: rgba(0,0,0,0.55);
     transition: all 0.3s;
     transition-delay: 0.3s;
@@ -81,22 +88,22 @@
 
   .guider.vcomp > .cover.p0 {
     top: 100px;
-    bottom: calc(var(--dasher-height) + 1px);
+    /* bottom: calc(var(--dasher-height) + 1px); */
   }
 
   .guider.vcomp > .cover.p1 {
     top: 100px;
-    bottom: 0;
+    /* bottom: 0; */
   }
 
   .guider.vcomp > .cover.p2 {
     top: 45px;
-    bottom: 0;
+    /* bottom: 0; */
   }
 
   .guider.vcomp > .cover.p3 {
     top: 75px;
-    bottom: 0;
+    /* bottom: 0; */
   }
 
   .guider.vcomp > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .container {
@@ -251,21 +258,25 @@
           case 0:
             this.session.open_home();
             this.phase = 'p0';
+            this.dasher_control.show = true;
             break;
 
           case 1:
             this.session.open_home();
             this.phase = 'p1';
+            this.dasher_control.show = false;
             break;
 
           case 2:
             this.session.open_stylevote();
             this.phase = 'p2';
+            this.dasher_control.show = false;
             break;
 
           case 3:
             this.session.open_search();
             this.phase = 'p3';
+            this.dasher_control.show = false;
             break;
         }
       }
@@ -288,12 +299,18 @@
 
       show_guider: function() {
         return this.session.show_guider
+      },
+
+      dasher_control: function() {
+        return this.session.mode.dasher_control
       }
     },
 
     methods: {
       exit: function() {
+        this.session.open_home();
         this.session.show_guider = false;
+        this.dasher_control.show = true;
       },
 
       go_next: function() {

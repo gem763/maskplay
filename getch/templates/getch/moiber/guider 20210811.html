@@ -1,0 +1,316 @@
+<style>
+  .guider.vcomp .page-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: rgba(255,255,255,0.8); */
+    transition: all 0.3s;
+    z-index: 200;
+    display: block;
+  }
+
+  /* .guider.vcomp.hidden {
+    display: none;
+  } */
+
+  .guider.vcomp .page-body > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-pagination {
+    bottom: calc(85px + var(--iphone-bottom));
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    opacity: 0.1;
+    background: white;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    background: white;
+    opacity: 1;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: rgba(255,255,255,0.8); */
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p0 {
+    /* background: rgba(255,0,0,0.8); */
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p1 {
+    /* background: rgba(0,255,0,0.8); */
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p2 {
+    /* background: rgba(0,0,255,0.8); */
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p3 {
+    /* background: rgba(60,60,60,0.8); */
+  }
+
+  .guider.vcomp .page-body > .cover {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* background: rgba(0,0,0,0.55); */
+    transition: all 0.3s;
+    transition-delay: 0.3s;
+  }
+
+  .guider.vcomp .page-body > .cover.p0 {
+    top: 100px;
+    bottom: calc(var(--dasher-height) + 1px);
+  }
+
+  .guider.vcomp .page-body > .cover.p1 {
+    top: 100px;
+    bottom: 0;
+  }
+
+  .guider.vcomp .page-body > .cover.p2 {
+    top: 45px;
+    bottom: 0;
+  }
+
+  .guider.vcomp .page-body > .cover.p3 {
+    top: 75px;
+    bottom: 0;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .container {
+    position: absolute;
+    width: 100%;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p0 > .container {
+    bottom: calc(110px + var(--iphone-bottom));
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p1 > .container,
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p2 > .container,
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide.p3 > .container {
+    top: 95px;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .container > .robo {
+    margin-top: 20px;
+  }
+
+  .guider.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .exit {
+    width: 70px;
+    height: 34px;
+    line-height: 34px;
+    background: white;
+    color: var(--color-dark);
+    position: absolute;
+    bottom: calc(110px + var(--iphone-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    /* padding: 10px; */
+    text-align: center;
+    z-index: 1;
+    font-size: 12px;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+</style>
+
+<script type='text/x-template' id='guider-template'>
+  <page
+    class='guider vcomp'
+    :order='session.page.guider.order'
+    :open='session.page.guider.open'
+    :from='session.page.guider.from'
+    :hide_close='true'
+    :trans_headerbar='true'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <!-- <div class='guider vcomp' :class='{ hidden:hidden }'> -->
+      <div class='cover' :class='phase'></div>
+
+      <div class='swiper-container' ref='swiper'>
+        <div class='swiper-wrapper'>
+          <div class='swiper-slide'>
+            <div class='guide p0'>
+              <div class='container'>
+                <robo :session='session' type='next' @action='go_next'>
+                  <div>포인트, 지금 얼만큼 모았더라?
+                    매일 보너스 포인트 오늘 얼마나 모았지?
+                    포인트 체크에서 사용까지 모두,
+                    요기👇🏻👇🏻 포인트 지갑에서!</div>
+                </robo>
+
+                <robo :session='session'>
+                  <div>👇🏻 매일 보너스 포인트 획득 상황이
+                    막대로 표시돼요.
+                    서베이나 출쳌게임을 제외하고
+                    보너스 게임으로 하루 최대 100P 획득 가능!</div>
+                </robo>
+              </div>
+            </div>
+          </div>
+
+          <div class='swiper-slide'>
+            <div class='guide p1'>
+              <div class='container'>
+                <robo :session='session' type='next' @action='go_next'>
+                  <div>👆🏻브랜드에 훈수 두고 포인트 받자!
+                    서베이를 끝까지 완수하면 포인트 획득!
+                    (쉿) 레벨업 하면 더 많은 참여 기회가????</div>
+                </robo>
+              </div>
+            </div>
+          </div>
+
+          <div class='swiper-slide'>
+            <div class='guide p2'>
+              <div class='container'>
+                <robo :session='session' type='next' @action='go_next'>
+                  <div>👆🏻 몰랐는데 나, ㅇㅇㅇ 좋아하네??
+                    위? 아래? 내 스타일을 고를 때 마다 1P 획득
+                    매일 보너스는 최대 100P 까지!
+                    (밸런스게임 + 북마크게임)</div>
+                </robo>
+              </div>
+            </div>
+          </div>
+
+          <div class='swiper-slide'>
+            <div class='guide p3'>
+              <div class='container'>
+                <robo :session='session' type='next' @action='go_next'>
+                  <div>👆🏻 요즘 사람들 뭐입어?? 검색하다가
+                    내 취향 발견하면 북마크하고 1P 획득
+                    매일 보너스는 최대 100P 까지!
+                    (밸런스게임 + 북마크게임)</div>
+                </robo>
+              </div>
+
+              <div class='exit' @click='exit'>시작하기</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+      </div>
+
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('guider', {
+    template: '#guider-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return {
+        phase: 'p0',
+        swiper: undefined,
+        swiper_options: {
+          direction: 'horizontal',
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          },
+        }
+      }
+    },
+
+    watch: {
+      show_guider: function(_new, _old) {
+        if (_new) {
+          this.swiper.slideTo(0);
+          this.session.open_home();
+          this.phase = 'p0';
+        }
+      },
+
+      idx: function(_new, _old) {
+        switch (_new) {
+          case 0:
+            this.session.open_home();
+            this.phase = 'p0';
+            break;
+
+          case 1:
+            this.session.open_home();
+            this.phase = 'p1';
+            break;
+
+          case 2:
+            this.session.open_stylevote();
+            this.phase = 'p2';
+            break;
+
+          case 3:
+            this.session.open_search();
+            this.phase = 'p3';
+            break;
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    computed: {
+      idx: function() {
+        if (this.swiper) {
+          return this.swiper.realIndex
+        }
+      },
+
+      // hidden: function() {
+      //   return !this.session.show_guider
+      // },
+
+      show_guider: function() {
+        return this.session.show_guider
+      }
+    },
+
+    methods: {
+      exit: function() {
+        this.session.show_guider = false;
+      },
+
+      go_next: function() {
+        this.swiper.slideNext();
+      }
+    }
+  });
+</script>

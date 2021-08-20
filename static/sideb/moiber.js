@@ -5,7 +5,7 @@ class Session {
     this.page = {
       my:           { order: 0, instant: false, open: false },
       agit:         { order: 0, instant: false, open: false, boo: undefined, from: 'left' },
-      researcher:     { order: 0, instant: false, open: false, from: 'left' },
+      researcher:   { order: 0, instant: false, open: false, from: 'left' },
       collector:    { order: 0, instant: false, open: false, from: 'bottom', pix: undefined },
       baseinfo:     { order: 0, instant: false, open: false, from: 'left' },
       signup:       { order: 0, instant: false, open: false, from: 'left' },
@@ -29,6 +29,7 @@ class Session {
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
+      // guider:       { order: 0, instant: true, open: false, from: 'left' },
       about:        { order: 0, instant: true, open: false, from: 'left' },
       recruit:      { order: 0, instant: true, open: false, from: 'left' },
       policy:       { order: 0, instant: true, open: false, from: 'left' },
@@ -76,16 +77,36 @@ class Session {
     // this.open_checkingame();
     // this.open_flashgames();
     // this.open_signup();
+
+    this.reload_everyday();
   }
 
   get dasher_control() {
     return {
+      show: true,
       open: false,
       section: undefined,
       phase: 'menu',
       content: undefined,
       detail_obj: undefined
     }
+  }
+
+  reload_everyday() {
+    const now = new Date();
+    const night = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1, // the next day, ...
+        0, 0, 0 // ...at 00:00:00 hours
+    );
+
+    var msTillMidnight = night.getTime() - now.getTime();
+    setTimeout(() => {
+      location.reload();
+      // this.reload_everyday();
+
+    }, msTillMidnight);
   }
 
   // keyset_sampling() {
@@ -188,6 +209,10 @@ class Session {
     this.open_page(this.home);
     // this.open_researcher();
   }
+
+  // open_guider() {
+  //   this.open_page('guider');
+  // }
 
   open_about() {
     this.open_page('about');
@@ -423,6 +448,10 @@ class Session {
   load_itemlabels() {
     this.itemlabels = new Itemlabels(this);
   }
+
+  help() {
+    this.show_guider = true;
+  }
 }
 
 
@@ -588,15 +617,15 @@ class Boo extends Baseboo {
       this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
       this.wallet.baseinfo_inputed = true;
       alert(`기본정보 입력으로 ${this.wallet.amount_baseinfo_input}P가 지급되었습니다`);
-      this.help();
+      this.session.help();
     }
   }
 
-  help() {
-    if (this.session.user.auth.help) {
-      this.session.show_guider = true;
-    }
-  }
+  // help() {
+  //   if (this.session.user.auth.help) {
+  //     this.session.show_guider = true;
+  //   }
+  // }
 
 
   stylevote(ipix_pos, ipix_neg, type) {
@@ -614,7 +643,7 @@ class Boo extends Baseboo {
       });
 
       if (type == 'clear') {
-        this.wallet.receive_daybonus('daily_balance_game', -this.wallet.per_vote);
+        this.wallet.receive_daybonus('daily_balance_game', (-1) * this.wallet.per_vote);
 
       } else if (type == 'new') {
         this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
@@ -721,10 +750,15 @@ class Wallet {
   }
 
   receive_daybonus(type, amount) {
-    // amount = 10;
-    amount = Math.min(this.amount_daybonus + amount, this.amount_daybonus_max) - this.amount_daybonus;
     if (amount > 0) {
-      // console.log(1)
+      amount = Math.min(this.amount_daybonus + amount, this.amount_daybonus_max) - this.amount_daybonus;
+
+      if (amount > 0) {
+        this.receive(type, amount);
+        this.amount_daybonus += amount;
+      }
+
+    } else {
       this.receive(type, amount);
       this.amount_daybonus += amount;
     }

@@ -1113,17 +1113,24 @@ class SupportSerializer(serializers.ModelSerializer):
 
         amount = obj.wallet.amount
         n_transaction = obj.wallet.n_transaction
+        supported = False
+        amount_supported = 0
 
         user = get_current_user()
         if user.is_authenticated:
-            supported = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).exists()
-        else:
-            supported = False
+            supported = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet, when__date=datetime.now().date()).exists()
+            amount_supported = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).aggregate(total=Sum('amount'))
+            amount_supported = amount_supported['total'] if amount_supported['total'] else 0
+
+        # else:
+        #     supported = False
+        #     amount_supported = 0
 
         return {
             'collected': amount, # if amount else 0,
             'n_transaction': n_transaction, # if n_transaction else 0,
-            'supported': supported
+            'supported': supported,
+            'amount_supported': amount_supported
         }
 
     def get_gift(self, obj):

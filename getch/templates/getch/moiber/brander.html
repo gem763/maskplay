@@ -164,7 +164,17 @@
     padding-top: 15px;
   }
 
-  .brander.vcomp .page-body > .main > .sections > .section.support > .action {
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action-area {
+    position: relative;
+    height: 34px;
+    width: 100%;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action-area > .action {
     height: 34px;
     background: #183394;
     color: white;
@@ -180,15 +190,20 @@
     cursor: pointer;
   }
 
-  .brander.vcomp .page-body > .main > .sections > .section.support > .action.active {
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action-area > .action.active {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .brander.vcomp .page-body > .main > .sections > .section.support > .action.supported {
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action-area > .action.supported {
     opacity: 1;
     pointer-events: none;
     background: var(--color-dark);
+  }
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .action-area > .amount-supported {
+    color: #999999;
+    font-size: 14px;
   }
 
   .brander.vcomp .page-body > .main > .sections > .section.support > .gift {
@@ -315,8 +330,12 @@
           </div>
 
           <div class='section support' v-else-if='on("support")'>
-            <div class='action' :class='{ active: supportable, supported: supported }' @click='buy_ticket'>
-              [[ action_support_text ]] -[[ support_ticketsize_p ]]
+            <div class='action-area'>
+              <div class='action' :class='{ active: supportable, supported: supported }' @click='buy_ticket'>
+                [[ action_support_text ]] -[[ support_ticketsize_p ]]
+              </div>
+
+              <div class='amount-supported'>[[ amount_supported_text ]]</div>
             </div>
 
             <div class='text'>
@@ -392,14 +411,24 @@
 
       buy_ticket: function() {
         if (this.supportable) {
-          const receiver_id = this.support.id;
-          const amount = this.support_ticketsize;
+          const msg = `후원 이벤트에 참여하시겠습니까? \n참여시 ${this.support_ticketsize}P가 차감되며, 취소는 불가합니다`;
+          const resp = confirm(msg);
 
-          if (receiver_id && amount) {
-            this.support.wallet.collected += amount;
-            this.support.wallet.supported = true;
-            this.myboo.wallet.send('support', amount, receiver_id);
-            this.myboo.supports.list.push(this.support);
+          if (resp) {
+            const receiver_id = this.support.id;
+            const amount = this.support_ticketsize;
+
+            if (receiver_id && amount) {
+              this.support.wallet.collected += amount;
+              this.support.wallet.amount_supported += amount;
+              this.support.wallet.supported = true;
+              this.myboo.wallet.send('support', amount, receiver_id);
+
+              const isupport = _.find(this.myboo.supports.list, ['id', this.support_id]);
+              if (!isupport) {
+                this.myboo.supports.list.push(this.support);
+              }
+            }
           }
         }
       },
@@ -561,6 +590,18 @@
       supported: function() {
         if (this.support_wallet) {
           return this.support_wallet.supported
+        }
+      },
+
+      amount_supported: function() {
+        if (this.support_wallet) {
+          return this.support_wallet.amount_supported
+        }
+      },
+
+      amount_supported_text: function() {
+        if (this.amount_supported) {
+          return '내 누적 후원 ' + this.amount_supported + 'P'
         }
       },
 

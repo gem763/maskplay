@@ -97,6 +97,11 @@ def recruit(request):
     return redirect_params('discover', params)
 
 
+def app_ios(request):
+    return redirect('https://itunes.apple.com/app/id1578448720')
+
+
+
 def load(request, ctx):
     # 처음 로딩할때는 session 객체가 없어서,
     # 이렇게 save()해주면 새로 생기면서 session_key가 만들어진다

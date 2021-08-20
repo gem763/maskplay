@@ -48,13 +48,14 @@
   }
 
   .joystick.vcomp > .head > .icon.setting {
-    right: -55px;
+    right: 0;
+    /* right: -55px; */
     transition: all 0.2s;
   }
 
-  .joystick.vcomp > .head > .icon.setting.on {
+  /* .joystick.vcomp > .head > .icon.setting.on {
     right: 0;
-  }
+  } */
 
   .joystick.vcomp > .head > .icon > img {
     height: auto;
@@ -241,14 +242,18 @@
         <img src='/static/materials/logos/logo.png'>
       </div>
 
-      <div class='icon setting' :class='{ on: settable }' @click.stop='toggle_menu'>
+      <!-- <div class='icon setting' :class='{ on: settable }' @click.stop='toggle_menu'> -->
+      <div class='icon setting' @click.stop='toggle_menu'>
         <img src='/static/materials/icons/setting_line.png'>
         <div class='dimmer' v-if='on_menu'></div>
         <div class='setting-menu' v-if='on_menu'>
           <!-- <div class='item' @click='session.open_profiler()'>내 프로필 편집</div> -->
-          <div class='item' @click='make_collection'>컬렉션 만들기</div>
+          <div class='item' @click='open_pointget'>포인트 획득하기</div>
+          <div class='item' @click='open_pointuse'>포인트 사용하기</div>
           <div class='item' @click='help'>도움말 보기</div>
-          <div class='item logout' @click='session.logout()'>로그아웃</div>
+          <div class='item' v-if='on_my' @click='make_collection'>컬렉션 만들기</div>
+          <div class='item logout' v-if='on_my' @click='session.logout()'>로그아웃</div>
+          <div class='item logout' v-if='!boo' @click='session.open_login()'>로그인</div>
         </div>
       </div>
     </div>
@@ -274,11 +279,15 @@
         }
       },
 
-      settable: function() {
-        if (this.boo) {
-          return this.boo.profile && this.boo.id
-        }
+
+      dasher_control: function() {
+        return this.session.mode.dasher_control
       },
+      // settable: function() {
+      //   if (this.boo) {
+      //     return this.boo.profile && this.boo.id
+      //   }
+      // },
 
       category: function() {
         return this.session.page.search.category
@@ -324,10 +333,23 @@
       },
 
       help: function() {
-        if (this.boo) {
-          this.boo.help();
-        }
+        this.session.help();
+        // if (this.boo) {
+        //   this.boo.help();
+        // }
       },
+
+      open_pointget: function() {
+        this.dasher_control.open = true;
+        this.dasher_control.section = 'pointget';
+        this.dasher_control.phase = 'menu';
+      },
+
+      open_pointuse: function() {
+        this.dasher_control.open = true;
+        this.dasher_control.section = 'pointuse';
+        this.dasher_control.phase = 'menu';
+      }
     }
   });
 </script>

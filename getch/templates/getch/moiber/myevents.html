@@ -184,7 +184,7 @@
             <img :src='coverpix(r)' @load='coverpix_loaded'>
             <!-- <div class='name'>[[ name(r) ]]</div> -->
             <div class='deduction'>[[ deduction(r) ]]</div>
-            <div class='blogo'>
+            <div class='blogo' v-if='r.brand'>
               <img :src='r.brand.logo'>
             </div>
           </div>

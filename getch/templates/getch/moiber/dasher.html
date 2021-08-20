@@ -301,24 +301,16 @@
       return {}
     },
 
-    created: function() {
-      // if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
-      //   document.documentElement.style.setProperty('--iphone-bottom', `30px`);
-      //
-      // } else {
-      //   document.documentElement.style.setProperty('--iphone-bottom', `0px`);
-      // }
-    },
-
     watch: {
-      wallet_loaded: function(_new, _old) {
-        if (_new) {
-          // if (!this.wallet.welcomed) {
-          //   this.wallet.receive('welcome', this.wallet.amount_welcome);
-          //   alert('첫방문 기념으로 ' + this.wallet.amount_welcome + 'P가 지급되었습니다')
-          // }
-        }
-      }
+      // wallet_loaded: function(_new, _old) {
+      //   if (_new) {
+      //     // if (!this.wallet.welcomed) {
+      //     //   this.wallet.receive('welcome', this.wallet.amount_welcome);
+      //     //   alert('첫방문 기념으로 ' + this.wallet.amount_welcome + 'P가 지급되었습니다')
+      //     // }
+      //   }
+      // }
+
       // rewards_loaded: function(_new, _old) {
       //   if (_new) {
       //     if (this.rewards_history) {
@@ -365,10 +357,13 @@
       status: function() {
         return {
           // show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search', 'brander', 'agit')),
-          show: this.wallet_onloading
-                // || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'brander', 'agit'))
-                || (this.session.on('researcher', 'stylevote', 'brander', 'agit'))
-                || (!this.session.editing.on && this.session.on('search')),
+          show: this.control.show && (
+            this.wallet_onloading
+            // || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'brander', 'agit'))
+            || (this.session.on('researcher', 'stylevote', 'brander', 'agit'))
+            || (!this.session.editing.on && this.session.on('search'))
+          ),
+
           open: this.control.open
         }
       },
@@ -385,32 +380,33 @@
         }
       },
 
-      wallet_loaded: function() {
-        if (this.boo) {
-          return this.boo.wallet != undefined
-        }
-      },
-
-      wallet_onloading: function() {
-        return this.session.user.has_auth && !this.wallet_loaded
-      },
-
       wallet: function() {
-        if (this.wallet_loaded) {
+        if (this.boo) {
           return this.boo.wallet
         }
       },
 
+      // wallet_loaded: function() {
+      //   return this.wallet != undefined
+      //   // if (this.boo) {
+      //   //   return this.boo.wallet != undefined
+      //   // }
+      // },
+
+      wallet_onloading: function() {
+        return this.session.user.has_auth && !this.wallet
+      },
+
       amount: function() {
-        if (this.wallet_loaded) {
-          return this.boo.wallet.amount
+        if (this.wallet) {
+          return this.wallet.amount
         } else {
           return 0
         }
       },
 
       amount_daybonus: function() {
-        if (this.wallet_loaded) {
+        if (this.wallet) {
           return this.boo.wallet.amount_daybonus
         } else {
           0
@@ -418,7 +414,7 @@
       },
 
       amount_daybonus_max: function() {
-        if (this.wallet_loaded) {
+        if (this.wallet) {
           return this.boo.wallet.amount_daybonus_max
         }
       },

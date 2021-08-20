@@ -53,7 +53,7 @@
     bottom: 10px;
     right: 10px;
     color: white;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
   }
 
@@ -186,10 +186,10 @@
 
       reward: function() {
         if (this.research) {
-          return this.research.reward ? this.research.reward + 'P': ''
+          return this.research.reward ? '완료하면 ' + this.research.reward + 'P 지급 💰': ''
 
         } else {
-          return '300P'
+          // return '300P'
         }
       },
 

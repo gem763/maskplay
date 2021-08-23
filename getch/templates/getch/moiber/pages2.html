@@ -27,9 +27,9 @@
 {% include "getch/moiber/researcher.html" %}
 {% include "getch/moiber/research.html" %}
 {% include "getch/moiber/researchitem.html" %}
-{% include "getch/moiber/checkingame.html" %}
 {% include "getch/moiber/flashgames.html" %}
 {% include "getch/moiber/brander.html" %}
+{% include "getch/moiber/checkin.html" %}
 {% include "getch/moiber/test.html" %}
 
 <style>
@@ -53,8 +53,8 @@
     <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote>
     <!-- <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork> -->
     <research :session='session'></research>
-    <checkingame :session='session'></checkingame>
-    <flashgames :session='session'></flashgames>
+    <checkin :session='session'></checkin>
+    <!-- <flashgames :session='session'></flashgames> -->
     <!-- <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult> -->
     <agit :session='session'></agit>
     <multichooser :session='session'></multichooser>

@@ -48,6 +48,11 @@
     opacity: 1;
   }
 
+  .researchcard.vcomp > .pix > img.cover.finished {
+    /* filter: grayscale(1) opacity(0.5); */
+    filter: brightness(80%);
+  }
+
   .researchcard.vcomp > .pix > .reward {
     position: absolute;
     bottom: 10px;
@@ -55,6 +60,15 @@
     color: white;
     font-size: 16px;
     font-weight: bold;
+  }
+
+  .researchcard.vcomp > .pix > img.cover.finished + .reward {
+    bottom: 50%;
+    right: 50%;
+    transform: translate(50%, 50%);
+    font-size: 18px;
+    width: 100%;
+    text-align: center;
   }
 
   .researchcard.vcomp > .pix > .logo {
@@ -116,11 +130,11 @@
   <div class='researchcard vcomp' @click='go_research'>
 
     <div class='pix'>
-      <div class='spinner'>
+      <div class='spinner' v-if='!coverpix_loaded'>
         <i class="fa fa-spinner fa-spin"></i>
       </div>
 
-      <img class='cover' :class='{ loaded: coverpix_loaded }' :src='coverpix' @load='coverpix_set_loaded'>
+      <img class='cover' :class='{ loaded: coverpix_loaded, finished: finished }' :src='coverpix' @load='coverpix_set_loaded'>
       <span class='reward'>[[ reward ]]</span>
       <div class='logo' v-if='logo'>
         <img :src='logo'>
@@ -186,7 +200,12 @@
 
       reward: function() {
         if (this.research) {
-          return this.research.reward ? '완료하면 ' + this.research.reward + 'P 지급 💰': ''
+          if (this.finished) {
+            return this.research.reward ? '서베이 완료! ' + this.research.reward + 'P 득! ✌🏻': ''
+
+          } else {
+            return this.research.reward ? '완료하면 ' + this.research.reward + 'P 지급 💰': ''
+          }
 
         } else {
           // return '300P'
@@ -267,6 +286,18 @@
           return '모이버'
         }
       },
+
+      answers: function() {
+        if (this.research) {
+          return this.research.answers
+        }
+      },
+
+      finished: function() {
+        if (this.answers) {
+          return this.answers.finished
+        }
+      }
 
       // bname: function() {
       //   if (this.bname) {

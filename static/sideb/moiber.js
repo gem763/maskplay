@@ -1021,6 +1021,7 @@ class Research extends Loader {
     this.due = undefined;
     this.created_at = undefined;
     this.answers = undefined;
+    this.priority = undefined;
     this.researchitems = new ResearchItems(session, baseobj.id);
   }
 
@@ -1036,6 +1037,7 @@ class Research extends Loader {
     this.due = obj.due;
     this.created_at = obj.created_at;
     this.answers = obj.answers;
+    this.priority = obj.priority;
 
     if (obj.brand) {
       this.brand = Brand.init(this.session, obj.brand);
@@ -1563,6 +1565,7 @@ class Auth {
     this.email = cuser.email;
     this.is_superuser = cuser.is_superuser;
     this.help = cuser.help;
+    this.referal_code = cuser.referal_code;
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(session, cuser.boo)} : {};
     // this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(cuser.boo.id, store)} : {};

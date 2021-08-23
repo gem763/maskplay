@@ -247,7 +247,6 @@
         <img src='/static/materials/icons/setting_line.png'>
         <div class='dimmer' v-if='on_menu'></div>
         <div class='setting-menu' v-if='on_menu'>
-          <!-- <div class='item' @click='session.open_profiler()'>내 프로필 편집</div> -->
           <div class='item' @click='open_pointget'>포인트 획득하기</div>
           <div class='item' @click='open_pointuse'>포인트 사용하기</div>
           <div class='item' @click='help'>도움말 보기</div>
@@ -301,7 +300,8 @@
                       // || (this.session.scroll_direction=='down' && this.session.on('search'))
                       // || (this.session.scroll_direction=='down' && this.session.on('stylevote'))
                       || (this.session.scroll_direction=='down' && this.session.on('researcher'))
-                      || (this.session.scroll_direction=='down' && this.session.on('brander')),
+                      || (this.session.scroll_direction=='down' && this.session.on('brander'))
+                      || (this.session.on('checkin')),
 
           hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'baseinfo', 'signup', 'signupper', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research', 'checkingame', 'flashgames')
                   || this.on_agit

@@ -25,6 +25,8 @@ import os
 import re
 import collections
 import random
+import base64
+
 
 # from gensim.models import Doc2Vec
 
@@ -197,6 +199,9 @@ class User(AbstractEmailUser):
     boo_selected = models.IntegerField(default=0)
     help = models.BooleanField(default=True)
 
+    grcode = models.CharField(max_length=20, blank=True, null=True)
+
+
     def save(self, *args, **kwargs):
         #
         #
@@ -237,7 +242,15 @@ class User(AbstractEmailUser):
         return json.dumps(_user)
 
     @property
+    def referal_code(self):
+        return base64.b64encode(str(self.id).encode('ascii')).decode('ascii')#[:8]
+
+    @property
     def serialized2(self):
+        if self.grcode is None:
+            self.grcode = self.referal_code
+            self.save()
+
         return {
             'id': self.id,
             'email': self.email,
@@ -250,6 +263,7 @@ class User(AbstractEmailUser):
             'is_superuser': self.is_superuser,
             'boo_selected': self.boo_selected,
             'help': self.help,
+            'referal_code': self.referal_code,
             'boo': {'id':self.boo.id, 'nick':self.boo.nick }
         }
 
@@ -1159,7 +1173,7 @@ class ResearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Research
-        fields = ['id', 'owner', 'brand', 'title', 'desc', 'published', 'coverpix', 'reward', 'due', 'created_at', 'answers']
+        fields = ['id', 'owner', 'brand', 'title', 'desc', 'published', 'coverpix', 'reward', 'due', 'created_at', 'answers', 'priority']
         read_only_fields = fields
 
     def get_owner(self, obj):

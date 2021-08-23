@@ -1,0 +1,60 @@
+<style>
+  .checkin.vcomp .page-body {
+    width: 100%;
+    height: 100%;
+  }
+
+
+  .checkin.vcomp .page-body > .background {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .checkin.vcomp .page-body > .background > .content {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 100px);
+    background: lightpink;
+    border-radius: 0 0 15px 15px;
+    padding-top: 100px;
+    /* padding-bottom: 20px; */
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+</style>
+
+
+<script type='text/x-template' id='checkin-template'>
+  <page
+    class='checkin vcomp'
+    :order='session.page.checkin.order'
+    :open='session.page.checkin.open'
+    :from='session.page.checkin.from'
+    :hide_close='true'
+    :hide_menu='true'
+    :hide_headerbar='true'
+    :trans_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='background' @click='session.close_page()'>
+        <div class='content' @click.stop>
+          <flashgame :session='session'></flashgame>
+        </div>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('checkin', {
+    template: '#checkin-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return { }
+    }
+  });
+</script>

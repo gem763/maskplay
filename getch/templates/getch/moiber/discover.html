@@ -125,7 +125,7 @@
 
       /* --height: -webkit-fill-available; */
       /* --square-size: calc(min(var(--width), var(--height)/2) * 0.75); */
-      --square-size: calc(min(var(--width) - 90px, (var(--height) - 70px) / 2));
+      --square-size: calc(min(var(--width) - 90px, (var(--height) - 60px) / 2));
       /* --square-size: calc(min(100vw, 45vh) * 0.95); */
 
       --iphone-bottom: 0px;
@@ -245,7 +245,6 @@
 </head>
 
 
-<!-- <body style='background:white;margin:0;'> -->
 <body>
   <!-- Google Tag Manager (noscript) -->
   <noscript>
@@ -256,8 +255,6 @@
 
   <div id='moiber'>
     <div class='window'>
-      <!-- <homepixs :session='session'></homepixs> -->
-      <!-- <headerbar :session='session'></headerbar> -->
       <pages :session='session'></pages>
       <joystick :session='session'></joystick>
       <guider :session='session'></guider>
@@ -278,7 +275,6 @@
 
       <div class='about'>주식회사 모이버 | 대표 : 임동석 | 주소 : 서울 서초구 신반포로 315, 2층<br>
         사업자 등록 번호 : 707-87-01867 | 인터넷 정보 매개업</div>
-      <!-- <div class='rights'>©2021 MOIBER Co., Ltd. All rights reserved.</div> -->
     </div>
   </div>
 
@@ -319,6 +315,7 @@
   {% include "getch/moiber/supportbrands.html" %}
   {% include "getch/moiber/myinfo.html" %}
   {% include "getch/moiber/myevents.html" %}
+  {% include "getch/moiber/flashgame.html" %}
   {% include "getch/moiber/guider.html" %}
   {% include "getch/moiber/robo.html" %}
 

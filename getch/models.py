@@ -360,50 +360,6 @@ class Wallet(BigIdAbstract):
         Transaction.objects.create(sender=self, receiver=to, type=_type, amount=amount)
 
 
-
-    # def write(self, type=None, amount=None):
-    #     user = get_current_user()
-    #     if not user.is_authenticated:
-    #         return
-    #
-    #     if type == 'checkin_game':
-    #         _type = IN_CHECKIN_GAME
-    #
-    #     elif type == 'daily_balance_game':
-    #         _type = IN_DAILY_BALANCE_GAME
-    #
-    #     elif type == 'daily_collecting':
-    #         _type = IN_DAILY_COLLECTING
-    #
-    #     elif type == 'research':
-    #         _type = IN_RESEARCH
-    #
-    #     elif type == 'interview':
-    #         _type = IN_INTERVIEW
-    #
-    #     elif type == 'welcome':
-    #         _type = IN_WELCOME
-    #
-    #     elif type == 'base_input':
-    #         _type = IN_BASE_INPUT
-    #
-    #     elif type == 'style_input':
-    #         _type = IN_STYLE_INPUT
-    #
-    #     elif type == 'item_input':
-    #         _type = IN_ITEM_INPUT
-    #
-    #     elif type == 'support':
-    #         _type = OUT_SUPPORT
-    #
-    #     elif type == 'raffle':
-    #         _type = OUT_RAFFLE
-    #
-    #     elif type == 'shopping':
-    #         _type = OUT_SHOPPING
-    #
-    #     Transaction.objects.create(wallet=self, type=_type, amount=amount, client=user.boo)
-
     @property
     def whose(self):
         if hasattr(self, 'boo'):
@@ -986,17 +942,22 @@ class RaffleSerializer(serializers.ModelSerializer):
 
         amount = obj.wallet.amount
         n_transaction = obj.wallet.n_transaction
+        raffled = False
+        amount_raffled = 0
 
         user = get_current_user()
         if user.is_authenticated:
-            raffled = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).exists()
-        else:
-            raffled = False
+            raffled = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet, when__date=datetime.now().date()).exists()
+            amount_raffled = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).aggregate(total=Sum('amount'))
+            amount_raffled = amount_raffled['total'] if amount_raffled['total'] else 0
+        # else:
+        #     raffled = False
 
         return {
-            'collected': amount, # if amount else 0,
-            'n_transaction': n_transaction, # if n_transaction else 0,
-            'raffled': raffled
+            'collected': amount,
+            'n_transaction': n_transaction,
+            'raffled': raffled,
+            'amount_raffled': amount_raffled
         }
 
     def get_item(self, obj):
@@ -1121,10 +1082,6 @@ class SupportSerializer(serializers.ModelSerializer):
             supported = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet, when__date=datetime.now().date()).exists()
             amount_supported = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).aggregate(total=Sum('amount'))
             amount_supported = amount_supported['total'] if amount_supported['total'] else 0
-
-        # else:
-        #     supported = False
-        #     amount_supported = 0
 
         return {
             'collected': amount, # if amount else 0,

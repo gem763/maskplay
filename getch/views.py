@@ -625,6 +625,23 @@ def get_itemlabel(request, label_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def save_mylabels(request):
+    try:
+        if request.user.is_authenticated:
+            _boo = request.user.boo
+            _type = request.GET.get('type', None)
+            _add = json.loads(request.GET.get('add', None))
+            _remove = json.loads(request.GET.get('remove', None))
+
+            getattr(_boo, _type).add(*_add)
+            getattr(_boo, _type).remove(*_remove)
+
+        return JsonResponse({'success':True, 'message':'mylabels edited successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
 def edit_mylabels(request):
     try:
         if request.user.is_authenticated:

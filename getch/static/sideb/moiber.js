@@ -29,7 +29,6 @@ class Session {
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
-      // guider:       { order: 0, instant: true, open: false, from: 'left' },
       about:        { order: 0, instant: true, open: false, from: 'left' },
       recruit:      { order: 0, instant: true, open: false, from: 'left' },
       policy:       { order: 0, instant: true, open: false, from: 'left' },
@@ -70,14 +69,7 @@ class Session {
     this.user = new User(this);
     // this.keyset_sampling();
 
-    // this.open_brander(Brand.init(this, {id:2}));
     // this.open_test();
-    // this.open_my();
-    // this.open_profileconfig();
-    // this.open_checkingame();
-    // this.open_flashgames();
-    // this.open_signup();
-
     this.reload_everyday();
   }
 
@@ -157,6 +149,10 @@ class Session {
 
   open_page(pagename, covering) {
     if (this.on(pagename)) {
+      setTimeout(() => {
+        this.mode.dasher_control.open = false;
+        this.mode.dasher_control.section = undefined;
+      }, 200);
       return
     }
 

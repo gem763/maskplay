@@ -288,7 +288,7 @@
 
     computed: {
       idx: function() {
-        if (this.swiper) {
+        if (this.swiper && this.show_guider) {
           return this.swiper.realIndex
         }
       },

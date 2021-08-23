@@ -163,6 +163,7 @@ urlpatterns = [
     path('label/istylelabels/', v.get_istylelabels, name='get_istylelabels'),
     path('label/iitemlabels/', v.get_iitemlabels, name='get_iitemlabels'),
     path('label/edit/', v.edit_mylabels, name='edit_mylabels'),
+    path('label/save/', v.save_mylabels, name='save_mylabels'),
 
     path('flashgame/<int:flashgame_id>/', v.get_flashgame, name='get_flashgame'),
     path('flashgame/iflashgames/', v.get_iflashgames, name='get_iflashgames'),

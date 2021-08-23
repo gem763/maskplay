@@ -26,7 +26,6 @@
     position: relative;
     width: 100%;
     padding-top: 100%;
-    /* background: orange; */
   }
 
   .itemdetail.vcomp > .main > .pixes > .swiper-container {
@@ -36,8 +35,6 @@
     right: 1px;
     bottom: 1px;
     z-index: 0;
-    /* overflow: visible; */
-    /* overflow-y: visible; */
   }
 
   .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper {
@@ -52,8 +49,6 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    /* overflow: hidden;
-    padding-bottom: 5%; */
   }
 
   .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper > .swiper-slide > img {
@@ -63,21 +58,15 @@
     object-fit: cover;
     opacity: 0;
     transition: all 0.5s;
+    filter: brightness(95%);
   }
 
   .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-wrapper > .swiper-slide > img.loaded {
     opacity: 1;
   }
 
-  /* .swiper-pagination-fraction, .swiper-pagination-custom, .swiper-container-horizontal > .swiper-pagination-bullets {
-      bottom: 25px;
-      left: 0;
-      width: 100%;
-  } */
-
   .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
-    /* background: gray; */
-    background: rgba(0,0,0,0.1);
+    background: rgba(255,255,255,0.4);
     opacity: 0;
   }
 
@@ -86,8 +75,8 @@
   }
 
   .itemdetail.vcomp > .main > .pixes > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
-    /* background: var(--color-dark); */
-    background: rgba(0,0,0,0.7);
+    /* background: rgba(0,0,0,0.7); */
+    background: white;
   }
 
   .itemdetail.vcomp > .main > .txt {
@@ -121,8 +110,14 @@
     padding-top: 0;
   }
 
+  .itemdetail.vcomp > .main > .txt.cum {
+    text-align: right;
+    padding-top: 0;
+    color: #999999;
+    font-size: 12px;
+  }
+
   .itemdetail.vcomp > .main > .txt.desc {
-    /* background: lightyellow; */
     font-size: 11px;
     color: var(--color-gray);
     line-height: 15px;
@@ -131,7 +126,6 @@
   }
 
   .itemdetail.vcomp > .main > .txt.noti {
-    /* background: lightgreen; */
     font-size: 11px;
     color: var(--color-gray);
     line-height: 15px;
@@ -153,8 +147,6 @@
     color: white;
     border-radius: 15px;
     font-size: 12px;
-    /* line-height: 36px;
-    text-align: center; */
     font-weight: normal;
     display: flex;
     align-items: center;
@@ -225,6 +217,8 @@
         </div>
       </div>
 
+      <div class='txt cum'>[[ amount_raffled_text ]]</div>
+
       <div class='txt desc'>[[ desc ]]</div>
 
       <div class='txt noti' v-if='is_raffle'>
@@ -259,13 +253,8 @@
           },
           pagination: {
             el: '.swiper-pagination',
-          },
-          // autoplay: {
-          //  delay: 5000,
-          // },
-        },
-
-        paginated: false
+          }
+        }
       }
     },
 
@@ -273,13 +262,13 @@
       this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
     },
 
+    watch: {
+      n_pix: function(_new, _old) {}
+    },
+
     methods: {
       pix_loaded: function(idx, event) {
         event.target.classList.add('loaded');
-
-        if (idx != 1) {
-          this.paginated = true;
-        }
       },
 
       pix: function(idx) {
@@ -296,18 +285,36 @@
         if (this.raffleable) {
           const receiver_id = this.raffle.id;
           const amount = this.deduction;
+          const msg = `래플에 참여하시겠습니까? \n참여시 ${amount}P가 차감되며, 취소는 불가합니다`;
+          const resp = confirm(msg);
 
-          if (receiver_id && amount) {
+          if (resp && receiver_id && amount) {
             this.raffle.wallet.collected += amount;
+            this.raffle.wallet.amount_raffled += amount;
             this.raffle.wallet.raffled = true;
             this.myboo.wallet.send('raffle', amount, receiver_id);
-            this.myboo.raffles.list.push(this.obj);
+            // this.myboo.raffles.list.push(this.obj);
+
+            const iraffle = _.find(this.myboo.raffles.list, ['id', receiver_id]);
+            if (!iraffle) {
+              this.myboo.raffles.list.push(this.raffle);
+            }
           }
         }
       }
     },
 
     computed: {
+      n_pix: function() {
+        if (this.swiper) {
+          return this.swiper.slides.length
+        }
+      },
+
+      paginated: function() {
+        return this.n_pix > 1
+      },
+
       item: function() {
         if (this.obj && this.obj.item) {
           return this.obj.item.load()
@@ -396,6 +403,18 @@
       raffled: function() {
         if (this.raffle_wallet) {
           return this.raffle_wallet.raffled
+        }
+      },
+
+      amount_raffled: function() {
+        if (this.raffle_wallet) {
+          return this.raffle_wallet.amount_raffled
+        }
+      },
+
+      amount_raffled_text: function() {
+        if (this.amount_raffled) {
+          return '내 누적 참여 ' + this.amount_raffled + 'P'
         }
       },
 

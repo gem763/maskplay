@@ -504,7 +504,9 @@
       // },
 
       goto_labelchooser: function(type) {
-        this.session.open_multichooser(this.session[type]);
+        if (this.myboo && this.myboo.loaded) {
+          this.session.open_multichooser(this.session[type]);
+        }
       },
 
       open_baseinfo: function() {

@@ -38,7 +38,8 @@ class WalletAdmin(admin.ModelAdmin):
 @admin.register(m.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ['sender', 'receiver', 'when', 'type', 'amount']
-    # raw_id_fields = ('client', )
+    raw_id_fields = ('sender', 'receiver', )
+    list_filter = ['sender']
 
 
 @admin.register(m.Support)

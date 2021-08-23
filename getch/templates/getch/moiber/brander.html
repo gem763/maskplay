@@ -15,20 +15,61 @@
     opacity: 1;
   }
 
-  .brander.vcomp .page-body > .main > .coverpix {
+
+  .brander.vcomp .page-body > .main > .coverpixes {
     position: relative;
-    margin-top: 100px;
+    width: 100%;
+    padding-top: 100px;
   }
 
-  .brander.vcomp .page-body > .main > .coverpix > img {
+  .brander.vcomp .page-body > .main .pixes > .swiper-container {
+    position: relative;
     width: 100%;
-    height: auto;
-    display: block;
+    z-index: 0;
+  }
+
+  .brander.vcomp .page-body > .main .pixes > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .brander.vcomp .page-body > .main .pixes > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    /* height: 100%; */
+    /* background: white; */
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .brander.vcomp .page-body > .main .pixes > .swiper-container > .swiper-wrapper > .swiper-slide > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     opacity: 0;
     transition: all 0.5s;
+    filter: brightness(95%);
   }
 
-  .brander.vcomp .page-body > .main > .coverpix > .logo {
+  .brander.vcomp .page-body > .main .pixes > .swiper-container > .swiper-wrapper > .swiper-slide > img.loaded {
+    opacity: 1;
+  }
+
+  .brander.vcomp .page-body > .main .pixes > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    background: rgba(255,255,255,0.4);
+    opacity: 0;
+  }
+
+  .brander.vcomp .page-body > .main .pixes.paginated > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    opacity: 1;
+  }
+
+  .brander.vcomp .page-body > .main .pixes > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    /* background: rgba(255,255,255,0.7); */
+    background: white;
+  }
+
+  .brander.vcomp .page-body > .main > .coverpixes > .logo {
     position: absolute;
     bottom: -40px;
     left: 16px;
@@ -39,7 +80,7 @@
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
   }
 
-  .brander.vcomp .page-body > .main > .coverpix > .logo > img {
+  .brander.vcomp .page-body > .main > .coverpixes > .logo > img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -47,10 +88,13 @@
     transition: all 0.5s;
   }
 
-  .brander.vcomp .page-body > .main > .coverpix > img.loaded,
-  .brander.vcomp .page-body > .main > .coverpix > .logo > img.loaded {
+  .brander.vcomp .page-body > .main > .coverpixes > .logo > img.loaded {
     opacity: 1;
   }
+
+
+
+
 
   .brander.vcomp .page-body > .main > .menu {
     position: relative;
@@ -151,7 +195,7 @@
 
   .brander.vcomp .page-body > .main > .sections > .section  {
     position: relative;
-    padding: 16px;
+    /* padding: 16px; */
     padding-top: 0;
     padding-bottom: 200px;
     /* background: lightblue; */
@@ -161,13 +205,15 @@
 
   .brander.vcomp .page-body > .main > .sections > .section > .text {
     white-space: pre-line;
-    padding-top: 15px;
+    padding: 16px;
   }
 
   .brander.vcomp .page-body > .main > .sections > .section.support > .action-area {
     position: relative;
     height: 34px;
     width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
     /* background: orange; */
     display: flex;
     align-items: center;
@@ -203,40 +249,43 @@
 
   .brander.vcomp .page-body > .main > .sections > .section.support > .action-area > .amount-supported {
     color: #999999;
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .brander.vcomp .page-body > .main > .sections > .section.support > .gift {
     position: relative;
     width: 100%;
     margin-top: 20px;
-    opacity: 0;
-    transition: all 0.5s;
+    /* opacity: 0; */
+    /* transition: all 0.5s; */
   }
 
-  .brander.vcomp .page-body > .main > .sections > .section.support > .gift.loaded {
-    opacity: 1;
-  }
-
-  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > img {
-    width: 100%;
-    height: 100%;
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .giftpixes > .swiper-container .swiper-slide > img  {
+    width: calc(100% - 32px);
+    height: auto;
     border-radius: 8px;
   }
 
-  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-name {
+  /* .brander.vcomp .page-body > .main > .sections > .section.support > .gift.loaded {
+    opacity: 1;
+  } */
+
+  /* .brander.vcomp .page-body > .main > .sections > .section.support > .gift > img {
     width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  } */
+
+  .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-name {
     font-size: 16px;
     font-weight: bold;
-    margin-top: 20px;
+    padding: 16px 16px 0;
   }
 
   .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-price {
-    width: 100%;
     font-size: 14px;
-    /* text-align: right; */
-    margin-top: 10px;
     color: #777777;
+    padding: 10px 16px 0;
   }
 
   .brander.vcomp .page-body > .main > .sections > .section.support > .gift > .gift-desc {
@@ -244,7 +293,7 @@
     color: var(--color-gray);
     line-height: 15px;
     white-space: pre-line;
-    margin-top: 25px;
+    padding: 25px 16px;
   }
 
   .brander.vcomp .page-body > .goback {
@@ -297,12 +346,23 @@
 
     <template #page-body>
       <div class='main' :class='{ loaded: ready && support }'>
-        <div class='coverpix'>
-          <img :src='coverpix_0' @load='coverpix_loaded'>
+
+        <div class='coverpixes pixes' :class='{ paginated:coverpix_paginated }'>
+          <div class='swiper-container' ref='swiper_coverpix'>
+            <div class='swiper-wrapper'>
+              <div class="swiper-slide" v-for='i in 5' v-if='coverpix(i-1)'>
+                <img :src='coverpix(i-1)' @load='coverpix_loaded'>
+              </div>
+            </div>
+
+            <div class="swiper-pagination"></div>
+          </div>
+
           <div class='logo'>
-            <img :src='logo' @load='logo_loaded'>
+            <img :src='logo' @load='pix_loaded'>
           </div>
         </div>
+
 
         <div class='menu'>
           <span class='item' :class='{ on: on("who") }' @click='sectionize("who")'>브랜드 소개</span>
@@ -341,8 +401,20 @@
             <div class='text'>
               [[ '누적 10,000 포인트 후원 달성 시, 1분을 추첨하여 브랜드 신제품을 감사 선물로 드립니다.\n\n 매일 100P 씩 후원할 수 있으며, 여러번 후원할 수록 당첨 확률이 올라갑니다.' ]]
             </div>
+
             <div class='gift'>
-              <img :src='gift_pix_0' @load='giftpix_loaded'>
+              <div class='giftpixes pixes' :class='{ paginated:giftpix_paginated }'>
+                <div class='swiper-container' ref='swiper_giftpix'>
+                  <div class='swiper-wrapper'>
+                    <div class="swiper-slide" v-for='i in 5' v-if='giftpix(i-1)'>
+                      <img :src='giftpix(i-1)' @load='pix_loaded'>
+                    </div>
+                  </div>
+
+                  <div class="swiper-pagination"></div>
+                </div>
+              </div>
+
               <div class='gift-name'>[[ gift_name ]]</div>
               <div class='gift-price'>[[ gift_price ]]</div>
               <div class='gift-desc'>[[ gift_desc ]]</div>
@@ -375,8 +447,29 @@
     data: function() {
       return {
         section: 'support',
-        ready: false
+        ready: false,
+
+        swiper_coverpix: undefined,
+        swiper_giftpix: undefined,
+        swiper_options: {
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          }
+        }
       }
+    },
+
+    mounted: function() {
+      this.swiper_coverpix = new Swiper(this.$refs.swiper_coverpix, this.swiper_options);
+      this.swiper_giftpix = new Swiper(this.$refs.swiper_giftpix, this.swiper_options);
     },
 
     watch: {
@@ -395,52 +488,54 @@
         this.section = sec;
       },
 
+      pix_loaded: function(event) {
+        event.target.classList.add('loaded');
+      },
+
       coverpix_loaded: function(event) {
         this.ready = true;
-        // this.session.page.brander.ready = true;
-        event.target.classList.add('loaded');
+        this.pix_loaded(event);
+        // event.target.classList.add('loaded');
       },
 
-      logo_loaded: function(event) {
-        event.target.classList.add('loaded');
+      coverpix: function(idx) {
+        if (this.brand) {
+          return this.brand['coverpix_' + idx]
+        }
       },
 
-      giftpix_loaded: function(event) {
-        event.target.closest('.gift').classList.add('loaded');
+      giftpix: function(idx) {
+        if (this.gift) {
+          return this.gift['pix_' + idx]
+        }
       },
 
       buy_ticket: function() {
         if (this.supportable) {
-          const msg = `후원 이벤트에 참여하시겠습니까? \n참여시 ${this.support_ticketsize}P가 차감되며, 취소는 불가합니다`;
+          const receiver_id = this.support.id;
+          const amount = this.support_ticketsize;
+          const msg = `후원 이벤트에 참여하시겠습니까? \n참여시 ${amount}P가 차감되며, 취소는 불가합니다`;
           const resp = confirm(msg);
 
-          if (resp) {
-            const receiver_id = this.support.id;
-            const amount = this.support_ticketsize;
+          if (resp && receiver_id && amount) {
+            this.support.wallet.collected += amount;
+            this.support.wallet.amount_supported += amount;
+            this.support.wallet.supported = true;
+            this.myboo.wallet.send('support', amount, receiver_id);
 
-            if (receiver_id && amount) {
-              this.support.wallet.collected += amount;
-              this.support.wallet.amount_supported += amount;
-              this.support.wallet.supported = true;
-              this.myboo.wallet.send('support', amount, receiver_id);
-
-              const isupport = _.find(this.myboo.supports.list, ['id', this.support_id]);
-              if (!isupport) {
-                this.myboo.supports.list.push(this.support);
-              }
+            const isupport = _.find(this.myboo.supports.list, ['id', receiver_id]);
+            if (!isupport) {
+              this.myboo.supports.list.push(this.support);
             }
           }
         }
       },
 
       open_researcher: function() {
-        // this.session.dasher_close = true;
-        // this.session.dasher_control = 'close';
         this.session.open_researcher();
       },
 
       goback: function() {
-        // this.session.dasher_control = 'open_pointuse';
         this.session.close_page();
       },
 
@@ -450,6 +545,26 @@
     },
 
     computed: {
+      n_coverpix: function() {
+        if (this.swiper_coverpix) {
+          return this.swiper_coverpix.slides.length
+        }
+      },
+
+      coverpix_paginated: function() {
+        return this.n_coverpix > 1
+      },
+
+      n_giftpix: function() {
+        if (this.swiper_giftpix) {
+          return this.swiper_giftpix.slides.length
+        }
+      },
+
+      giftpix_paginated: function() {
+        return this.n_giftpix > 1
+      },
+
       myboo: function() {
         if (this.session.user.has_auth) {
           return this.session.user.boo
@@ -521,11 +636,11 @@
         }
       },
 
-      coverpix_0: function() {
-        if (this.brand) {
-          return this.brand.coverpix_0
-        }
-      },
+      // coverpix_0: function() {
+      //   if (this.brand) {
+      //     return this.brand.coverpix_0
+      //   }
+      // },
 
       homepage: function() {
         if (this.brand) {

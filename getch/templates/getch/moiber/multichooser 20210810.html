@@ -60,29 +60,6 @@
     padding-top: calc(100% / 3);
   }
 
-  .multichooser.vcomp .page-body > .container > .labels > .saver {
-    position: relative;
-    width: 100%;
-    background: var(--color-dark);
-    color: white;
-    border-radius: 8px;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-    margin: 16px 4px 0 4px;
-    opacity: 0.2;
-    pointer-events: none;
-    cursor: pointer;
-  }
-
-  .multichooser.vcomp .page-body > .container > .labels > .saver.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
   .multichooser.vcomp .page-body > .container > .labels > .label > .pix {
     position: absolute;
     top: 4px;
@@ -173,8 +150,6 @@
               <div class='label'>[[ l.label ]]</div>
             </div>
           </div>
-
-          <div class='saver' :class='{ active: savable }' @click='save'>저장하기</div>
         </div>
       </div>
     </template>
@@ -189,7 +164,9 @@
     props: ['session'],
     data: function() {
       return {
-        mylabels: undefined
+        mylabels: undefined,
+        add: undefined,
+        remove: undefined,
       }
     },
 
@@ -199,56 +176,29 @@
       },
 
       toggle_choose: function(label_id) {
-        if (this.mylabels) {
-          if (this.mylabels.includes(label_id)) {
-            const idx = this.mylabels.indexOf(label_id);
-            this.mylabels.splice(idx, 1);
-            // this.save_single('remove', label_id);
+        if (this.myboo_labels) {
+          if (this.myboo_labels.includes(label_id)) {
+            // const idx = this.myboo_labels.indexOf(label_id);
+            // this.myboo_labels.splice(idx, 1);
+            // this.save('remove', label_id);
 
           } else {
-            this.mylabels.push(label_id);
-            // this.save_single('add', label_id);
+            // this.myboo_labels.push(label_id);
+            // this.save('add', label_id);
           }
         }
       },
 
-      save_single: function(action, id) {
+      save: function(action, id) {
         const _url = `label/edit?type=${this.label_type}&action=${action}&id=${id}`;
         fetch(_url).then(x=>x.json()).then(console.log);
       },
 
-      save: function() {
-        const _add = JSON.stringify(this.add);
-        const _remove = JSON.stringify(this.remove);
-        const _url = `label/save?type=${this.label_type}&add=${_add}&remove=${_remove}`;
-        fetch(_url).then(x=>x.json()).then(console.log);
-
-        this.myboo[this.label_type] = this.mylabels;
-        this.rewarding();
-        this.session.close_page();
-      },
-
       pix_class: function(label_id) {
-        if (this.mylabels && this.mylabels.includes(label_id)) {
+        if (this.myboo_labels && this.myboo_labels.includes(label_id)) {
           return 'chosen'
         }
       },
-
-      rewarding: function() {
-        const transaction_type = this.label_type + '_input';
-        const amount = this.wallet['amount_' + transaction_type];
-
-        if (!this.rewarded && this.has_labels) {
-          this.wallet.receive(transaction_type, amount);
-          this.wallet[this.label_type + '_inputed'] = true;
-          alert(amount + 'P가 지급되었습니다');
-
-        } else if (this.rewarded && !this.has_labels) {
-          this.wallet.receive(transaction_type, -amount);
-          this.wallet[this.label_type + '_inputed'] = false;
-          alert('관심 ' + this.title + '을 선택하지 않으면 ' + amount + 'P가 반환됩니다');
-        }
-      }
     },
 
     watch: {
@@ -259,30 +209,30 @@
       'session.page.multichooser.open': function(_new, _old) {
         if (_new) {
           this.mylabels = this.myboo_labels.slice();
-          // this.add = [];
-          // this.remove = [];
+          this.add = [];
+          this.remove = [];
         }
 
-        // if (_old) {
-        //   if (!this.rewarded && this.has_labels) {
-        //     setTimeout(() => {
-        //       const transaction_type = this.label_type + '_input';
-        //       const amount = this.wallet['amount_' + transaction_type];
-        //       this.wallet.receive(transaction_type, amount);
-        //       this.wallet[this.label_type + '_inputed'] = true;
-        //       alert(amount + 'P를 지급했습니다');
-        //     }, 600);
-        //
-        //   } else if (this.rewarded && !this.has_labels) {
-        //     setTimeout(() => {
-        //       const transaction_type = this.label_type + '_input';
-        //       const amount = this.wallet['amount_' + transaction_type];
-        //       this.wallet.receive(transaction_type, -amount);
-        //       this.wallet[this.label_type + '_inputed'] = false;
-        //       alert(amount + 'P가 차감됩니다');
-        //     }, 600);
-        //   }
-        // }
+        if (_old) {
+          if (!this.rewarded && this.has_labels) {
+            setTimeout(() => {
+              const transaction_type = this.label_type + '_input';
+              const amount = this.wallet['amount_' + transaction_type];
+              this.wallet.receive(transaction_type, amount);
+              this.wallet[this.label_type + '_inputed'] = true;
+              alert(amount + 'P를 지급했습니다');
+            }, 600);
+
+          } else if (this.rewarded && !this.has_labels) {
+            setTimeout(() => {
+              const transaction_type = this.label_type + '_input';
+              const amount = this.wallet['amount_' + transaction_type];
+              this.wallet.receive(transaction_type, -amount);
+              this.wallet[this.label_type + '_inputed'] = false;
+              alert(amount + 'P가 차감됩니다');
+            }, 600);
+          }
+        }
       }
     },
 
@@ -312,8 +262,8 @@
       },
 
       has_labels: function() {
-        if (this.mylabels) {
-          return this.mylabels.length > 0
+        if (this.myboo_labels) {
+          return this.myboo_labels.length > 0
         }
       },
 
@@ -340,27 +290,6 @@
 
         } else if (this.label_type == 'itemlabels') {
           return '아이템'
-        }
-      },
-
-      add: function() {
-        if (this.myboo_labels && this.mylabels) {
-          return _.difference(this.mylabels, this.myboo_labels)
-        }
-      },
-
-      remove: function() {
-        if (this.myboo_labels && this.mylabels) {
-          return _.difference(this.myboo_labels, this.mylabels)
-        }
-      },
-
-      savable: function() {
-        try {
-          return (this.add.length > 0) || (this.remove.length > 0)
-
-        } catch(e) {
-          return false
         }
       }
     }

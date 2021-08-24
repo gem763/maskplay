@@ -167,6 +167,7 @@ urlpatterns = [
 
     path('flashgame/<int:flashgame_id>/', v.get_flashgame, name='get_flashgame'),
     path('flashgame/iflashgames/', v.get_iflashgames, name='get_iflashgames'),
+    path('flashgame/answer/', v.flashgame_answer, name='flashgame_answer'),
 
     path('mobile/send_authkey/', v.send_mobile_authkey, name='send_mobile_authkey'),
     path('mobile/verify/', v.mobile_verify, name='mobile_verify'),

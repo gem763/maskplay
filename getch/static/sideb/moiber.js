@@ -71,7 +71,7 @@ class Session {
     // this.keyset_sampling();
 
     this.reload_everyday();
-    this.open_checkin();
+    // this.open_checkin();
   }
 
   get dasher_control() {
@@ -321,31 +321,37 @@ class Session {
     this.open_page('checkin');
   }
 
-  // open_checkingame() {
-  //   if (this.user.has_auth) {
-  //     if (this.user.boo.wallet) {
-  //       if (!this.user.boo.wallet.checkin_today) {
-  //         this.user.boo.wallet.receive('checkin_game', this.user.boo.wallet.per_checkin);
-  //         this.user.boo.wallet.checkin_today = true;
-  //         alert('<출첵> 지금 ' + this.user.boo.wallet.per_checkin + 'P가 지급되었습니다');
-  //
-  //       } else {
-  //         alert('출첵 포인트가 이미 지급되었습니다')
-  //       }
-  //
-  //     } else {
-  //       // alert('')
-  //     }
-  //
-  //   } else {
-  //     alert('로그인 해주세요')
-  //   }
-  //
-  // }
 
   open_flashgames() {
-    this.open_page('flashgames');
+    if (this.user.has_auth) {
+      if (this.user.boo.wallet) {
+        if (!this.user.boo.wallet.checkin_today) {
+          this.user.boo.wallet.receive('checkin_game', this.user.boo.wallet.per_checkin);
+          this.user.boo.wallet.checkin_today = true;
+          alert('<출첵> 지금 ' + this.user.boo.wallet.per_checkin + 'P가 지급되었습니다');
+
+        } else {
+          alert('출첵 포인트가 이미 지급되었습니다')
+        }
+
+      } else {
+        // alert('')
+      }
+
+    } else {
+      const yes = confirm('로그인 해주세요');
+      if (yes) {
+        this.open_login();
+      }
+      // alert('로그인 해주세요')
+    }
+
   }
+
+
+  // open_flashgames() {
+  //   this.open_page('flashgames');
+  // }
 
   open_brander(brand) {
     this.page.brander.brand = brand;
@@ -725,6 +731,8 @@ class Wallet {
     this.amount_to_levelup = 5000;
   }
 
+
+
   send(type, amount, receiver_id) {
     fetch(`transact?receiver_id=${receiver_id}&type=${type}&amount=${amount}`)
       .then(x => x.json())
@@ -881,7 +889,18 @@ class Flashgame extends Loader {
     this.pix = undefined;
     this.reward = undefined;
     this.pub_date = undefined;
+    this.published = undefined;
+    this.stat = undefined;
+    this.answer = undefined;
   }
+
+  // assign(obj) {
+  //   Object.assign(this, obj);
+  //
+  //   const _today = moment(new Date()).format('YYYY-MM-DD');
+  //
+  //
+  // }
 }
 
 

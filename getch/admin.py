@@ -132,6 +132,12 @@ class Flashgame(admin.ModelAdmin):
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
 
 
+@admin.register(m.Flashgametag)
+class Flashgametag(admin.ModelAdmin):
+    list_display = ['on', 'who', 'answer']
+    # list_editable = ['answer']
+    raw_id_fields = ('on', 'who', )
+
 
 @admin.register(m.ResearchItem)
 class ResearchItemAdmin(admin.ModelAdmin):

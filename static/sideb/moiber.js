@@ -22,8 +22,8 @@ class Session {
       // mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
       // contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
-      checkingame:  { order: 0, instant: false, open: false, from: 'top', researchitem: Checkingame.build(this) },
-      flashgames:   { order: 0, instant: false, open: false, from: 'top', content: new Flashgames(this) },
+      checkin:      { order: 0, instant: false, open: false, from: 'top' },
+      flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
@@ -60,6 +60,7 @@ class Session {
     this.show_notice = undefined;
     this.researches = new Researches(this);
     this.supports = new Supports(this);
+    this.flashgames = new Flashgames(this);
     this.shoptems = undefined;
     this.coffeecoupons = undefined;
     this.raffles = undefined;
@@ -69,8 +70,8 @@ class Session {
     this.user = new User(this);
     // this.keyset_sampling();
 
-    // this.open_test();
     this.reload_everyday();
+    // this.open_checkin();
   }
 
   get dasher_control() {
@@ -315,9 +316,13 @@ class Session {
     }
   }
 
+
+  open_checkin() {
+    this.open_page('checkin');
+  }
+
+
   open_checkingame() {
-    // alert('출첵게임');
-    // this.open_page('checkingame');
     if (this.user.has_auth) {
       if (this.user.boo.wallet) {
         if (!this.user.boo.wallet.checkin_today) {
@@ -338,6 +343,7 @@ class Session {
     }
 
   }
+
 
   open_flashgames() {
     this.open_page('flashgames');
@@ -853,19 +859,19 @@ class Itemlabel extends Loader {
 }
 
 
-class Checkingame extends Loader {
-  constructor(session, baseobj) {
-    super(session, baseobj);
-    this.url = `/research/checkingame`;
-    this.order = undefined;
-    this.type = undefined;
-    this.gender = undefined;
-    this.preq = undefined;
-    this.question = undefined;
-    this.pix = undefined;
-    this.mc = undefined;
-  }
-}
+// class Checkingame extends Loader {
+//   constructor(session, baseobj) {
+//     super(session, baseobj);
+//     this.url = `/research/checkingame`;
+//     this.order = undefined;
+//     this.type = undefined;
+//     this.gender = undefined;
+//     this.preq = undefined;
+//     this.question = undefined;
+//     this.pix = undefined;
+//     this.mc = undefined;
+//   }
+// }
 
 class Flashgame extends Loader {
   constructor(session, baseobj) {
@@ -877,6 +883,7 @@ class Flashgame extends Loader {
     this.pix = undefined;
     this.reward = undefined;
     this.pub_date = undefined;
+    this.published = undefined;
   }
 }
 

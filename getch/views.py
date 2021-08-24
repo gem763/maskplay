@@ -736,6 +736,30 @@ def get_flashgame(request, flashgame_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def flashgame_answer(request):
+    try:
+        if request.user.is_authenticated:
+            _boo = request.user.boo
+            _flashgame_id = request.GET.get('flashgame_id', None)
+            _answer = json.loads(request.GET.get('answer', None))
+
+            _flashgame = m.Flashgame.objects.get(pk=_flashgame_id)
+            _mytags = _flashgame.flashgametag_set.filter(who=_boo)
+
+            if _mytags.count() > 0:
+                _mytag = _mytags[0]
+                _mytag.answer = _answer
+                _mytag.save()
+
+            else:
+                m.Flashgametag.objects.create(on=_flashgame, who=_boo, answer=_answer)
+
+            return JsonResponse({'success':True, 'message':'answered successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while answering'}, safe=False)
+
+
 
 def get_item(request, item_id):
     try:

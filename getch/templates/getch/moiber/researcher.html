@@ -76,16 +76,18 @@
       },
 
       researches_list: function() {
-        let _list;
+        if (this.researches) {
+          let _list;
 
-        if (this.is_superuser) {
-          _list = this.researches.list
+          if (this.is_superuser) {
+            _list = this.researches.list
 
-        } else {
-          _list = _.filter(this.researches.list, 'published');
+          } else {
+            _list = _.filter(this.researches.list, 'published');
+          }
+
+          return _.sortBy(_list, [function(o) { if (o.answers) { return o.answers.finished ? o.answers.finished : false }  }, function(o) { return -o.priority }])
         }
-
-        return _.sortBy(_list, [function(o) { if (o.answers) { return o.answers.finished ? o.answers.finished : false }  }, function(o) { return -o.priority }])
       }
     }
   });

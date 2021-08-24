@@ -1335,7 +1335,7 @@ class ResearchItemSerializer(serializers.ModelSerializer):
             return _mc
 
 
-class Flashgame(BigIdAbstract, ModelWithFlag):
+class Flashgame(BigIdAbstract):
     TYPE_KEYS = ( ('AB', 'AB타입'), )
     type = models.CharField(max_length=3, choices=TYPE_KEYS, default='AB', null=False, blank=False)
     text = models.TextField(max_length=100, blank=True, null=True)
@@ -1360,20 +1360,50 @@ class Flashgame(BigIdAbstract, ModelWithFlag):
 
     @classproperty
     def iflashgames(cls):
-        return cls.objects.filter(published=True, pub_date__lte=datetime.now().date()).order_by('-pub_date').values_list('id', flat=True)
+        # return cls.objects.filter(published=True, pub_date__lte=datetime.now().date()).order_by('-pub_date').values_list('id', flat=True)
+        return cls.objects.filter(pub_date__lte=datetime.now().date()).order_by('-pub_date').values_list('id', flat=True)
+
+    @property
+    def stat(self):
+        return {
+            'count_0': self.flashgametag_set.filter(answer=[0]).count(),
+            'count_1': self.flashgametag_set.filter(answer=[1]).count()
+        }
+
+
+class Flashgametag(BigIdAbstract):
+    on = models.ForeignKey(Flashgame, blank=True, null=True, on_delete=models.SET_NULL)
+    who = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    # answer = models.CharField(max_length=20, blank=True, null=True)
+    answer = models.JSONField(default=list, max_length=20, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return str(self.on) + ' | ' + str(self.who) + ' | ' + str(self.answer)
+
 
 
 class FlashgameSerializer(serializers.ModelSerializer):
     pix = serializers.SerializerMethodField()
+    answer = serializers.SerializerMethodField()
 
     class Meta:
         model = Flashgame
-        fields = ['id', 'type', 'gender', 'text', 'pix', 'reward', 'pub_date']
+        fields = ['id', 'type', 'gender', 'text', 'pix', 'reward', 'pub_date', 'published', 'stat', 'answer']
         read_only_fields = fields
 
     def get_pix(self, obj):
         if obj.type == 'AB':
             return { 'pix_0': obj.pix_0.url, 'pixlabel_0': obj.pixlabel_0, 'pix_1': obj.pix_1.url, 'pixlabel_1': obj.pixlabel_1 }
+
+    def get_answer(self, obj):
+        user = get_current_user()
+
+        if user.is_authenticated:
+            try:
+                return obj.flashgametag_set.get(who=user.boo).answer
+            except:
+                return None
 
 
 class Contentwork(BigIdAbstract):

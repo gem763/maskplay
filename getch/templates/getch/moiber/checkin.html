@@ -15,10 +15,8 @@
     position: relative;
     width: 100%;
     height: calc(100% - 100px);
-    background: lightpink;
+    background: white;
     border-radius: 0 0 15px 15px;
-    padding-top: 100px;
-    /* padding-bottom: 20px; */
     box-sizing: border-box;
     overflow: hidden;
   }
@@ -40,7 +38,7 @@
     <template #page-body>
       <div class='background' @click='session.close_page()'>
         <div class='content' @click.stop>
-          <flashgame :session='session'></flashgame>
+          <flashgame :session='session' :flashgame='flashgame'></flashgame>
         </div>
       </div>
     </template>
@@ -55,6 +53,52 @@
     props: ['session'],
     data: function() {
       return { }
+    },
+
+    watch: {
+      flashgame: function(_new, _old) {
+        if (_new) {
+          if (!_new.answer || (_new.answer.length == 0)) {
+            this.session.open_checkin();
+          }
+        }
+      }
+    },
+
+    computed: {
+      is_superuser: function() {
+        if (this.session.user.has_auth) {
+          return this.session.user.auth.is_superuser
+        }
+      },
+
+      flashgames: function() {
+        return this.session.flashgames
+      },
+
+      flashgame: function() {
+        if (this.flashgames) {
+          const _today = moment(new Date()).format('YYYY-MM-DD');
+
+          if (this.is_superuser) {
+            return _.filter(this.flashgames.list, { pub_date: _today })[0]
+            // return _.filter(this.flashgames.list, function(o) {
+            //   return (o.pub_date == _today) && (o.answer.length > 0)
+            // })[0]
+
+          } else if (this.session.user.has_auth) {
+            return _.filter(this.flashgames.list, { pub_date: _today, published: true })[0]
+            // return _.filter(this.flashgames.list, function(o) {
+            //   return (o.pub_date == _today) && (o.answer.length > 0) && (o.published)
+            // })[0]
+
+          } else {
+            // 로그인 안했더라도 출첵게임 보이게
+            return _.filter(this.flashgames.list, { pub_date: _today, published: true })[0]
+            // return
+          }
+        }
+      }
     }
   });
 </script>

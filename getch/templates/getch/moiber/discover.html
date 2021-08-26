@@ -408,6 +408,8 @@
     }
 
     $(document).ready(function(){
+      // alert(navigator.userAgent);
+
       var csrftoken = Cookies.get('csrftoken');
       $.ajaxSetup({
         beforeSend: function(xhr, settings) {

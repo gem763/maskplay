@@ -26,6 +26,7 @@ import re
 import collections
 import random
 import base64
+import requests
 
 
 # from gensim.models import Doc2Vec
@@ -202,10 +203,33 @@ class User(AbstractEmailUser):
     grcode = models.CharField(max_length=20, blank=True, null=True)
 
 
-    def save(self, *args, **kwargs):
+    # def save(self, *args, **kwargs):
+    #     if not self.pk:
+    #         self.notify_on_slack()
+    #
+    #     super().save(*args, **kwargs)
+
+
+    def notify_on_slack(self):
+        # 슬랙 알림 기능
+        # def post_message(channel, text):
         #
+        #         token = "xoxb-395086725542-2383070631024-KZw0XxQQ1nCjwkxoP1eXzlDJ"
         #
-        super().save(*args, **kwargs)
+        #         response = rqlib.post("https://slack.com/api/chat.postMessage",
+        #             headers={"Authorization": "Bearer "+token},
+        #             data={"channel": channel,"text": text}
+        #         )
+        #         # print(response)
+
+        # message = '[회원가입] ' + self.email
+        message = '[회원가입] {email} / {gender} / {birth}'.format(email=self.email, gender=self.get_gender_display(), birth=self.birth)
+        token = 'xoxb-395086725542-2383070631024-KZw0XxQQ1nCjwkxoP1eXzlDJ'
+
+        response = requests.post('https://slack.com/api/chat.postMessage',
+            headers = { "Authorization": "Bearer " + token },
+            data = { "channel": '#5-기술-가입알림', "text": message }
+        )
 
 
     @classmethod
@@ -580,7 +604,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
         if str(research_id) in self.answers:
             return self.answers[str(research_id)]
         else:
-            return {}
+            return { 'finished': False }
 
     @property
     def icollections(self):

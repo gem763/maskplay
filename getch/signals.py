@@ -46,7 +46,7 @@ def allauth_user_pre_social_login(request, sociallogin, **kwargs):
     users = User.objects.filter(email=sociallogin.user.email)
 
     if users:
-        print(users)
+        # print(users)
         # allauth.account.app_settings.EmailVerificationMethod
         perform_login(request, users[0], email_verification='optional')
         raise ImmediateHttpResponse(redirect(settings.LOGIN_REDIRECT_URL))

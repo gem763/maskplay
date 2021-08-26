@@ -62,6 +62,7 @@
     position: relative;
     border-radius: 8px;
     overflow: hidden;
+    cursor: pointer;
   }
 
   .flashgame > .backbone > .sections > .section > .candidate > img.pix {
@@ -70,6 +71,7 @@
     object-fit: cover;
     opacity: 0;
     transition: all 0.3s;
+    filter: brightness(95%);
   }
 
   .flashgame > .backbone > .sections > .section > .candidate > img.pix.loaded {
@@ -193,7 +195,7 @@
     },
 
     watch: {
-      answer: function() {}
+      answer: function() {},
     },
 
     methods: {
@@ -214,6 +216,24 @@
         }
       },
 
+      reward_checkin: function() {
+        if (!this.checkin_today) {
+          this.mywallet.receive('checkin_game', this.mywallet.per_checkin);
+          this.mywallet.checkin_today = true;
+          setTimeout(() => { alert('<출첵> 지금 ' + this.mywallet.per_checkin + 'P가 지급되었습니다'); }, 300);
+          // alert('<출첵> 지금 ' + this.mywallet.per_checkin + 'P가 지급되었습니다');
+        }
+      },
+
+      cancel_reward_checkin: function() {
+        if (this.checkin_today) {
+          this.mywallet.receive('checkin_game', -this.mywallet.per_checkin);
+          this.mywallet.checkin_today = false;
+          setTimeout(() => { alert('출첵 ' + this.mywallet.per_checkin + 'P가 취소처리 됩니다'); }, 300);
+          // alert('출첵 ' + this.mywallet.per_checkin + 'P가 취소처리 됩니다');
+        }
+      },
+
       toggle_choose: function(act) {
         if (!this.myboo) {
           const yes = confirm('로그인 해주세요');
@@ -221,13 +241,15 @@
             this.session.open_login();
           }
 
-          return
-        }
+        } else if (!this.mywallet) {
+          alert('잠시만 기다려주세요');
 
-        if (this.answer) {
+        } else if (this.answer) {
           if (this.answer.includes(act)) {
             this.answer.splice(0); // 완전히 비우기
             this.stat['count_' + act] -= 1;
+            // this.$nextTick(() => this.cancel_reward_checkin());
+            this.cancel_reward_checkin();
 
           } else if (this.answer.includes(1-act)) {
             this.answer.splice(0); // 완전히 비우기
@@ -238,6 +260,9 @@
           } else {
             this.answer.push(act);
             this.stat['count_' + act] += 1;
+            // this.$nextTick(() => this.reward_checkin());
+            this.reward_checkin();
+            setTimeout(() => { this.session.close_page(); }, 1000);
           }
 
           this.answering();
@@ -254,7 +279,7 @@
 
       mywallet: function() {
         if (this.myboo) {
-          return this.myboo.mywallet
+          return this.myboo.wallet
         }
       },
 
@@ -307,7 +332,7 @@
       title: function() {
         if (this.flashgame) {
           const _date = new Date(this.flashgame.pub_date);
-          return `출석체크`
+          return `⭐️ 출첵게임 ⭐️`
           // return `출석체크 ${_date.getMonth()+1}월 ${_date.getDate()}일`
         }
       },
@@ -326,13 +351,13 @@
 
       pct_0: function() {
         if (this.stat) {
-          return 100 * this.stat.count_0 / (this.stat.count_0 + this.stat.count_1) + '%'
+          return Math.round(100 * this.stat.count_0 / (this.stat.count_0 + this.stat.count_1)) + '%'
         }
       },
 
       pct_1: function() {
         if (this.stat) {
-          return 100 * this.stat.count_1 / (this.stat.count_0 + this.stat.count_1) + '%'
+          return Math.round(100 * this.stat.count_1 / (this.stat.count_0 + this.stat.count_1)) + '%'
         }
       },
     }

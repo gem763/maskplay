@@ -420,7 +420,9 @@ class Wallet(BigIdAbstract):
 
     @property
     def checkin_today(self):
-        return self.receiver_transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
+        agg = self.receiver_transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).aggregate(total=Sum('amount'))
+        return agg['total'] > 0 if agg['total'] else False
+        # return self.receiver_transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
         # return self.transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
 
     @property
@@ -1403,7 +1405,7 @@ class FlashgameSerializer(serializers.ModelSerializer):
             try:
                 return obj.flashgametag_set.get(who=user.boo).answer
             except:
-                return None
+                return []
 
 
 class Contentwork(BigIdAbstract):

@@ -322,7 +322,7 @@ class Session {
   }
 
 
-  open_checkingame() {
+  open_flashgames() {
     if (this.user.has_auth) {
       if (this.user.boo.wallet) {
         if (!this.user.boo.wallet.checkin_today) {
@@ -339,15 +339,19 @@ class Session {
       }
 
     } else {
-      alert('로그인 해주세요')
+      const yes = confirm('로그인 해주세요');
+      if (yes) {
+        this.open_login();
+      }
+      // alert('로그인 해주세요')
     }
 
   }
 
 
-  open_flashgames() {
-    this.open_page('flashgames');
-  }
+  // open_flashgames() {
+  //   this.open_page('flashgames');
+  // }
 
   open_brander(brand) {
     this.page.brander.brand = brand;
@@ -727,6 +731,8 @@ class Wallet {
     this.amount_to_levelup = 5000;
   }
 
+
+
   send(type, amount, receiver_id) {
     fetch(`transact?receiver_id=${receiver_id}&type=${type}&amount=${amount}`)
       .then(x => x.json())
@@ -884,7 +890,17 @@ class Flashgame extends Loader {
     this.reward = undefined;
     this.pub_date = undefined;
     this.published = undefined;
+    this.stat = undefined;
+    this.answer = undefined;
   }
+
+  // assign(obj) {
+  //   Object.assign(this, obj);
+  //
+  //   const _today = moment(new Date()).format('YYYY-MM-DD');
+  //
+  //
+  // }
 }
 
 

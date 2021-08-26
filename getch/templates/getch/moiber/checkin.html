@@ -20,6 +20,24 @@
     box-sizing: border-box;
     overflow: hidden;
   }
+
+  .checkin.vcomp .page-body > .background > .exit {
+    position: absolute;
+    top: calc(100px - 45px);
+    left: 0;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .checkin.vcomp .page-body > .background > .exit > img {
+    width: 12px;
+    height: auto;
+  }
 </style>
 
 
@@ -39,6 +57,9 @@
       <div class='background' @click='session.close_page()'>
         <div class='content' @click.stop>
           <flashgame :session='session' :flashgame='flashgame'></flashgame>
+        </div>
+        <div class='exit' @click='session.close_page()'>
+          <img src='/static/materials/icons/icon_x.png'>
         </div>
       </div>
     </template>

@@ -1,4 +1,8 @@
 <style>
+  :root {
+    --pix-size: min(var(--width) - 90px, (var(--height) - 60px - 32px - var(--iphone-bottom))/2);
+  }
+
   .researchitem {
     position: relative;
     width: 100%;
@@ -12,6 +16,7 @@
     width: 100%;
     height: 100%;
     padding-top: 60px;
+    padding-bottom: var(--iphone-bottom);
     box-sizing: border-box;
     background: #f8f8f8;
   }
@@ -25,7 +30,7 @@
 
   .researchitem > .backbone > .section.outfocused {
     opacity: 0.2;
-    filter: grayscale(1);
+    filter: grayscale(1) brightness(95%);
   }
 
   .researchitem > .backbone > .section td.outfocused {
@@ -81,6 +86,24 @@
     color: #666666;
     border: 1px solid #f1f1f1;
     background: #fcfcfc;
+  }
+
+  .researchitem > .backbone > .section.full > .center > .qatext > input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    box-sizing: border-box;
+    background: none;
+    text-align: center;
+  }
+
+  .researchitem > .backbone > .section.full > .center > .qatext > input:focus {
+    outline: none;
+  }
+
+  .researchitem > .backbone > .section.full > .center > .qatext > input::placeholder {
+    font-weight: normal;
+    color: #999999;
   }
 
   .researchitem > .backbone > .section.full > .center > .ox > table {
@@ -450,20 +473,20 @@
 
   .researchitem > .backbone > .section.pix {
     width: 100%;
-    height: calc(50% + var(--square-size) * 0.4);
+    height: calc(50% + var(--pix-size) * 0.4);
     top: 0;
   }
 
   .researchitem > .backbone > .section.down-left {
     width: 50%;
-    height: calc(50% - var(--square-size) * 0.4 - var(--w-15));
+    height: calc(50% - var(--pix-size) * 0.4 - var(--w-15));
     bottom: var(--w-15);
     left: 0;
   }
 
   .researchitem > .backbone > .section.down-right {
     width: 50%;
-    height: calc(50% - var(--square-size) * 0.4 - var(--w-15));
+    height: calc(50% - var(--pix-size) * 0.4 - var(--w-15));
     bottom: var(--w-15);
     right: 0;
   }
@@ -502,8 +525,8 @@
 
 
   .researchitem > .backbone > .section.pix > img.candidate {
-    width: var(--square-size);
-    height: calc(var(--square-size) * 1.4);
+    width: var(--pix-size);
+    height: calc(var(--pix-size) * 1.4);
     bottom: var(--w-1);
   }
 
@@ -518,24 +541,24 @@
   }
 
   .researchitem > .backbone > .section.up > img.candidate {
-    width: var(--square-size);
-    height: var(--square-size);
+    width: var(--pix-size);
+    height: var(--pix-size);
     bottom: 1px;
   }
 
   .researchitem > .backbone > .section.down > img.candidate {
-    width: var(--square-size);
-    height: var(--square-size);
+    width: var(--pix-size);
+    height: var(--pix-size);
     top: 1px;
   }
 
   .researchitem > .backbone > .section > .label {
     text-align: center;
     position: absolute;
-    /* width: calc(var(--square-size) * 0.8); */
-    left: 53px;
+    /* width: calc(var(--pix-size) * 0.8); */
+    left: calc((100% - var(--pix-size)) / 2 + 8px);
     /* transform: translateX(-50%); */
-    border-radius: 8px;
+    border-radius: 15px;
     white-space: pre-line;
     /* padding: 5px; */
     font-size: 13px;
@@ -549,22 +572,20 @@
   }
 
   .researchitem > .backbone > .section.up > .label {
-    bottom: calc(var(--square-size) - 38px);
+    bottom: calc(min(var(--width) - 90px, (var(--height) - 60px - 32px - var(--iphone-bottom))/2) - 38px);
   }
 
   .researchitem > .backbone > .section.down > .label {
-    top: calc(var(--square-size) - 38px);
+    top: calc(min(var(--width) - 90px, (var(--height) - 60px - 32px - var(--iphone-bottom))/2) - 38px);
   }
 
   .researchitem > .backbone > .divider {
     position: absolute;
-    /* top: 0; */
-    bottom: calc((100% - 60px) / 2);
+    top: calc(60px + (100% - 60px - var(--iphone-bottom)) / 2);
+    /* bottom: calc((100% - 60px) / 2); */
     width: 100%;
     height: 0;
     background: white;
-    /* top: 50%; */
-    /* transform: translateY(-50%); */
   }
 
   .researchitem > .backbone > .divider > .vs {
@@ -650,7 +671,8 @@
 
   .researchitem > .arrows {
     position: absolute;
-    bottom: calc((100% - 60px) / 2);
+    top: calc(60px + (100% - 60px - var(--iphone-bottom)) / 2);
+    /* bottom: calc((100% - 60px) / 2); */
     height: 0;
     left: 0;
     width: 100%;
@@ -842,9 +864,12 @@
           <div class='pix'>
             <img class='candidate' :src='researchitem.pix.pix_0'>
           </div>
-          <div class='qatext' @click='edit_qatext'>
-            <span class='qa_answer' v-if='answer[0]'>[[ answer[0] ]]</span>
-            <span class='placeholder' v-else>답변을 입력해 주세요</span>
+          <!-- <div class='qatext' @click='edit_qatext'> -->
+          <div class='qatext' v-if='answer'>
+            <!-- <span class='qa_answer' v-if='answer[0]'>[[ answer[0] ]]</span>
+            <span class='placeholder' v-else>답변을 입력해 주세요</span> -->
+            <!-- <input v-model.trim='answer[0]' placeholder='답변을 입력해 주세요' spellcheck='false'> -->
+            <input v-model.trim='answer[0]' placeholder='답변을 입력해 주세요' spellcheck='false' @blur='answer_typed'>
           </div>
         </div>
       </div>
@@ -890,20 +915,21 @@
     props: ['researchitem', 'research', 'brand', 'session', 'swiper', 'pagination', 'idx'],
     data: function() {
       return {
-        status: -1,
-        pix_0_loaded: false,
-        pix_1_loaded: false,
-        headcover_loaded: false,
-        // qa_answer: ''
-        robo_hidden: false
+        pix_0_loaded: undefined, //false,
+        pix_1_loaded: undefined, //false,
+        // headcover_loaded: undefined, //false,
+        robo_hidden: undefined, //false
       }
     },
 
-    // created: function() {
-    //   this.status = this.vote_state;
-    // },
-
     watch: {
+      researchitem_id: function() {
+        this.pix_0_loaded = false;
+        this.pix_1_loaded = false;
+        // this.headcover_loaded = false;
+        this.robo_hidden = false;
+      },
+
       pix_0_loaded: function(_new, _old) {
         if (this.is_intro && _new) {
           this.$emit('intro_loaded');
@@ -947,8 +973,8 @@
               this.release_slide();
               console.log('답변완료');
 
-              if (!this.is_mc_pix && !this.is_mc_nopix) {
-                setTimeout(() => { this.go_next() }, 300);
+              if (!this.is_mc_pix && !this.is_mc_nopix && !this.is_qa) {
+                setTimeout(() => { this.go_next() }, 600);
               }
 
             } else {
@@ -958,40 +984,14 @@
           }
         }
       }
-
-      // answered: {
-      //   handler: function(_new, _old) {
-      //     if (!_new && this.swiper) {
-      //       if (this.swiper.realIndex == this.idx + 1) {
-      //         console.log(1234324);
-      //       }
-      //     }
-      //
-      //   }, immediate: true
-      // }
-
-      // idx: function(_new, _old) {
-        // if (this.swiper.realIndex == _new+1) {
-        //   console.log(this.idx)
-        // }
-        // console.log(_new, this.idx);
-      // },
-
-
-      // answer: function(_new, _old) {
-      //   console.log(_old, _new);
-      //   const _answer = JSON.stringify(_new);
-      //   const _url = `research/${this.research_id}/item/${this.researchitem.id}/answer/${_answer}`;
-      //   fetch(_url).then(x=>x.json()).then(console.log)
-      // }
-
-      // vote_state: function(_new, _old) {
-      //   this.status = this.vote_state;
-      // }
     },
 
 
     computed: {
+      researchitem_id: function() {
+        return this.researchitem.id
+      },
+
       myboo: function() {
         if (this.session.user.has_auth) {
           return this.session.user.boo
@@ -1026,12 +1026,6 @@
         }
       },
 
-      // not_answered: function() {
-      //   if (this.answer) {
-      //     return this.on_mainstory && (this.answer[0] == undefined)
-      //   }
-      // },
-
       answered: function() {
         if (this.answer) {
           if (this.on_mainstory) {
@@ -1042,11 +1036,6 @@
           }
         }
       },
-
-      // research: function() {
-      //   return this.session.page.research.content
-      // },
-
 
       research_desc: function() {
         if (this.research) {
@@ -1059,9 +1048,6 @@
           return this.research.title
         }
       },
-      // research_id: function() {
-      //   return this.research.id
-      // },
 
       research_reward: function() {
         if (this.research && this.research.reward) {
@@ -1182,9 +1168,14 @@
       },
 
       outfocused: function(act) {
-        if (this.answer && this.answer.includes(act)) {
-          return 'outfocused'
+        if (this.answer) {
+          if ((this.answer.length > 0) && (this.answer.includes(act))) {
+            return 'outfocused'
+          }
         }
+        // if (this.answer && this.answer.includes(act)) {
+        //   return 'outfocused'
+        // }
       },
 
       choice_class: function(c, act) {
@@ -1200,17 +1191,27 @@
         fetch(_url).then(x=>x.json()).then(console.log)
       },
 
-      edit_qatext: function() {
-        this.session.open_texteditor(this.answer[0], '답변을 입력해 주세요', 1, txt_done => {
-          if (txt_done == '') {
-            this.answer.splice(0);
+      // edit_qatext: function() {
+      //   this.session.open_texteditor(this.answer[0], '답변을 입력해 주세요', 1, txt_done => {
+      //     if (txt_done == '') {
+      //       this.answer.splice(0);
+      //
+      //     } else {
+      //       this.answer.splice(0, 1, txt_done);
+      //     }
+      //
+      //     this.answering();
+      //   });
+      // },
 
-          } else {
-            this.answer.splice(0, 1, txt_done);
-          }
+      answer_typed: function() {
+        // console.log(event.target.value)
+        if (this.answer[0] == '') {
+          this.answer.splice(0);
+        }
 
-          this.answering();
-        });
+        this.answering();
+        setTimeout(() => { this.go_next() }, 600);
       },
 
       multi_choose: function(act) {
@@ -1226,19 +1227,6 @@
           this.answering();
         }
       },
-
-      // toggle_choose: function(act) {
-      //   // 선택을 클리어하는 경우
-      //   if (this.status==act) {
-      //     this.status = -1;
-      //     // this.session.user.contentvote(this.post.id, -1);
-      //
-      //   } else {
-      //     this.status = act;
-      //     // this.session.user.contentvote(this.post.id, act);
-      //     // setTimeout(() => { this.swiper.slideNext() }, 300);
-      //   }
-      // },
 
       toggle_choose: function(act) {
         if (this.answer) {

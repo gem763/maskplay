@@ -3,6 +3,7 @@
     position: relative;
     width: 100%;
     height: 100%;
+    background: white;
   }
 
   .flashgame > .backbone {
@@ -13,29 +14,78 @@
 
   .flashgame > .backbone > .header {
     position: relative;
-    height: 100px;
+    height: 60px;
     width: 100%;
-    padding-top: 45px;
+    /* padding-top: 45px; */
     box-sizing: border-box;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
     flex-direction: column;
+    /* border-bottom: 1px solid rgba(0,0,0,0.25); */
+    box-shadow: 0 0 1px rgb(0, 0, 0, 0.25);
   }
 
   .flashgame > .backbone > .header > .title {
-    font-size: 13px;
-    color: #999999;
+    font-size: 14px;
+    /* color: #999999; */
   }
 
   .flashgame > .backbone > .header > .question {
-    font-size: 15px;
+    font-size: 14px;
     margin-top: 2px;
+  }
+
+  .flashgame > .backbone > .header > .logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .flashgame > .backbone > .header > .logo > .logo-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 100px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.25);
+  }
+
+  .flashgame > .backbone > .header > .logo > .logo-img > img {
+    width: 36px;
+    height: auto;
+  }
+
+  .flashgame > .backbone > .header > .exit {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 45px;
+    height: 60px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .flashgame > .backbone > .header > .exit > img {
+    width: 12px;
+    height: auto;
   }
 
   .flashgame > .backbone > .sections {
     position: relative;
-    height: calc(100% - 100px);
+    height: calc(100% - 60px);
     width: 100%;
   }
 
@@ -57,8 +107,8 @@
   }
 
   .flashgame > .backbone > .sections > .section > .candidate {
-    width: min(var(--width) - 90px, (var(--height) - 232px)/2);
-    height: min(var(--width) - 90px, (var(--height) - 232px)/2);
+    width: min(var(--width) - 120px, (var(--height) - 100px - 16px - 60px - 32px - var(--iphone-bottom))/2);
+    height: min(var(--width) - 120px, (var(--height) - 100px - 16px - 60px - 32px - var(--iphone-bottom))/2);
     position: relative;
     border-radius: 8px;
     overflow: hidden;
@@ -78,16 +128,20 @@
     opacity: 1;
   }
 
+  .flashgame > .backbone > .sections > .section > .candidate.focused > img.pix {
+    filter: brightness(80%);
+  }
+
   .flashgame > .backbone > .sections > .section > .candidate.outfocused > img.pix {
     opacity: 0.2;
-    filter: grayscale(1);
+    filter: grayscale(1) brightness(95%);
   }
 
   .flashgame > .backbone > .sections > .section > .candidate > .label {
     text-align: left;
     position: absolute;
     left: 8px;
-    border-radius: 8px;
+    border-radius: 15px;
     font-size: 13px;
     background: rgba(255,255,255,0.7);
     height: 30px;
@@ -114,9 +168,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 30px;
+    font-size: 60px;
     font-weight: bold;
     color: white;
+    text-shadow: 0 0 1px #999999;
+  }
+
+  .flashgame > .backbone > .sections > .section > .candidate.outfocused > .score {
+    color: var(--color-dark);
+    text-shadow: none;
   }
 
   .flashgame > .backbone > .sections > .divider {
@@ -154,11 +214,20 @@
       <div class='header'>
         <div class='title'>[[ title ]]</div>
         <div class='question'>[[ question ]]</div>
+        <div class='logo'>
+          <div class='logo-img'>
+            <img src='/static/materials/logos/logo.png'>
+          </div>
+        </div>
+
+        <div class='exit' @click='session.close_page()'>
+          <img src='/static/materials/icons/icon_x.png'>
+        </div>
       </div>
 
       <div class='sections'>
         <div class='section up'>
-          <div class='candidate' :class='outfocused(1)' @click='toggle_choose(0)'>
+          <div class='candidate' :class='status(0)' @click='toggle_choose(0)'>
             <img class='pix' :src='pix_0' @load='pix_loaded'>
             <div class='label'>[[ pixlabel_0 ]]</div>
             <div class='score' v-if='answered'>[[ pct_0 ]]</div>
@@ -166,7 +235,7 @@
         </div>
 
         <div class='section down'>
-          <div class='candidate' :class='outfocused(0)' @click='toggle_choose(1)'>
+          <div class='candidate' :class='status(1)' @click='toggle_choose(1)'>
             <img class='pix' :src='pix_1' @load='pix_loaded'>
             <div class='label'>[[ pixlabel_1 ]]</div>
             <div class='score' v-if='answered'>[[ pct_1 ]]</div>
@@ -206,6 +275,15 @@
       outfocused: function(act) {
         if (this.answer && this.answer.includes(act)) {
           return 'outfocused'
+        }
+      },
+
+      status: function(act) {
+        if (this.answer) {
+          return {
+            focused: (this.answer.length > 0) && this.answer.includes(act),
+            outfocused: (this.answer.length > 0) && !this.answer.includes(act)
+          }
         }
       },
 

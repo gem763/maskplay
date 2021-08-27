@@ -31,7 +31,8 @@
 
   .research.vcomp .page-body > .closer {
     position: absolute;
-    bottom: var(--iphone-bottom);
+    top: 60px;
+    /* bottom: var(--iphone-bottom); */
     right: 0;
     width: 45px;
     height: 45px;
@@ -99,7 +100,7 @@
         </div>
       </div>
 
-      <div class='closer' @click='session.close_page()'>
+      <div class='closer' v-if='closeable' @click='session.close_page()'>
         <img src='/static/materials/icons/icon_x.png'>
       </div>
 
@@ -119,7 +120,7 @@
     data: function() {
       return {
         default_gender: 'F',
-        onloading: true,
+        onloading: undefined,
         swiper: undefined,
         swiper_options: {
           direction: 'horizontal',
@@ -139,6 +140,18 @@
       this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
     },
 
+    watch: {
+      research_id: function(_new, _old) {
+        this.onloading = true;
+      }
+      // 'session.page.research.open': function(_new, _old) {
+      //   if (_new) {
+      //     this.onloading = true;
+      //   }
+      // }
+
+    },
+
     methods: {
       intro_loaded: function() {
         this.onloading = false;
@@ -152,6 +165,12 @@
     },
 
     computed: {
+      closeable: function() {
+        if (this.swiper) {
+          return !this.swiper.isEnd
+        }
+      },
+
       boo: function() {
         if (this.session.user.has_auth) {
           return this.session.user.boo
@@ -176,7 +195,7 @@
 
         } else if (this.auth_gender == '여성') {
           return 'F'
-          
+
         } else {
           return this.default_gender
         }
@@ -203,6 +222,12 @@
 
       research: function() {
         return this.session.page.research.content
+      },
+
+      research_id: function() {
+        if (this.research) {
+          return this.research.id
+        }
       },
 
       brand: function() {

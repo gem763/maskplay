@@ -11,32 +11,47 @@
     height: 100%;
   }
 
-  .checkin.vcomp .page-body > .background > .content {
+  .checkin.vcomp .page-body > .background > .section {
     position: relative;
     width: 100%;
-    height: calc(100% - 100px);
+  }
+
+  /* .checkin.vcomp .page-body > .background > .section {
+    position: absolute;
     background: white;
-    border-radius: 0 0 15px 15px;
+    border-radius: 8px;
     box-sizing: border-box;
     overflow: hidden;
+    top: 108px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  } */
+
+  .checkin.vcomp .page-body > .background > .section.spacer {
+    height: 100px;
+    background: white;
   }
 
-  .checkin.vcomp .page-body > .background > .exit {
-    position: absolute;
-    top: calc(100px - 45px);
-    left: 0;
-    width: 45px;
-    height: 45px;
-    /* background: orange; */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+  .checkin.vcomp .page-body > .background > .section.content {
+    height: calc(100% - 100px - var(--iphone-bottom));
+    /* background: white; */
+    /* overflow: hidden; */
+    padding: 8px;
+    box-sizing: border-box;
   }
 
-  .checkin.vcomp .page-body > .background > .exit > img {
-    width: 12px;
-    height: auto;
+  .checkin.vcomp .page-body > .background > .section.content > .container {
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .checkin.vcomp .page-body > .background > .section.bottom {
+    height: var(--iphone-bottom);
+    background: white;
   }
 </style>
 
@@ -55,12 +70,15 @@
 
     <template #page-body>
       <div class='background' @click='session.close_page()'>
-        <div class='content' @click.stop>
-          <flashgame :session='session' :flashgame='flashgame'></flashgame>
+        <div class='section spacer'></div>
+
+        <div class='section content' @click.stop>
+          <div class='container'>
+            <flashgame :session='session' :flashgame='flashgame'></flashgame>
+          </div>
         </div>
-        <div class='exit' @click='session.close_page()'>
-          <img src='/static/materials/icons/icon_x.png'>
-        </div>
+
+        <div class='section bottom'></div>
       </div>
     </template>
   </page>

@@ -24,7 +24,7 @@
   .dasher.vcomp > .panel {
     position: absolute;
     /* bottom: -77px; */
-    bottom: calc(var(--dasher-height) * (-1));
+    bottom: calc(var(--dasher-height) * (-1) - 1px);
     left: 0;
     width: 100%;
     /* height: 77px; */
@@ -394,7 +394,10 @@
       // },
 
       wallet_onloading: function() {
-        return this.session.user.has_auth && !this.wallet
+        if (this.boo) {
+          return !this.boo.wallet
+        }
+        // return this.session.user.has_auth && !this.wallet
       },
 
       amount: function() {

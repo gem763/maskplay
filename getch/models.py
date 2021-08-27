@@ -203,11 +203,12 @@ class User(AbstractEmailUser):
     grcode = models.CharField(max_length=20, blank=True, null=True)
 
 
-    # def save(self, *args, **kwargs):
-    #     if not self.pk:
-    #         self.notify_on_slack()
-    #
-    #     super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.notify_on_slack()
+            # print('********')
+
+        super().save(*args, **kwargs)
 
 
     def notify_on_slack(self):
@@ -222,14 +223,17 @@ class User(AbstractEmailUser):
         #         )
         #         # print(response)
 
-        # message = '[회원가입] ' + self.email
-        message = '[회원가입] {email} / {gender} / {birth}'.format(email=self.email, gender=self.get_gender_display(), birth=self.birth)
-        token = 'xoxb-395086725542-2383070631024-KZw0XxQQ1nCjwkxoP1eXzlDJ'
+        message = '[회원가입] ' + self.email
+        # message = '[회원가입] {email} / {gender} / {birth}'.format(email=self.email, gender=self.get_gender_display(), birth=self.birth)
+        # token = 'xoxb-395086725542-2383070631024-KZw0XxQQ1nCjwkxoP1eXzlDJ'
+        token = 'xoxb-395086725542-2383070631024-cDoNECth0zAnsRuLq0AQHnxl'
 
         response = requests.post('https://slack.com/api/chat.postMessage',
             headers = { "Authorization": "Bearer " + token },
             data = { "channel": '#5-기술-가입알림', "text": message }
         )
+
+        # print(response, '**********')
 
 
     @classmethod
@@ -1965,7 +1969,7 @@ class BooSerializer(serializers.ModelSerializer):
             'amount_daybonus': obj.wallet.amount_daybonus,
             # 'amount_today': obj.wallet.amount_today,
             'checkin_today': obj.wallet.checkin_today,
-            'welcomed': obj.wallet.welcomed,
+            # 'welcomed': obj.wallet.welcomed,
             'baseinfo_inputed': obj.wallet.baseinfo_inputed,
             'stylelabels_inputed': obj.wallet.stylelabels_inputed,
             'itemlabels_inputed': obj.wallet.itemlabels_inputed,

@@ -413,7 +413,7 @@ def signup_setbase(request):
             user.mobile = _data['mobile']
             user.mobile_verified = _data['mobile_verified']
             user.save()
-            user.notify_on_slack();
+            # user.notify_on_slack();
             return JsonResponse({'success':True, 'message':'signup setbased successfully'}, safe=False)
 
     except:

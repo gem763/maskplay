@@ -22,7 +22,7 @@ class Session {
       // mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
       // contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
-      checkin:      { order: 0, instant: false, open: false, from: 'top' },
+      checkin:      { order: 0, instant: false, open: false, from: undefined },
       flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
@@ -724,7 +724,7 @@ class Wallet {
     this.per_vote = 1;
     this.per_collect = 1;
     this.per_checkin = 10;
-    this.amount_welcome = 500;
+    // this.amount_welcome = 500;
     this.amount_baseinfo_input = 100;
     this.amount_stylelabels_input = 50;
     this.amount_itemlabels_input = 50;

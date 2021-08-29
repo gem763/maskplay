@@ -364,6 +364,13 @@ class PostpixAdmin(admin.ModelAdmin):
     list_display = ['key', 'owner', 'post', 'img', 'desc', 'tokens']
 
 
+@admin.register(m.BalancegameRecord)
+class BalancegameRecordAdmin(admin.ModelAdmin):
+    list_display = ['who', 'pix_0_id', 'pix_1_id', 'chosen']
+    raw_id_fields = ('who', 'pix_0', 'pix_1', )
+    list_per_page = 20
+
+
 @admin.register(m.Pix)
 class PixAdmin(admin.ModelAdmin):
     list_display = ['owner', 'desc', 'tokens', 'outlink', 'type', 'preview']

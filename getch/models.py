@@ -192,7 +192,7 @@ class User(AbstractEmailUser):
     name = models.CharField(max_length=30, blank=True, null=True)
 
     GENDER_TYPES = ( (0, '남성'), (1, '여성'), )
-    gender = models.IntegerField(choices=GENDER_TYPES, default=0, null=False, blank=False)
+    gender = models.IntegerField(choices=GENDER_TYPES, default=1, null=False, blank=False)
     birth = models.DateField(auto_now=False, null=True, blank=True)
     address = models.CharField(max_length=100, blank=True, null=True)
     mobile = models.CharField(max_length=30, blank=True, null=True)
@@ -205,7 +205,8 @@ class User(AbstractEmailUser):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.notify_on_slack()
+            pass
+            # self.notify_on_slack()
             # print('********')
 
         super().save(*args, **kwargs)
@@ -278,6 +279,9 @@ class User(AbstractEmailUser):
         if self.grcode is None:
             self.grcode = self.referal_code
             self.save()
+
+        if not self.has_active_boo:
+            self.create_default_boo()
 
         return {
             'id': self.id,
@@ -1764,12 +1768,29 @@ class PixSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pix
-        fields = ['id', 'owner', 'src', 'desc', 'outlink']
+        fields = ['id', 'owner', 'src', 'desc', 'outlink', 'type']
         read_only_fields = fields
 
     def get_owner(self, obj):
         return {'id': obj.owner.id, 'nick': obj.owner.nick}
         # return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
+
+
+class BalancegameRecord(BigIdAbstract):
+    who = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    pix_0 = models.ForeignKey(Pix, related_name='pix_0_balancegamerecord_set', null=False, on_delete=models.CASCADE)
+    pix_1 = models.ForeignKey(Pix, related_name='pix_1_balancegamerecord_set', null=False, on_delete=models.CASCADE)
+
+    CHOSEN_TYPES = (
+        (0, '0'),
+        (1, '1'),
+    )
+
+    chosen = models.IntegerField(choices=CHOSEN_TYPES, default=0, null=False, blank=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return str(self.who) + ' | ' + str(self.pix_0.id) + '-' + str(self.pix_1.id)
 
 
 class Collection(OrderedModel):

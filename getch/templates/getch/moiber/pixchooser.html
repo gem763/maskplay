@@ -184,12 +184,12 @@
     <img class='loading' src='/static/materials/logos/moiber_logo_splash.gif'>
 
     <div class='section up' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
-      <img class='candidate' :src='pixpair.list[0].src' @load='imgloaded_0=true'>
+      <img class='candidate' :src='pix_src(0)' @load='imgloaded_0=true'>
       <div class='more' v-if='imgloaded_0' @click.stop='session.open_search(pixpair.list[0])'><img src='/static/materials/icons/seemore.png'></div>
     </div>
 
     <div class='section down' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
-      <img class='candidate' :src='pixpair.list[1].src' @load='imgloaded_1=true'>
+      <img class='candidate' :src='pix_src(1)' @load='imgloaded_1=true'>
       <div class='more' v-if='imgloaded_1' @click.stop='session.open_search(pixpair.list[1])'><img src='/static/materials/icons/seemore.png'></div>
     </div>
 
@@ -236,6 +236,14 @@
     },
 
     methods: {
+      pix_src: function(idx) {
+        if (this.pixpair) {
+          if (this.pixpair.list[idx]) {
+            return this.pixpair.list[idx].src
+          }
+        }
+      },
+
       go_next: function() {
         if (this.swiper) {
           this.swiper.slideNext();

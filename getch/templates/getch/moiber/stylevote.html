@@ -150,7 +150,7 @@
     watch: {
       ipixpair: function(_new, _old) {
         if (this.pixpair_set.list.length - _new <= 3) {
-          this.pixpair_set.load(5);
+          this.pixpair_set.load(3);
         }
 
         if (_new > _old) {

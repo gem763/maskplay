@@ -25,7 +25,8 @@ class Session {
       checkin:      { order: 0, instant: false, open: false, from: undefined },
       flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
-      stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
+      stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this) },
+      // stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
@@ -525,12 +526,14 @@ class Pix extends Loader {
     this.src = undefined;
     this.owner = undefined;
     this.outlink = undefined;
+    this.type = undefined;
   }
 
   assign(obj) {
     this.desc = obj.desc;
     this.src = obj.src;
     this.outlink = obj.outlink;
+    this.type = obj.type;
     this.owner = Baseboo.init(this.session, obj.owner);
   }
 
@@ -1388,26 +1391,57 @@ class Postages extends Multiloader {
   }
 }
 
+// class Pixpair extends Multiloader {
+//   constructor(session, baseobj) {
+//     super(session);
+//     this.contentype = Pix;
+//     this.ids = baseobj.id;
+//     // this.load(2);
+//   }
+//
+//   static build(session, baseobj) {
+//     return new this(session, baseobj).load(2)
+//   }
+// }
+//
+// class PixpairSet extends Multiloader {
+//   constructor(session, n) {
+//     super(session);
+//     this.contentype = Pixpair;
+//     this.nloads_init = 3;
+//     this.ids_url = `/pix/ipixs/comb/${n}`;
+//     this.load_ids();
+//   }
+// }
+
 class Pixpair extends Multiloader {
-  constructor(session, baseobj) {
+  constructor(session) {
     super(session);
     this.contentype = Pix;
-    this.ids = baseobj.id;
-    // this.load(2);
-  }
-
-  static build(session, baseobj) {
-    return new this(session, baseobj).load(2)
+    this.nloads_init = 2;
+    this.ids_url = `/pixpair/ipixs`;
+    this.load_ids();
   }
 }
 
 class PixpairSet extends Multiloader {
-  constructor(session, n) {
+  constructor(session) {
     super(session);
     this.contentype = Pixpair;
-    this.nloads_init = 3;
-    this.ids_url = `/pix/ipixs/comb/${n}`;
-    this.load_ids();
+    this.load(1);
+  }
+
+  load(n) {
+    if (!n) { var n = 1; }
+    this.list_onloading = [];
+
+    for (let i = 0; i < n; i++) {
+      const content = new this.contentype(this.session);
+      this.list.push(content);
+      this.list_onloading.push(content);
+    };
+
+    return this
   }
 }
 

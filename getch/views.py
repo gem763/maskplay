@@ -36,10 +36,7 @@ import time
 import requests
 
 
-# test = m.Support.objects.filter(wallet__receiver_transaction__when__date=datetime.now().date())
-# print(test)
-# print(m.Support.objects.filter(wallet__transaction__who=638))
-# print()
+# bgrs = []
 
 labels = {
     'gender': list(m.Genderlabel.objects.order_by('key').values('id', 'label')),
@@ -49,8 +46,6 @@ labels = {
     'item': list(m.Itemlabel.objects.order_by('key').values('id', 'label'))
 }
 
-# print('***************', labels)
-# anonyboo = m.Boo.objects.get(pk=m.BOO_DELETED)
 context = { 'labels':labels }
 
 def redirect_params(url, params=None):
@@ -473,11 +468,13 @@ def get_user2(request):
     sessionkey = request.session.session_key
 
     if request.user.is_authenticated:
-        if not request.user.has_active_boo:
-            request.user.create_default_boo()
+        # if not request.user.has_active_boo:
+        #     request.user.create_default_boo()
 
+        # bgrs.clear()
+        # bgrs.extend(list(m.BalancegameRecord.objects.filter(who=request.user.boo).values('pix_0', 'pix_1')))
+        # print(bgrs)
         return JsonResponse({'success':True, 'user':request.user.serialized2, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
-        # return JsonResponse({'success':True, 'user':request.user.serialized2, 'first_visit':True, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
 
     else:
         return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
@@ -816,7 +813,7 @@ def _pix_combinations(n):
 
 def get_ipixs_comb(request, n):
     _comb = _pix_combinations(n)
-    _comb = [list(e) for e in _comb]
+    _comb = [sorted(list(e)) for e in _comb]
     return JsonResponse({'success':True, 'ids':_comb}, safe=False)
 
 
@@ -824,6 +821,62 @@ def get_ipixs(request):
     _ipixs = list(m.Pix.ipixs())
     random.shuffle(_ipixs)
     return JsonResponse({'success':True, 'ids':_ipixs}, safe=False)
+
+
+# def pixpair_exists(bgr, ipixpair):
+#     return (bgr['pix_0'] == ipixpair[0]) and (bgr['pix_1'] == ipixpair[1])
+
+
+# tmp = [0]
+# def get_kkk():
+#     tmp[0] = 1
+#     return [4140, 4145]
+
+
+def get_pixpair_ipixs(request):
+    _user = request.user
+
+    # st = time.time()
+    # # https://stackoverflow.com/questions/1731346/how-to-get-two-random-records-with-django/6405601#6405601
+    # _type = random.choice(['X', 'M', 'F', 'T'])
+    # _univ = m.Pix.objects.filter(type=_type)
+    # _ilast = _univ.count() - 1
+    #
+    # _i0 = random.randint(0, _ilast)
+    # _i1 = random.randint(0, _ilast - 1)
+    # if _i0 == _i1: _i1 = _ilast
+    #
+    # _ipixs = sorted([_univ[_i0].id, _univ[_i1].id])
+    # print(_ipixs, '****************', time.time() - st)
+
+    # st = time.time()
+
+    if _user.is_authenticated and (_user.gender == 0):
+        __type = ['X', 'M', 'T']
+
+    else:
+        __type = ['X', 'M', 'F', 'T']
+
+    _type = random.choice(__type)
+    _univ = m.Pix.objects.filter(type=_type).values_list('id', flat=True)
+    _ipixs = sorted(random.sample(list(_univ), 2))
+    # print(_ipixs, '****************', time.time() - st)
+
+    # if tmp[0] == 0:
+    #     _ipixs = get_kkk()
+
+    # if any(pixpair_exists(bgr, _ipixs) for bgr in bgrs):
+
+    if _user.is_authenticated:
+        if _user.has_active_boo and _user.boo.balancegamerecord_set.filter(pix_0_id=_ipixs[0], pix_1_id=_ipixs[1]).exists():
+            return get_pixpair_ipixs(request)
+
+        else:
+            return JsonResponse({'success':True, 'ids':_ipixs}, safe=False)
+
+    else:
+        return JsonResponse({'success':True, 'ids':_ipixs}, safe=False)
+
 
 
 def get_random_icols(request):
@@ -1232,35 +1285,54 @@ def settle(request):
 
 
 def stylevote(request):
-    ipix_pos = request.GET.get('ipix_pos', None)
-    ipix_neg = request.GET.get('ipix_neg', None)
-    toggletype = request.GET.get('type', None)
+    try:
+        ipix_pos = int(request.GET.get('ipix_pos', None))
+        ipix_neg = int(request.GET.get('ipix_neg', None))
+        toggletype = request.GET.get('type', None)
 
-    if request.user.is_authenticated and ipix_pos and ipix_neg and toggletype:
-        _pix_pos = m.Pix.objects.get(pk=ipix_pos)
-        _pix_neg = m.Pix.objects.get(pk=ipix_neg)
-        _tags_pos = collections.Counter(_pix_pos.tokens.split())
-        _tags_neg = collections.Counter(_pix_neg.tokens.split())
-        _boo = request.user.boo
+        if request.user.is_authenticated and ipix_pos and ipix_neg and toggletype:
+            _pix_pos = m.Pix.objects.get(pk=ipix_pos)
+            _pix_neg = m.Pix.objects.get(pk=ipix_neg)
+            _tags_pos = collections.Counter(_pix_pos.tokens.split())
+            _tags_neg = collections.Counter(_pix_neg.tokens.split())
+            _boo = request.user.boo
 
-        if toggletype == 'clear':
-            _boo.postags = collections.Counter(_boo.postags) - _tags_neg
-            _boo.negtags = collections.Counter(_boo.negtags) - _tags_pos
+            _pix_0 = min(ipix_pos, ipix_neg)
+            _pix_1 = max(ipix_pos, ipix_neg)
+            _chosen = 0 if (_pix_0 == ipix_pos) else 1
 
-        elif toggletype == 'change':
-            _boo.postags = collections.Counter(_boo.postags) - _tags_neg + _tags_pos
-            _boo.negtags = collections.Counter(_boo.negtags) - _tags_pos + _tags_neg
+            if toggletype == 'clear':
+                _boo.postags = collections.Counter(_boo.postags) - _tags_neg
+                _boo.negtags = collections.Counter(_boo.negtags) - _tags_pos
 
-        else: # toggletype=='new'
-            _boo.postags = collections.Counter(_boo.postags) + _tags_pos
-            _boo.negtags = collections.Counter(_boo.negtags) + _tags_neg
+                try:
+                    m.BalancegameRecord.objects.filter(who=_boo, pix_0_id=_pix_0, pix_1_id=_pix_1).delete()
+                except:
+                    pass
 
-        # _boo.rewarding(n_voted=1, amount_by_vote=10)
-        _boo.save()
-        return JsonResponse({'success':True, 'message':'tagged successfully'}, safe=False)
-        # return JsonResponse({'success':True, 'message':'tagged successfully', 'styleprofile':_boo.styleprofile}, safe=False)
+            elif toggletype == 'change':
+                _boo.postags = collections.Counter(_boo.postags) - _tags_neg + _tags_pos
+                _boo.negtags = collections.Counter(_boo.negtags) - _tags_pos + _tags_neg
 
-    else:
+                try:
+                    _bgr = m.BalancegameRecord.objects.filter(who=_boo, pix_0_id=_pix_0, pix_1_id=_pix_1)[0]
+                    _bgr.chosen = _chosen
+                    _bgr.save()
+                except:
+                    pass
+
+            else: # toggletype=='new'
+                print(_boo, _pix_0, _pix_1, _chosen)
+                _boo.postags = collections.Counter(_boo.postags) + _tags_pos
+                _boo.negtags = collections.Counter(_boo.negtags) + _tags_neg
+                m.BalancegameRecord.objects.create(who=_boo, pix_0_id=_pix_0, pix_1_id=_pix_1, chosen=_chosen)
+
+            # _boo.rewarding(n_voted=1, amount_by_vote=10)
+            _boo.save()
+            return JsonResponse({'success':True, 'message':'tagged successfully'}, safe=False)
+            # return JsonResponse({'success':True, 'message':'tagged successfully', 'styleprofile':_boo.styleprofile}, safe=False)
+
+    except:
         return JsonResponse({'success':False, 'message':'something wrong while tagging'}, safe=False)
 
 

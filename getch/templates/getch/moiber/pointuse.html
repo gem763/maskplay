@@ -42,8 +42,7 @@
       <div class='item' @click='go_content(1)'>
         <img src='/static/materials/imgs/menu/pointuse-raffle.jpg'>
         <div class='title'>
-          <span>래플</span>
-          <span>참여</span>
+          <span>추첨</span>
         </div>
       </div>
 
@@ -88,7 +87,7 @@
       </template>
 
       <template v-else-if='control.content==1'>
-        <div class='title'>진행 중인 래플</div>
+        <div class='title'>진행 중인 추첨</div>
         <div class='body'>
           <raffler :session='session' @go_detail='go_detail'></raffler>
         </div>
@@ -122,7 +121,7 @@
 
     <template #detail>
       <template v-if='detail_type=="raffle"'>
-        <div class='title'>진행 중인 래플</div>
+        <div class='title'>진행 중인 추첨</div>
         <div class='body'>
           <itemdetail :obj='control.detail_obj' :session='session'></itemdetail>
         </div>

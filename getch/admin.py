@@ -208,8 +208,8 @@ class ResearchAdmin(admin.ModelAdmin):
         return obj.coverpix_preview
 
     inlines = ( ResearchItemInline, )
-    list_display = ['title', 'owner', 'brand', 'published', 'reward', 'due', 'priority', 'coverpix_preview']
-    list_editable = ['published', 'priority']
+    list_display = ['title', 'owner', 'brand', 'published', 'reward', 'due', 'priority', 'time_required', 'coverpix_preview']
+    list_editable = ['published', 'priority', 'time_required']
     raw_id_fields = ('owner', 'brand', )
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
     # readonly_fields = ('coverpix_thumbnail',)

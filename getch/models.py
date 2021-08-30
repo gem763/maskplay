@@ -1172,6 +1172,7 @@ class Research(BigIdAbstract):
     published = models.BooleanField(default=False)
     coverpix = models.ImageField(upload_to=_coverpix_path, max_length=500, null=True, blank=True)
     reward = models.IntegerField(default=0)
+    time_required = models.IntegerField(default=0)
     due = models.DateTimeField(null=True, blank=True)
     priority = models.IntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now, null=False)

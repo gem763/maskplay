@@ -222,9 +222,9 @@
 <script type='text/x-template' id='joystick-template'>
   <div class='joystick vcomp' :class='phase'>
     <div class='body'>
-      <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>서베이</span>
+      <span class='menu' :class='{ on: session.on("researcher") }' @click='session.open_researcher()'>트렌드연구</span>
       <span class='menu' :class='{ on: session.on("stylevote") }' @click='session.open_stylevote()'>밸런스게임</span>
-      <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>검색</span>
+      <span class='menu' :class='{ on: session.on("search") }' @click='session.open_search()'>탐색</span>
       <span class='menu' :class='{ on: on_my }' @click='session.open_my()'>마이페이지</span>
 
       <!-- <span class='logo'>
@@ -249,8 +249,9 @@
         <div class='setting-menu' v-if='on_menu'>
           <div class='item' @click='open_pointget'>포인트 획득하기</div>
           <div class='item' @click='open_pointuse'>포인트 사용하기</div>
-          <div class='item' @click='help'>도움말 보기</div>
           <div class='item' v-if='on_my' @click='make_collection'>컬렉션 만들기</div>
+          <div class='item' @click='help'>도움말 보기</div>
+          <div class='item' @click='session.contact()'>문의하기</div>
           <div class='item logout' v-if='on_my' @click='session.logout()'>로그아웃</div>
           <div class='item logout' v-if='!boo' @click='session.open_login()'>로그인</div>
         </div>

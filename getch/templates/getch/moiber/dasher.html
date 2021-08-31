@@ -1,9 +1,4 @@
 <style>
-  /* :root {
-    --iphone-bottom: 30px;
-    --dasher-height: calc(77px + var(--iphone-bottom));
-  } */
-
   .dasher.vcomp {
     position: absolute;
     top: 0;
@@ -47,6 +42,10 @@
   .dasher.vcomp.show.open > .panel {
     height: calc(100% - 50px);
     background: white;
+  }
+
+  .dasher.vcomp.blocked > .panel {
+    pointer-events: none;
   }
 
   .dasher.vcomp > .panel > .sections {
@@ -364,7 +363,8 @@
             || (!this.session.editing.on && this.session.on('search'))
           ),
 
-          open: this.control.open
+          open: this.control.open,
+          blocked: this.session.show_guider
         }
       },
 

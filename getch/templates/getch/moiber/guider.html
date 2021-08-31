@@ -7,7 +7,7 @@
     height: 100%;
     /* background: rgba(255,255,255,0.8); */
     transition: all 0.3s;
-    transition-delay: 0.3s;
+    /* transition-delay: 0.3s; */
     z-index: 200;
     display: block;
     opacity: 1;
@@ -121,6 +121,22 @@
     top: 95px;
   }
 
+  .guider.vcomp > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .container > .closer {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .guider.vcomp > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .container > .closer > span {
+    font-size: 13px;
+    color: white;
+    height: 20px;
+    /* background: orange; */
+    display: inline-block;
+    line-height: 20px;
+    cursor: pointer;
+  }
+
   .guider.vcomp > .swiper-container > .swiper-wrapper > .swiper-slide > .guide > .container > .robo {
     margin-top: 20px;
   }
@@ -153,6 +169,10 @@
         <div class='swiper-slide'>
           <div class='guide p0'>
             <div class='container'>
+              <div class='closer'>
+                <span @click='exit'>도움말 닫기</span>
+              </div>
+
               <robo :session='session' type='next' @action='go_next'>
                 <div>포인트, 지금 얼만큼 모았더라?
                   매일 보너스 포인트 오늘 얼마나 모았지?
@@ -178,6 +198,10 @@
                   서베이를 끝까지 완수하면 포인트 획득!
                   (쉿) 레벨업 하면 더 많은 참여 기회가????</div>
               </robo>
+
+              <div class='closer'>
+                <span @click='exit'>도움말 닫기</span>
+              </div>
             </div>
           </div>
         </div>
@@ -191,6 +215,10 @@
                   매일 보너스는 최대 100P 까지!
                   (밸런스게임 + 북마크게임)</div>
               </robo>
+
+              <div class='closer'>
+                <span @click='exit'>도움말 닫기</span>
+              </div>
             </div>
           </div>
         </div>
@@ -198,7 +226,7 @@
         <div class='swiper-slide'>
           <div class='guide p3'>
             <div class='container'>
-              <robo :session='session' type='next' @action='go_next'>
+              <robo :session='session'>
                 <div>👆🏻 요즘 사람들 뭐입어?? 검색하다가
                   내 취향 발견하면 북마크하고 1P 획득
                   매일 보너스는 최대 100P 까지!
@@ -308,7 +336,7 @@
 
     methods: {
       exit: function() {
-        this.session.open_home();
+        // this.session.open_home();
         this.session.show_guider = false;
         this.dasher_control.show = true;
       },

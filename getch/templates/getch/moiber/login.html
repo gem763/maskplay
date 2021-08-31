@@ -203,8 +203,13 @@
       },
 
       action_login_kakao: function() {
-        if(navigator.userAgent.toLowerCase().indexOf('iosapp') != -1){
-          //앱인경우
+        if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
+          //ios 앱인경우
+          var param = { action: 'kakaologin' };
+          webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(param));
+
+        } else if (navigator.userAgent.toLowerCase().indexOf('androidapp') != -1) {
+          //안드로이드 앱인경우
           var param = { action: 'kakaologin' };
           webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(param));
 

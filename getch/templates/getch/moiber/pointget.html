@@ -4,11 +4,26 @@
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     font-size: 12px;
     color: var(--color-dark);
-    pointer-events: none;
+    /* pointer-events: none; */
+    height: calc(100% - 60px);
+    margin-top: 60px;
+  }
+
+  .pointget.vcomp .content > .explain > .gobutton {
+    color: white;
+    height: 36px;
+    line-height: 36px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px;
+    border-radius: 15px;
+    background: var(--color-point);
+    margin-top: 30px;
+    cursor: pointer;
   }
 
   .pointget.vcomp .content > .explain > .title {
@@ -52,7 +67,7 @@
 
     <template #menu>
       <!-- <div class='item' @click='session.open_flashgames()'> -->
-      <div class='item' @click='session.open_checkin()'>  
+      <div class='item' @click='session.open_checkin()'>
         <img src='/static/materials/imgs/menu/pointget-choolcheck-game.jpg'>
         <div class='title'>
           <span>출쳌게임</span>
@@ -79,24 +94,24 @@
       <div class='item' @click='goto_researcher'>
         <img src='/static/materials/imgs/menu/pointget-moiber-survey.jpg'>
         <div class='title'>
-          <span>모이버랩</span>
-          <span>서베이</span>
-        </div>
-      </div>
-
-      <div class='item' @click='goto_researcher'>
-        <img src='/static/materials/imgs/menu/pointget-brand-survey.png'>
-        <div class='title'>
-          <span>브랜드</span>
-          <span>서베이</span>
+          <span>트렌드연구</span>
+          <span>참여</span>
         </div>
       </div>
 
       <div class='item' @click='goto_interview'>
-        <img src='/static/materials/imgs/menu/pointget-interview.jpg'>
+        <img src='/static/materials/imgs/menu/pointget-brand-survey.png'>
         <div class='title'>
           <span>인터뷰</span>
           <span>참여</span>
+        </div>
+      </div>
+
+      <div class='item' @click='session.help()'>
+        <img src='/static/materials/imgs/menu/pointget-interview.jpg'>
+        <div class='title'>
+          <span>도움말</span>
+          <span>보기</span>
         </div>
       </div>
     </template>
@@ -116,26 +131,42 @@
 
       <template v-else-if='control.content==1'>
         <div class='explain'>
-          <span class='title'><b>밸런스게임 참여</b>로 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
+          <robo :session='session' type='next-dark' @action='goto_stylevote'>
+            <div>👆🏻 몰랐는데 나, ㅇㅇㅇ 좋아하네??
+              위? 아래? 내 스타일을 고를 때 마다 1P 획득
+              매일 보너스는 최대 100P 까지!
+              (밸런스게임 + 북마크게임)</div>
+          </robo>
+
+          <div class='gobutton' @click='goto_stylevote'>밸런스게임GO</div>
+          <!-- <span class='title'><b>밸런스게임 참여</b>로 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
           <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
-          <span class='desc'>위 혹은 아래? 맘에 드는 스타일을 골라 클릭할 때 마다 1P 지급!</span>
+          <span class='desc'>위 혹은 아래? 맘에 드는 스타일을 골라 클릭할 때 마다 1P 지급!</span> -->
         </div>
 
-        <div class='illust'>
+        <!-- <div class='illust'>
           <img src='/static/materials/imgs/illust_balancegame.jpg' @click='goto_stylevote'>
-        </div>
+        </div> -->
       </template>
 
       <template v-else-if='control.content==2'>
         <div class='explain'>
-          <span class='title'><b>옷장넣기</b>를 통해서도 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
+          <robo :session='session' type='next-dark' @action='goto_search'>
+            <div>👆🏻 요즘 사람들 뭐입어?? 검색하다가
+              내 취향 발견하면 북마크하고 1P 획득
+              매일 보너스는 최대 100P 까지!
+              (밸런스게임 + 북마크게임)</div>
+          </robo>
+
+          <div class='gobutton' @click='goto_search'>북마크게임GO</div>
+          <!-- <span class='title'><b>옷장넣기</b>를 통해서도 <b>매일 보너스 최대 100P</b> 획득 가능!</span>
           <span class='subtitle'>(보너스 밸런스게임+옷장넣기 총합 최대 100P)</span>
-          <span class='desc'>관심가는 스타일을 즐겨찾기처럼 옷장에 넣을 때 마다 1P 지급!</span>
+          <span class='desc'>관심가는 스타일을 즐겨찾기처럼 옷장에 넣을 때 마다 1P 지급!</span> -->
         </div>
 
-        <div class='illust'>
+        <!-- <div class='illust'>
           <img src='/static/materials/imgs/illust_balancegame.jpg' @click='goto_search'>
-        </div>
+        </div> -->
       </template>
 
       <template v-else-if='control.content==3'>

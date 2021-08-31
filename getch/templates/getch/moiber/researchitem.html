@@ -1,6 +1,6 @@
 <style>
   :root {
-    --pix-size: min(var(--width) - 90px, (var(--height) - 60px - 32px - var(--iphone-bottom))/2);
+    --pix-size: min(var(--width) - 90px, (var(--height) - var(--iphone-bottom) - var(--appdownloader-height) - 60px - 32px)/2);
   }
 
   .researchitem {
@@ -750,7 +750,7 @@
         <img :src='researchitem.pix.pix_0' :class='{ loaded: pix_0_loaded }' @load='pix_0_loaded=true'>
 
         <div class='cover' :class='{ loaded: pix_0_loaded }'>
-          <robo :class='{ hidden:robo_hidden }' :session='session' type='x' @action='hide_robo'>
+          <robo :class='{ hidden:robo_hidden }' :session='session' type='' @action=''>
             <div class='reward'>+[[ research_reward ]]P 💰</div>
 
             <div class='message'>서베이 완료

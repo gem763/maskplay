@@ -250,7 +250,7 @@
           <div class='item' @click='open_pointget'>포인트 획득하기</div>
           <div class='item' @click='open_pointuse'>포인트 사용하기</div>
           <div class='item' v-if='on_my' @click='make_collection'>컬렉션 만들기</div>
-          <div class='item' @click='help'>도움말 보기</div>
+          <div class='item' @click='session.help()'>도움말 보기</div>
           <div class='item' @click='session.contact()'>문의하기</div>
           <div class='item logout' v-if='on_my' @click='session.logout()'>로그아웃</div>
           <div class='item logout' v-if='!boo' @click='session.open_login()'>로그인</div>
@@ -333,12 +333,9 @@
         }
       },
 
-      help: function() {
-        this.session.help();
-        // if (this.boo) {
-        //   this.boo.help();
-        // }
-      },
+      // help: function() {
+      //   this.session.help();
+      // },
 
       open_pointget: function() {
         this.dasher_control.open = true;

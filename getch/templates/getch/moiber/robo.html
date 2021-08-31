@@ -71,8 +71,12 @@
   }
 
   .robo.vcomp > .action > img.next {
-    width: 6px;
+    width: 14px;
     height: auto;
+  }
+
+  .robo.vcomp > .action > img.next.dark {
+    filter: brightness(0.5);
   }
 </style>
 
@@ -91,7 +95,9 @@
 
     <div class='action' @click='$emit("action")'>
       <img class='x' v-if='x_type' src='/static/materials/icons/icon_x.png'>
-      <img class='next' v-else-if='next_type' src='/static/materials/icons/button-backward.png'>
+      <img class='next' v-else-if='next_type' src='/static/materials/icons/seemore.png'>
+      <img class='next dark' v-else-if='next_dark_type' src='/static/materials/icons/seemore.png'>
+      <!-- <img class='next' v-else-if='next_type' src='/static/materials/icons/button-backward.png'> -->
     </div>
 
   </div>
@@ -114,6 +120,10 @@
 
       next_type: function() {
         return this.type == 'next'
+      },
+
+      next_dark_type: function() {
+        return this.type == 'next-dark'
       }
     }
   });

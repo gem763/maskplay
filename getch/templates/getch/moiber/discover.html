@@ -42,7 +42,7 @@
       --color-gray: #828282;
       --color-inactive: #CBCAC9;
 
-      --width-max: 414px;
+      --width-max: 428px;
       --width-max-twins: calc(var(--width-max) * 2);
       --width: min(var(--width-max), 100vw, calc(100vh * 11 / 16));
       --width-unit: calc(var(--width) / 100);
@@ -109,10 +109,8 @@
       --discover-col-interval: calc((var(--width) - 2 * var(--discover-col-width)) / 3);
       --discover-col-padding: calc(var(--discover-col-interval) / 2);
 
-      /* --headerbar-height: var(--w-15); */
       --dasher-height-min: 60px;
       --dasher-height-expanded: 150px;
-      /* --dasher-height-max: var(--w-40); */
 
       --minipost-margin: var(--w-1);
       --minipost-width: calc((var(--width) - var(--minipost-margin) * 4) / 3);
@@ -121,14 +119,14 @@
       아래처럼 height를 js로 새로 정의하고, var(--height) 방식으로 보정했다
       https://stackoverflow.com/questions/23223157/how-to-fix-vhviewport-unit-css-in-mobile-safari */
       --height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+      --height: calc(var(--vh, 1vh) * 100);
       /* --height: calc(var(--vh, 1vh) * 100); */
 
       /* --height: -webkit-fill-available; */
-      /* --square-size: calc(min(var(--width), var(--height)/2) * 0.75); */
-      --square-size: calc(min(var(--width) - 90px, (var(--height) - 60px) / 2));
-      /* --square-size: calc(min(100vw, 45vh) * 0.95); */
-
+      /* --square-size: calc(min(var(--width) - 90px, (var(--height) - 60px) / 2)); */
+      --square-size: calc(min(var(--width) - 90px, (var(--height) - var(--dasher-height) - var(--appdownloader-height) - 45px - 32px) / 2));
       --iphone-bottom: 0px;
+      --appdownloader-height: 0px;
       --dasher-height: calc(77px + var(--iphone-bottom));
     }
 
@@ -167,11 +165,72 @@
       height: var(--height);
       background: white;
       transform: translateX(-50%);
-      /* margin: auto; */
-      /* box-shadow: 0 0 10px 1px rgba(0,0,0,0.5); */
       border-right: 1px solid #cecece;
       border-left: 1px solid #cecece;
       box-sizing: content-box;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #moiber > .window > .header {
+      position: relative;
+      width: 100%;
+      height: var(--appdownloader-height);
+      background: var(--color-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #moiber > .window > .header > .downloadapp {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: var(--appdownloader-height);
+      height: var(--appdownloader-height);
+      /* background: orange; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #moiber > .window > .header > .downloadapp > img {
+      width: 15px;
+      height: auto;
+    }
+
+    #moiber > .window > .header > .closer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--appdownloader-height);
+      height: var(--appdownloader-height);
+      /* background: orange; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    #moiber > .window > .header > .closer > img {
+      width: 12px;
+      height: auto;
+      filter: brightness(2);
+    }
+
+
+    #moiber > .window > .main {
+      position: relative;
+      width: 100%;
+      /* height: calc(100% - 100px); */
+      flex-grow: 1;
       overflow: hidden;
     }
 
@@ -179,10 +238,8 @@
       position: absolute;
       top: 0;
       right: 50%;
-      /* left: calc(50% - var(--width)/2); */
       width: var(--width);
       height: 100%;
-      /* transform: translateX(-50%); */
       background: none;
       display: none;
     }
@@ -255,11 +312,24 @@
 
   <div id='moiber'>
     <div class='window'>
-      <pages :session='session'></pages>
-      <joystick :session='session'></joystick>
-      <guider :session='session'></guider>
-      <dasher :session='session'></dasher>
-      <!-- <notice :session='session'></notice> -->
+      <div class='header' @click='open_appdownload'>
+        <span>모이버 앱으로 더 편리하게 이용하기</span>
+        <span class='downloadapp'>
+          <img src='/static/materials/icons/download.png'>
+        </span>
+
+        <span class='closer' @click.stop='close_appdownloader'>
+          <img src='/static/materials/icons/icon_x.png'>
+        </span>
+      </div>
+
+      <div class='main'>
+        <pages :session='session'></pages>
+        <joystick :session='session'></joystick>
+        <guider :session='session'></guider>
+        <dasher :session='session'></dasher>
+        <!-- <notice :session='session'></notice> -->
+      </div>
     </div>
 
     <div class='sider'>
@@ -374,6 +444,22 @@
       },
 
       methods: {
+        close_appdownloader: function() {
+          document.documentElement.style.setProperty('--appdownloader-height', '0px');
+        },
+
+        open_appdownload: function() {
+          if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            window.open('https://moiber.com/app/ios');
+
+          } else if (/Android/i.test(navigator.userAgent)) {
+            console.log('android');
+
+          } else {
+            console.log('other');
+          }
+        },
+
         contact: function() {
           window.open('mailto:contact@moiber.com');
         },
@@ -419,24 +505,54 @@
         }
       });
 
-      // $.ajaxSetup({
-      //   headers: { "X-CSRFToken": '{{csrf_token}}' }
-      // });
 
 
+      // First we get the viewport height and we multiple it by 1% to get a value for a vh unit
+      let vh;// = window.innerHeight * 0.01;
+      // Then we set the value in the --vh custom property to the root of the document
+      // document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+
+
+      // if(/Macintosh|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
       if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
-        document.documentElement.style.setProperty('--iphone-bottom', `30px`);
+        document.documentElement.style.setProperty('--iphone-bottom', '30px');
+        document.documentElement.style.setProperty('--vh', `1vh`);
 
       } else {
-        document.documentElement.style.setProperty('--iphone-bottom', `0px`);
+        document.documentElement.style.setProperty('--iphone-bottom', '0px');
+        vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
       }
 
 
-      // let vh = window.innerHeight * 0.01;
+
+      // if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
+      //   document.documentElement.style.setProperty('--iphone-bottom', '30px');
+      //   document.documentElement.style.setProperty('--appdownloader-height', '0px');
       //
-      // // let vh = window.innerHeight * 0.01;
-      // // Then we set the value in the --vh custom property to the root of the document
-      // document.documentElement.style.setProperty('--vh', `${vh}px`);
+      // } else if (navigator.userAgent.toLowerCase().indexOf('androidapp') != -1) {
+      //   document.documentElement.style.setProperty('--iphone-bottom', '0px');
+      //   document.documentElement.style.setProperty('--appdownloader-height', '0px');
+      //
+      // } else {
+      //   document.documentElement.style.setProperty('--iphone-bottom', '0px');
+      //   document.documentElement.style.setProperty('--appdownloader-height', '45px');
+      // }
+
+
+      // if(/Macintosh|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      // if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+      if ((/iPhone|iPad|iPod/i.test(navigator.userAgent)) && (navigator.userAgent.toLowerCase().indexOf('mobileapp') == -1)) {
+        // true for mobile device
+        document.documentElement.style.setProperty('--appdownloader-height', '45px');
+
+      } else {
+        // false for not mobile device
+        document.documentElement.style.setProperty('--appdownloader-height', '0px');
+      }
+
+
 
       history.pushState(null, null, document.URL);
       window.addEventListener('popstate', function () {

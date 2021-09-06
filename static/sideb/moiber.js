@@ -25,7 +25,7 @@ class Session {
       checkin:      { order: 0, instant: false, open: false, from: undefined },
       flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
-      stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this) },
+      stylevote:    { order: 0, instant: false, open: false, from: 'left'},// contents: new PixpairSet(this) },
       // stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
@@ -68,6 +68,7 @@ class Session {
     this.stylelabels = undefined; //new Stylelabels(this);
     this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
+    this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false };
     this.user = new User(this);
     // this.keyset_sampling();
 
@@ -637,6 +638,20 @@ class Boo extends Baseboo {
   // }
 
 
+  balancegame_stat_update(amount_add) {
+    if ([10,20,30,40,50,60,70,80,90,100].includes(this.wallet.amount_daybonus + amount_add)) {
+      fetch('balancegame/stat')
+        .then(x => x.json())
+        .then(js => {
+          if (js.success) {
+            console.log(js);
+            this.session.balancegame.stat = js.stat;
+            this.session.balancegame.stat_updated = true;
+          }
+        });
+    }
+  }
+
   stylevote(ipix_pos, ipix_neg, type) {
     if (!this.wallet) {
       return
@@ -651,12 +666,28 @@ class Boo extends Baseboo {
         }
       });
 
-      if (type == 'clear') {
-        this.wallet.receive_daybonus('daily_balance_game', (-1) * this.wallet.per_vote);
+    if (type == 'clear') {
+      this.wallet.receive_daybonus('daily_balance_game', (-1) * this.wallet.per_vote);
 
-      } else if (type == 'new') {
-        this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
+    } else if (type == 'new') {
+      if (this.session.user.auth.is_superuser) {
+        this.balancegame_stat_update(this.wallet.per_vote); // 순서가 바뀌면 안된다
       }
+
+      this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
+    }
+
+    // if ([10,20,30,40,50,60,70,80,90,100].includes(this.wallet.amount_daybonus)) {
+    //   fetch('balancegame/stat')
+    //     .then(x => x.json())
+    //     .then(js => {
+    //       if (js.success) {
+    //         console.log(js);
+    //         this.session.balancegame.stat = js.stat;
+    //         this.session.balancegame.stat_updated = true;
+    //       }
+    //     });
+    // }
   }
 
   has_pix(pix_id, collection) {

@@ -27,6 +27,7 @@ import collections
 import random
 import base64
 import requests
+import time
 
 
 # from gensim.models import Doc2Vec
@@ -744,6 +745,56 @@ class Boo(BigIdAbstract, ModelWithFlag):
     @property
     def ilikes_comment(self):
         return list(Flager.objects.filter(status=LIKE_COMMENT, user=self).values_list('object_id', flat=True))
+
+
+    @property
+    def balancegame_stat(self):
+        st = time.time()
+        # _toks = BalancegameRecord.objects.filter(who=self).select_related('pix_0__tokens_ko', 'pix_1__tokens_ko')
+        # _toks = BalancegameRecord.objects.filter(who=self).select_related('pix_0', 'pix_1', 'pix_0__tokens_ko', 'pix_1__tokens_ko').annotate(
+        _toks = BalancegameRecord.objects.filter(who=self).order_by('-id')[:100].annotate(
+            pos_tokens=Case(
+                When(chosen=0, then=F('pix_0__tokens_ko')),
+                When(chosen=1, then=F('pix_1__tokens_ko')),
+                default=Value(''),
+            ),
+            neg_tokens=Case(
+                When(chosen=0, then=F('pix_1__tokens_ko')),
+                When(chosen=1, then=F('pix_0__tokens_ko')),
+                default=Value(''),
+            ),
+        )
+
+        print(time.time()-st, '**********')
+        st = time.time()
+
+        # pos_tokens = _toks.values_list('pix_0__tokens_ko', flat=True)
+        # neg_tokens = _toks.values_list('pix_1__tokens_ko', flat=True)
+
+        pos_tokens = _toks.values_list('pos_tokens', flat=True)
+        neg_tokens = _toks.values_list('neg_tokens', flat=True)
+
+        print(time.time()-st, '**********')
+        st = time.time()
+
+        # pos_stat = collections.Counter(re.split(' ', ' '.join(pos_tokens)))
+        pos_stat = collections.Counter(' '.join(pos_tokens).split())
+
+        print(time.time()-st, '**********')
+        st = time.time()
+
+        # neg_stat = collections.Counter(re.split(' ', ' '.join(neg_tokens)))
+        neg_stat = collections.Counter(' '.join(neg_tokens).split())
+
+        print(time.time()-st, '**********')
+        st = time.time()
+
+        # out = (pos_stat - neg_stat).most_common(10)
+        out = dict((pos_stat - neg_stat).most_common(10))
+
+        print(time.time()-st, '**********')
+        st = time.time()
+        return out
 
 
     @property
@@ -1742,6 +1793,7 @@ class Pix(BigIdAbstract):
     src = models.ImageField(upload_to=_pixpath, max_length=500, null=False, blank=False)
     desc = models.TextField(max_length=200, blank=True, null=False, default='')
     tokens = models.TextField(max_length=1000, blank=True, null=False, default='')
+    tokens_ko = models.TextField(max_length=1000, blank=True, null=False, default='')
     outlink = models.URLField(max_length=500, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

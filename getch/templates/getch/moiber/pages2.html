@@ -50,7 +50,9 @@
     <researcher :session='session'></researcher>
     <search :session='session'></search>
     <brander :session='session'></brander>
-    <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote>
+    <stylevote :session='session'></stylevote>
+    <!-- <stylevote :session='session' v-if='session.balancegame.pixpair_set'></stylevote> -->
+    <!-- <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote> -->
     <!-- <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork> -->
     <research :session='session'></research>
     <checkin :session='session'></checkin>

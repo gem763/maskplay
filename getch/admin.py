@@ -285,7 +285,7 @@ class UserAdmin(admin.ModelAdmin):
         fk_name = 'user'
 
     inlines = ( BooInline, )
-    list_display = ['email', 'name', 'gender', 'birth', 'mobile', 'mobile_verified', 'address', 'is_superuser', 'is_staff', 'help', 'boo_selected', 'boo']
+    list_display = ['email', 'name', 'gender', 'birth', 'mobile', 'mobile_verified', 'address', 'is_superuser', 'is_staff', 'help', 'boo_selected', 'boo', 'date_joined']
     list_display_links = ['email']
     list_editable = ['boo_selected', 'is_superuser', 'is_staff', 'mobile_verified', 'help']
     list_per_page = 20
@@ -373,7 +373,7 @@ class BalancegameRecordAdmin(admin.ModelAdmin):
 
 @admin.register(m.Pix)
 class PixAdmin(admin.ModelAdmin):
-    list_display = ['owner', 'desc', 'tokens', 'outlink', 'type', 'preview']
+    list_display = ['owner', 'desc', 'tokens', 'tokens_ko', 'outlink', 'type', 'preview']
     raw_id_fields = ('owner', )
     list_editable = ['type']
     list_per_page = 20

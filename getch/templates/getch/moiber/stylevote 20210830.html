@@ -1,0 +1,214 @@
+<style>
+  /* .stylevote.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  } */
+
+  .stylevote.vcomp .page-body > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: white;
+  }
+
+  .stylevote.vcomp .page-body > .swiper-container > .swiper-wrapper {
+    /* z-index: 0; */
+  }
+
+  .stylevote.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+
+  .stylevote.vcomp .page-body > .loginplz {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .stylevote.vcomp .page-body > .loginplz > .logger {
+    width: 260px;
+    height: 120px;
+    background: white;
+    border-radius: var(--w-3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .stylevote.vcomp .page-body > .loginplz > .logger > .title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .stylevote.vcomp .page-body > .loginplz > .logger > .actions {
+    position: relative;
+    width: 100%;
+    height: calc(33px + 20px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .stylevote.vcomp .page-body > .loginplz > .logger > .actions > .action {
+    width: 50%;
+    height: calc(100% - 20px);
+    background: var(--color-point);
+    border-radius: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 15px;
+  }
+</style>
+
+
+<script type='text/x-template' id='stylevote-template'>
+  <page
+    class='stylevote vcomp'
+    :order='session.page.stylevote.order'
+    :open='session.page.stylevote.open'
+    :from='session.page.stylevote.from'
+    :hide_close='true'
+    :hide_menu='true'
+    :hide_headerbar='true'
+    :trans_headerbar='true'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='swiper-container' ref='swiper'>
+        <div class='swiper-wrapper'>
+
+          <div class="swiper-slide" v-for='pp in pixpair_set.list'>
+            <pixchooser :pixpair='pp' :swiper='swiper' :session='session' @show_loginplz='show_loginplz'></pixchooser>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- <div class='loginplz' v-if='on_loginplz' @click='dismiss_loginplz'>
+        <div class='logger'>
+          <div class='title'>로그인이 필요합니다</div>
+          <div class='actions'>
+            <div class='action' @click.stop='goto_login'>로그인하기</div>
+          </div>
+        </div>
+      </div> -->
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('stylevote', {
+    template: '#stylevote-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        on_loginplz: false,
+        swiper: undefined,
+        swiper_options: {
+          direction: 'horizontal',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          }
+        }
+      }
+    },
+
+    watch: {
+      ipixpair: function(_new, _old) {
+        // console.log([5,10].includes(_new), _new)
+
+        if (this.pixpair_set.list.length - _new <= 3) {
+          this.pixpair_set.load(3);
+        }
+
+        if (_new > _old) {
+          this.session.scroll_direction = 'down';
+        } else {
+          this.session.scroll_direction = 'up';
+        }
+
+        // if ((_new > _old) && ([10, 20, 30, 40, 50, 60, 70, 80, 90, 100].includes(_new))) {
+        //   fetch('balancegame/stat').then(x=>x.json()).then(console.log)
+        // }
+      },
+    },
+
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    // watch: {
+    //   'session.page.mbti.open': function(_new, _old) {
+    //     if (_new && this.swiper) {
+    //       this.swiper.slideTo(0);
+    //     }
+    //   }
+    // },
+
+    methods: {
+      goto_first: function() {
+        this.swiper.slideNext();
+      },
+
+      show_loginplz: function() {
+        this.on_loginplz = true;
+      },
+
+      dismiss_loginplz: function() {
+        this.on_loginplz = false;
+      },
+
+      goto_login: function() {
+        this.session.open_login();
+        this.on_loginplz = false;
+      },
+    },
+
+    computed: {
+      pixpair_set: function() {
+        return this.session.page.stylevote.contents
+      },
+
+      ipixpair: function() {
+        if (this.swiper) {
+          return this.swiper.realIndex
+        }
+      }
+    }
+  });
+</script>

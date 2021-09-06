@@ -758,6 +758,18 @@ def flashgame_answer(request):
         return JsonResponse({'success':False, 'message':'something wrong while answering'}, safe=False)
 
 
+def balancegame_stat(request):
+    try:
+        if request.user.is_authenticated:
+            _user = request.user
+            # _user = m.User.objects.get(email='magrittelim@gmail.com')
+            # print(request.user.boo.balancegame_stat)
+            return JsonResponse({'success':True, 'stat':_user.boo.balancegame_stat, 'message': 'balancegame stat evaluated successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message': 'something wrong while evaluating balancegame stat'}, safe=False)
+
+
 
 def get_item(request, item_id):
     try:

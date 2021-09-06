@@ -12,8 +12,7 @@
   }
 
   .dasher.vcomp.show.open {
-    /* background: rgba(255,255,255,0.5); */
-    background: rgba(0,0,0,0.5);
+    background: rgba(255,255,255,0.5);
     pointer-events: auto;
   }
 
@@ -301,6 +300,35 @@
       return {}
     },
 
+    watch: {
+      // wallet_loaded: function(_new, _old) {
+      //   if (_new) {
+      //     // if (!this.wallet.welcomed) {
+      //     //   this.wallet.receive('welcome', this.wallet.amount_welcome);
+      //     //   alert('첫방문 기념으로 ' + this.wallet.amount_welcome + 'P가 지급되었습니다')
+      //     // }
+      //   }
+      // }
+
+      // rewards_loaded: function(_new, _old) {
+      //   if (_new) {
+      //     if (this.rewards_history) {
+      //       const of_today = _.find(this.rewards_history, 'is_today');
+      //
+      //       if (of_today.checkin_reward == 0) {
+      //         of_today.checkin_reward += this.rewarder.reward_per_checkin;
+      //         this.rewarder.settle_amount(this.rewarder.reward_per_checkin, 'checkin');
+      //       }
+      //
+      //       if ((Object.keys(this.rewards_history).length == 1) && (of_today.bonus_reward == 0)) {
+      //         of_today.bonus_reward += this.rewarder.reward_welcome;
+      //         this.rewarder.settle_amount(this.rewarder.reward_welcome, 'bonus');
+      //       }
+      //     }
+      //   }
+      // }
+    },
+
     methods: {
       toggle_section: function(sec) {
         if (this.control.section == sec) {
@@ -327,8 +355,10 @@
 
       status: function() {
         return {
+          // show: this.rewards_onloading || (this.rewards_loaded && this.session.on('researcher', 'stylevote', 'search', 'brander', 'agit')),
           show: this.control.show && (
             this.wallet_onloading
+            // || (this.wallet_loaded && this.session.on('researcher', 'stylevote', 'brander', 'agit'))
             || (this.session.on('researcher', 'stylevote', 'brander', 'agit'))
             || (!this.session.editing.on && this.session.on('search'))
           ),
@@ -356,10 +386,18 @@
         }
       },
 
+      // wallet_loaded: function() {
+      //   return this.wallet != undefined
+      //   // if (this.boo) {
+      //   //   return this.boo.wallet != undefined
+      //   // }
+      // },
+
       wallet_onloading: function() {
         if (this.boo) {
           return !this.boo.wallet
         }
+        // return this.session.user.has_auth && !this.wallet
       },
 
       amount: function() {

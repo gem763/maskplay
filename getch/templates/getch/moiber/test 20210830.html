@@ -1,0 +1,136 @@
+<style>
+  /* .test.vcomp .page-body {
+    background: white;
+  } */
+
+  .test.vcomp .page-body > .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  .test.vcomp .page-body > .container > .brands {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 12px;
+    padding-top: 200px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+
+  .test.vcomp .page-body > .container > .brands > .brand {
+    position: relative;
+    width: calc(100% / 3);
+    padding-top: calc(100% / 3);
+    background: white;
+    cursor: pointer;
+  }
+
+  .test.vcomp .page-body > .container > .brands > .brand > img.logo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 100px;
+    object-fit: cover;
+    box-shadow: 0px 2px 1px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: all 0.5s;
+  }
+
+  .test.vcomp .page-body > .container > .brands > .brand > img.logo.loaded {
+    opacity: 1;
+  }
+
+  .test.vcomp .page-body > .container > .brands > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--color-dark);
+  }
+</style>
+
+<script type='text/x-template' id='test-template'>
+  <page
+    class='test vcomp'
+    :order='session.page.test.order'
+    :open='session.page.test.open'
+    :from='session.page.test.from'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='container'>
+        <!-- <itemdetail :obj='obj_ready' :session='session'></itemdetail> -->
+
+        <div class='brands'>
+          <div class='brand' v-for='b in supportbrands' @click='session.open_brander(b)'>
+            <img class='logo' :src='b.logo' @load='logo_loaded'>
+          </div>
+
+          <div class='spinner' v-if='!ready'>
+            <i class="fa fa-spinner fa-spin"></i>
+          </div>
+        </div>
+
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('test', {
+    template: '#test-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        ready: false
+        // obj: Raffle.build(this.session, {id:1})
+        // obj: Shoptem.build(this.session, {id:1})
+      }
+    },
+
+    methods: {
+      logo_loaded: function(event) {
+        this.ready = true;
+        event.target.classList.add('loaded');
+      }
+    },
+
+    computed: {
+      supportbrands: function() {
+        return _.filter(this.session.store.brandstore, b => b.supports.length>0)
+      },
+
+      obj_list: function() {
+        if (this.obj) {
+          return this.obj.list
+        }
+      }
+      // obj_ready: function() {
+      //   if (this.obj && this.obj.item && this.obj.item.name && this.obj.item.pix_0 && this.obj.item.price) {
+      //     return this.obj
+      //   }
+      // }
+    }
+  });
+</script>

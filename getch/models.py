@@ -790,7 +790,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
         st = time.time()
 
         # out = (pos_stat - neg_stat).most_common(10)
-        out = dict((pos_stat - neg_stat).most_common(10))
+        out = dict((pos_stat - neg_stat).most_common(30))
 
         print(time.time()-st, '**********')
         st = time.time()

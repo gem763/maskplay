@@ -73,7 +73,16 @@ class Session {
     // this.keyset_sampling();
 
     this.reload_everyday();
-    // this.open_checkin();
+    // this.open_test();
+
+    // fetch('balancegame/stat')
+    //   .then(x => x.json())
+    //   .then(js => {
+    //     if (js.success) {
+    //       this.balancegame.stat = js.stat;
+    //       this.balancegame.stat_updated = true;
+    //     }
+    //   });
   }
 
   get dasher_control() {
@@ -638,8 +647,9 @@ class Boo extends Baseboo {
   // }
 
 
+  // 10/30/50/70/100
   balancegame_stat_update(amount_add) {
-    if ([10,20,30,40,50,60,70,80,90,100].includes(this.wallet.amount_daybonus + amount_add)) {
+    if ([10,30,50,70,100].includes(this.wallet.amount_daybonus + amount_add)) {
       fetch('balancegame/stat')
         .then(x => x.json())
         .then(js => {

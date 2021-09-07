@@ -148,7 +148,9 @@
       https://stackoverflow.com/questions/18061308/prevent-address-bar-hiding-in-mobile-browsers */
       margin: 0;
       height: 100%;
-      overflow: hidden;
+      /* overflow: hidden; */
+      /* 안드로이드에서 키보드올라올때 이 body의 높이가 바뀐다. 이때 스크롤할수 있도록 overflow 설정  */
+      overflow: auto; 
       background: white;
     }
 

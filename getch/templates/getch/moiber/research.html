@@ -143,7 +143,16 @@
     watch: {
       research_id: function(_new, _old) {
         this.onloading = true;
-      }
+      },
+
+      'session.page.research.open': function(_new, _old) {
+        if (_new) {
+          this.session.fix_window_width();
+
+        } else {
+          this.session.release_window_width();
+        }
+      },
       // 'session.page.research.open': function(_new, _old) {
       //   if (_new) {
       //     this.onloading = true;

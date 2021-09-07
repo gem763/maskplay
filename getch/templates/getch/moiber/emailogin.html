@@ -185,7 +185,8 @@
 
         <div class='action login' :class='{ active: login_available }' @click='login'>로그인하기</div>
         <div class='desc agree'>약관에 동의하고 로그인합니다.</div>
-        <div class='desc signup' @click='session.open_emailsignup(email)'>모이버에 처음 방문했어요</div>
+        <div class='desc signup' @click='session.open_signup()'>모이버에 처음 방문했어요</div>
+        <!-- <div class='desc signup' @click='session.open_emailsignup(email)'>모이버에 처음 방문했어요</div> -->
         <!-- <div class='desc pwchange' @click=''>비밀번호가 생각이 안나요</div> -->
       </div>
 
@@ -224,6 +225,15 @@
 
 
     watch: {
+      'session.page.emailogin.open': function(_new, _old) {
+        if (_new) {
+          this.session.fix_window_width();
+
+        } else {
+          this.session.release_window_width();
+        }
+      },
+
       email: function(_new, _old) {
         if (this.alert_mode != undefined || this.login_available) {
           this.email_check();

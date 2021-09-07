@@ -13,6 +13,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    overflow-y: auto;
   }
 
   .signup.vcomp .page-body > .section.top {
@@ -20,9 +21,9 @@
   }
 
   .signup.vcomp .page-body > .section.middle {
-    height: 80%;
+    height: 100%;
     background: none;
-    justify-content: flex-end;
+    /* justify-content: flex-end; */
   }
 
   .signup.vcomp .page-body > .section.bottom {
@@ -79,7 +80,7 @@
     opacity: 1;
   }
 
-  .signup.vcomp .page-body > .section.bottom > .tail {
+  .signup.vcomp .page-body > .section > .tail {
     width: 100%;
     background: none;
     font-size: 11px;
@@ -87,7 +88,7 @@
     text-align: center;
   }
 
-  .signup.vcomp .page-body > .section.bottom > .tail > .item {
+  .signup.vcomp .page-body > .section > .tail > .item {
     margin-left: 5px;
     margin-right: 5px;
     cursor: pointer;
@@ -223,7 +224,7 @@
     @close='session.close_page()'>
 
     <template #page-body>
-      <div class='section top'></div>
+      <!-- <div class='section top'></div> -->
 
       <div class='section middle'>
         <div class='desc title'><b>회원가입</b></div>
@@ -292,9 +293,6 @@
           <div>💋 입력하면 100P가 즉시 지급됩니다!</div>
         </robo>
 
-      </div>
-
-      <div class='section bottom'>
         <div class='tail'>
           <span class='item' @click='session.open_about()'>회사소개</span>
           <span class='item' @click='session.open_landing()'>서비스소개</span>
@@ -303,7 +301,19 @@
           <span class='item' @click='session.open_privacy()'>개인정보보호</span>
           <span class='item' @click='session.contact()'>문의</span>
         </div>
+
       </div>
+
+      <!-- <div class='section bottom'>
+        <div class='tail'>
+          <span class='item' @click='session.open_about()'>회사소개</span>
+          <span class='item' @click='session.open_landing()'>서비스소개</span>
+          <span class='item' @click='session.open_recruit()'>채용</span>
+          <span class='item' @click='session.open_policy()'>약관</span>
+          <span class='item' @click='session.open_privacy()'>개인정보보호</span>
+          <span class='item' @click='session.contact()'>문의</span>
+        </div>
+      </div> -->
     </template>
   </page>
 </script>
@@ -326,6 +336,17 @@
         robo_hidden: false,
         on_verifying: false,
       }
+    },
+
+    watch: {
+      'session.page.signup.open': function(_new, _old) {
+        if (_new) {
+          this.session.fix_window_width();
+
+        } else {
+          this.session.release_window_width();
+        }
+      },
     },
 
     computed: {

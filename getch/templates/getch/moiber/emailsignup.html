@@ -327,6 +327,13 @@
         if (_new) {
           this.step = 0;
         }
+
+        if (_new) {
+          this.session.fix_window_width();
+
+        } else {
+          this.session.release_window_width();
+        }
       },
 
       email: function(_new, _old) {

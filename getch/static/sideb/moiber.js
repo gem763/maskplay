@@ -74,6 +74,7 @@ class Session {
 
     this.reload_everyday();
     // this.open_test();
+    this.open_signup();
 
     // fetch('balancegame/stat')
     //   .then(x => x.json())
@@ -468,6 +469,19 @@ class Session {
 
   help() {
     this.show_guider = true;
+  }
+
+  fix_window_width() {
+    setTimeout(() => {
+      const w = document.querySelector('#moiber > .window').clientWidth;
+      document.documentElement.style.setProperty('--width', w + 'px');
+    }, 400);
+  }
+
+  release_window_width() {
+    setTimeout(() => {
+      document.documentElement.style.setProperty('--width', 'min(var(--width-max), 100vw, calc(100vh * 11 / 16))');
+    }, 300);
   }
 }
 

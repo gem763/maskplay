@@ -215,6 +215,13 @@
           this.mobile_verified = this.auth_mobile_verified;
           this.address = this.auth_address;
         }
+
+        if (_new) {
+          this.session.fix_window_width();
+
+        } else {
+          this.session.release_window_width();
+        }
       }
     },
 

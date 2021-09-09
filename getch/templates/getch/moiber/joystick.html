@@ -252,8 +252,9 @@
           <div class='item' v-if='on_my' @click='make_collection'>컬렉션 만들기</div>
           <div class='item' @click='session.help()'>도움말 보기</div>
           <div class='item' @click='session.contact()'>문의하기</div>
-          <div class='item logout' v-if='on_my' @click='session.logout()'>로그아웃</div>
-          <div class='item logout' v-if='!boo' @click='session.open_login()'>로그인</div>
+          <div class='item' v-if='on_my' @click='session.logout()'>로그아웃</div>
+          <div class='item' v-if='!boo' @click='session.open_login()'>로그인</div>
+          <div class='item' v-if='boo && (boo.id==638 || boo.id==694)' @click='share_test'>공유하기</div>
         </div>
       </div>
     </div>
@@ -347,6 +348,22 @@
         this.dasher_control.open = true;
         this.dasher_control.section = 'pointuse';
         this.dasher_control.phase = 'menu';
+      },
+
+      share_test: function() {
+        if (navigator.share) {
+          navigator.share({
+            title: "모이버 공유하기",
+            text: "모이버 출석체크를 공유해요",
+            url: 'https://moiber.com'
+          }).then(() => {
+            alert('공유해따')
+          }).catch(console.error);
+
+        } else {
+          alert('공유못해따')
+          // shareDialog.classList.add('is-open');
+        }
       }
     }
   });

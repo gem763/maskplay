@@ -88,9 +88,13 @@
 
         var counts = this.result;
         var keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
-        var root = d3.hierarchy({children: keys}).sum(function(d) { return counts[d]; });
+        var root = d3.hierarchy({children: keys})
+          .sum(function(d) {
+            // return counts[d];
+            return Math.pow(counts[d], 2);
+          });
 
-        // console.log(root);
+        console.log(root);
 
         var node = chart.selectAll(".node")
           .data(pack(root).leaves())
@@ -114,8 +118,24 @@
           .attr("x", 0)
           .attr("y", function(d) { return d.r/8; })
           .attr('fill', 'white')
-          .attr("font-size", function(d) { return d.r/2; })
+          .attr("font-size", function(d) {
+            if (d.data.length > 4) {
+              return d.r/3
+
+            } else {
+              return d.r/2
+            }
+          })
+          // .each(getSize)
+          // .attr("font-size", function(d) { return d.scale + "px"; })
           .text(function(d) { return d.data; });
+
+          // function getSize(d) {
+          //   var bbox = this.getBBox(),
+          //       cbbox = this.parentNode.getBBox(),
+          //       scale = Math.min(cbbox.width/bbox.width, cbbox.height/bbox.height);
+          //   d.scale = scale;
+          // }
       }
     }
   });

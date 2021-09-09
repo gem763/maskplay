@@ -528,10 +528,15 @@
         if (this.agenda) {
           // console.log(this.agenda.outlink);
           if (navigator.userAgent.toLowerCase().indexOf('androidapp') != -1) {
-            alert(this.agenda.outlink);
+            // alert(this.agenda.outlink);
+            // cordova 안드로이드앱에서 _self로 하면, 예외처리로 되어 외부브라우저가 열린다
+            // 왜? 인지는 모른다... 2021.09.09
+            window.open(this.agenda.outlink, '_self');
+
+          } else {
+            window.open(this.agenda.outlink, '_blank');//, 'location=0');//.focus();
           }
 
-          window.open(this.agenda.outlink, '_self');//, 'location=0');//.focus();
           // const win = window.open('', '_blank');
           // win.location.href = this.agenda.outlink;
         }

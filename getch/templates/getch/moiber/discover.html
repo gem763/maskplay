@@ -150,7 +150,7 @@
       height: 100%;
       /* overflow: hidden; */
       /* 안드로이드에서 키보드올라올때 이 body의 높이가 바뀐다. 이때 스크롤할수 있도록 overflow 설정  */
-      overflow: auto; 
+      overflow: auto;
       background: white;
     }
 
@@ -342,7 +342,7 @@
         <span class='item' @click='session.open_recruit()'>채용</span>
         <span class='item' @click='session.open_policy()'>약관</span>
         <span class='item' @click='session.open_privacy()'>개인정보보호</span>
-        <span class='item' @click='contact'>문의</span>
+        <span class='item' @click='session.contact()'>문의</span>
       </div>
 
       <div class='about'>주식회사 모이버 | 대표 : 임동석 | 주소 : 서울 서초구 신반포로 315, 2층<br>
@@ -457,16 +457,16 @@
             window.open('https://moiber.com/app/ios');
 
           } else if (/Android/i.test(navigator.userAgent)) {
-            console.log('android');
+            window.open('https://moiber.com/app/android');
 
           } else {
             console.log('other');
           }
         },
 
-        contact: function() {
-          window.open('mailto:contact@moiber.com');
-        },
+        // contact: function() {
+        //   window.open('mailto:contact@moiber.com');
+        // },
       }
     });
 
@@ -545,10 +545,15 @@
       // }
 
 
+
+      // console.log(navigator.userAgent);
       // if(/Macintosh|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
       // if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       if ((/iPhone|iPad|iPod/i.test(navigator.userAgent)) && (navigator.userAgent.toLowerCase().indexOf('mobileapp') == -1)) {
         // true for mobile device
+        document.documentElement.style.setProperty('--appdownloader-height', '45px');
+
+      } else if ((/Android/i.test(navigator.userAgent)) && (navigator.userAgent.toLowerCase().indexOf('mobileapp') == -1)) {
         document.documentElement.style.setProperty('--appdownloader-height', '45px');
 
       } else {

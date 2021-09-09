@@ -376,7 +376,7 @@ class PixAdmin(admin.ModelAdmin):
     list_display = ['owner', 'desc', 'tokens', 'tokens_ko', 'outlink', 'type', 'preview']
     raw_id_fields = ('owner', )
     list_editable = ['type']
-    search_fields = ('owner__nick', )
+    search_fields = ('owner__nick', 'tokens', )
     list_per_page = 20
 
     def preview(self, obj):

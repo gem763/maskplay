@@ -289,17 +289,21 @@
     props: ['session'],
     data: function() {
       return {
-        section: 'related',
-        // section: 'collection',
+        // section: 'related',
+        section: 'collection',
         // section: 'myinfo'
       }
     },
 
     watch: {
       is_myboo: function(_new, _old) {
-        if (!_new) {
-          this.section = 'collection';
+        if (_new) {
+          this.section = 'related';
         }
+
+        // if (!_new) {
+        //   this.section = 'collection';
+        // }
       }
     },
 

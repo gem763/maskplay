@@ -526,7 +526,14 @@
 
       visit: function() {
         if (this.agenda) {
-          window.open(this.agenda.outlink);
+          // console.log(this.agenda.outlink);
+          if (navigator.userAgent.toLowerCase().indexOf('androidapp') != -1) {
+            alert(this.agenda.outlink);
+          }
+
+          window.open(this.agenda.outlink, '_blank');//, 'location=0');//.focus();
+          // const win = window.open('', '_blank');
+          // win.location.href = this.agenda.outlink;
         }
       },
 

@@ -202,7 +202,7 @@
                 <span class='item' @click='session.open_recruit()'>채용</span>
                 <span class='item' @click='session.open_policy()'>약관</span>
                 <span class='item' @click='session.open_privacy()'>개인정보보호</span>
-                <span class='item' @click='contact'>문의</span>
+                <span class='item' @click='session.contact()'>문의</span>
               </div>
             </div>
           </div>
@@ -246,9 +246,9 @@
     },
 
     methods: {
-      contact: function() {
-        window.open('mailto:contact@moiber.com');
-      },
+      // contact: function() {
+      //   window.open('mailto:contact@moiber.com');
+      // },
 
       goto_fb: function() {
         window.open('https://www.facebook.com/moiber.official');

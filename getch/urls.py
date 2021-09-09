@@ -17,6 +17,7 @@ urlpatterns = [
     path('policy/', v.policy, name='policy'),
     path('recruit/', v.recruit, name='recruit'),
     path('app/ios/', v.app_ios, name='app_ios'),
+    path('app/android/', v.app_android, name='app_android'),
     # path('accounts/', include('allauth.urls')),
     # path('login/', v.Login.as_view(), name='login'),
     path('logout/', v.Logout.as_view(), name='logout'),

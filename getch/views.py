@@ -96,6 +96,9 @@ def app_ios(request):
     return redirect('https://itunes.apple.com/app/id1578448720')
 
 
+def app_android(request):
+    return redirect('https://play.google.com/store/apps/details?id=com.moiber.mobileApp')
+
 
 def load(request, ctx):
     # 처음 로딩할때는 session 객체가 없어서,

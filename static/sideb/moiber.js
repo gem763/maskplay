@@ -74,6 +74,7 @@ class Session {
 
     this.reload_everyday();
     // this.open_test();
+    // this.open_signup();
 
     // fetch('balancegame/stat')
     //   .then(x => x.json())
@@ -443,7 +444,8 @@ class Session {
   }
 
   contact() {
-    window.open('mailto:contact@moiber.com')
+    // window.open('mailto:contact@moiber.com')
+    document.location.href = 'mailto:contact@moiber.com';
   }
 
   load_shoptems() {

@@ -75,7 +75,7 @@
         </div>
 
         <!-- <br><br> -->
-        <div class='apply' @click='apply'>지원하기</div>
+        <div class='apply' @click='session.contact()'>지원하기</div>
         <!-- <br> -->
       </div>
     </template>
@@ -108,9 +108,9 @@
         }
       },
 
-      apply: function() {
-        window.open('mailto:contact@moiber.com');
-      }
+      // apply: function() {
+      //   window.open('mailto:contact@moiber.com');
+      // }
     }
   });
 </script>

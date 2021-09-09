@@ -234,7 +234,20 @@
       },
 
       login_kakao: function() {
-        window.location.assign(this.kakao_login_url);
+        if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
+          //ios 앱인경우
+          var param = { action: 'kakaologin' };
+          webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(param));
+
+        } else if (navigator.userAgent.toLowerCase().indexOf('androidapp') != -1) {
+          //안드로이드 앱인경우
+          var param = { action: 'kakaologin' };
+          webkit.messageHandlers.cordova_iab.postMessage(JSON.stringify(param));
+
+        } else {
+          //웹인경우
+          window.location.assign(this.kakao_login_url);
+        }
       },
 
       login_naver: function() {

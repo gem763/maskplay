@@ -54,7 +54,7 @@
         </div>
       </div>
 
-      <div class='item' @click='suggest'>
+      <div class='item' @click='session.contact()'>
         <img src='/static/materials/imgs/menu/pointuse-suggestion.jpg'>
         <div class='title'>
           <span>건의하기</span>
@@ -69,7 +69,7 @@
         </div>
       </div>
 
-      <div class='item' @click='suggest'>
+      <div class='item' @click='session.contact()'>
         <img src='/static/materials/imgs/menu/pointuse-question.jpg'>
         <div class='title'>
           <span>질문하기</span>
@@ -197,9 +197,9 @@
         this.go_content(4);
       },
 
-      suggest: function() {
-        window.open('mailto:contact@moiber.com');
-      }
+      // suggest: function() {
+      //   window.open('mailto:contact@moiber.com');
+      // }
     }
   });
 </script>

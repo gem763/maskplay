@@ -95,6 +95,7 @@
 
     <div class='action' @click='$emit("action")'>
       <img class='x' v-if='x_type' src='/static/materials/icons/icon_x.png'>
+      <img class='x dark' v-if='x_dark_type' src='/static/materials/icons/icon_x.png'>
       <img class='next' v-else-if='next_type' src='/static/materials/icons/seemore.png'>
       <img class='next dark' v-else-if='next_dark_type' src='/static/materials/icons/seemore.png'>
       <!-- <img class='next' v-else-if='next_type' src='/static/materials/icons/button-backward.png'> -->
@@ -116,6 +117,10 @@
     computed: {
       x_type: function() {
         return this.type == 'x'
+      },
+
+      x_dark_type: function() {
+        return this.type == 'x-dark'
       },
 
       next_type: function() {

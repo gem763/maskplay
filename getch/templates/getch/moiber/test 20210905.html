@@ -1,0 +1,142 @@
+<style>
+  .test.vcomp .page-body > .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .test.vcomp .page-body > .container > svg text {
+  	text-anchor: middle;
+
+  }
+</style>
+
+<script type='text/x-template' id='test-template'>
+  <page
+    class='test vcomp'
+    :order='session.page.test.order'
+    :open='session.page.test.open'
+    :from='session.page.test.from'
+    :hide_menu='true'
+    @close='session.close_page()'>
+
+    <template #page-body>
+      <div class='container' ref='container'>
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('test', {
+    template: '#test-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        // result: {
+        //   '검정': 8,
+        //   '스니커즈': 15,
+        //   '모자': 17,
+        //   '바지': 16,
+        //   '블레이저': 12,
+        //   '디자인': 2,
+        //   '운동화': 11
+        // }
+      }
+    },
+
+    mounted: function() {
+      // this.wordcloud_render();
+    },
+
+    watch: {
+      result: function(_new, _old) {
+        this.wordcloud_render();
+      }
+    },
+
+    computed: {
+      result: function() {
+        return this.session.balancegame.stat
+      }
+    },
+
+    methods: {
+      wordcloud_render: function() {
+        // https://codepen.io/art-lav/pen/oKGgeZ?editors=1111
+
+        var raw;
+        var size = Math.min(this.$refs.container.clientWidth, this.$refs.container.clientHeight);
+        // var color = d3.scaleOrdinal(d3.schemeCategory10);
+        var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+        var chart = d3.select(".test.vcomp .page-body > .container")
+          .append('svg')
+          .attr("width", size)
+          .attr("height", size);
+
+        var pack = d3.pack()
+          .size([size, size])
+          .padding(size*0.005);
+
+        var counts = this.result;
+        var keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+        var root = d3.hierarchy({children: keys})
+          .sum(function(d) {
+            // return counts[d];
+            return Math.pow(counts[d], 2);
+          });
+
+        console.log(root);
+
+        var node = chart.selectAll(".node")
+          .data(pack(root).leaves())
+          .enter().append("g")
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+        node.append("circle")
+          .attr("id", function(d) { return d.data; })
+          .attr("r", function(d) { return d.r; })
+          .style("fill", function(d) { return color(d.data); });
+
+        node.append("clipPath")
+          .attr("id", function(d) { return "clip-" + d.data; })
+          .append("use")
+          .attr("xlink:href", function(d) { return "#" + d.data; });
+
+        node.append("text")
+          .attr("clip-path", function(d) { return "url(#clip-" + d.data + ")"; })
+          .append("tspan")
+          .attr("x", 0)
+          .attr("y", function(d) { return d.r/8; })
+          .attr('fill', 'white')
+          .attr("font-size", function(d) {
+            if (d.data.length > 4) {
+              return d.r/3
+
+            } else {
+              return d.r/2
+            }
+          })
+          // .each(getSize)
+          // .attr("font-size", function(d) { return d.scale + "px"; })
+          .text(function(d) { return d.data; });
+
+          // function getSize(d) {
+          //   var bbox = this.getBBox(),
+          //       cbbox = this.parentNode.getBBox(),
+          //       scale = Math.min(cbbox.width/bbox.width, cbbox.height/bbox.height);
+          //   d.scale = scale;
+          // }
+      }
+    }
+  });
+</script>

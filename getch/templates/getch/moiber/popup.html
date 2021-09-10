@@ -1,0 +1,159 @@
+<style>
+  .popup.vcomp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.2s;
+    background: none;
+    pointer-events: none;
+    /* z-index: 300; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .popup.vcomp.open {
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+  }
+
+  .popup.vcomp > .messagebox {
+    position: relative;
+    width: 100%;
+    /* height: 300px; */
+    background: white;
+    opacity: 0;
+    transition: all 0.2s;
+    border-radius: 15px;
+    /* padding-bottom: 16px; */
+    /* padding: 16px;
+    box-sizing: border-box; */
+    /* overflow: hidden; */
+  }
+
+  .popup.vcomp.open > .messagebox {
+    opacity: 1;
+  }
+
+  .popup.vcomp > .messagebox > .head {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    /* background: white; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color-dark);
+  }
+
+  .popup.vcomp > .messagebox > .actions {
+    position: relative;
+    width: 100%;
+    /* height: 100px; */
+    /* background: lightpink; */
+    padding: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .popup.vcomp > .messagebox > .actions > .action {
+    position: relative;
+    height: 36px;
+    width: calc(50% - 8px);
+    background: #f8f8f8;
+    border-radius: 15px;
+    text-align: center;
+    line-height: 36px;
+    cursor: pointer;
+  }
+
+  .popup.vcomp > .messagebox > .actions > .action.kakao-share {
+    background: #FFE810;
+  }
+
+  .popup.vcomp > .messagebox > .actions > .action.retry {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  .popup.vcomp > .messagebox > .actions > .action.copy-link.copied {
+    background: var(--color-dark);
+    color: white;
+  }
+
+  /* .popup.vcomp > .messagebox > .actions > .hidden-message {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+    padding-top: 10px;
+    opacity: 0;
+  }
+
+  @keyframes fadeOut {
+    0% {opacity: 1;}
+    50% {opacity: 1;}
+    100% {opacity: 0;}
+  }
+
+  .popup.vcomp > .messagebox > .actions > .hidden-message.show {
+    animation: fadeOut 1s forwards;
+  } */
+</style>
+
+<script type='text/x-template' id='popup-template'>
+  <div class='popup vcomp' :class='{ open: open }' @click='dismiss'>
+    <div class='messagebox' @click.stop>
+      <div class='head'>
+        <slot name='title'></slot>
+      </div>
+
+      <robo :session='session' type='x' @action='dismiss'>
+        <slot name='message'></slot>
+      </robo>
+
+      <div class='actions'>
+        <slot name='actions'></slot>
+        <!-- <div class='action'>링크복사</div>
+        <div class='action'>카카오톡 공유하기</div> -->
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('popup', {
+    template: '#popup-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session', 'open' ],
+    data: function() {
+      return {}
+    },
+
+    // computed: {
+    //   open: function() {
+    //     return this.session.popup.open
+    //   }
+    // },
+
+    methods: {
+      dismiss: function() {
+        this.$emit('dismiss');
+        // this.session.popup.open = false;
+      }
+    }
+  });
+</script>

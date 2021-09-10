@@ -44,6 +44,7 @@ class Session {
     this.page[this.home].open = true;
 
     this.show_guider = false;
+    // this.popup = { open: false, type: undefined, actions: {} };
 
     // this.contentworks = {
     //   '동네스타일': Contentwork.build(this, { id: 1})

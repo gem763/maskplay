@@ -29,7 +29,7 @@ SECRET_KEY = config("SECRET_KEY")
 KAKAO_JS_KEY = config('KAKAO_JS_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 APP = 'getch'

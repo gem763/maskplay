@@ -368,6 +368,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
   <!-- <script src="https://unpkg.com/vuewordcloud"></script> -->
   <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
 
   {% include "getch/moiber/pages2.html" %}
   {% include "getch/moiber/joystick.html" %}
@@ -470,11 +471,14 @@
       }
     });
 
+    Kakao.init('{{ kakao_js_key|safe }}');
+    // console.log(kakao)
+
     function kakaotalk_login(data) {
       // alert(typeof(data) + data);
       // alert(data);
       const formdata = new FormData();
-      formdata.append('csrfmiddlewaretoken', '{{csrf_token}}');
+      formdata.append('csrfmiddlewaretoken', '{{ csrf_token }}');
       formdata.append('data', data);
       // formdata.append('data', JSON.stringify(data));
 

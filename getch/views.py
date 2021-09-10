@@ -64,6 +64,7 @@ def discover(request):
     context['entry'] = request.GET.get('entry', None)
     context['dongne'] = request.GET.get('dongne', None)
     context['gender'] = request.GET.get('gender', None)
+    context['kakao_js_key'] = settings.KAKAO_JS_KEY
     # print(request.user.boo.reward_snapshot)
     return render(request, 'getch/moiber/discover.html', context)
 

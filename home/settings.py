@@ -26,6 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'l9naapdhlj2wfi5e26u+urm_1sn28umx!0f3@v60hn_(33%)j+'
 SECRET_KEY = config("SECRET_KEY")
+KAKAO_JS_KEY = config('KAKAO_JS_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

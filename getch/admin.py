@@ -311,6 +311,7 @@ class BooAdmin(admin.ModelAdmin):
     list_display_links = ['user']
     list_filter = ['user'] # admin 페이지 오른쪽에 필터메뉴 있다
     list_editable = ['nick', 'coltagged']
+    search_fields = ('nick', )
     list_per_page = 20
 
     def selected(self, obj):

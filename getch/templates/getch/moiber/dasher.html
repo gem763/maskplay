@@ -248,6 +248,33 @@
     font-size: 20px;
     margin-right: 5px;
   }
+
+  .dasher.vcomp > .panel > .reloader {
+    position: absolute;
+    bottom: calc(var(--dasher-height) * (-1));
+    left: 0;
+    width: 100%;
+    height: var(--dasher-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    font-size: 12px;
+    color: var(--color-dark);
+    transition: all 0.3s;
+    /* background: orange; */
+    cursor: pointer;
+  }
+
+  .dasher.vcomp > .panel > .reloader.show {
+    bottom: 0;
+  }
+
+  .dasher.vcomp > .panel > .reloader > img {
+    width: 15px;
+    height: auto;
+    margin-right: 5px;
+  }
 </style>
 
 <script type='text/x-template' id='dasher-template'>
@@ -283,9 +310,14 @@
         </div>
       </div>
 
-      <div class='spinner' :class='{ show: wallet_onloading }'>
+      <div class='spinner' :class='{ show: wallet_onloading && !on_reloader }'>
         <i class="fa fa-spinner fa-spin"></i>
         포인트 확인 중 입니다...
+      </div>
+
+      <div class='reloader' :class='{ show: on_reloader }' @click='reload_boo'>
+        <img src='/static/materials/icons/reload.png'>
+        다시 로드하기
       </div>
     </div>
   </div>
@@ -298,7 +330,26 @@
     delimiters: ['[[', ']]'],
     props: [ 'session' ],
     data: function() {
-      return {}
+      return {
+        wallet_loading_interval: 0,
+        wallet_loading_interval_id: undefined
+      }
+    },
+
+    watch: {
+      wallet_onloading: function(_new, _old) {
+        if (_new) {
+          this.wallet_loading_interval_id = setInterval(() => {
+            this.wallet_loading_interval += 1;
+          }, 1000);
+
+        } else {
+          clearInterval(this.wallet_loading_interval_id);
+          this.wallet_loading_interval = 0;
+        }
+      },
+
+      wallet_loading_interval: function() {}
     },
 
     methods: {
@@ -317,6 +368,10 @@
 
       close: function() {
         this.toggle_section(this.control.section);
+      },
+
+      reload_boo: function() {
+        this.session.user.auth.reload_boos();
       }
     },
 
@@ -359,6 +414,14 @@
       wallet_onloading: function() {
         if (this.boo) {
           return !this.boo.wallet
+          // return this.boo.onloading && !this.boo.wallet
+          // return true
+        }
+      },
+
+      on_reloader: function() {
+        if (this.wallet_onloading) {
+          return this.wallet_loading_interval > 5
         }
       },
 

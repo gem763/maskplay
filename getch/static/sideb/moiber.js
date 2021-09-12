@@ -69,7 +69,7 @@ class Session {
     this.stylelabels = undefined; //new Stylelabels(this);
     this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
-    this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false };
+    this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false, stat_last: false };
     this.user = new User(this);
     // this.keyset_sampling();
 
@@ -86,6 +86,10 @@ class Session {
     //     }
     //   });
   }
+
+  // reload_user() {
+  //   this.user = new User(this);
+  // }
 
   get dasher_control() {
     return {
@@ -159,6 +163,8 @@ class Session {
     while (!this.on(this.home)) {
       this.close_page();
     }
+
+    this.mode.dasher_control = this.dasher_control;
   }
 
   open_page(pagename, covering) {
@@ -531,6 +537,12 @@ class Loader {
     return this
   }
 
+  // reload() {
+  //   this.loaded = false;
+  //   this.onloading = false;
+  //   this.load();
+  // }
+
   // 객체만 생성 (로드는 안하기)
   static init(session, baseobj) {
     return new this(session, baseobj)
@@ -666,6 +678,8 @@ class Boo extends Baseboo {
   // 10/30/50/70/100
   balancegame_stat_update(amount_add) {
     if ([10,30,50,70,100].includes(this.wallet.amount_daybonus + amount_add)) {
+      const is_last = 100 == (this.wallet.amount_daybonus + amount_add);
+
       fetch('balancegame/stat')
         .then(x => x.json())
         .then(js => {
@@ -673,6 +687,7 @@ class Boo extends Baseboo {
             console.log(js);
             this.session.balancegame.stat = js.stat;
             this.session.balancegame.stat_updated = true;
+            this.session.balancegame.stat_last = is_last;
           }
         });
     }
@@ -1529,19 +1544,33 @@ class User {
     fetch('/user2')
       .then(x => x.json())
       .then(js => {
-        if (js.success) {
-          this.auth = new Auth(js.user, this.session);
-          // this.session.open_my();
+        // console.log(js);
 
-          // if (js.user.is_superuser) {
-          //   this.session.researches.load_onworks();
-          // }
+        if (js.mode == 0) {
+          this.auth = new Auth(js.user, this.session);
+
+        } else if (js.mode == 1) {
+          this.guest = { boo: JSON.parse(js.guestboo) };
+
+        } else {
+
         }
 
-        this.guest = { boo: JSON.parse(js.guestboo) };
+        // if (js.success) {
+        //   this.auth = new Auth(js.user, this.session);
+        // }
+        //
+        // this.guest = { boo: JSON.parse(js.guestboo) };
         this.onloading = false;
       });
   }
+
+  // reload() {
+  //   this.auth = undefined;
+  //   this.guest = undefined;
+  //   this.onloading = true;
+  //   this.load();
+  // }
 
   get has_auth() {
     return this.auth ? true : false
@@ -1667,6 +1696,7 @@ class User {
 class Auth {
   // constructor(cuser, store) {
   constructor(cuser, session) {
+    this.cuser = cuser;
     this.id = Number(cuser.id);
     this.name = cuser.name;
     this.gender = cuser.gender==0 ? '남성' : '여성';
@@ -1689,6 +1719,14 @@ class Auth {
     // this.load_other_boos();
     // this.signup_check();
   }
+
+  reload_boos() {
+    this.boos = {};
+    setTimeout(() => {
+      this.boos = this.cuser.boo ? {[this.cuser.boo_selected]: Boo.build(this.session, this.cuser.boo)} : {};
+    }, 10);
+  }
+
 
   // signup_check() {
   //   const signupinfo = sessionStorage.getItem('signupinfo');
@@ -1743,6 +1781,7 @@ class Auth {
 
   get boo() {
     return this.boos[this.boo_selected];
+    // return this.session.store.boostore[this.boo_selected]
   }
 
   is_following(author_id) {

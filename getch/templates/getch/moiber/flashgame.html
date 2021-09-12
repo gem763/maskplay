@@ -253,7 +253,8 @@
       <template #message>[[ popup_message ]]</template>
 
       <template #actions>
-        <div class='action copy-link' :class='{ copied: copied }' v-if='popup_type=="done"' @click='copy_link'>[[ copied ? "복사완료!" : "링크 복사히기" ]]</div>
+        <div class='action home' v-if='popup_type=="done"' @click='goto_home'>모이버 홈으로</div>
+        <!-- <div class='action copy-link' :class='{ copied: copied }' v-if='popup_type=="done"' @click='copy_link'>[[ copied ? "복사완료!" : "링크 복사하기" ]]</div> -->
         <div class='action kakao-share' v-if='popup_type=="done"' @click='kakao_share'>카카오톡 공유하기</div>
         <div class='action' v-if='popup_type=="cancel"' @click='ok'>확인</div>
         <div class='action retry' v-if='popup_type=="cancel"' @click='retry'>다시 해보기</div>
@@ -422,6 +423,11 @@
 
       retry: function() {
         this.dismiss_popup();
+      },
+
+      goto_home: function() {
+        this.session.open_home();
+        this.dismiss_popup();
       }
     },
 
@@ -528,7 +534,7 @@
       popup_message: function() {
         if (this.mywallet) {
           if (this.popup_type == 'done') {
-            return '지금 ' + this.mywallet.per_checkin + 'P가 지급되었습니다'
+            return this.mywallet.per_checkin + 'P가 지급되었습니다\n친구와 공유해 볼까요?'
 
           } else if (this.popup_type == 'cancel') {
             return '출첵 ' + this.mywallet.per_checkin + 'P가 취소처리 됩니다'

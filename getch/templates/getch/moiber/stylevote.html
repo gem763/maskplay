@@ -121,7 +121,7 @@
 
       <div class='analyzer' :class='{ on: on_analyzer }' @click='close_analyzer'>
         <div class='box' @click.stop>
-          <div class='head'>밸런스게임 중간집계</div>
+          <div class='head'>[[ analyzer_title ]]</div>
 
           <div class='content'>
             <div class='wordcloud' ref='wordcloud'></div>
@@ -293,6 +293,15 @@
 
       stat_updated: function() {
         return this.session.balancegame.stat_updated
+      },
+
+      analyzer_title: function() {
+        if (this.session.balancegame.stat_last) {
+          return '오늘의 밸런스게임 결과'
+
+        } else {
+          return '밸런스게임 중간집계'
+        }
       }
     }
   });

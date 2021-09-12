@@ -469,19 +469,30 @@ def get_user(request):
 
 
 def get_user2(request):
-    sessionkey = request.session.session_key
+    try:
+        if request.user.is_authenticated:
+            return JsonResponse({'mode':0, 'user':request.user.serialized2}, safe=False)
 
-    if request.user.is_authenticated:
-        # if not request.user.has_active_boo:
-        #     request.user.create_default_boo()
+        else:
+            sessionkey = request.session.session_key
+            guestboo = m.Boo.guestboo_serialized(sessionkey)
+            return JsonResponse({'mode':1, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
 
-        # bgrs.clear()
-        # bgrs.extend(list(m.BalancegameRecord.objects.filter(who=request.user.boo).values('pix_0', 'pix_1')))
-        # print(bgrs)
-        return JsonResponse({'success':True, 'user':request.user.serialized2, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
+    except:
+        return JsonResponse({'mode':-1, 'message':'something wrong while auth'})
 
-    else:
-        return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
+
+    # try:
+    #     sessionkey = request.session.session_key
+    #     guestboo = m.Boo.guestboo_serialized(sessionkey)
+    #
+    #     if request.user.is_authenticated:
+    #         print('***************')
+    #         return JsonResponse({'success':True, 'user':request.user.serialized2, 'guestboo':m.Boo.guestboo_serialized(sessionkey)}, safe=False)
+    #
+    # except:
+    #     print('##############')
+    #     return JsonResponse({'success':False, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
 
 
 def notice_preset(request):

@@ -711,9 +711,9 @@ class Boo extends Baseboo {
       this.wallet.receive_daybonus('daily_balance_game', (-1) * this.wallet.per_vote);
 
     } else if (type == 'new') {
-      if (this.session.user.auth.is_superuser) {
+      // if (this.session.user.auth.is_superuser) {
         this.balancegame_stat_update(this.wallet.per_vote); // 순서가 바뀌면 안된다
-      }
+      // }
 
       this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
     }

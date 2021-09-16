@@ -10,6 +10,7 @@ urlpatterns = [
     path('about/', v.about, name='about'),
     path('company/recruit/', v.company_recruit, name='company_recruit'),
     path('landing/', v.landing, name='landing'),
+    path('zthinker/', v.zthinker, name='zthinker'),
     path('test/', v.test, name='test'),
     # path('testbed/', v.testbed, name='testbed'),
     # path('memb/', v.memb, name='memb'),

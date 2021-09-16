@@ -159,6 +159,10 @@ def landing(request):
     # context['entry'] = 'landing'
     # return render(request, 'getch/moiber/discover.html', context)
 
+def zthinker(request):
+    params = { 'entry': 'zthinker' }
+    return redirect_params('discover', params)
+
 def testbed(request):
     context['req'] = 5
     return load(request, context)

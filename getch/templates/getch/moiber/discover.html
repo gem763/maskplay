@@ -396,6 +396,7 @@
   {% include "getch/moiber/guider.html" %}
   {% include "getch/moiber/robo.html" %}
   {% include "getch/moiber/popup.html" %}
+  {% include "getch/moiber/banner.html" %}
 
   {% include "getch/pixloader.html" %}
   {% include "getch/editext.html" %}
@@ -415,6 +416,10 @@
         this.entry = '{{entry}}';
 
         switch (this.entry) {
+          case 'zthinker':
+            this.session.open_zthinker();
+            break;
+
           case 'landing':
             this.session.open_landing();
             break;

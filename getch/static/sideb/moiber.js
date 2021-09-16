@@ -35,6 +35,7 @@ class Session {
       policy:       { order: 0, instant: true, open: false, from: 'left' },
       privacy:      { order: 0, instant: true, open: false, from: 'left' },
       landing:      { order: 0, instant: true, open: false, from: 'left' },
+      zthinker:     { order: 0, instant: false, open: false, from: 'left' },
       infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
 
       test:         { order: 0, instant: false, open: false, from: 'right' },
@@ -253,6 +254,10 @@ class Session {
 
   open_landing() {
     this.open_page('landing');
+  }
+
+  open_zthinker() {
+    this.open_page('zthinker');
   }
 
   open_baseinfo() {

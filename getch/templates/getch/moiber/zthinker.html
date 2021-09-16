@@ -1,0 +1,313 @@
+<style>
+  .zthinker.vcomp .page-body {
+    background: white;
+  }
+
+  .zthinker.vcomp .page-body > .container {
+    background: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .zthinker.vcomp .page-body > .container > span.apply {
+    position: absolute;
+    top: calc(50% + var(--width)/2 + 50px);
+    left: 50%;
+    transform: translateX(-50%);
+    height: 36px;
+    background: orange;
+    border-radius: 15px;
+    line-height: 36px;
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: var(--color-dark);
+    color: white;
+    cursor: pointer;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: calc(var(--width) + 50px);
+    z-index: 0;
+    transform: translateY(-50%);
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper {
+    z-index: 0;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+    overflow: hidden;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    background: white;
+    color: var(--color-dark);
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > img {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transform: translateY(-50%);
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide.loaded > .spinner {
+    opacity: 0;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .slogan {
+    position: absolute;
+    bottom: var(--w-90);
+    width: 100%;
+    /* background: orange; */
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .btn {
+    background: var(--color-dark);
+    width: var(--w-33);
+    height: var(--w-12);
+    border-radius: var(--w-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: white;
+    position: absolute;
+    bottom: var(--w-60);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .btn > span {
+    pointer-events: none;
+  }
+
+  /* .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .contactus {
+    position: absolute;
+    bottom: var(--w-40);
+    width: 100%;
+    font-size: 15px;
+    text-align: center;
+    color: var(--color-inactive);
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .links {
+    position: absolute;
+    width: 100%;
+    bottom: var(--w-30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .links > .link {
+    width: var(--w-10);
+    height: var(--w-10);
+    position: relative;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .links > .link > img {
+    width: 60%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } */
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-pagination > .swiper-pagination-bullet {
+    background: gray;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-pagination > .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    background: black;
+  }
+
+  /* .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-pagination > .swiper-pagination-bullet:last-child.swiper-pagination-bullet-active {
+    background: black;
+  } */
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .tail {
+    position: absolute;
+    bottom: var(--w-20);
+    width: 100%;
+    /* background: orange; */
+    font-size: 12px;
+    color: #828282;
+    text-align: center;
+  }
+
+  .zthinker.vcomp .page-body > .container > .swiper-container > .swiper-wrapper > .swiper-slide > .tail > .item {
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+</style>
+
+
+<script type='text/x-template' id='zthinker-template'>
+  <page
+    class='zthinker vcomp'
+    :order='session.page.zthinker.order'
+    :open='session.page.zthinker.open'
+    :from='session.page.zthinker.from'
+    :hide_headerbar='true'
+    @close='session.close_page()'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #page-body>
+      <div class='container'>
+
+        <div class='swiper-container' ref='swiper'>
+          <div class='swiper-wrapper'>
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-1.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-2.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-3.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-4.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-5.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-6.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide">
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-7-C.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide" v-if='on_app'>
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-8.png' @load='loaded'>
+            </div>
+
+            <div class="swiper-slide" v-else>
+              <div class='spinner'>
+                <i class="fa fa-spinner fa-spin"></i>
+              </div>
+              <img src='/static/materials/zthinker/MOIBER-ZTHINKER-8-web.png' @load='loaded'>
+            </div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+
+        <span class='apply' @click='apply_zthinker'>지원서 작성하기</span>
+
+      </div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('zthinker', {
+    template: '#zthinker-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        swiper: undefined,
+        swiper_options: {
+          // direction: 'vertical',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          },
+          pagination: {
+            el: '.swiper-pagination',
+          },
+        }
+      }
+    },
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    computed: {
+      on_app: function() {
+        return (navigator.userAgent.toLowerCase().indexOf('mobileapp') != -1)
+      }
+    },
+
+    methods: {
+      loaded: function() {
+        event.target.parentElement.classList.add('loaded');
+      },
+
+      apply_zthinker: function() {
+        window.open('http://naver.me/FuVdRiur');
+      }
+    }
+  });
+</script>

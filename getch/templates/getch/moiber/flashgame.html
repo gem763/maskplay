@@ -230,7 +230,7 @@
           <div class='candidate' :class='status(0)' @click='toggle_choose(0)'>
             <img class='pix' :src='pix_0' @load='pix_loaded'>
             <div class='label'>[[ pixlabel_0 ]]</div>
-            <div class='score' v-if='answered'>[[ pct_0 ]]</div>
+            <div class='score' v-if='answered'>[[ pct_0 ]]%</div>
           </div>
         </div>
 
@@ -238,7 +238,7 @@
           <div class='candidate' :class='status(1)' @click='toggle_choose(1)'>
             <img class='pix' :src='pix_1' @load='pix_loaded'>
             <div class='label'>[[ pixlabel_1 ]]</div>
-            <div class='score' v-if='answered'>[[ pct_1 ]]</div>
+            <div class='score' v-if='answered'>[[ pct_1 ]]%</div>
           </div>
         </div>
 
@@ -512,13 +512,14 @@
 
       pct_0: function() {
         if (this.stat) {
-          return Math.round(100 * this.stat.count_0 / (this.stat.count_0 + this.stat.count_1)) + '%'
+          return Math.round(100 * this.stat.count_0 / (this.stat.count_0 + this.stat.count_1))// + '%'
         }
       },
 
       pct_1: function() {
         if (this.stat) {
-          return Math.round(100 * this.stat.count_1 / (this.stat.count_0 + this.stat.count_1)) + '%'
+          return (100 - this.pct_0)// + '%'
+          // return Math.round(100 * this.stat.count_1 / (this.stat.count_0 + this.stat.count_1)) + '%'
         }
       },
 

@@ -20,14 +20,18 @@ from ordered_model.models import OrderedModel
 from IPython.core.debugger import set_trace
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 import json
 import os
 import re
 import collections
 import random
-import base64
 import requests
 import time
+import base64
+import hashlib
+import hmac
 
 
 # from gensim.models import Doc2Vec
@@ -189,6 +193,63 @@ class MobileVerifier(BigIdAbstract):
         return self.mobile
 
 
+
+def _make_signature(string):
+    secret_key = bytes("0erEPaknjXM1AnKBWW0r0WHKYeFnxsdhewWkbHoC", 'UTF-8')
+    string = bytes(string, 'UTF-8')
+    string_hmac = hmac.new(secret_key, string, digestmod=hashlib.sha256).digest()
+    string_base64 = base64.b64encode(string_hmac).decode('UTF-8')
+    return string_base64
+
+
+def notify_mobile(number, message):
+    # number = self.mobile.replace('-', '')
+
+    url = "https://sens.apigw.ntruss.com"
+    uri = "/sms/v2/services/" + "ncp:sms:kr:270782467605:auth" + "/messages"
+    api_url = url + uri
+    timestamp = str(int(time.time() * 1000))
+    access_key = "uhp30EUaIfhXwU4sB74a"
+    string_to_sign = "POST " + uri + "\n" + timestamp + "\n" + access_key
+    signature = _make_signature(string_to_sign)
+
+    headers = {
+        'Content-Type': "application/json; charset=UTF-8",
+        'x-ncp-apigw-timestamp': timestamp,
+        'x-ncp-iam-access-key': access_key,
+        'x-ncp-apigw-signature-v2': signature
+    }
+
+    body = {
+        "type": "SMS",
+        "contentType": "COMM",
+        "from": "01049103793",
+        "content": message,
+        "messages": [{"to": number}]
+    }
+
+    body = json.dumps(body)
+
+    # 문자 전송
+    resp = requests.post(api_url, headers=headers, data=body)
+    return resp.ok
+
+
+def notify_slack(channel=None, title=None, blocks=None):
+    # https://api.slack.com/methods/chat.postMessage#arg_attachments
+    # https://api.slack.com/reference/surfaces/formatting
+    token = 'xoxb-395086725542-2541429028388-i7Gjg4WbFjpZUQqXfioFFuJW'
+    client = WebClient(token=token)
+
+    try:
+        resp = client.chat_postMessage(channel="#5-기술-앱봇", blocks=blocks, text=title)
+        return True
+
+    except SlackApiError as e:
+        print(e)
+        return False
+
+
 class User(AbstractEmailUser):
     name = models.CharField(max_length=30, blank=True, null=True)
 
@@ -213,6 +274,23 @@ class User(AbstractEmailUser):
         super().save(*args, **kwargs)
 
 
+    def shop_notify(self, shoptem_id):
+        _shoptem = Shoptem.objects.get(pk=shoptem_id)
+
+        blocks = [{
+        	'type': 'section',
+        	'text': {
+        		'type': 'mrkdwn',
+        		'text': f'>*구매확정 알림*\n>확정시각: 2021-09-30\n>닉네임: {self.boo.nick}\n>이메일: {self.email}\n>전화번호: {self.mobile}\n>아이템: {_shoptem.item.name}\n>사용포인트: {_shoptem.item.price}'
+        	}
+        }]
+
+        notify_mobile(self.mobile.replace('-',''), '아무거나 보내염')
+        notify_slack(channel='#5-기술-앱봇', title='구매확정 알림', blocks=blocks)
+
+
+    # 아래 코드는 잘 동작하지 않는다
+    # slack 공식 api로 바꾸자
     def notify_on_slack(self):
         # 슬랙 알림 기능
         # def post_message(channel, text):
@@ -234,8 +312,6 @@ class User(AbstractEmailUser):
             headers = { "Authorization": "Bearer " + token },
             data = { "channel": '#5-기술-가입알림', "text": message }
         )
-
-        # print(response, '**********')
 
 
     @classmethod
@@ -359,10 +435,12 @@ IN_WELCOME = 5
 IN_BASEINFO_INPUT = 6
 IN_STYLELABELS_INPUT = 7
 IN_ITEMLABELS_INPUT = 8
+IN_TEST = 50
 
 OUT_SUPPORT = 100
 OUT_RAFFLE = 101
-OUT_SHOPPING = 102
+OUT_SHOPTEM = 102
+OUT_COFFEECOUPON = 103
 
 class Wallet(BigIdAbstract):
     created_at = models.DateTimeField(default=timezone.now, null=False)
@@ -401,8 +479,11 @@ class Wallet(BigIdAbstract):
         elif type == 'raffle':
             _type = OUT_RAFFLE
 
-        elif type == 'shopping':
-            _type = OUT_SHOPPING
+        elif type == 'shoptem':
+            _type = OUT_SHOPTEM
+
+        elif type == 'coffeecoupon':
+            _type = OUT_COFFEECOUPON
 
         Transaction.objects.create(sender=self, receiver=to, type=_type, amount=amount)
 
@@ -417,6 +498,13 @@ class Wallet(BigIdAbstract):
 
         elif hasattr(self, 'support'):
             return self.support
+
+        elif hasattr(self, 'shoptem'):
+            return self.shoptem
+
+        elif hasattr(self, 'coffeecoupon'):
+            return self.coffeecoupon
+
 
     @property
     def whose_type(self):
@@ -540,10 +628,12 @@ class Transaction(BigIdAbstract):
         (IN_BASEINFO_INPUT, '기본정보입력'),
         (IN_STYLELABELS_INPUT, '관심스타일입력'),
         (IN_ITEMLABELS_INPUT, '관심아이템입력'),
+        (IN_TEST, '테스트 INFLOW'),
 
         (OUT_SUPPORT, '후원'),
         (OUT_RAFFLE, '래플'),
-        (OUT_SHOPPING, '쇼핑')
+        (OUT_SHOPTEM, '쇼핑'),
+        (OUT_COFFEECOUPON, '커피쿠폰'),
     )
 
     type = models.IntegerField(choices=TRANSACTION_TYPES, default=0, null=False, blank=False)
@@ -560,6 +650,41 @@ class Transaction(BigIdAbstract):
             receiver = str(self.receiver)
 
         return sender + ' > ' + receiver
+
+
+class Notihistory(BigIdAbstract):
+    transaction = models.ForeignKey(Transaction, blank=True, null=True, on_delete=models.SET_NULL)
+    slacked = models.BooleanField(default=False)
+    mobiled = models.BooleanField(default=False)
+    emailed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now, null=False)
+
+    def __str__(self):
+        return str(self.transaction) + ' | ' + str(self.created_at)
+
+    @classmethod
+    def add(cls, trans_id):
+        _user = get_current_user()
+        _noti = cls.objects.create(transaction_id=trans_id)
+
+        _trans = _noti.transaction
+        _item = _trans.receiver.whose.item
+
+        slack_blocks = [{
+        	'type': 'section',
+        	'text': {
+        		'type': 'mrkdwn',
+        		'text': f'>*구매확정 알림*\n>거래시각: {_trans.when}\n>닉네임: {_user.boo.nick}\n>이메일: {_user.email}\n>전화번호: {_user.mobile}\n>아이템: {_item.name}\n>사용포인트: {_item.price}'
+        	}
+        }]
+
+        mobile_message = f'[모이버] {_user.boo.nick}님이 구매하신 상품의 주문처리가 완료되었습니다: {_item.name}. 모바일로 전송되기까지 다소 시간이 소요될 수 있음을 미리 알려드립니다.'
+
+        _noti.mobiled = notify_mobile(_user.mobile.replace('-',''), mobile_message)
+        _noti.slacked = notify_slack(channel='#5-기술-앱봇', title='구매확정 알림', blocks=slack_blocks)
+        _noti.save()
+
+
 
 
 class Boo(BigIdAbstract, ModelWithFlag):
@@ -1075,6 +1200,7 @@ class Coffeecoupon(BigIdAbstract):
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
     listing = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, null=False)
+    wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return str(self.item) + ' | ' + str(self.created_at)
@@ -1086,20 +1212,29 @@ class Coffeecoupon(BigIdAbstract):
 
 class CoffeecouponSerializer(serializers.ModelSerializer):
     item = serializers.SerializerMethodField()
+    wallet = serializers.SerializerMethodField()
 
     class Meta:
         model = Coffeecoupon
-        fields = ['id', 'item']
+        fields = ['id', 'item', 'wallet']
         read_only_fields = fields
 
     def get_item(self, obj):
         return {'id': obj.item.id, 'name': obj.item.name, 'pix_0': obj.item.pix_0.url, 'price': obj.item.price, 'out_of_stock': obj.item.out_of_stock}
+
+    def get_wallet(self, obj):
+        if not obj.wallet:
+            obj.wallet = Wallet.objects.create()
+            obj.save()
+
+        return {}
 
 
 class Shoptem(BigIdAbstract):
     item = models.ForeignKey(Item, blank=False, null=False, on_delete=models.CASCADE)
     listing = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, null=False)
+    wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return str(self.item) + ' | ' + str(self.created_at)
@@ -1111,14 +1246,40 @@ class Shoptem(BigIdAbstract):
 
 class ShoptemSerializer(serializers.ModelSerializer):
     item = serializers.SerializerMethodField()
+    wallet = serializers.SerializerMethodField()
 
     class Meta:
         model = Shoptem
-        fields = ['id', 'item']
+        fields = ['id', 'item', 'wallet']
         read_only_fields = fields
 
     def get_item(self, obj):
         return {'id': obj.item.id, 'name': obj.item.name, 'pix_0': obj.item.pix_0.url, 'price': obj.item.price, 'out_of_stock': obj.item.out_of_stock}
+
+    def get_wallet(self, obj):
+        if not obj.wallet:
+            obj.wallet = Wallet.objects.create()
+            obj.save()
+
+        return {}
+
+        # amount = obj.wallet.amount
+        # n_transaction = obj.wallet.n_transaction
+        # shopped = False
+        # amount_shopped = 0
+        #
+        # user = get_current_user()
+        # if user.is_authenticated:
+        #     shopped = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet, when__date=datetime.now().date()).exists()
+        #     amount_shopped = obj.wallet.receiver_transaction_set.filter(sender=user.boo.wallet).aggregate(total=Sum('amount'))
+        #     amount_shopped = amount_shopped['total'] if amount_shopped['total'] else 0
+        #
+        # return {
+        #     'collected': amount,
+        #     'n_transaction': n_transaction,
+        #     'shopped': shopped,
+        #     'amount_shopped': amount_shopped
+        # }
 
 
 class Support(BigIdAbstract):

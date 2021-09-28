@@ -30,6 +30,12 @@ class AdminpixPreviewWidget(AdminFileWidget):
         ]
 
 
+@admin.register(m.Notihistory)
+class NotihistoryAdmin(admin.ModelAdmin):
+    list_display = ['transaction', 'slacked', 'mobiled', 'emailed']
+    raw_id_fields = ('transaction', )
+
+
 @admin.register(m.Wallet)
 class WalletAdmin(admin.ModelAdmin):
     list_display = ['whose_type', 'whose', 'n_transaction', 'inflow', 'outflow', 'amount']
@@ -38,8 +44,31 @@ class WalletAdmin(admin.ModelAdmin):
 @admin.register(m.Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ['sender', 'receiver', 'when', 'type', 'amount']
+    list_per_page = 20
+    list_select_related = (
+        'sender','sender__boo','sender__boo__user','sender__raffle','sender__raffle__item','sender__support','sender__support__brand','sender__shoptem','sender__shoptem__item','sender__coffeecoupon','sender__coffeecoupon__item',
+        'receiver','receiver__boo','receiver__boo__user','receiver__raffle','receiver__raffle__item','receiver__support','receiver__support__brand','receiver__shoptem','receiver__shoptem__item','receiver__coffeecoupon','receiver__coffeecoupon__item', )
+
     raw_id_fields = ('sender', 'receiver', )
-    list_filter = ['sender']
+    list_filter = ('type', )
+
+    def who(self, wallet):
+        if hasattr(wallet, 'boo'):
+            return wallet.boo.user
+
+        elif hasattr(wallet, 'raffle'):
+            return wallet.raffle.item
+
+        elif hasattr(wallet, 'support'):
+            return wallet.support.brand
+
+    def sender_who(self, obj):
+        return self.who(obj.sender)
+
+        # return obj.sender.whose
+
+    def receiver_who(self, obj):
+        return self.who(obj.receiver)
 
 
 @admin.register(m.Support)
@@ -72,6 +101,8 @@ class RaffleAdmin(admin.ModelAdmin):
 class CoffeecouponAdmin(admin.ModelAdmin):
     list_display = ['item', 'listing', 'item_preview']
     list_editable = ['listing']
+    raw_id_fields = ('wallet', )
+    exclude = ('wallet',)
 
     def item_preview(self, obj):
         return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.item.pix_0.url))
@@ -81,6 +112,8 @@ class CoffeecouponAdmin(admin.ModelAdmin):
 class ShoptemAdmin(admin.ModelAdmin):
     list_display = ['item', 'listing', 'item_preview']
     list_editable = ['listing']
+    raw_id_fields = ('wallet', )
+    exclude = ('wallet',)
 
     def item_preview(self, obj):
         return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.item.pix_0.url))

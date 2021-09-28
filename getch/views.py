@@ -28,6 +28,8 @@ import collections
 from datetime import datetime, date, timedelta
 # from gensim.models import Doc2Vec
 from django.utils import timezone
+# from slacker import Slacker
+from slack_sdk import WebClient
 
 import base64
 import hashlib
@@ -182,6 +184,23 @@ def testfeed(request):
 #
 #         else:
 #             return JsonResponse({'success':False, 'message':'something wrong while checking signup'}, safe=False)
+
+
+# def slack_notify(channel=None, blocks=None):
+#     token = 'xoxb-395086725542-2541429028388-i7Gjg4WbFjpZUQqXfioFFuJW'
+#     client = WebClient(token=token)
+#     client.chat_postMessage(channel="#5-기술-앱봇", blocks=blocks, text='텍스트블라블라')
+#
+#
+# blocks = [{
+# 	"type": "section",
+# 	"text": {
+# 		"type": "mrkdwn",
+# 		"text": ">*테스트해봅시당*\n>• Detective Chimp\n>• Bouncing Boy\n>• Aqualad"
+# 	}
+# }]
+#
+# slack_notify(channel='#5-기술-앱봇', blocks=blocks)
 
 
 def make_signature(string):
@@ -458,6 +477,20 @@ def signup_setbase_change(request):
 
 
 
+def notify_shopping(request, trans_id):
+    try:
+        if request.user.is_authenticated:
+            m.Notihistory.add(trans_id)
+            return JsonResponse({'success':True, 'message':'notified successfully'}, safe=False)
+
+        else:
+            return JsonResponse({'success':False, 'message':'something wrong while notifying'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while notifying'}, safe=False)
+
+
+
 def get_user(request):
     sessionkey = request.session.session_key
 
@@ -694,6 +727,19 @@ def get_coffeecoupon(request, coffeecoupon_id):
     except:
         return JsonResponse({'success':False}, safe=False)
 
+
+
+# def buy_shoptem(request, shoptem_id):
+#     try:
+#         if request.user.is_authenticated:
+#             request.user.shop_notify(shoptem_id)
+#             return JsonResponse({'success':True, 'message':'bought and notified successfully'}, safe=False)
+#
+#         else:
+#             return JsonResponse({'success':True, 'message':'something wrong while finalizing shopping'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':True, 'message':'something wrong while finalizing shopping'}, safe=False)
 
 
 def get_ishoptems(request):
@@ -1249,22 +1295,30 @@ def link_delete(request, link_id):
 def transact(request):
     try:
         if request.user.is_authenticated:
-            # _receiver = request.GET.get('receiver', None)
             _receiver_id = request.GET.get('receiver_id', None)
             _type = request.GET.get('type', None)
             _amount = int(request.GET.get('amount', 0))
 
-            if _receiver_id is None:
-                _sender = m.Boo.objects.get(pk=m.MOIBER_BOO).wallet
-                _receiver = request.user.boo.wallet
-
-            elif _type == 'support':
+            if _type == 'support':
                 _sender = request.user.boo.wallet
                 _receiver = m.Support.objects.get(pk=_receiver_id).wallet
 
             elif _type == 'raffle':
                 _sender = request.user.boo.wallet
                 _receiver = m.Raffle.objects.get(pk=_receiver_id).wallet
+
+            elif _type == 'shoptem':
+                _sender = request.user.boo.wallet
+                _receiver = m.Shoptem.objects.get(pk=_receiver_id).wallet
+                # _receiver = m.Boo.objects.get(pk=m.MOIBER_BOO).wallet
+
+            elif _type == 'coffeecoupon':
+                _sender = request.user.boo.wallet
+                _receiver = m.Coffeecoupon.objects.get(pk=_receiver_id).wallet
+
+            elif _receiver_id is None:
+                _sender = m.Boo.objects.get(pk=m.MOIBER_BOO).wallet
+                _receiver = request.user.boo.wallet
 
             _sender.send(to=_receiver, type=_type, amount=_amount)
             return JsonResponse({'success':True, 'message':'transacted successfully'}, safe=False)

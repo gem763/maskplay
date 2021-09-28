@@ -151,6 +151,7 @@ urlpatterns = [
     path('coffeecoupon/<int:coffeecoupon_id>/', v.get_coffeecoupon, name='get_coffeecoupon'),
     path('coffeecoupon/icoffeecoupons/', v.get_icoffeecoupons, name='get_icoffeecoupons'),
 
+    # path('shoptem/<int:shoptem_id>/buy/', v.buy_shoptem, name='buy_shoptem'),
     path('shoptem/<int:shoptem_id>/', v.get_shoptem, name='get_shoptem'),
     path('shoptem/ishoptems/', v.get_ishoptems, name='get_ishoptems'),
 
@@ -178,4 +179,6 @@ urlpatterns = [
     path('mobile/send_authkey/', v.send_mobile_authkey, name='send_mobile_authkey'),
     path('mobile/verify/', v.mobile_verify, name='mobile_verify'),
     path('mobile/verify/save/', v.mobile_verify_save, name='mobile_verify_save'),
+
+    path('notify/shopping/<int:trans_id>/', v.notify_shopping, name='notify_shopping'),
 ]

@@ -201,7 +201,7 @@
 
       <div class='txt name'>[[ name ]]</div>
 
-      <div class='txt price' v-if='is_shoptem'>
+      <div class='txt price' v-if='is_shoptem || is_coffeecoupon'>
         [[ price_p ]]
         <div class='action buy' :class='{ active: buyable }' @click='buy'>
           구매하기
@@ -278,7 +278,26 @@
       },
 
       buy: function() {
-        console.log('사자')
+        if (this.buyable) {
+          let msg;
+
+          if (this.session.user.auth.mobile_verified) {
+            msg = `구매하시겠습니까? \n${this.price}P가 차감되며, 취소는 불가합니다`;
+            const resp = confirm(msg);
+
+            if (resp) {
+              this.myboo.wallet.send(this.type, this.price, this.obj.id);
+
+              // const iraffle = _.find(this.myboo.raffles.list, ['id', receiver_id]);
+              // if (!iraffle) {
+              //   this.myboo.raffles.list.push(this.raffle);
+              // }
+            }
+
+          } else {
+
+          }
+        }
       },
 
       apply_raffle: function() {
@@ -332,7 +351,12 @@
       },
 
       is_shoptem: function() {
-        return (this.type == 'shoptem') || (this.type=='coffeecoupon')
+        return this.type == 'shoptem'
+        // return (this.type == 'shoptem') || (this.type=='coffeecoupon')
+      },
+
+      is_coffeecoupon: function() {
+        return this.type=='coffeecoupon'
       },
 
       ready: function() {

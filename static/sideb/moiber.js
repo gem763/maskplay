@@ -75,7 +75,7 @@ class Session {
     // this.keyset_sampling();
 
     this.reload_everyday();
-    // this.open_test();
+    // this.open_baseinfo();
     // this.open_signup();
 
     // fetch('balancegame/stat')

@@ -221,7 +221,7 @@ def notify_mobile(number, message):
     }
 
     body = {
-        "type": "SMS",
+        "type": "LMS",
         "contentType": "COMM",
         "from": "01049103793",
         "content": message,
@@ -238,8 +238,8 @@ def notify_mobile(number, message):
 def notify_slack(channel=None, title=None, blocks=None):
     # https://api.slack.com/methods/chat.postMessage#arg_attachments
     # https://api.slack.com/reference/surfaces/formatting
-    token = 'xoxb-395086725542-2541429028388-i7Gjg4WbFjpZUQqXfioFFuJW'
-    client = WebClient(token=token)
+    # token = 'xoxb-395086725542-2541429028388-i7Gjg4WbFjpZUQqXfioFFuJW'
+    client = WebClient(token=settings.SLACK_BOT_TOKEN)
 
     try:
         resp = client.chat_postMessage(channel="#5-기술-앱봇", blocks=blocks, text=title)
@@ -485,7 +485,11 @@ class Wallet(BigIdAbstract):
         elif type == 'coffeecoupon':
             _type = OUT_COFFEECOUPON
 
-        Transaction.objects.create(sender=self, receiver=to, type=_type, amount=amount)
+        _trans = Transaction.objects.create(sender=self, receiver=to, type=_type, amount=amount)
+
+        # 쇼핑이라면, 휴대폰으로 주문내역 알리고, 우리에게도 slack 및 이메일로 알린다
+        if type in ['shoptem', 'coffeecoupon']:
+            Notihistory.add(_trans.id)
 
 
     @property
@@ -654,6 +658,7 @@ class Transaction(BigIdAbstract):
 
 class Notihistory(BigIdAbstract):
     transaction = models.ForeignKey(Transaction, blank=True, null=True, on_delete=models.SET_NULL)
+    ordercode = models.CharField(max_length=50, blank=True, null=True)
     slacked = models.BooleanField(default=False)
     mobiled = models.BooleanField(default=False)
     emailed = models.BooleanField(default=False)
@@ -669,19 +674,21 @@ class Notihistory(BigIdAbstract):
 
         _trans = _noti.transaction
         _item = _trans.receiver.whose.item
+        _ordercode = f'M{_noti.id}-{str(_trans.when).replace("-","").replace(" ","").replace(".","").replace(":","")}'
 
         slack_blocks = [{
         	'type': 'section',
         	'text': {
         		'type': 'mrkdwn',
-        		'text': f'>*구매확정 알림*\n>거래시각: {_trans.when}\n>닉네임: {_user.boo.nick}\n>이메일: {_user.email}\n>전화번호: {_user.mobile}\n>아이템: {_item.name}\n>사용포인트: {_item.price}'
+        		'text': f'>*구매확정 알림*\n>주문번호: {_ordercode}\n>주문시각: {_trans.when}\n>닉네임: {_user.boo.nick}\n>이메일: {_user.email}\n>전화번호: {_user.mobile}\n>아이템: {_item.name}\n>사용포인트: {_item.price}'
         	}
         }]
 
-        mobile_message = f'[모이버] {_user.boo.nick}님이 구매하신 상품의 주문처리가 완료되었습니다: {_item.name}. 모바일로 전송되기까지 다소 시간이 소요될 수 있음을 미리 알려드립니다.'
+        mobile_message = f'[모이버] {_user.boo.nick}님이 구매하신 상품의 주문처리가 완료되었습니다\n- 주문번호: {_ordercode}\n- {_item.name}\n- 모바일로 전송되기까지 다소 시간이 소요될 수 있음을 미리 알려드립니다\n- 문의처: contact@moiber.com'
 
         _noti.mobiled = notify_mobile(_user.mobile.replace('-',''), mobile_message)
         _noti.slacked = notify_slack(channel='#5-기술-앱봇', title='구매확정 알림', blocks=slack_blocks)
+        _noti.ordercode = _ordercode
         _noti.save()
 
 

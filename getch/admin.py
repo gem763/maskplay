@@ -32,7 +32,7 @@ class AdminpixPreviewWidget(AdminFileWidget):
 
 @admin.register(m.Notihistory)
 class NotihistoryAdmin(admin.ModelAdmin):
-    list_display = ['transaction', 'slacked', 'mobiled', 'emailed']
+    list_display = ['transaction', 'ordercode', 'created_at', 'slacked', 'mobiled', 'emailed']
     raw_id_fields = ('transaction', )
 
 

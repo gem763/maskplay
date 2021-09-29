@@ -280,22 +280,32 @@
       buy: function() {
         if (this.buyable) {
           let msg;
+          let resp;
 
-          if (this.session.user.auth.mobile_verified) {
-            msg = `구매하시겠습니까? \n${this.price}P가 차감되며, 취소는 불가합니다`;
-            const resp = confirm(msg);
+          if (this.mobile_verified) {
+            msg = `구매하시겠습니까? \n${this.price}P가 차감되며, 취소는 불가합니다.`;
+            resp = confirm(msg);
 
             if (resp) {
               this.myboo.wallet.send(this.type, this.price, this.obj.id);
-
-              // const iraffle = _.find(this.myboo.raffles.list, ['id', receiver_id]);
-              // if (!iraffle) {
-              //   this.myboo.raffles.list.push(this.raffle);
-              // }
+              alert(`주문처리가 완료되었습니다! ${this.myboo.nick}님의 휴대번호로 안내 메시지를 전송하였습니다.`);
             }
 
-          } else {
+          } else if (!this.mobile_verified && this.mobile) {
+            msg = `상품을 구매하시려면, ${this.myboo.nick}님이 입력하신 휴대번호(${this.mobile}) 인증이 필수입니다. 휴대번호 인증을 시작합니다.`;
+            resp = confirm(msg);
 
+            if (resp) {
+              this.mobile_verify();
+            }
+
+          } else if (!this.mobile) {
+            msg = `이 상품은 모바일 메시지로 전송하기 때문에 휴대번호가 필요합니다. 휴대번호 입력 페이지로 이동합니다`;
+            resp = confirm(msg);
+
+            if (resp) {
+              this.session.open_baseinfo();
+            }
           }
         }
       },
@@ -320,10 +330,48 @@
             }
           }
         }
+      },
+
+      mobile_verify: function() {
+        // this.on_verifying = true;
+
+        const _mobile = this.mobile.replaceAll('-', '');
+        fetch(`mobile/send_authkey?number=${_mobile}`)
+          .then(x => x.json())
+          .then(j => {
+            const authkey = prompt('전송받은 인증번호를 정확히 입력해주세요', '');
+
+            fetch(`mobile/verify?mobile=${_mobile}&authkey=${authkey}`)
+              .then(x => x.json())
+              .then(j => {
+                if (j.code == 0) {
+                  this.session.user.auth.mobile_verified = true;
+                  fetch(`/mobile/verify/save`).then(res => res.json()).then(js => { console.log(js); });
+                  alert('인증완료 되었습니다!');
+                  this.buy();
+
+                } else if (j.code == 1) {
+                  alert('인증번호가 잘못 입력되었습니다. 다시 시도해 주세요');
+
+                } else {
+                  alert('잠시후에 다시 시도해 주세요');
+                }
+
+                // this.on_verifying = false;
+              });
+          });
       }
     },
 
     computed: {
+      mobile: function() {
+        return this.session.user.auth.mobile
+      },
+
+      mobile_verified: function() {
+        return this.session.user.auth.mobile_verified
+      },
+
       n_pix: function() {
         if (this.swiper) {
           return this.swiper.slides.length

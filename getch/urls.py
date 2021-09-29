@@ -180,5 +180,5 @@ urlpatterns = [
     path('mobile/verify/', v.mobile_verify, name='mobile_verify'),
     path('mobile/verify/save/', v.mobile_verify_save, name='mobile_verify_save'),
 
-    path('notify/shopping/<int:trans_id>/', v.notify_shopping, name='notify_shopping'),
+    # path('notify/shopping/<int:trans_id>/', v.notify_shopping, name='notify_shopping'),
 ]

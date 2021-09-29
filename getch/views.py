@@ -477,17 +477,17 @@ def signup_setbase_change(request):
 
 
 
-def notify_shopping(request, trans_id):
-    try:
-        if request.user.is_authenticated:
-            m.Notihistory.add(trans_id)
-            return JsonResponse({'success':True, 'message':'notified successfully'}, safe=False)
-
-        else:
-            return JsonResponse({'success':False, 'message':'something wrong while notifying'}, safe=False)
-
-    except:
-        return JsonResponse({'success':False, 'message':'something wrong while notifying'}, safe=False)
+# def notify_shopping(request, trans_id):
+#     try:
+#         if request.user.is_authenticated:
+#             m.Notihistory.add(trans_id)
+#             return JsonResponse({'success':True, 'message':'notified successfully'}, safe=False)
+#
+#         else:
+#             return JsonResponse({'success':False, 'message':'something wrong while notifying'}, safe=False)
+#
+#     except:
+#         return JsonResponse({'success':False, 'message':'something wrong while notifying'}, safe=False)
 
 
 

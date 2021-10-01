@@ -321,6 +321,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ['email', 'name', 'gender', 'birth', 'mobile', 'mobile_verified', 'address', 'is_superuser', 'is_staff', 'help', 'boo_selected', 'boo', 'date_joined']
     list_display_links = ['email']
     list_editable = ['boo_selected', 'is_superuser', 'is_staff', 'mobile_verified', 'help']
+    search_fields = ('email', )
     list_per_page = 20
 
 

@@ -31,11 +31,12 @@ class Session {
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
       about:        { order: 0, instant: true, open: false, from: 'left' },
-      recruit:      { order: 0, instant: true, open: false, from: 'left' },
+      recruit:      { order: 0, instant: false, open: false, from: 'left' },
       policy:       { order: 0, instant: true, open: false, from: 'left' },
       privacy:      { order: 0, instant: true, open: false, from: 'left' },
       landing:      { order: 0, instant: true, open: false, from: 'left' },
-      zthinker:     { order: 0, instant: false, open: false, from: 'left' },
+      // zthinker:     { order: 0, instant: false, open: false, from: 'left' },
+      bulletin:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
       infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
 
       test:         { order: 0, instant: false, open: false, from: 'right' },
@@ -256,8 +257,13 @@ class Session {
     this.open_page('landing');
   }
 
-  open_zthinker() {
-    this.open_page('zthinker');
+  // open_zthinker() {
+  //   this.open_page('zthinker');
+  // }
+
+  open_bulletin(type) {
+    this.page.bulletin.type = type;
+    this.open_page('bulletin');
   }
 
   open_baseinfo() {

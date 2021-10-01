@@ -161,7 +161,7 @@
             <div class='deduction'>[[ deduction(r) ]]</div>
           </div>
 
-          <div class='due'><span>[[ days_to_due(r) ]]</span></div>
+          <div class='due'><span>[[ days_to_due_text(r) ]]</span></div>
         </div>
       </template>
 
@@ -314,7 +314,28 @@
 
       days_to_due: function(e) {
         if (e.due) {
-          return '마감 ' + Math.ceil( (new Date(e.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+          return Math.ceil( (new Date(e.due) - new Date()) / (1000 * 24 * 60 * 60) )
+          // return '마감 ' + Math.ceil( (new Date(e.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+        }
+        // else {
+        //   return ''
+        // }
+      },
+
+      outdated: function(e) {
+        return this.days_to_due(e) < 0
+      },
+
+      days_to_due_text: function(e) {
+        const _remained = this.days_to_due(e);
+
+        if (_remained) {
+          if (_remained >= 0) {
+            return '마감 ' + _remained + '일전'
+
+          } else {
+            return '종료'
+          }
 
         } else {
           return ''

@@ -41,6 +41,10 @@
     opacity: 1;
   }
 
+  .raffler.vcomp > .raffles > .raffle.outdated {
+    opacity: 0.2;
+  }
+
   .raffler.vcomp > .raffles > .raffle > .coverpix {
     position: relative;
     width: 100%;
@@ -118,14 +122,14 @@
 <script type='text/x-template' id='raffler-template'>
   <div class='raffler vcomp'>
     <div class='raffles'>
-      <div class='raffle' v-for='(r, idx) in raffles_list' @click='go_detail(r)'>
+      <div class='raffle' :class='{ outdated:outdated(r) }' v-for='(r, idx) in raffles_list' @click='go_detail(r)'>
         <div class='coverpix'>
           <img :src='coverpix(r)' @load='coverpix_loaded'>
           <div class='name'>[[ name(r) ]]</div>
           <div class='deduction'>[[ deduction(r) ]]</div>
         </div>
 
-        <div class='due'><span>[[ days_to_due(r) ]]</span></div>
+        <div class='due'><span>[[ days_to_due_text(r) ]]</span></div>
       </div>
     </div>
 
@@ -174,7 +178,28 @@
 
       days_to_due: function(raffle) {
         if (raffle.due) {
-          return '마감 ' + Math.ceil( (new Date(raffle.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+          return Math.ceil( (new Date(raffle.due) - new Date()) / (1000 * 24 * 60 * 60) )
+          // return '마감 ' + Math.ceil( (new Date(raffle.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+        }
+        // else {
+        //   return ''
+        // }
+      },
+
+      outdated: function(raffle) {
+        return this.days_to_due(raffle) < 0
+      },
+
+      days_to_due_text: function(raffle) {
+        const _remained = this.days_to_due(raffle);
+
+        if (_remained) {
+          if (_remained >= 0) {
+            return '마감 ' + _remained + '일전'
+
+          } else {
+            return '종료'
+          }
 
         } else {
           return ''

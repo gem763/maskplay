@@ -1148,13 +1148,17 @@ class Raffle(BigIdAbstract):
     def __str__(self):
         return str(self.item) + ' | ' + str(self.created_at)
 
+    @property
+    def outdated(self):
+        return self.due <= datetime.now()
+
     @classmethod
     def iraffles(cls, boo=None):
         if (boo):
-            return cls.objects.filter(listing=True, wallet__receiver_transaction__sender=boo.wallet).order_by('due').values_list('id', flat=True)
+            return cls.objects.filter(listing=True, wallet__receiver_transaction__sender=boo.wallet).order_by('-due').values_list('id', flat=True)
 
         else:
-            return cls.objects.filter(listing=True).order_by('due').values_list('id', flat=True)
+            return cls.objects.filter(listing=True).order_by('-due').values_list('id', flat=True)
 
 
 class RaffleSerializer(serializers.ModelSerializer):

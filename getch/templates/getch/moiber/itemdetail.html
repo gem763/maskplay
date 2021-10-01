@@ -209,7 +209,7 @@
       </div>
 
       <div class='txt period' v-if='is_raffle'>
-        [[ days_to_due ]]
+        [[ days_to_due_text ]]
         <!-- [[ raffle_collected_p ]] -->
         <div class='action apply' :class='{ active: raffleable, raffled:raffled }' @click='apply_raffle'>
           <span>[[ action_raffle_text ]]</span>
@@ -221,7 +221,7 @@
 
       <div class='txt desc'>[[ desc ]]</div>
 
-      <div class='txt noti' v-if='is_raffle'>
+      <div class='txt noti' v-if='is_raffle && !outdated'>
         <span>응모 기간 종료 후 3일 이내에 당첨자 추첨 및 발표가 진행 됩니다. 고객 실수로 인한 주소 오류 또는 연락처 미기재 등으로 인한 오발송 되는 경품은 재발송이 불가합니다.</span>
       </div>
     </div>
@@ -314,7 +314,7 @@
         if (this.raffleable) {
           const receiver_id = this.raffle.id;
           const amount = this.deduction;
-          const msg = `래플에 참여하시겠습니까? \n참여시 ${amount}P가 차감되며, 취소는 불가합니다`;
+          const msg = `추첨에 참여하시겠습니까? \n참여시 ${amount}P가 차감되며, 취소는 불가합니다`;
           const resp = confirm(msg);
 
           if (resp && receiver_id && amount) {
@@ -447,7 +447,28 @@
 
       days_to_due: function() {
         if (this.obj && this.obj.due) {
-          return '마감 ' + Math.ceil( (new Date(this.obj.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+          return Math.ceil( (new Date(this.obj.due) - new Date()) / (1000 * 24 * 60 * 60) )
+          // return '마감 ' + Math.ceil( (new Date(this.obj.due) - new Date()) / (1000 * 24 * 60 * 60) ) + '일전'
+        }
+        //  else {
+        //   return ''
+        // }
+      },
+
+      outdated: function() {
+        if (this.days_to_due) {
+          return this.days_to_due < 0
+        }
+      },
+
+      days_to_due_text: function() {
+        if (this.days_to_due) {
+          if (this.days_to_due >= 0) {
+            return '마감 ' + this.days_to_due + '일전'
+
+          } else {
+            return '종료'
+          }
 
         } else {
           return ''
@@ -509,7 +530,7 @@
       },
 
       raffleable: function() {
-        return this.budget >= this.deduction
+        return (this.budget >= this.deduction) && !this.outdated
       },
 
       buyable: function() {

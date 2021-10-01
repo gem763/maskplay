@@ -1,6 +1,7 @@
 {% include "getch/moiber/page3.html" %}
 {% include "getch/moiber/finder.html" %}
 {% include "getch/moiber/collector.html" %}
+{% include "getch/moiber/my.html" %}
 {% include "getch/moiber/agit.html" %}
 {% include "getch/moiber/accountcheck.html" %}
 {% include "getch/moiber/baseinfo.html" %}
@@ -30,7 +31,7 @@
 {% include "getch/moiber/flashgames.html" %}
 {% include "getch/moiber/brander.html" %}
 {% include "getch/moiber/checkin.html" %}
-{% include "getch/moiber/zthinker.html" %}
+{% include "getch/moiber/bulletin.html" %}
 {% include "getch/moiber/test.html" %}
 
 <style>
@@ -59,6 +60,7 @@
     <checkin :session='session'></checkin>
     <!-- <flashgames :session='session'></flashgames> -->
     <!-- <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult> -->
+    <my :session='session'></my>
     <agit :session='session'></agit>
     <multichooser :session='session'></multichooser>
     <!-- <profiler :session='session' v-if='session.user.has_auth'></profiler> -->
@@ -66,7 +68,8 @@
     <pixeditor :session='session'></pixeditor>
     <texteditor :session='session'></texteditor>
     <landing :session='session'></landing>
-    <zthinker :session='session'></zthinker>
+    <!-- <zthinker :session='session'></zthinker> -->
+    <bulletin :session='session'></bulletin>
     <about :session='session'></about>
     <recruit :session='session'></recruit>
     <policy :session='session'></policy>

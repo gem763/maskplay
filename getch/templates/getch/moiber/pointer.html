@@ -1,0 +1,159 @@
+<style>
+  .pointer.vcomp {
+    position: relative;
+    width: 100%;
+  }
+
+  .pointer.vcomp > .container {
+    position: relative;
+    width: 100%;
+    /* background: lightblue; */
+    padding-left: 16px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .pointer.vcomp > .container > .card {
+    position: relative;
+    width: calc(50% - 8px);
+    height: 60px;
+    background: white;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #cecece;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+
+  .pointer.vcomp > .container > .card > .text {
+    height: 100%;
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .pointer.vcomp > .container > .card > .text > .title {
+    font-size: 14px;
+    font-weight: bold;
+    height: 40%;
+  }
+
+  .pointer.vcomp > .container > .card > .text > .desc {
+    font-size: 10px;
+    height: 60%;
+    white-space: pre-line;
+    display: flex;
+    justify-content: left;
+    align-items: flex-end;
+  }
+
+  .pointer.vcomp > .container > .card > .icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 100%;
+    /* background: white; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+  }
+</style>
+
+<script type='text/x-template' id='pointer-template'>
+  <div class='pointer vcomp'>
+    <div class='container'>
+      <div class='card' @click='session.open_stylevote()'>
+        <div class='text'>
+          <div class='title'>밸런스 게임</div>
+          <div class='desc'>위vs아래 고르다보면
+            매일 최대 100 포인트가!!</div>
+        </div>
+        <div class='icon'>⚖️</div>
+      </div>
+
+      <div class='card'>
+        <div class='text'>
+          <div class='title'>추첨 응모</div>
+          <div class='desc'>매일 1회 응모하면
+            당첨확률이 올라간다??</div>
+        </div>
+        <div class='icon'>🎰</div>
+      </div>
+
+      <div class='card' @click='session.open_researcher()'>
+        <div class='text'>
+          <div class='title'>트렌드 연구</div>
+          <div class='desc'>패션 현업 프로젝트
+            참여의 기회!</div>
+        </div>
+        <div class='icon'>💡</div>
+      </div>
+
+      <div class='card'>
+        <div class='text'>
+          <div class='title'>커피 쿠폰</div>
+          <div class='desc'>포인트로 즐기는
+            커피 한잔의 여유</div>
+        </div>
+        <div class='icon'>☕️</div>
+      </div>
+
+      <div class='card'>
+        <div class='text'>
+          <div class='title'>출첵 게임</div>
+          <div class='desc'>매일 취향게임 하고
+            포인트 쌓자!</div>
+        </div>
+        <div class='icon'>🗓</div>
+      </div>
+
+      <div class='card'>
+        <div class='text'>
+          <div class='title'>상품권 구매</div>
+          <div class='desc'>포인트 모아
+            상품권 구매하기</div>
+        </div>
+        <div class='icon'>👛</div>
+      </div>
+
+      <div class='card' @click='session.help()'>
+        <div class='text'>
+          <div class='title'>사용 가이드</div>
+          <div class='desc'>한 눈에 확인하는
+            앱 사용 가이드</div>
+        </div>
+        <div class='icon'>🤖</div>
+      </div>
+
+      <div class='card' @click='session.contact()'>
+        <div class='text'>
+          <div class='title'>건의하기</div>
+          <div class='desc'>이거 해주세요
+            질문있슴돠</div>
+        </div>
+        <div class='icon'>📮</div>
+      </div>
+
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('pointer', {
+    template: '#pointer-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session' ],
+    data: function() {
+      return { }
+    }
+  });
+</script>

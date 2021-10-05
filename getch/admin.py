@@ -30,6 +30,12 @@ class AdminpixPreviewWidget(AdminFileWidget):
         ]
 
 
+@admin.register(m.Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ['pix', 'type', 'category', 'item']
+    raw_id_fields = ('pix', )
+
+
 @admin.register(m.Notihistory)
 class NotihistoryAdmin(admin.ModelAdmin):
     list_display = ['transaction', 'ordercode', 'created_at', 'slacked', 'mobiled', 'emailed']

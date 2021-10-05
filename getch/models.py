@@ -73,6 +73,7 @@ class BigIdAbstract(models.Model):
 #         abstract = False
 
 
+
 class Flager(FlagBase):
     user = models.ForeignKey('Boo', related_name='%(class)s_users', verbose_name='Boo', on_delete=models.CASCADE)
 
@@ -1999,6 +2000,41 @@ class PixSerializer(serializers.ModelSerializer):
     def get_owner(self, obj):
         return {'id': obj.owner.id, 'nick': obj.owner.nick}
         # return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
+
+
+class Tag(BigIdAbstract):
+    pix = models.ForeignKey(Pix, blank=True, null=True, on_delete=models.SET_NULL)
+    type = models.CharField(max_length=20, null=False, blank=False)
+    category = models.CharField(max_length=20, null=False, blank=False)
+    item = models.CharField(max_length=20, null=False, blank=False)
+
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+
+    color = models.CharField(max_length=20, null=True, blank=True)
+    detail = models.CharField(max_length=20, null=True, blank=True)
+    pattern = models.CharField(max_length=20, null=True, blank=True) # 옴니어스 원래의 속성은 print임
+    texture = models.CharField(max_length=20, null=True, blank=True)
+    look = models.CharField(max_length=20, null=True, blank=True)
+    length = models.CharField(max_length=20, null=True, blank=True)
+    sleeve_length = models.CharField(max_length=20, null=True, blank=True)
+    neckline = models.CharField(max_length=20, null=True, blank=True)
+    fit = models.CharField(max_length=20, null=True, blank=True)
+    shape = models.CharField(max_length=20, null=True, blank=True)
+    heel_height = models.CharField(max_length=20, null=True, blank=True)
+    heel_shape = models.CharField(max_length=20, null=True, blank=True)
+    toe_type = models.CharField(max_length=20, null=True, blank=True)
+    sole_type = models.CharField(max_length=20, null=True, blank=True)
+
+    strap = models.BooleanField(default=False)
+    size = models.CharField(max_length=20, null=True, blank=True)
+    main_material = models.CharField(max_length=20, null=True, blank=True)
+    sub_material = models.CharField(max_length=20, null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'[{self.pix.id}] {self.type} | {self.category} | {self.item}'
 
 
 class BalancegameRecord(BigIdAbstract):

@@ -30,7 +30,7 @@ KAKAO_JS_KEY = config('KAKAO_JS_KEY')
 SLACK_BOT_TOKEN = config('SLACK_BOT_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 APP = 'getch'

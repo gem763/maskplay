@@ -35,14 +35,11 @@
     opacity: 0;
     transition: all 0.5s;
     box-sizing: border-box;
+    cursor: pointer;
   }
 
   .raffler.vcomp > .raffles > .raffle.loaded {
     opacity: 1;
-  }
-
-  .raffler.vcomp > .raffles > .raffle.outdated {
-    opacity: 0.2;
   }
 
   .raffler.vcomp > .raffles > .raffle > .coverpix {
@@ -58,6 +55,10 @@
     height: 100%;
     object-fit: cover;
     filter: brightness(80%);
+  }
+
+  .raffler.vcomp > .raffles > .raffle.outdated > .coverpix > img {
+    opacity: 0.3;
   }
 
   .raffler.vcomp > .raffles > .raffle > .coverpix > .name {
@@ -85,6 +86,22 @@
     box-sizing: border-box;
     text-align: right;
     color: white;
+  }
+
+  .raffler.vcomp > .raffles > .raffle > .coverpix > .see-result {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    display: none;
+  }
+
+  .raffler.vcomp > .raffles > .raffle.outdated > .coverpix > .see-result {
+    display: block;
   }
 
   .raffler.vcomp > .raffles > .raffle > .due {
@@ -127,6 +144,7 @@
           <img :src='coverpix(r)' @load='coverpix_loaded'>
           <div class='name'>[[ name(r) ]]</div>
           <div class='deduction'>[[ deduction(r) ]]</div>
+          <div class='see-result'>결과확인 🤩</div>
         </div>
 
         <div class='due'><span>[[ days_to_due_text(r) ]]</span></div>

@@ -1026,6 +1026,8 @@ class Raffle extends Loader {
     this.deduction = undefined;
     this.due = undefined;
     this.wallet = undefined;
+    this.winner = undefined;
+    this.send_requested = false;
   }
 
   assign(obj) {
@@ -1033,6 +1035,8 @@ class Raffle extends Loader {
     this.deduction = obj.deduction;
     this.due = obj.due;
     this.wallet = obj.wallet;
+    this.winner = obj.winner;
+    this.send_requested = obj.send_requested;
   }
 
   static init(session, baseobj) {

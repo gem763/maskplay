@@ -1145,6 +1145,8 @@ class Raffle(BigIdAbstract):
     created_at = models.DateTimeField(default=timezone.now, null=False)
 
     wallet = models.OneToOneField(Wallet, null=True, blank=True, on_delete=models.SET_NULL)
+    winner = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
+    send_requested = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.item) + ' | ' + str(self.created_at)
@@ -1168,7 +1170,7 @@ class RaffleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Raffle
-        fields = ['id', 'item', 'deduction', 'due', 'wallet']
+        fields = ['id', 'item', 'deduction', 'due', 'wallet', 'winner', 'send_requested']
         read_only_fields = fields
 
     def get_wallet(self, obj):
@@ -1972,6 +1974,8 @@ class Pix(BigIdAbstract):
 
     TYPE_KEYS = ( ('X', '없음'), ('M', '남자착장'), ('F', '여자착장'), ('T', '아이템') )
     type = models.CharField(max_length=1, choices=TYPE_KEYS, default='F', null=False, blank=False)
+
+    taggerlog = models.JSONField(default=dict, blank=True, null=True)
 
     @classmethod
     def ipixs(cls):

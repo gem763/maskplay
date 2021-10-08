@@ -26,6 +26,23 @@
     justify-content: space-between;
   }
 
+
+  .myevents.vcomp > .segment > .notice {
+    position: relative;
+    width: 100%;
+    margin-bottom: 8px;
+    /* height: 100px; */
+    border-radius: 8px;
+    /* display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column; */
+    box-sizing: border-box;
+    cursor: pointer;
+    background: wheat;
+    padding: 16px;
+  }
+
   .myevents.vcomp > .segment > .event {
     position: relative;
     width: 100%;
@@ -77,7 +94,11 @@
     filter: brightness(80%);
   }
 
-  .myevents.vcomp > .segment > .event > .coverpix > .name {
+  .myevents.vcomp > .segment > .event.outdated > .coverpix > img {
+    opacity: 0.2;
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix > .item-name {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -102,6 +123,22 @@
     box-sizing: border-box;
     text-align: right;
     color: white;
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix > .see-result {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    display: none;
+  }
+
+  .myevents.vcomp > .segment > .event.outdated > .coverpix > .see-result {
+    display: block;
   }
 
   .myevents.vcomp > .segment > .event > .due {
@@ -141,10 +178,97 @@
     font-size: 12px;
     color: var(--color-dark);
   }
+
+  .myevents.vcomp > .segment > .notice > .head {
+    font-size: 13px;
+    /* color: #999999; */
+  }
+
+  .myevents.vcomp > .segment > .notice > .desc {
+    font-size: 15px;
+    font-weight: bold;
+  }
+
+  .myevents.vcomp > .segment > .notice > .baseinfo {
+    font-size: 13px;
+    height: 0px;
+    transition: all 0.2s;
+    overflow: hidden;
+    padding: 0;
+    opacity: 0;
+  }
+
+  .myevents.vcomp > .segment > .notice.baseinfoing > .baseinfo {
+    height: 75px;
+    padding: 16px 0 16px 0;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    margin-top: 16px;
+    opacity: 1;
+  }
+
+
+  .myevents.vcomp > .segment > .notice > .actions {
+    text-align: right;
+    margin-top: 15px;
+  }
+
+  .myevents.vcomp > .segment > .notice > .actions > .btn {
+    background: var(--color-dark);
+    color: white;
+    padding: 5px 10px 5px 10px;
+    font-size: 11px;
+    border-radius: 100px;
+  }
+
+  .myevents.vcomp > .segment > .notice > .actions > .btn.ok {
+    background: var(--color-point);
+  }
+
+  .myevents.vcomp > .segment > .notice > .actions > .btn.request {
+    display: inline-block;
+  }
+
+  .myevents.vcomp > .segment > .notice > .actions > .btn.close,
+  .myevents.vcomp > .segment > .notice > .actions > .btn.ok {
+    display: none;
+  }
+
+  .myevents.vcomp > .segment > .notice.baseinfoing > .actions > .btn.request {
+    display: none;
+  }
+
+  .myevents.vcomp > .segment > .notice.baseinfoing > .actions > .btn.close,
+  .myevents.vcomp > .segment > .notice.baseinfoing > .actions > .btn.ok {
+    display: inline-block;
+  }
 </style>
 
 <script type='text/x-template' id='myevents-template'>
   <div class='myevents vcomp'>
+
+
+    <div class='segment'>
+      <!-- <div class='notice' v-for='(r, idx) in raffles_mywin' @click='$emit("pop_sendme", r)'> -->
+      <div class='notice' v-for='(r, idx) in raffles_mywin'>
+        <div class='head'>[추첨 이벤트]</div>
+        <div class='desc'>[[ r.item.name ]]에 당첨되셨어요!🎉</div>
+        <div class='baseinfo'>
+          <div>아래의 배송정보를 확인해주세요</div>
+          <ul>
+            <li>이름/ <b>[[ name ]]</b></li>
+            <li>배송지/ <b>[[ address ]]</b></li>
+            <li>연락처/ <b>[[ mobile ]]</b></li>
+          </ul>
+        </div>
+
+        <div class='actions'>
+          <span class='btn request' @click='baseinfoing'>상품배송 신청하기</span>
+          <span class='btn close' @click='baseinfoing_close'>닫기</span>
+          <span class='btn ok' @click='sendme'>네, 보내주세요</span>
+        </div>
+      </div>
+    </div>
 
     <div class='segment'>
       <div class='title'>추첨</div>
@@ -154,11 +278,12 @@
       </div>
 
       <template v-else-if='has_raffles'>
-        <div class='event' v-for='(r, idx) in raffles_list' @click='open_raffle(r)'>
+        <div class='event' :class='{ outdated:outdated(r) }' v-for='(r, idx) in raffles_list' @click='open_raffle(r)'>
           <div class='coverpix'>
             <img :src='coverpix(r)' @load='coverpix_loaded'>
-            <div class='name'>[[ name(r) ]]</div>
+            <div class='item-name'>[[ item_name(r) ]]</div>
             <div class='deduction'>[[ deduction(r) ]]</div>
+            <div class='see-result'>결과확인 🤩</div>
           </div>
 
           <div class='due'><span>[[ days_to_due_text(r) ]]</span></div>
@@ -218,6 +343,24 @@
         }
       },
 
+      name: function() {
+        if (this.myboo) {
+          return this.session.user.auth.name
+        }
+      },
+
+      mobile: function() {
+        if (this.myboo) {
+          return this.session.user.auth.mobile
+        }
+      },
+
+      address: function() {
+        if (this.myboo) {
+          return this.session.user.auth.address
+        }
+      },
+
       supports: function() {
         if (this.myboo) {
           return this.myboo.supports
@@ -239,6 +382,12 @@
       raffles_list: function() {
         if (this.raffles) {
           return this.raffles.list
+        }
+      },
+
+      raffles_mywin: function() {
+        if (this.myboo && this.raffles_list) {
+          return _.filter(this.raffles_list, ['winner', this.myboo.id])
         }
       },
 
@@ -280,6 +429,19 @@
     },
 
     methods: {
+      baseinfoing: function() {
+        // console.log(1234)
+        event.target.closest('.notice').classList.add('baseinfoing');
+      },
+
+      baseinfoing_close: function() {
+        event.target.closest('.notice').classList.remove('baseinfoing');
+      },
+
+      sendme: function() {
+        this.baseinfoing_close();
+      },
+
       coverpix: function(e) {
         if (e.item) {
           return e.item.pix_wide ? e.item.pix_wide : e.item.pix_0
@@ -294,7 +456,7 @@
         event.target.closest('.event').classList.add('loaded');
       },
 
-      name: function(e) {
+      item_name: function(e) {
         if (e.item) {
           return e.item.name
 

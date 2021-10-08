@@ -94,8 +94,9 @@ class SupportAdmin(admin.ModelAdmin):
 
 @admin.register(m.Raffle)
 class RaffleAdmin(admin.ModelAdmin):
-    list_display = ['item', 'listing', 'deduction', 'due', 'item_preview']
+    list_display = ['item', 'listing', 'deduction', 'due', 'winner', 'send_requested', 'item_preview']
     list_editable = ['listing']
+    raw_id_fields = ('item', 'wallet', 'winner', )
 
     def item_preview(self, obj):
         if obj.item.pix_wide:

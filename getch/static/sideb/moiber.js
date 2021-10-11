@@ -576,6 +576,7 @@ class Pix extends Loader {
     this.owner = undefined;
     this.outlink = undefined;
     this.type = undefined;
+    this.tags = undefined;
   }
 
   assign(obj) {
@@ -583,6 +584,7 @@ class Pix extends Loader {
     this.src = obj.src;
     this.outlink = obj.outlink;
     this.type = obj.type;
+    this.tags = obj.tags;
     this.owner = Baseboo.init(this.session, obj.owner);
   }
 

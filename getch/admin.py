@@ -32,7 +32,11 @@ class AdminpixPreviewWidget(AdminFileWidget):
 
 @admin.register(m.Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ['pix', 'type', 'category', 'item']
+    list_display = [
+        'pix_id', 'type', 'category', 'item',
+        'color', 'detail', 'pattern', 'texture', 'look', 'length', 'sleeve_length', 'neckline', 'fit', 'shape',
+        'heel_height', 'heel_shape', 'toe_type', 'sole_type', 'strap', 'size', 'main_material', 'sub_material']
+
     raw_id_fields = ('pix', )
 
 
@@ -418,8 +422,9 @@ class PixAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.JSONField: {'widget': JSONEditorWidget},
     }
-        
-    list_display = ['owner', 'desc', 'tokens', 'tokens_ko', 'outlink', 'type', 'preview']
+
+    # list_display = ['owner', 'desc', 'tokens', 'tokens_ko', 'outlink', 'type', 'tagged', 'preview']
+    list_display = ['owner', 'desc', 'tokens_ko', 'outlink', 'type', 'tagger_called', 'tagged', 'preview']
     raw_id_fields = ('owner', )
     list_editable = ['type']
     search_fields = ('owner__nick', 'tokens', 'tokens_ko', )
@@ -427,6 +432,19 @@ class PixAdmin(admin.ModelAdmin):
 
     def preview(self, obj):
         return obj.preview
+
+    def tagger_called(self, obj):
+        return obj.tagger_called
+
+    def tagger_blocked(self, obj):
+        return obj.tagger_blocked
+
+    def tagged(self, obj):
+        return obj.tagged
+
+    tagger_called.boolean = True
+    # tagger_blocked.boolean = True
+    tagged.boolean = True
 
 
 @admin.register(m.Collection)

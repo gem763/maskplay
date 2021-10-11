@@ -954,12 +954,6 @@ def get_pixpair_ipixs(request):
     _type = random.choice(__type)
     _univ = m.Pix.objects.filter(type=_type).values_list('id', flat=True)
     _ipixs = sorted(random.sample(list(_univ), 2))
-    # print(_ipixs, '****************', time.time() - st)
-
-    # if tmp[0] == 0:
-    #     _ipixs = get_kkk()
-
-    # if any(pixpair_exists(bgr, _ipixs) for bgr in bgrs):
 
     if _user.is_authenticated:
         if _user.has_active_boo and _user.boo.balancegamerecord_set.filter(pix_0_id=_ipixs[0], pix_1_id=_ipixs[1]).exists():

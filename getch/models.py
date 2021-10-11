@@ -2005,18 +2005,35 @@ class Pix(BigIdAbstract):
             return mark_safe('<img src="{}" style="height:150px;width:150px;object-fit:cover;" />'.format(self.src.url))
         return ""
 
+    @property
+    def tagger_called(self):
+        return len(self.taggerlog) > 0
+
+    @property
+    def tagged(self):
+        return self.tagger_called and (self.taggerlog['status'] == 'ok')
+
+    @property
+    def tagger_quota_limited(self):
+        return self.tagger_called and (self.taggerlog['status'] == 'fail') and (self.taggerlog['error']['code'] == 823)
+
+
 
 class PixSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
 
     class Meta:
         model = Pix
-        fields = ['id', 'owner', 'src', 'desc', 'outlink', 'type']
+        fields = ['id', 'owner', 'src', 'desc', 'outlink', 'type', 'tags']
         read_only_fields = fields
 
     def get_owner(self, obj):
         return {'id': obj.owner.id, 'nick': obj.owner.nick}
         # return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
+
+    def get_tags(self, obj):
+        return [{'type': tag.type, 'category': tag.category, 'item': tag.item, 'x': tag.x, 'y': tag.y} for tag in obj.tag_set.all()]
 
 
 class Tag(BigIdAbstract):

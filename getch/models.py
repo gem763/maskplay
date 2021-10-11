@@ -673,22 +673,35 @@ class Notihistory(BigIdAbstract):
         _user = get_current_user()
         _noti = cls.objects.create(transaction_id=trans_id)
 
-        _trans = _noti.transaction
+        _trans = _noti.transaction#; print('************', _trans.type)
         _item = _trans.receiver.whose.item
         _ordercode = f'M{_noti.id}-{str(_trans.when).replace("-","").replace(" ","").replace(".","").replace(":","")}'
 
-        slack_blocks = [{
-        	'type': 'section',
-        	'text': {
-        		'type': 'mrkdwn',
-        		'text': f'>*구매확정 알림*\n>주문번호: {_ordercode}\n>주문시각: {_trans.when}\n>닉네임: {_user.boo.nick}\n>이메일: {_user.email}\n>전화번호: {_user.mobile}\n>아이템: {_item.name}\n>사용포인트: {_item.price}'
-        	}
-        }]
+        if _trans.type == OUT_RAFFLE:
+            slack_blocks = [{
+            	'type': 'section',
+            	'text': {
+            		'type': 'mrkdwn',
+            		'text': f'>*[추첨]배송확정 알림*\n>주문번호: {_ordercode}\n>주문시각: {_noti.created_at}\n>아이템: {_item.name}\n>이름/성별/생년월일: {_user.name}/{_user.get_gender_display()}/{_user.birth}\n>닉네임: {_user.boo.nick}\n>이메일: {_user.email}\n>전화번호: {_user.mobile}\n>배송지: {_user.address}'
+            	}
+            }]
 
-        mobile_message = f'[모이버] {_user.boo.nick}님이 구매하신 상품의 주문처리가 완료되었습니다\n- 주문번호: {_ordercode}\n- {_item.name}\n- 모바일로 전송되기까지 다소 시간이 소요될 수 있음을 미리 알려드립니다\n- 문의처: contact@moiber.com'
+            mobile_message = f'[모이버] {_user.boo.nick}님이 신청하신 상품의 배송이 시작되었습니다\n- 주문번호: {_ordercode}\n- {_item.name}\n- {_user.address}\n- 배송기간은 서울/경기지역 2~4일 내외, 그 외 지역 3~5일 내외로 소요됩니다.(단, 택배사의 사정에 따라 기간이 조정될 수 있습니다)\n- 문의처: contact@moiber.com'
+
+        else:
+            slack_blocks = [{
+            	'type': 'section',
+            	'text': {
+            		'type': 'mrkdwn',
+            		'text': f'>*[쇼핑]구매확정 알림*\n>주문번호: {_ordercode}\n>주문시각: {_noti.created_at}\n>아이템: {_item.name}\n>사용포인트: {_item.price}\n>이름/성별/생년월일: {_user.name}/{_user.get_gender_display()}/{_user.birth}\n>닉네임: {_user.boo.nick}\n>이메일: {_user.email}\n>전화번호: {_user.mobile}'
+            	}
+            }]
+
+            mobile_message = f'[모이버] {_user.boo.nick}님이 구매하신 상품의 주문처리가 완료되었습니다\n- 주문번호: {_ordercode}\n- {_item.name}\n- 모바일로 전송되기까지 다소 시간이 소요될 수 있음을 미리 알려드립니다\n- 문의처: contact@moiber.com'
 
         _noti.mobiled = notify_mobile(_user.mobile.replace('-',''), mobile_message)
-        _noti.slacked = notify_slack(channel='#5-기술-앱봇', title='구매확정 알림', blocks=slack_blocks)
+        # print(slack_blocks)
+        _noti.slacked = notify_slack(channel='#5-기술-앱봇', title='구매/배송확정 알림', blocks=slack_blocks)
         _noti.ordercode = _ordercode
         _noti.save()
 

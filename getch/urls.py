@@ -156,6 +156,7 @@ urlpatterns = [
     path('shoptem/ishoptems/', v.get_ishoptems, name='get_ishoptems'),
 
     path('raffle/<int:raffle_id>/', v.get_raffle, name='get_raffle'),
+    path('raffle/<int:raffle_id>/send_request/', v.raffle_send_request, name='raffle_send_request'),
     path('raffle/iraffles/', v.get_iraffles, name='get_iraffles'),
     path('raffle/iraffles/my/', v.get_iraffles_my, name='get_iraffles_my'),
 

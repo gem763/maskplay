@@ -415,6 +415,10 @@ class BalancegameRecordAdmin(admin.ModelAdmin):
 
 @admin.register(m.Pix)
 class PixAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.JSONField: {'widget': JSONEditorWidget},
+    }
+        
     list_display = ['owner', 'desc', 'tokens', 'tokens_ko', 'outlink', 'type', 'preview']
     raw_id_fields = ('owner', )
     list_editable = ['type']

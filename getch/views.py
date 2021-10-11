@@ -783,6 +783,23 @@ def get_raffle(request, raffle_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+def raffle_send_request(request, raffle_id):
+    try:
+        if request.user.is_authenticated:
+            _raffle = m.Raffle.objects.get(pk=raffle_id)
+            _raffle.send_requested = True
+            _raffle.save()
+
+            _trans = _raffle.wallet.receiver_transaction_set.filter(sender__boo=request.user.boo).last()
+            m.Notihistory.add(_trans.id)
+            return JsonResponse({'success':True, 'message':'raffle send requested successfully'}, safe=False)
+
+        else:
+            return JsonResponse({'success':False, 'message':'something wrong while raffle send requesting'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while raffle send requesting'}, safe=False)
+
 
 def get_iflashgames(request):
     _iflashgames = list(m.Flashgame.iflashgames)

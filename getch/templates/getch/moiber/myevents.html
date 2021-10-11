@@ -38,9 +38,14 @@
     justify-content: center;
     flex-direction: column; */
     box-sizing: border-box;
-    cursor: pointer;
-    background: wheat;
+    /* cursor: pointer; */
+    background: white;
     padding: 16px;
+    transition: all 0.3s;
+  }
+
+  .myevents.vcomp > .segment > .notice.requestable {
+    background: wheat;
   }
 
   .myevents.vcomp > .segment > .event {
@@ -190,6 +195,7 @@
   }
 
   .myevents.vcomp > .segment > .notice > .baseinfo {
+    position: relative;
     font-size: 13px;
     height: 0px;
     transition: all 0.2s;
@@ -199,14 +205,35 @@
   }
 
   .myevents.vcomp > .segment > .notice.baseinfoing > .baseinfo {
-    height: 75px;
+    height: 105px;
     padding: 16px 0 16px 0;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+    border-top: 1px solid rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(0,0,0,0.5);
     margin-top: 16px;
     opacity: 1;
   }
 
+  .myevents.vcomp > .segment > .notice > .baseinfo > ul > li {
+    margin-bottom: 3px;
+  }
+
+  .myevents.vcomp > .segment > .notice > .baseinfo > ul > li > b.empty {
+    color: var(--color-point);
+  }
+
+  .myevents.vcomp > .segment > .notice.baseinfoing > .baseinfo > .edit {
+    position: absolute;
+    right: 0;
+    top: 8px;
+    /* background: orange; */
+    padding: 5px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .myevents.vcomp > .segment > .notice.baseinfoing > .baseinfo > .alert {
+    font-size: 10px;
+  }
 
   .myevents.vcomp > .segment > .notice > .actions {
     text-align: right;
@@ -219,14 +246,30 @@
     padding: 5px 10px 5px 10px;
     font-size: 11px;
     border-radius: 100px;
+    cursor: pointer;
   }
 
   .myevents.vcomp > .segment > .notice > .actions > .btn.ok {
     background: var(--color-point);
+    /* background: lightgray;
+    opacity: 0.2;
+    pointer-events: none; */
   }
+
+  /* .myevents.vcomp > .segment > .notice > .actions > .btn.ok.active {
+    background: var(--color-point);
+    pointer-events: auto;
+  } */
 
   .myevents.vcomp > .segment > .notice > .actions > .btn.request {
     display: inline-block;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  .myevents.vcomp > .segment > .notice.requestable > .actions > .btn.request {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .myevents.vcomp > .segment > .notice > .actions > .btn.close,
@@ -248,31 +291,32 @@
   <div class='myevents vcomp'>
 
 
-    <div class='segment'>
-      <!-- <div class='notice' v-for='(r, idx) in raffles_mywin' @click='$emit("pop_sendme", r)'> -->
-      <div class='notice' v-for='(r, idx) in raffles_mywin'>
+    <div class='segment' v-if='raffles_mywin && raffles_mywin.length > 0'>
+      <div class='notice' :class='{ requestable: !r.send_requested }' v-for='(r, idx) in raffles_mywin'>
         <div class='head'>[추첨 이벤트]</div>
         <div class='desc'>[[ r.item.name ]]에 당첨되셨어요!🎉</div>
         <div class='baseinfo'>
           <div>아래의 배송정보를 확인해주세요</div>
           <ul>
-            <li>이름/ <b>[[ name ]]</b></li>
-            <li>배송지/ <b>[[ address ]]</b></li>
-            <li>연락처/ <b>[[ mobile ]]</b></li>
+            <li>(이름) <b v-if='name'>[[ name ]]</b><b class='empty' v-else>이름 입력은 필수입니다</b></li>
+            <li>(배송지) <b v-if='address'>[[ address ]]</b><b class='empty' v-else>주소 입력은 필수입니다</b></li>
+            <li>(연락처) <b v-if='mobile'>[[ mobile ]]</b><b class='empty' v-else>연락처 입력은 필수입니다</b></li>
           </ul>
+
+          <div class='alert'>고객 실수로 인한 주소 오류 등으로 오발송 되는 경품은 재발송이 불가합니다.</div>
+          <span class='edit' @click='session.open_baseinfo()'>✍🏻 수정하기</span>
         </div>
 
         <div class='actions'>
-          <span class='btn request' @click='baseinfoing'>상품배송 신청하기</span>
+          <span class='btn request' @click='baseinfoing'>[[ r.send_requested ? '상품배송 신청완료' : '상품배송 신청하기']]</span>
           <span class='btn close' @click='baseinfoing_close'>닫기</span>
-          <span class='btn ok' @click='sendme'>네, 보내주세요</span>
+          <span class='btn ok' v-if='sendable' @click='sendme($event, r)'>네, 보내주세요</span>
         </div>
       </div>
     </div>
 
     <div class='segment'>
       <div class='title'>추첨</div>
-
       <div class='spinner' v-if='raffles_onloading'>
         <i class="fa fa-spinner fa-spin"></i>
       </div>
@@ -425,6 +469,10 @@
         if (this.supports_list) {
           return this.supports_list.length > 0
         }
+      },
+
+      sendable: function() {
+        return this.name && this.mobile && this.address
       }
     },
 
@@ -434,12 +482,30 @@
         event.target.closest('.notice').classList.add('baseinfoing');
       },
 
-      baseinfoing_close: function() {
+      baseinfoing_close: function(event) {
         event.target.closest('.notice').classList.remove('baseinfoing');
       },
 
-      sendme: function() {
-        this.baseinfoing_close();
+      sendme: function(event, r) {
+        const msg = `배송정보를 다시한번 확인해주세요.\n상품배송을 진행할까요?`;
+        resp = confirm(msg);
+
+        if (resp) {
+          fetch(`raffle/${r.id}/send_request`)
+            .then(x => x.json())
+            .then(j => {
+              console.log(j);
+              
+              if (j.success) {
+                r.send_requested = true;
+                alert(`상품배송을 성공적으로 신청하였습니다! ${this.myboo.nick}님의 휴대번호로 안내 메시지를 전송하였습니다.`);
+                this.baseinfoing_close(event);
+
+              } else {
+                alert(`오류가 발생하였습니다. contact@moibercom 으로 문의바랍니다.`);
+              }
+            })
+        }
       },
 
       coverpix: function(e) {

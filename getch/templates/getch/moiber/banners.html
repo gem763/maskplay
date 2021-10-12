@@ -113,6 +113,20 @@
   <div class='banners vcomp'>
 
 
+    <div class='banner' @click='open_raffle'>
+      <div class='pix'>
+        <img class='cover' src='/static/materials/bulletin/luckydraw/banner-luckydraw.png'>
+      </div>
+
+      <div class='content'>
+        <div class='title'>포인트로 참여하는 '럭키드로우(추첨)'</div>
+        <div class='info'>
+          <span class='owner'>MOIBER LAB</span>
+          <span class='due'>절찬 진행중</span>
+        </div>
+      </div>
+    </div>
+
     <div class='banner' @click='session.open_recruit()'>
       <div class='pix'>
         <img class='cover' src='/static/materials/bulletin/career/moiber_recruit_banner.jpg'>
@@ -158,6 +172,10 @@
       on_app: function() {
         return (navigator.userAgent.toLowerCase().indexOf('mobileapp') != -1)
       },
+
+      control: function() {
+        return this.session.mode.dasher_control
+      },
     },
 
     methods: {
@@ -168,6 +186,13 @@
         } else {
           this.session.open_bulletin('zthinker-web');
         }
+      },
+
+      open_raffle: function() {
+        this.control.phase = 'content';
+        this.control.section = 'pointuse';
+        this.control.content = 1;
+        setTimeout(() => { this.control.open = true; }, 10);
       }
     }
   });

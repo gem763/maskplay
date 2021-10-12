@@ -1512,6 +1512,9 @@ class ResearchItem(BigIdAbstract, ModelWithFlag):
 
     # multi_choices = models.TextField(max_length=200, blank=True, null=True)
 
+
+    single_choice_only = models.BooleanField(default=False)
+
     mcpix_0 = models.ImageField(upload_to=_researchitempix_path, max_length=500, null=True, blank=True)
     mclabel_0 = models.CharField(max_length=20, blank=True, null=True)
 
@@ -1559,7 +1562,7 @@ class ResearchItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResearchItem
-        fields = ['id', 'order', 'type', 'gender', 'preq', 'text', 'pix', 'mc']
+        fields = ['id', 'order', 'type', 'gender', 'preq', 'text', 'pix', 'mc', 'single_choice_only']
         read_only_fields = fields
 
     def get_pix(self, obj):

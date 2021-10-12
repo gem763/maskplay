@@ -55,7 +55,6 @@ class Session {
 
     this.store = new Store();
     this.editing = { on: false, selected:[] };
-    this.pixtory = [{ pixs: new Pixs(this) }];
     this.scroll_direction = 'up';
     this.mode = { on: this.home, order: 0, prev: undefined, dasher_control: this.dasher_control };
     this.ikeyset = undefined;
@@ -72,6 +71,7 @@ class Session {
     this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
     this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false, stat_last: false };
+    this.pixtory = [{ pixs: new Pixs(this) }];
     this.user = new User(this);
     // this.keyset_sampling();
 
@@ -334,16 +334,19 @@ class Session {
   }
 
   open_research(content) {
-    if (this.user.has_auth) {
-      this.page.research.content = content;
-      this.open_page('research');
+    this.page.research.content = content;
+    this.open_page('research');
 
-    } else {
-      const answer = confirm('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다');
-      if (answer) {
-        this.open_login();
-      }
-    }
+    // if (this.user.has_auth) {
+    //   this.page.research.content = content;
+    //   this.open_page('research');
+    //
+    // } else {
+    //   const answer = confirm('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다');
+    //   if (answer) {
+    //     this.open_login();
+    //   }
+    // }
   }
 
 
@@ -576,6 +579,7 @@ class Pix extends Loader {
     this.owner = undefined;
     this.outlink = undefined;
     this.type = undefined;
+    this.tags = undefined;
   }
 
   assign(obj) {
@@ -583,6 +587,7 @@ class Pix extends Loader {
     this.src = obj.src;
     this.outlink = obj.outlink;
     this.type = obj.type;
+    this.tags = obj.tags;
     this.owner = Baseboo.init(this.session, obj.owner);
   }
 

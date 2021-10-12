@@ -408,15 +408,23 @@
       delimiters: ['[[', ']]'],
       data: {
         session: undefined,
-        entry: undefined
+        entry: undefined,
+        id: undefined,
       },
 
       created: function() {
         this.session = new Session();
         this.session.labels = {{labels|safe}};
         this.entry = '{{entry}}';
+        this.id = Number('{{id}}');
 
         switch (this.entry) {
+          case 'research':
+            console.log(this.id);
+            this.open_research();
+            // this.session.open_zthinker();
+            break;
+
           case 'zthinker':
             this.session.open_zthinker();
             break;
@@ -473,6 +481,16 @@
             console.log('other');
           }
         },
+
+        open_research: function() {
+          const r = _.find(this.session.researches.list, ['id', this.id]);
+          if (r) {
+            this.session.open_research(r);
+
+          } else {
+            setTimeout(()=>{ this.open_research() }, 1000);
+          }
+        }
 
         // contact: function() {
         //   window.open('mailto:contact@moiber.com');

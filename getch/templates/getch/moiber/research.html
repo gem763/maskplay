@@ -95,6 +95,7 @@
             :brand='brand'
             :session='session'
             :swiper='swiper'
+            @kakao_share='kakao_share'
           ></researchitem>
 
         </div>
@@ -170,6 +171,22 @@
         if (this.npage) {
           return (ipage + 1) + '/' + this.npage
         }
+      },
+
+      kakao_share: function() {
+        _templateArgs = {
+          title: this.research.title,
+          desc: `${this.research.desc} - ${this.brand.name_en}`,
+          pix: this.intro.pix.pix_0,
+          linkpath: `?entry=research&id=${this.research.id}`
+        };
+
+        Kakao.Link.sendCustom({
+          templateId: 63330,
+          templateArgs: _templateArgs
+        });
+
+        // this.dismiss_popup();
       }
     },
 

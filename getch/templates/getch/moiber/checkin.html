@@ -98,7 +98,7 @@
       flashgame: function(_new, _old) {
         if (_new) {
           if (!_new.answer || (_new.answer.length == 0)) {
-            if (!this.session.on('landing','about','policy','privacy','recruit','zthinker','bulletin')) {
+            if (!this.session.on('landing','about','policy','privacy','recruit','zthinker','bulletin','research')) {
               this.session.open_checkin();
             }
           }

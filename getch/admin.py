@@ -204,7 +204,7 @@ class ResearchItemAdmin(admin.ModelAdmin):
             'classes': ('pix_1',)
         }),
         ('MULTICHOICES', {
-            'fields': ('mcpix_0','mclabel_0','mcpix_1','mclabel_1','mcpix_2','mclabel_2','mcpix_3','mclabel_3','mcpix_4','mclabel_4','mcpix_5','mclabel_5','mcpix_6','mclabel_6','mcpix_7','mclabel_7','mcpix_8','mclabel_8','mcpix_9','mclabel_9','mcpix_10','mclabel_10','mcpix_11','mclabel_11',),
+            'fields': ('single_choice_only','mcpix_0','mclabel_0','mcpix_1','mclabel_1','mcpix_2','mclabel_2','mcpix_3','mclabel_3','mcpix_4','mclabel_4','mcpix_5','mclabel_5','mcpix_6','mclabel_6','mcpix_7','mclabel_7','mcpix_8','mclabel_8','mcpix_9','mclabel_9','mcpix_10','mclabel_10','mcpix_11','mclabel_11',),
             'classes': ('mc',)
         }),
     )
@@ -239,7 +239,7 @@ class ResearchAdmin(admin.ModelAdmin):
                 'classes': ('pix_1',)
             }),
             (None, {
-                'fields': ('mcpix_0','mclabel_0','mcpix_1','mclabel_1','mcpix_2','mclabel_2','mcpix_3','mclabel_3','mcpix_4','mclabel_4','mcpix_5','mclabel_5','mcpix_6','mclabel_6','mcpix_7','mclabel_7','mcpix_8','mclabel_8','mcpix_9','mclabel_9','mcpix_10','mclabel_10','mcpix_11','mclabel_11',),
+                'fields': ('single_choice_only','mcpix_0','mclabel_0','mcpix_1','mclabel_1','mcpix_2','mclabel_2','mcpix_3','mclabel_3','mcpix_4','mclabel_4','mcpix_5','mclabel_5','mcpix_6','mclabel_6','mcpix_7','mclabel_7','mcpix_8','mclabel_8','mcpix_9','mclabel_9','mcpix_10','mclabel_10','mcpix_11','mclabel_11',),
                 'classes': ('mc',)
             }),
         )

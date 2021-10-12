@@ -64,6 +64,7 @@ def test(request):
 def discover(request):
     request.session.save()
     context['entry'] = request.GET.get('entry', None)
+    context['id'] = request.GET.get('id', None)
     context['dongne'] = request.GET.get('dongne', None)
     context['gender'] = request.GET.get('gender', None)
     context['kakao_js_key'] = settings.KAKAO_JS_KEY

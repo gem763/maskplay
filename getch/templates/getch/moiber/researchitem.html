@@ -395,6 +395,11 @@
     cursor: pointer;
   }
 
+  .researchitem > .backbone > .section.full > .cover > span.more.kakao-share {
+    background: #FFE810;
+    color: black;
+  }
+
 
   .researchitem > .backbone > .section > .mc {
     position: absolute;
@@ -769,6 +774,7 @@
           <span class='more support' v-if='has_support' @click='go_brander'>후원 이벤트 참여</span>
           <span class='more homepage' v-if='has_homepage' @click='go_homepage'>브랜드 공식 사이트</span>
           <span class='more insta' v-if='has_insta' @click='go_insta'>브랜드 공식 인스타</span>
+          <span class='more kakao-share' @click='$emit("kakao_share")'>카카오톡 공유하기</span>
         </div>
       </div>
     </div>
@@ -899,7 +905,7 @@
       </div>
 
       <!-- <div class='arrow right' :class='{ holded: slide_holded }' v-if='on_mainstory' @click.stop='go_next'> -->
-      <div class='arrow right' :class='{ holded: slide_holded }' v-if='!is_end' @click.stop='go_next'>
+      <div class='arrow right' :class='{ holded: slide_holded }' v-if='!is_end && !is_beginning' @click.stop='go_next'>
         <img src='/static/materials/icons/button-backward.png'>
       </div>
     </div>
@@ -975,7 +981,10 @@
 
               if (!this.is_mc_pix && !this.is_mc_nopix && !this.is_qa) {
                 setTimeout(() => { this.go_next() }, 600);
-              }
+
+              } else if (this.is_mc_pix || this.is_mc_nopix) {
+                setTimeout(() => { this.go_next() }, 600);
+              } jjjjjjjjjjjj
 
             } else {
               this.hold_slide();
@@ -1086,6 +1095,10 @@
         return this.researchitem.type == 'QA'
       },
 
+      // is_single_choice_only: function() {
+      //   return this.
+      // },
+
       on_mainstory: function() {
         return !this.is_intro && !this.is_outro
       },
@@ -1156,7 +1169,13 @@
       },
 
       go_next: function() {
-        if (this.swiper) {
+        if (!this.session.user.has_auth) {
+          const answer = confirm('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다');
+          if (answer) {
+            this.session.open_login();
+          }
+
+        } else if (this.swiper) {
           this.swiper.slideNext();
         }
       },

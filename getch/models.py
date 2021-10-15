@@ -2033,7 +2033,6 @@ class PixSerializer(serializers.ModelSerializer):
 
     def get_owner(self, obj):
         return {'id': obj.owner.id, 'nick': obj.owner.nick}
-        # return {'id': obj.owner.id, 'nick': obj.owner.nick, 'collections': list(obj.owner.collection_set.order_by('-order').values('id', 'name'))}
 
     def get_tags(self, obj):
         return [{'type': tag.type, 'category': tag.category, 'item': tag.item, 'x': tag.x, 'y': tag.y} for tag in obj.tag_set.all()]
@@ -2072,6 +2071,18 @@ class Tag(BigIdAbstract):
 
     def __str__(self):
         return f'[{self.pix.id}] {self.type} | {self.category} | {self.item}'
+
+
+class TagSerializer(serializers.ModelSerializer):
+    pix = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Tag
+        fields = ['id', 'pix', 'type', 'category', 'item', 'x', 'y']
+        read_only_fields = fields
+
+    def get_pix(self, obj):
+        return { 'id': obj.pix.id }
 
 
 class BalancegameRecord(BigIdAbstract):

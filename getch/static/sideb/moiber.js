@@ -26,6 +26,7 @@ class Session {
       flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left'},// contents: new PixpairSet(this) },
+      balancegame:  { order: 0, instant: false, open: false, from: 'left'},
       // stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
@@ -71,6 +72,7 @@ class Session {
     this.itemlabels = undefined;
     // this.checkingame = Checkingame.build(this);
     this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false, stat_last: false };
+    this.balancegame2 = { tagpairs: new Tagpairs(this), stat: undefined, stat_updated: false, stat_last: false };
     this.pixtory = [{ pixs: new Pixs(this) }];
     this.user = new User(this);
     // this.keyset_sampling();
@@ -393,12 +395,16 @@ class Session {
   }
 
   open_stylevote() {
-    // if (!this.page.stylevote.contents) {
-    //   this.page.stylevote.contents = new PixpairSet(this, 200);
-    // }
+    if (this.user.has_auth && this.user.auth.is_superuser) {
+      this.open_balancegame();
 
-    // setTimeout(() => { this.open_page('stylevote'); }, 10);
-    this.open_page('stylevote');
+    } else {
+      this.open_page('stylevote');
+    }
+  }
+
+  open_balancegame() {
+    this.open_page('balancegame');
   }
 
   open_collector(pix) {
@@ -985,14 +991,6 @@ class Flashgame extends Loader {
     this.stat = undefined;
     this.answer = undefined;
   }
-
-  // assign(obj) {
-  //   Object.assign(this, obj);
-  //
-  //   const _today = moment(new Date()).format('YYYY-MM-DD');
-  //
-  //
-  // }
 }
 
 
@@ -1108,11 +1106,6 @@ class Brand extends Loader {
     this.supports = [];
   }
 
-  // assign(obj) {
-  //   Object.assign(this, obj);
-  //   this.supports = new Supports(this.session, this.id);
-  // }
-
   static init(session, baseobj) {
     if (baseobj.id in session.store.brandstore) {
       return session.store.brandstore[baseobj.id]
@@ -1201,6 +1194,25 @@ class Support extends Loader {
 }
 
 
+class Tag extends Loader {
+  constructor(session, baseobj) {
+    super(session, baseobj);
+    this.url = `/tag/${baseobj.id}`;
+    this.pix = undefined;
+    this.type = undefined;
+    this.category = undefined;
+    this.item = undefined;
+    this.x = undefined;
+    this.y = undefined;
+  }
+
+  assign(obj) {
+    Object.assign(this, obj);
+    this.pix = Pix.build(this.session, obj.pix);
+  }
+}
+
+
 class Multiloader {
   constructor(session) {
     this.session = session;
@@ -1271,16 +1283,6 @@ class Itemlabels extends Multiloader {
   }
 }
 
-
-// class Supportbrands extends Multiloader {
-//   constructor(session) {
-//     super(session);
-//     this.contentype = Brand;
-//     this.nloads_init = 10;
-//     this.ids_url = `/brand/isupportbrands`;
-//     this.load_ids();
-//   }
-// }
 
 class Supports extends Multiloader {
   constructor(session) {
@@ -1484,28 +1486,38 @@ class Postages extends Multiloader {
   }
 }
 
-// class Pixpair extends Multiloader {
-//   constructor(session, baseobj) {
-//     super(session);
-//     this.contentype = Pix;
-//     this.ids = baseobj.id;
-//     // this.load(2);
-//   }
-//
-//   static build(session, baseobj) {
-//     return new this(session, baseobj).load(2)
-//   }
-// }
-//
-// class PixpairSet extends Multiloader {
-//   constructor(session, n) {
-//     super(session);
-//     this.contentype = Pixpair;
-//     this.nloads_init = 3;
-//     this.ids_url = `/pix/ipixs/comb/${n}`;
-//     this.load_ids();
-//   }
-// }
+
+class Tagpair extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Tag
+    this.nloads_init = 2;
+    this.ids_url = `/tag/itags`;
+    this.load_ids();
+  }
+}
+
+
+class Tagpairs extends Multiloader {
+  constructor(session) {
+    super(session);
+    this.contentype = Tagpair;
+    this.load(1);
+  }
+
+  load(n) {
+    if (!n) { var n = 1; }
+    this.list_onloading = [];
+
+    for (let i = 0; i < n; i++) {
+      const content = new this.contentype(this.session);
+      this.list.push(content);
+      this.list_onloading.push(content);
+    };
+
+    return this
+  }
+}
 
 class Pixpair extends Multiloader {
   constructor(session) {

@@ -1,0 +1,290 @@
+<style>
+  .balancegame.vcomp .page-body > .analyzer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer.on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    /* top: 100%; */
+    /* height: calc(50% - 77px - 16px - var(--iphone-bottom)); */
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s;
+    bottom: calc(32px - 50px - var(--width));
+  }
+
+  .balancegame.vcomp .page-body > .analyzer.on > .box {
+    bottom: calc(77px + 16px + var(--iphone-bottom));
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .head {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color-dark);
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content {
+    position: relative;
+    /* padding: 0 16px 16px 16px; */
+    box-sizing: border-box;
+    /* flex-grow: 1; */
+    background: white;
+    /* overflow-y: auto; */
+    /* height: calc(100% - 50px - 16px); */
+    width: 100%;
+    padding-top: 100%;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud > svg text {
+    text-anchor: middle;
+  }
+
+  .balancegame.vcomp .page-body > .swiper-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: white;
+  }
+
+  .balancegame.vcomp .page-body > .swiper-container > .swiper-wrapper {
+    /* z-index: 0; */
+  }
+
+  .balancegame.vcomp .page-body > .swiper-container > .swiper-wrapper > .swiper-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+</style>
+
+
+<script type='text/x-template' id='balancegame-template'>
+  <page
+    class='balancegame vcomp'
+    :order='session.page.balancegame.order'
+    :open='session.page.balancegame.open'
+    :from='session.page.balancegame.from'
+    :hide_close='true'
+    :hide_menu='true'
+    :hide_headerbar='true'
+    :trans_headerbar='true'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='swiper-container' ref='swiper'>
+        <div class='swiper-wrapper'>
+          <div class="swiper-slide" v-for='tp in tagpairs_list'>
+            <tagchooser :tagpair='tp' :swiper='swiper' :session='session'></tagchooser>
+          </div>
+        </div>
+      </div>
+
+      <div class='analyzer' :class='{ on: on_analyzer }' @click='close_analyzer'>
+        <div class='box' @click.stop>
+          <div class='head'>[[ analyzer_title ]]</div>
+
+          <div class='content'>
+            <div class='wordcloud' ref='wordcloud'></div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('balancegame', {
+    template: '#balancegame-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {
+        on_analyzer: false,
+        swiper: undefined,
+        swiper_options: {
+          direction: 'horizontal',
+          simulateTouch: true,
+          observer: true,
+          observeParents: true,
+          slidesPerView: 'auto',
+          mousewheel: {
+            releaseOnEdges: true,
+          }
+        }
+      }
+    },
+
+    watch: {
+      itagpair: function(_new, _old) {
+        if (this.tagpairs.list.length - _new <= 3) {
+          this.tagpairs.load(3);
+        }
+
+        if (_new > _old) {
+          this.session.scroll_direction = 'down';
+        } else {
+          this.session.scroll_direction = 'up';
+        }
+      },
+
+      stat_updated: function(_new, _old) {
+        if (_new) {
+          this.wordcloud_render();
+          this.on_analyzer = true;
+          setTimeout(() => { this.session.balancegame.stat_updated = false; }, 100);
+        }
+      }
+    },
+
+
+    mounted: function() {
+      this.swiper = new Swiper(this.$refs.swiper, this.swiper_options);
+    },
+
+    methods: {
+      goto_login: function() {
+        this.session.open_login();
+      },
+
+      close_analyzer: function() {
+        this.on_analyzer = false;
+      },
+
+      wordcloud_render: function() {
+        // https://codepen.io/art-lav/pen/oKGgeZ?editors=1111
+
+        var raw;
+        var size = Math.min(this.$refs.wordcloud.clientWidth, this.$refs.wordcloud.clientHeight);
+        // var color = d3.scaleOrdinal(d3.schemeCategory10);
+        var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+        var chart = d3.select(".balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud")
+          .append('svg')
+          .attr("width", size)
+          .attr("height", size);
+
+        var pack = d3.pack()
+          .size([size, size])
+          .padding(size*0.005);
+
+        var counts = this.result;//console.log(counts);
+        var keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);//console.log(keys);
+        var root = d3.hierarchy({children: keys})
+          .sum(function(d) {
+            // return counts[d];
+            return Math.pow(counts[d], 2);
+          });
+
+        // console.log(root);
+
+        var node = chart.selectAll(".node")
+          .data(pack(root).leaves())
+          .enter().append("g")
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+        node.append("circle")
+          .attr("id", function(d) { return d.data; })
+          .attr("r", function(d) { return d.r; })
+          .style("fill", function(d) { return color(d.data); });
+
+        node.append("clipPath")
+          .attr("id", function(d) { return "clip-" + d.data; })
+          .append("use")
+          .attr("xlink:href", function(d) { return "#" + d.data; });
+
+        node.append("text")
+          .attr("clip-path", function(d) { return "url(#clip-" + d.data + ")"; })
+          .append("tspan")
+          .attr("x", 0)
+          .attr("y", function(d) { return d.r/8; })
+          .attr('fill', 'white')
+          .attr("font-size", function(d) {
+            if (d.data.length > 4) {
+              return d.r/3
+
+            } else {
+              return d.r/2
+            }
+          })
+          .text(function(d) { return d.data; });
+      }
+    },
+
+    computed: {
+      tagpairs: function() {
+        return this.session.balancegame2.tagpairs
+      },
+
+      tagpairs_list: function() {
+        if (this.tagpairs) {
+          return this.tagpairs.list
+        }
+      },
+
+      itagpair: function() {
+        if (this.swiper) {
+          return this.swiper.realIndex
+        }
+      },
+
+      result: function() {
+        return this.session.balancegame.stat
+      },
+
+      stat_updated: function() {
+        return this.session.balancegame.stat_updated
+      },
+
+      analyzer_title: function() {
+        if (this.session.balancegame.stat_last) {
+          return '오늘의 밸런스게임 결과'
+
+        } else {
+          return '밸런스게임 중간집계'
+        }
+      }
+    }
+  });
+</script>

@@ -177,6 +177,9 @@ urlpatterns = [
 
     path('pixpair/ipixs/', v.get_pixpair_ipixs, name='get_pixpair_ipixs'),
 
+    path('tag/<int:tag_id>/', v.get_tag, name='get_tag'),
+    path('tag/itags/', v.get_itags, name='get_itags'),
+
     path('mobile/send_authkey/', v.send_mobile_authkey, name='send_mobile_authkey'),
     path('mobile/verify/', v.mobile_verify, name='mobile_verify'),
     path('mobile/verify/save/', v.mobile_verify_save, name='mobile_verify_save'),

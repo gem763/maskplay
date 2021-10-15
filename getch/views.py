@@ -968,6 +968,23 @@ def get_pixpair_ipixs(request):
 
 
 
+def get_tag(request, tag_id):
+    try:
+        _tag = m.Tag.objects.get(pk=tag_id)
+        _tag = m.TagSerializer(_tag).data
+        return JsonResponse({'success':True, 'content':_tag}, safe=False)
+
+    except:
+        return JsonResponse({'success':False}, safe=False)
+
+
+def get_itags(request):
+    _itags = m.Tag.objects.order_by('?')[:2].values_list('id', flat=True)
+    _itags = sorted(list(_itags))
+    return JsonResponse({'success':True, 'ids':_itags}, safe=False)
+
+
+
 def get_random_icols(request):
     _icols = m.Collection.icols()
     random.shuffle(_icols)

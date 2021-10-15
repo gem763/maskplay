@@ -1,0 +1,366 @@
+<style>
+  .tagchooser.vcomp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* background: white; */
+    background: #f8f8f8;
+    padding-top: 45px;
+    padding-bottom: var(--dasher-height);
+    box-sizing: border-box;
+  }
+
+  .tagchooser.vcomp > .divider {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    background: white;
+    /* top: 50%; */
+    top: calc((100% - 45px - var(--dasher-height))/2 + 45px);
+    transform: translateY(-50%);
+  }
+
+  .tagchooser.vcomp > .divider > .vs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: var(--w-20);
+    height: 45px;
+    width: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+  }
+
+  .tagchooser.vcomp > .divider > .vs > * {
+    transform: translateY(2px);
+    letter-spacing: -1px;
+  }
+
+  .tagchooser.vcomp > .section {
+    /* position: absolute; */
+    position: relative;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+    /* background: #f8f8f8; */
+  }
+
+  .tagchooser.vcomp.loaded > .section {
+    pointer-events: auto;
+  }
+
+  .tagchooser.vcomp > .section.outfocused {
+    opacity: 0.2;
+    filter: grayscale(1);
+  }
+
+  .tagchooser.vcomp > .section.up {
+    /* bottom: 50%; */
+    /* background: white; */
+  }
+
+  .tagchooser.vcomp > .section.down {
+    /* top: 50%; */
+    /* background: white; */
+  }
+
+  .tagchooser.vcomp > .section > img.candidate {
+    position: absolute;
+    left: 50%;
+    width: var(--square-size);
+    height: var(--square-size);
+    transform: translateX(-50%);
+    object-fit: cover;
+    transition: opacity 0.3s;
+    border-radius: var(--w-3);
+    filter: brightness(95%);
+    opacity: 0;
+  }
+
+  .tagchooser.vcomp.loaded > .section > img.candidate {
+    opacity: 1;
+  }
+
+  .tagchooser.vcomp > .section.up > img.candidate {
+    bottom: 1px;
+  }
+
+  .tagchooser.vcomp > .section.down > img.candidate {
+    top: 1px;
+  }
+
+  .tagchooser.vcomp > .section > .more {
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    right: calc(50% - var(--square-size)/2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .tagchooser.vcomp > .section.up > .more {
+    /* bottom: calc(var(--square-size) - 44px); */
+    bottom: 1px;
+  }
+
+  .tagchooser.vcomp > .section.down > .more {
+    /* top: 1px; */
+    top: calc(var(--square-size) - 44px);
+  }
+
+  .tagchooser.vcomp > .section > .more > img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    /* background: rgba(255,255,255,0.3); */
+    border-radius: 50%;
+  }
+
+  .tagchooser.vcomp > img.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: auto;
+    opacity: 1;
+  }
+
+
+  .tagchooser.vcomp.loaded > img.loading {
+    opacity: 0;
+  }
+
+
+  .tagchooser.vcomp > .arrows {
+    position: absolute;
+    /* bottom: 50%; */
+    top: calc((100% - 45px - var(--dasher-height))/2 + 45px);
+    height: 0;
+    left: 0;
+    width: 100%;
+    background: orange;
+  }
+
+  .tagchooser.vcomp > .arrows > .arrow {
+    position: absolute;
+    top: 50%;
+    width: 45px;
+    height: 45px;
+    /* background: orange; */
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .tagchooser.vcomp > .arrows > .arrow.left {
+    left: 0;
+  }
+
+  .tagchooser.vcomp > .arrows > .arrow.right {
+    right: 0;
+  }
+
+  .tagchooser.vcomp > .arrows > .arrow > img {
+    width: 6px;
+    height: auto;
+  }
+
+  .tagchooser.vcomp > .arrows > .arrow.left > img {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script type='text/x-template' id='tagchooser-template'>
+  <div class='tagchooser vcomp' :class='{ loaded: loaded }'>
+    <img class='loading' src='/static/materials/logos/moiber_logo_splash.gif'>
+
+    <div class='section up' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
+      <img class='candidate' :src='pix_src_0' @load='imgloaded_0=true'>
+      <div class='more' v-if='imgloaded_0' @click.stop='session.open_search(pix_0)'><img src='/static/materials/icons/seemore.png'></div>
+    </div>
+
+    <div class='section down' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
+      <img class='candidate' :src='pix_src_1' @load='imgloaded_1=true'>
+      <div class='more' v-if='imgloaded_1' @click.stop='session.open_search(pix_1)'><img src='/static/materials/icons/seemore.png'></div>
+    </div>
+
+    <div class='divider' v-if='loaded'>
+      <div class='vs'>VS</div>
+    </div>
+
+    <div class='arrows'>
+      <div class='arrow left' v-if='!is_first' @click.stop='go_prev'>
+        <img src='/static/materials/icons/button-backward.png'>
+      </div>
+
+      <div class='arrow right' @click.stop='go_next'>
+        <img src='/static/materials/icons/button-backward.png'>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('tagchooser', {
+    template: '#tagchooser-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'tagpair', 'swiper', 'session' ],
+    data: function() {
+      return {
+        status: -1,
+        imgloaded_0: false,
+        imgloaded_1: false,
+      }
+    },
+
+    computed: {
+      loaded: function() {
+        return this.imgloaded_0 && this.imgloaded_1
+      },
+
+      is_first: function() {
+        if (this.swiper) {
+          return this.swiper.isBeginning
+        }
+      },
+
+      tag_0: function() {
+        return this.tagpair.list[0]
+      },
+
+      tag_1: function() {
+        return this.tagpair.list[1]
+      },
+
+      pix_0: function() {
+        if (this.tag_0) {
+          return this.tag_0.pix
+        }
+      },
+
+      pix_1: function() {
+        if (this.tag_1) {
+          return this.tag_1.pix
+        }
+      },
+
+      pix_src_0: function() {
+        if (this.pix_0) {
+          return this.pix_0.src
+        }
+      },
+
+      pix_src_1: function() {
+        if (this.pix_1) {
+          return this.pix_1.src
+        }
+      },
+
+      tag_0_x: function() {
+        if (this.tag_0) {
+          return (this.tag_0.x * 100) + '%'
+        }
+      },
+
+      tag_0_y: function() {
+        if (this.tag_0) {
+          return (this.tag_0.y * 100) + '%'
+        }
+      },
+
+      tag_1_x: function() {
+        if (this.tag_1) {
+          return (this.tag_1.x * 100) + '%'
+        }
+      },
+
+      tag_1_y: function() {
+        if (this.tag_1) {
+          return (this.tag_1.y * 100) + '%'
+        }
+      }
+    },
+
+    methods: {
+      // pix_src: function(idx) {
+      //   if (this.pixpair) {
+      //     if (this.pixpair.list[idx]) {
+      //       return this.pixpair.list[idx].src
+      //     }
+      //   }
+      // },
+
+      go_next: function() {
+        if (this.swiper) {
+          this.swiper.slideNext();
+        }
+      },
+
+      go_prev: function() {
+        if (this.swiper) {
+          this.swiper.slidePrev();
+        }
+      },
+
+      toggle_choose: function(act) {
+        if (!this.session.user.has_auth) {
+          const answer = confirm('로그인이 필요합니다');
+          if (answer) {
+            this.session.open_login();
+          }
+
+          // this.$emit('show_loginplz');
+
+          // this.session.user.loginplz = true;
+          // this.on_loginplz = true;
+          // setTimeout(() => { this.session.user.loginplz = false; }, 3000);
+          return
+
+        } else if (!this.session.user.boo.loaded) {
+          alert('사용자 데이터를 로딩 중입니다');
+          return
+        }
+
+        let ipix_pos, ipix_neg;
+        let type;
+
+        // 선택을 클리어하는 경우
+        if (this.status==act) {
+          ipix_pos = this.pixpair.list[1-act].id;
+          ipix_neg = this.pixpair.list[act].id;
+          type = 'clear';
+          this.status = -1;
+
+        } else {
+          // 완전히 새로 선택하는 경우
+          if (this.status==-1) {
+            ipix_pos = this.pixpair.list[act].id;
+            ipix_neg = this.pixpair.list[1-act].id;
+            type = 'new';
+
+          // 반대 것을 선택하는 경우
+          } else {
+            ipix_pos = this.pixpair.list[act].id;
+            ipix_neg = this.pixpair.list[1-act].id;
+            type = 'change';
+          }
+
+          this.status = act;
+          setTimeout(() => { this.swiper.slideNext() }, 300);
+        }
+
+        this.session.user.boo.stylevote(ipix_pos, ipix_neg, type);
+      }
+    }
+  });
+</script>

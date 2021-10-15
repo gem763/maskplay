@@ -22,7 +22,9 @@
 {% include "getch/moiber/profiler.html" %}
 {% include "getch/moiber/infoboard.html" %}
 {% include "getch/moiber/pixchooser.html" %}
+{% include "getch/moiber/tagchooser.html" %}
 {% include "getch/moiber/stylevote.html" %}
+{% include "getch/moiber/balancegame.html" %}
 {% include "getch/moiber/contentwork.html" %}
 {% include "getch/moiber/search.html" %}
 {% include "getch/moiber/researcher.html" %}
@@ -53,6 +55,7 @@
     <search :session='session'></search>
     <brander :session='session'></brander>
     <stylevote :session='session'></stylevote>
+    <balancegame :session='session'></balancegame>
     <!-- <stylevote :session='session' v-if='session.balancegame.pixpair_set'></stylevote> -->
     <!-- <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote> -->
     <!-- <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork> -->

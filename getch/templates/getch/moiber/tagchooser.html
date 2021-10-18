@@ -68,6 +68,47 @@
     /* background: white; */
   }
 
+  .tagchooser.vcomp > .section > .pix {
+    position: absolute;
+    left: 50%;
+    width: var(--square-size);
+    height: var(--square-size);
+    transform: translateX(-50%);
+    /* object-fit: cover; */
+    transition: opacity 0.3s;
+    border-radius: var(--w-3);
+    filter: brightness(95%);
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .tagchooser.vcomp.loaded > .section > .pix {
+    opacity: 1;
+  }
+
+  .tagchooser.vcomp.loaded > .section.up > .pix {
+    bottom: 1px;
+  }
+
+  .tagchooser.vcomp.loaded > .section.down > .pix {
+    top: 1px;
+  }
+
+  .tagchooser.vcomp > .section > .pix > img {
+    position: absolute;
+  }
+
+  .tagchooser.vcomp > .section > .pix > .tag {
+    position: absolute;
+    width: 20%;
+    height: 20%;
+    opacity: 0.5;
+    transform: translate(-50%, -50%);
+    border-radius: 100px;
+    border: 10px solid orange;
+  }
+
+
   .tagchooser.vcomp > .section > img.candidate {
     position: absolute;
     left: 50%;
@@ -184,13 +225,23 @@
     <img class='loading' src='/static/materials/logos/moiber_logo_splash.gif'>
 
     <div class='section up' :class='status==1 ? "outfocused" : ""' @click='toggle_choose(0)'>
-      <img class='candidate' :src='pix_src_0' @load='imgloaded_0=true'>
-      <div class='more' v-if='imgloaded_0' @click.stop='session.open_search(pix_0)'><img src='/static/materials/icons/seemore.png'></div>
+      <!-- <img class='candidate' :src='pix_src_0' @load='pixloaded_0=true'> -->
+      <div class='pix'>
+        <img :src='pix_src_0' :style='pix_0_style' @load='pixloaded(0, $event)'>
+        <div class='tag' :style='tag_0_style'></div>
+      </div>
+
+      <div class='more' v-if='pixloaded_0' @click.stop='session.open_search(pix_0)'><img src='/static/materials/icons/seemore.png'></div>
     </div>
 
     <div class='section down' :class='status==0 ? "outfocused" : ""' @click='toggle_choose(1)'>
-      <img class='candidate' :src='pix_src_1' @load='imgloaded_1=true'>
-      <div class='more' v-if='imgloaded_1' @click.stop='session.open_search(pix_1)'><img src='/static/materials/icons/seemore.png'></div>
+      <!-- <img class='candidate' :src='pix_src_1' @load='pixloaded_1=true'> -->
+      <!-- <img class='candidate' :src='pix_src_1' @load='pixloaded(1, $event)'> -->
+      <div class='pix'>
+        <img :src='pix_src_1' :style='pix_1_style' @load='pixloaded(1, $event)'>
+        <div class='tag' :style='tag_1_style'></div>
+      </div>
+      <div class='more' v-if='pixloaded_1' @click.stop='session.open_search(pix_1)'><img src='/static/materials/icons/seemore.png'></div>
     </div>
 
     <div class='divider' v-if='loaded'>
@@ -218,14 +269,18 @@
     data: function() {
       return {
         status: -1,
-        imgloaded_0: false,
-        imgloaded_1: false,
+        pixloaded_0: false,
+        pixloaded_1: false,
+        pix_0_w: undefined,
+        pix_0_h: undefined,
+        pix_1_w: undefined,
+        pix_1_h: undefined
       }
     },
 
     computed: {
       loaded: function() {
-        return this.imgloaded_0 && this.imgloaded_1
+        return this.pixloaded_0 && this.pixloaded_1
       },
 
       is_first: function() {
@@ -268,37 +323,53 @@
 
       tag_0_x: function() {
         if (this.tag_0) {
-          return (this.tag_0.x * 100) + '%'
+          return this.tag_0.x
         }
       },
 
       tag_0_y: function() {
         if (this.tag_0) {
-          return (this.tag_0.y * 100) + '%'
+          return this.tag_0.y
         }
       },
 
       tag_1_x: function() {
         if (this.tag_1) {
-          return (this.tag_1.x * 100) + '%'
+          return this.tag_1.x
         }
       },
 
       tag_1_y: function() {
         if (this.tag_1) {
-          return (this.tag_1.y * 100) + '%'
+          return this.tag_1.y
         }
+      },
+
+      pix_0_style: function() {
+        return this.pix_style(0)
+      },
+
+      pix_1_style: function() {
+        return this.pix_style(1)
+      },
+
+      tag_0_style: function() {
+        return this.tag_style(0)
+      },
+
+      tag_1_style: function() {
+        return this.tag_style(1)
       }
     },
 
     methods: {
-      // pix_src: function(idx) {
-      //   if (this.pixpair) {
-      //     if (this.pixpair.list[idx]) {
-      //       return this.pixpair.list[idx].src
-      //     }
-      //   }
-      // },
+      pixloaded: function(idx, event) {
+        this['pixloaded_'+idx] = true;
+        const imgtag = event.target;
+        this[`pix_${idx}_w`] = imgtag.naturalWidth;
+        this[`pix_${idx}_h`] = imgtag.naturalHeight;
+        // console.log(imgtag, imgtag.naturalWidth, imgtag.naturalHeight);
+      },
 
       go_next: function() {
         if (this.swiper) {
@@ -319,11 +390,6 @@
             this.session.open_login();
           }
 
-          // this.$emit('show_loginplz');
-
-          // this.session.user.loginplz = true;
-          // this.on_loginplz = true;
-          // setTimeout(() => { this.session.user.loginplz = false; }, 3000);
           return
 
         } else if (!this.session.user.boo.loaded) {
@@ -331,27 +397,23 @@
           return
         }
 
-        let ipix_pos, ipix_neg;
+        // let itag_pos, itag_neg;
         let type;
+        const itag_pos = this[`tag_${act}`].id;
+        const itag_neg = this[`tag_${1-act}`].id;
 
         // 선택을 클리어하는 경우
         if (this.status==act) {
-          ipix_pos = this.pixpair.list[1-act].id;
-          ipix_neg = this.pixpair.list[act].id;
           type = 'clear';
           this.status = -1;
 
         } else {
           // 완전히 새로 선택하는 경우
           if (this.status==-1) {
-            ipix_pos = this.pixpair.list[act].id;
-            ipix_neg = this.pixpair.list[1-act].id;
             type = 'new';
 
           // 반대 것을 선택하는 경우
           } else {
-            ipix_pos = this.pixpair.list[act].id;
-            ipix_neg = this.pixpair.list[1-act].id;
             type = 'change';
           }
 
@@ -359,7 +421,93 @@
           setTimeout(() => { this.swiper.slideNext() }, 300);
         }
 
-        this.session.user.boo.stylevote(ipix_pos, ipix_neg, type);
+        this.session.user.boo.balancegame_vote(itag_pos, itag_neg, type);
+      },
+
+      pix_style: function(idx) {
+        const pixloaded = this[`pixloaded_${idx}`];
+        const pix_w = this[`pix_${idx}_w`];
+        const pix_h = this[`pix_${idx}_h`];
+        const tag_x = this[`tag_${idx}_x`];
+        const tag_y = this[`tag_${idx}_y`];
+
+        if (pixloaded && pix_w && pix_h && tag_x && tag_y) {
+          const _style = {};
+
+          if (pix_w > pix_h) {
+            _style.height = '100%';
+            _style.width = (pix_w / pix_h * 100) + '%';
+
+          } else {
+            _style.width = '100%';
+            _style.height = (pix_h / pix_w * 100) + '%';
+          }
+
+          if (tag_x < 0.2) {
+            _style.left = 0;
+
+          } else if (tag_x > 0.8) {
+            _style.right = 0;
+
+          } else {
+            _style.left = `calc((100% - ${_style.width}) / 2)`;
+          }
+
+          if (tag_y < 0.2) {
+            _style.top = 0;
+
+          } else if (tag_y > 0.8) {
+            _style.bottom = 0;
+
+          } else {
+            _style.top = `calc((100% - ${_style.height}) / 2)`;
+          }
+
+          return _style
+        }
+      },
+
+      tag_style: function(idx) {
+        const pixloaded = this[`pixloaded_${idx}`];
+        const pix_w = this[`pix_${idx}_w`];
+        const pix_h = this[`pix_${idx}_h`];
+        const tag_x = this[`tag_${idx}_x`];
+        const tag_y = this[`tag_${idx}_y`];
+
+        if (pixloaded && pix_w && pix_h && tag_x && tag_y) {
+          const _style = {};
+
+          if (pix_w > pix_h) {
+            _style.top = (tag_y * 100) + '%';
+
+            if (tag_x < 0.2) {
+              _style.left = (pix_w * tag_x / pix_h * 100) + '%';
+
+            } else if (tag_x > 0.8) {
+              // _style.right = (this.pix_0_w * (1 - this.tag_0_x) / this.pix_0_h * 100) + '%';
+              _style.left = ((pix_w * tag_x - (pix_w - pix_h) / 1) / pix_h * 100) + '%';
+
+            } else {
+              _style.left = ((pix_w * tag_x - (pix_w - pix_h) / 2) / pix_h * 100) + '%';
+            }
+
+          } else {
+            _style.left = (tag_x * 100) + '%';
+
+            if (tag_y < 0.2) {
+              _style.top = (pix_h * tag_y / pix_w * 100) + '%';
+
+            } else if (tag_y > 0.8) {
+              // _style.bottom = (this.pix_0_h * (1 - this.tag_0_y) / this.pix_0_w * 100) + '%';
+              _style.top = ((pix_h * tag_y - (pix_h - pix_w) / 1) / pix_w * 100) + '%';
+
+            } else {
+              _style.top = ((pix_h * tag_y - (pix_h - pix_w) / 2) / pix_w * 100) + '%';
+            }
+          }
+
+          return _style
+        }
       }
     }
   });

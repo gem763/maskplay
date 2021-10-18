@@ -32,6 +32,7 @@ import time
 import base64
 import hashlib
 import hmac
+import pandas as pd
 
 
 # from gensim.models import Doc2Vec
@@ -898,7 +899,7 @@ class Boo(BigIdAbstract, ModelWithFlag):
         st = time.time()
         # _toks = BalancegameRecord.objects.filter(who=self).select_related('pix_0__tokens_ko', 'pix_1__tokens_ko')
         # _toks = BalancegameRecord.objects.filter(who=self).select_related('pix_0', 'pix_1', 'pix_0__tokens_ko', 'pix_1__tokens_ko').annotate(
-        _toks = BalancegameRecord.objects.filter(who=self).order_by('-id')[:100].annotate(
+        _toks = BalancegameRecord.objects.filter(who=self).exclude(pix_0__isnull=True).order_by('-id')[:100].annotate(
             pos_tokens=Case(
                 When(chosen=0, then=F('pix_0__tokens_ko')),
                 When(chosen=1, then=F('pix_1__tokens_ko')),
@@ -941,6 +942,25 @@ class Boo(BigIdAbstract, ModelWithFlag):
         print(time.time()-st, '**********')
         st = time.time()
         return out
+
+
+    @property
+    def balancegame_stat2(self):
+        bgr = BalancegameRecord.objects.filter(who=self).exclude(tag_pos__isnull=True).select_related('tag_pos', 'tag_neg').order_by('-id')[:100]
+
+        df_pos = pd.DataFrame([r.tag_pos.__dict__ for r in bgr])
+        df_neg = pd.DataFrame([r.tag_neg.__dict__ for r in bgr])
+
+        flds = [
+            'type','category','item',
+            'color','detail','pattern','texture','look','length','sleeve_length',
+            'neckline','fit','shape','heel_height','heel_shape','toe_type','sole_type',
+            'strap','size','main_material','sub_material'
+        ]
+
+        count = { col: collections.Counter(df_pos[col]) - collections.Counter(df_neg[col]) for col in flds }
+        count = sum(count.values(), collections.Counter())
+        return dict(count.most_common(30))
 
 
     @property
@@ -2087,8 +2107,12 @@ class TagSerializer(serializers.ModelSerializer):
 
 class BalancegameRecord(BigIdAbstract):
     who = models.ForeignKey(Boo, blank=True, null=True, on_delete=models.SET_NULL)
-    pix_0 = models.ForeignKey(Pix, related_name='pix_0_balancegamerecord_set', null=False, on_delete=models.CASCADE)
-    pix_1 = models.ForeignKey(Pix, related_name='pix_1_balancegamerecord_set', null=False, on_delete=models.CASCADE)
+    pix_0 = models.ForeignKey(Pix, related_name='pix_0_balancegamerecord_set', null=True, on_delete=models.CASCADE)
+    pix_1 = models.ForeignKey(Pix, related_name='pix_1_balancegamerecord_set', null=True, on_delete=models.CASCADE)
+
+    tag_pos = models.ForeignKey(Tag, related_name='tag_pos_balancegamerecord_set', null=True, on_delete=models.CASCADE)
+    tag_neg = models.ForeignKey(Tag, related_name='tag_neg_balancegamerecord_set', null=True, on_delete=models.CASCADE)
+
 
     CHOSEN_TYPES = (
         (0, '0'),
@@ -2099,7 +2123,8 @@ class BalancegameRecord(BigIdAbstract):
     created_at = models.DateTimeField(default=timezone.now, null=False)
 
     def __str__(self):
-        return str(self.who) + ' | ' + str(self.pix_0.id) + '-' + str(self.pix_1.id)
+        return str(self.who) + ' | ' + str(self.created_at)
+        # return str(self.who) + ' | ' + str(self.pix_0.id) + '-' + str(self.pix_1.id)
 
 
 class Collection(OrderedModel):

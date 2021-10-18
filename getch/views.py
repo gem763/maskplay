@@ -36,6 +36,7 @@ import hashlib
 import hmac
 import time
 import requests
+import pandas as pd
 
 
 # bgrs = []
@@ -166,13 +167,18 @@ def zthinker(request):
     params = { 'entry': 'zthinker' }
     return redirect_params('discover', params)
 
-def testbed(request):
-    context['req'] = 5
-    return load(request, context)
 
-def testfeed(request):
-    context['req'] = 6
-    return load(request, context)
+def testbed(request):
+    params = { 'entry': 'testbed' }
+    return redirect_params('discover', params)
+
+# def testbed(request):
+#     context['req'] = 5
+#     return load(request, context)
+#
+# def testfeed(request):
+#     context['req'] = 6
+#     return load(request, context)
 
 
 # def user_check_signup(request):
@@ -845,13 +851,20 @@ def balancegame_stat(request):
     try:
         if request.user.is_authenticated:
             _user = request.user
-            # _user = m.User.objects.get(email='magrittelim@gmail.com')
-            # print(request.user.boo.balancegame_stat)
             return JsonResponse({'success':True, 'stat':_user.boo.balancegame_stat, 'message': 'balancegame stat evaluated successfully'}, safe=False)
 
     except:
         return JsonResponse({'success':False, 'message': 'something wrong while evaluating balancegame stat'}, safe=False)
 
+
+def balancegame_stat2(request):
+    try:
+        if request.user.is_authenticated:
+            _user = request.user
+            return JsonResponse({'success':True, 'stat':_user.boo.balancegame_stat2, 'message': 'balancegame stat evaluated successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message': 'something wrong while evaluating balancegame stat'}, safe=False)
 
 
 def get_item(request, item_id):
@@ -978,10 +991,73 @@ def get_tag(request, tag_id):
         return JsonResponse({'success':False}, safe=False)
 
 
+univ = [
+    [10, {'type':'clothing', 'category':'캐주얼상의'}],
+    [10, {'type':'clothing', 'category':'팬츠'}],
+    [10, {'type':'clothing', 'category':'재킷'}],
+    [10, {'type':'clothing', 'category':'니트웨어'}],
+    [10, {'type':'clothing', 'category':'청바지'}],
+    [10, {'type':'clothing', 'category':'스커트'}],
+    [10, {'type':'clothing', 'category':'셔츠'}],
+    [10, {'type':'clothing', 'category':'점퍼'}],
+    [10, {'type':'clothing', 'category':'코트'}],
+    [9, {'type':'clothing', 'category':'드레스'}],
+    [8, {'type':'clothing', 'category':'블라우스'}],
+    [7, {'type':'clothing', 'category':'탑'}],
+    [6, {'type':'clothing', 'category':'패딩'}],
+    [3, {'type':'clothing', 'category':'베스트'}],
+    [2, {'type':'clothing', 'category':'점프수트'}],
+    [1, {'type':'clothing', 'category':'수영복'}],
+
+    [7, {'type':'shoes'}],
+    [7, {'type':'shoes', 'category':'운동화'}],
+    [7, {'type':'shoes', 'category':'부츠/워커'}],
+    [7, {'type':'shoes', 'category':'로퍼'}],
+    [6, {'type':'shoes', 'category':'슬리퍼'}],
+    [5, {'type':'shoes', 'category':'펌프스'}],
+    [4, {'type':'shoes', 'category':'정장구두'}],
+    [4, {'type':'shoes', 'category':'샌들'}],
+
+    [5, {'type':'bags', 'category':'가방'}],
+    [1, {'type':'bags', 'category':'지갑'}],
+
+    [1, {'type':'accessories', 'category':'잡화', 'item':'선글라스'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'벨트'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'안경'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'손목시계'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'머플러'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'헤어밴드'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'스카프'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'양말'}],
+    [1, {'type':'accessories', 'category':'잡화', 'item':'헤어악세서리'}],
+#     {'type':'accessories', 'category':'잡화', 'item':'고글'},
+#     {'type':'accessories', 'category':'잡화', 'item':'넥워머'},
+#     {'type':'accessories', 'category':'잡화', 'item':'넥타이'},
+#     {'type':'accessories', 'category':'잡화', 'item':'타이츠스타킹'},
+#     {'type':'accessories', 'category':'잡화', 'item':'암워머'},
+
+    [1, {'type':'jewelries'}],
+    [1, {'type':'jewelries', 'category':'목걸이'}],
+    [1, {'type':'jewelries', 'category':'팔찌/발찌'}],
+    [1, {'type':'jewelries', 'category':'귀걸이/피어싱'}],
+    [1, {'type':'jewelries', 'category':'반지'}],
+#     {'type':'jewelries', 'category':'펜던트'},
+
+    [3, {'type':'hats', 'category':'모자'}],
+]
+
+df_choice = pd.DataFrame(univ)
+
+
 def get_itags(request):
-    _itags = m.Tag.objects.order_by('?')[:2].values_list('id', flat=True)
-    _itags = sorted(list(_itags))
-    return JsonResponse({'success':True, 'ids':_itags}, safe=False)
+    # _itags = m.Tag.objects.order_by('?')[:2].values_list('id', flat=True)
+    # _itags = m.Tag.objects.filter(item='티셔츠').order_by('?')[:2].values_list('id', flat=True)
+    try:
+        _itags = m.Tag.objects.filter(**random.choices(df_choice[1], weights=df_choice[0])[0]).order_by('?')[:2].values_list('id', flat=True)
+        _itags = sorted(list(_itags))
+        return JsonResponse({'success':True, 'ids':_itags}, safe=False)
+    except:
+        return get_itags(request)
 
 
 
@@ -1396,6 +1472,42 @@ def settle(request):
 
     except:
         return JsonResponse({'success':False, 'message':'something wrong while settle'}, safe=False)
+
+
+
+def balancegame_vote(request):
+    try:
+        itag_pos = int(request.GET.get('itag_pos', None))
+        itag_neg = int(request.GET.get('itag_neg', None))
+        toggletype = request.GET.get('type', None)
+
+        if request.user.is_authenticated and itag_pos and itag_neg and toggletype:
+            _boo = request.user.boo
+
+            if toggletype == 'clear':
+                try:
+                    m.BalancegameRecord.objects.filter(who=_boo, tag_pos_id=itag_pos, tag_neg_id=itag_neg).last().delete()
+                except:
+                    pass
+
+            elif toggletype == 'change':
+                try:
+                    _bgr = m.BalancegameRecord.objects.filter(who=_boo, tag_pos_id=itag_neg, tag_neg_id=itag_pos).last()
+                    _bgr.tag_pos_id = itag_pos
+                    _bgr.tag_neg_id = itag_neg
+                    _bgr.save()
+                except:
+                    pass
+
+            else: # toggletype=='new'
+                m.BalancegameRecord.objects.create(who=_boo, tag_pos_id=itag_pos, tag_neg_id=itag_neg)
+
+            # _boo.save()
+            return JsonResponse({'success':True, 'message':'balancegame voted successfully'}, safe=False)
+
+    except:
+        return JsonResponse({'success':False, 'message':'something wrong while balancegame voting'}, safe=False)
+
 
 
 def stylevote(request):

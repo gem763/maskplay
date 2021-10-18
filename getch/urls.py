@@ -12,7 +12,7 @@ urlpatterns = [
     path('landing/', v.landing, name='landing'),
     path('zthinker/', v.zthinker, name='zthinker'),
     path('test/', v.test, name='test'),
-    # path('testbed/', v.testbed, name='testbed'),
+    path('testbed/', v.testbed, name='testbed'),
     # path('memb/', v.memb, name='memb'),
     path('privacy/', v.privacy, name='privacy'),
     path('policy/', v.policy, name='policy'),
@@ -114,16 +114,11 @@ urlpatterns = [
     path('user2/', v.get_user2, name='get_user2'),
     path('user2/other_boos/', v.other_boos2, name='other_boos2'),
 
-    # path('stylevote/<int:ipix_pos>/<int:ipix_neg>/', v.stylevote, name='stylevote'),
     path('stylevote/', v.stylevote, name='stylevote'),
     path('settle/', v.settle, name='settle'),
-    # path('wallet/write/', v.wallet_write, name='wallet_write'),
     path('transact/', v.transact, name='transact'),
 
     path('postage/<int:postage_id>/', v.get_postage, name='get_postage'),
-    # path('contentwork/<str:agenda>/', v.get_contentwork, name='get_contentwork'),
-    # path('contentwork/<str:agenda>/ipostages/', v.get_contentwork_ipostages, name='get_contentwork_ipostages'),
-    # path('contentwork/<str:agenda>/resultize/', v.contentwork_resultize, name='contentwork_resultize'),
 
     path('contentwork/<int:id>/', v.get_contentwork, name='get_contentwork'),
     path('contentwork/<int:id>/ipostages/', v.get_contentwork_ipostages, name='get_contentwork_ipostages'),
@@ -174,6 +169,8 @@ urlpatterns = [
     path('flashgame/answer/', v.flashgame_answer, name='flashgame_answer'),
 
     path('balancegame/stat/', v.balancegame_stat, name='balancegame_stat'),
+    path('balancegame/stat/2/', v.balancegame_stat2, name='balancegame_stat2'),
+    path('balancegame/vote/', v.balancegame_vote, name='balancegame_vote'),
 
     path('pixpair/ipixs/', v.get_pixpair_ipixs, name='get_pixpair_ipixs'),
 

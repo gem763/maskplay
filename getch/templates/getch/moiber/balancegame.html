@@ -172,7 +172,7 @@
         if (_new) {
           this.wordcloud_render();
           this.on_analyzer = true;
-          setTimeout(() => { this.session.balancegame.stat_updated = false; }, 100);
+          setTimeout(() => { this.session.balancegame2.stat_updated = false; }, 100);
         }
       }
     },
@@ -213,7 +213,7 @@
         var root = d3.hierarchy({children: keys})
           .sum(function(d) {
             // return counts[d];
-            return Math.pow(counts[d], 2);
+            return Math.pow(counts[d], 1.5);
           });
 
         // console.log(root);
@@ -270,15 +270,15 @@
       },
 
       result: function() {
-        return this.session.balancegame.stat
+        return this.session.balancegame2.stat
       },
 
       stat_updated: function() {
-        return this.session.balancegame.stat_updated
+        return this.session.balancegame2.stat_updated
       },
 
       analyzer_title: function() {
-        if (this.session.balancegame.stat_last) {
+        if (this.session.balancegame2.stat_last) {
           return '오늘의 밸런스게임 결과'
 
         } else {

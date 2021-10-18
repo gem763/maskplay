@@ -412,8 +412,9 @@ class PostpixAdmin(admin.ModelAdmin):
 
 @admin.register(m.BalancegameRecord)
 class BalancegameRecordAdmin(admin.ModelAdmin):
-    list_display = ['who', 'pix_0_id', 'pix_1_id', 'chosen']
-    raw_id_fields = ('who', 'pix_0', 'pix_1', )
+    list_display = ['who', 'pix_0_id', 'pix_1_id', 'tag_pos_id', 'tag_neg_id', 'chosen', 'created_at']
+    raw_id_fields = ('who', 'pix_0', 'pix_1', 'tag_pos', 'tag_neg', )
+    search_fields = ('who__nick', )
     list_per_page = 20
 
 

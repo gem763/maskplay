@@ -396,6 +396,7 @@ class Session {
 
   open_stylevote() {
     if (this.user.has_auth && this.user.auth.is_superuser) {
+    // if (this.entry == 'testbed') {
       this.open_balancegame();
 
     } else {
@@ -715,6 +716,43 @@ class Boo extends Baseboo {
     }
   }
 
+  balancegame_stat_update2(amount_add) {
+    if ([10,30,50,70,100].includes(this.wallet.amount_daybonus + amount_add)) {
+      const is_last = 100 == (this.wallet.amount_daybonus + amount_add);
+
+      fetch('balancegame/stat/2')
+        .then(x => x.json())
+        .then(js => {
+          if (js.success) {
+            console.log(js);
+            this.session.balancegame2.stat = js.stat;
+            this.session.balancegame2.stat_updated = true;
+            this.session.balancegame2.stat_last = is_last;
+          }
+        });
+    }
+  }
+
+
+  balancegame_vote(itag_pos, itag_neg, type) {
+    if (!this.wallet) {
+      return
+    }
+
+    fetch(`balancegame/vote?itag_pos=${itag_pos}&itag_neg=${itag_neg}&type=${type}`)
+      .then(x => x.json())
+      .then(js => { console.log(js) });
+
+    if (type == 'clear') {
+      this.wallet.receive_daybonus('daily_balance_game', (-1) * this.wallet.per_vote);
+
+    } else if (type == 'new') {
+      this.balancegame_stat_update2(this.wallet.per_vote); // 순서가 바뀌면 안된다
+      this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
+    }
+  }
+
+
   stylevote(ipix_pos, ipix_neg, type) {
     if (!this.wallet) {
       return
@@ -739,18 +777,6 @@ class Boo extends Baseboo {
 
       this.wallet.receive_daybonus('daily_balance_game', this.wallet.per_vote);
     }
-
-    // if ([10,20,30,40,50,60,70,80,90,100].includes(this.wallet.amount_daybonus)) {
-    //   fetch('balancegame/stat')
-    //     .then(x => x.json())
-    //     .then(js => {
-    //       if (js.success) {
-    //         console.log(js);
-    //         this.session.balancegame.stat = js.stat;
-    //         this.session.balancegame.stat_updated = true;
-    //       }
-    //     });
-    // }
   }
 
   has_pix(pix_id, collection) {

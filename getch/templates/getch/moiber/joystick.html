@@ -10,7 +10,7 @@
     transition: all 0.3s;
     transition-delay: 0.3s;
     z-index: 100;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .joystick.vcomp.minimized {
@@ -117,7 +117,8 @@
   } */
 
   .joystick.vcomp > .body > span.menu.on {
-    background: var(--color-dark);
+    /* background: var(--color-dark); */
+    background: var(--color-point);
     color: white;
   }
 
@@ -247,8 +248,9 @@
         <img src='/static/materials/icons/setting_line.png'>
         <div class='dimmer' v-if='on_menu'></div>
         <div class='setting-menu' v-if='on_menu'>
-          <div class='item' @click='open_pointget'>포인트 획득하기</div>
-          <div class='item' @click='open_pointuse'>포인트 사용하기</div>
+          <div class='item' @click='open_pointmenu'>포인트 메뉴</div>
+          <!-- <div class='item' @click='open_pointget'>포인트 획득하기</div> -->
+          <!-- <div class='item' @click='open_pointuse'>포인트 사용하기</div> -->
           <div class='item' v-if='on_my' @click='make_collection'>컬렉션 만들기</div>
           <div class='item' @click='session.help()'>도움말 보기</div>
           <div class='item' @click='session.contact()'>문의하기</div>
@@ -335,19 +337,21 @@
         }
       },
 
-      // help: function() {
-      //   this.session.help();
+      // open_pointget: function() {
+      //   this.dasher_control.open = true;
+      //   this.dasher_control.section = 'pointget';
+      //   this.dasher_control.phase = 'menu';
+      // },
+      //
+      // open_pointuse: function() {
+      //   this.dasher_control.open = true;
+      //   this.dasher_control.section = 'pointuse';
+      //   this.dasher_control.phase = 'menu';
       // },
 
-      open_pointget: function() {
+      open_pointmenu: function() {
         this.dasher_control.open = true;
-        this.dasher_control.section = 'pointget';
-        this.dasher_control.phase = 'menu';
-      },
-
-      open_pointuse: function() {
-        this.dasher_control.open = true;
-        this.dasher_control.section = 'pointuse';
+        this.dasher_control.section = 'pointmenu';
         this.dasher_control.phase = 'menu';
       },
 

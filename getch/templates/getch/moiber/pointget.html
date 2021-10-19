@@ -215,18 +215,7 @@
     delimiters: ['[[', ']]'],
     props: [ 'session', 'control' ],
     data: function() {
-      return {
-        // phase: 'menu',
-        // content: undefined
-      }
-    },
-
-    computed: {
-      is_superuser: function() {
-        if (this.session.user.has_auth) {
-          return this.session.user.auth.is_superuser
-        }
-      },
+      return {}
     },
 
     methods: {

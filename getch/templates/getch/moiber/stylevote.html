@@ -152,20 +152,16 @@
           mousewheel: {
             releaseOnEdges: true,
           }
-        },
-
-        // result: {
-        //   '검정': 8,
-        //   '스니커즈': 19,
-        //   '모자': 17,
-        //   '바지': 16,
-        //   '블레이저': 12,
-        // }
+        }
       }
     },
 
     watch: {
       ipixpair: function(_new, _old) {
+        if (!this.pixpair_set) {
+          return
+        }
+
         if (this.pixpair_set.list.length - _new <= 3) {
           this.pixpair_set.load(3);
         }
@@ -277,6 +273,9 @@
 
       pixpair_set_list: function() {
         if (this.pixpair_set) {
+          // return _.filter(this.pixpair_set.list, (o) => {
+          //   return o.list[0] && o.list[1] && o.list[0].loaded && o.list[1].loaded
+          // })
           return this.pixpair_set.list
         }
       },

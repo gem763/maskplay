@@ -49,6 +49,8 @@ class NotihistoryAdmin(admin.ModelAdmin):
 @admin.register(m.Wallet)
 class WalletAdmin(admin.ModelAdmin):
     list_display = ['whose_type', 'whose', 'n_transaction', 'inflow', 'outflow', 'amount']
+    search_fields = ('whose__nick', )
+    list_per_page = 20
 
 
 @admin.register(m.Transaction)

@@ -23,7 +23,7 @@ class Session {
       // contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
       checkin:      { order: 0, instant: false, open: false, from: undefined },
-      flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
+      // flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left'},// contents: new PixpairSet(this) },
       balancegame:  { order: 0, instant: false, open: false, from: 'left'},
@@ -63,15 +63,17 @@ class Session {
     this.entry = undefined;
     this.show_notice = undefined;
     this.researches = new Researches(this);
-    this.supports = new Supports(this);
+    this.supports = undefined;//new Supports(this);
     this.flashgames = new Flashgames(this);
     this.shoptems = undefined;
     this.coffeecoupons = undefined;
     this.raffles = undefined;
     this.stylelabels = undefined; //new Stylelabels(this);
     this.itemlabels = undefined;
+    this.collections = undefined;
     // this.checkingame = Checkingame.build(this);
-    this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false, stat_last: false };
+    // this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false, stat_last: false };
+    this.balancegame = { pixpair_set: undefined, stat: undefined, stat_updated: false, stat_last: false };
     this.balancegame2 = { tagpairs: new Tagpairs(this), stat: undefined, stat_updated: false, stat_last: false };
     this.pixtory = [{ pixs: new Pixs(this) }];
     this.user = new User(this);
@@ -121,6 +123,16 @@ class Session {
       // this.reload_everyday();
 
     }, msTillMidnight);
+  }
+
+
+  load_supports() {
+    this.supports = new Supports(this);
+  }
+
+
+  load_collections() {
+    this.collections = new Collections(this);
   }
 
   // keyset_sampling() {
@@ -357,36 +369,31 @@ class Session {
   }
 
 
-  open_flashgames() {
-    if (this.user.has_auth) {
-      if (this.user.boo.wallet) {
-        if (!this.user.boo.wallet.checkin_today) {
-          this.user.boo.wallet.receive('checkin_game', this.user.boo.wallet.per_checkin);
-          this.user.boo.wallet.checkin_today = true;
-          alert('<출첵> 지금 ' + this.user.boo.wallet.per_checkin + 'P가 지급되었습니다');
-
-        } else {
-          alert('출첵 포인트가 이미 지급되었습니다')
-        }
-
-      } else {
-        // alert('')
-      }
-
-    } else {
-      const yes = confirm('로그인 해주세요');
-      if (yes) {
-        this.open_login();
-      }
-      // alert('로그인 해주세요')
-    }
-
-  }
-
-
   // open_flashgames() {
-  //   this.open_page('flashgames');
+  //   if (this.user.has_auth) {
+  //     if (this.user.boo.wallet) {
+  //       if (!this.user.boo.wallet.checkin_today) {
+  //         this.user.boo.wallet.receive('checkin_game', this.user.boo.wallet.per_checkin);
+  //         this.user.boo.wallet.checkin_today = true;
+  //         alert('<출첵> 지금 ' + this.user.boo.wallet.per_checkin + 'P가 지급되었습니다');
+  //
+  //       } else {
+  //         alert('출첵 포인트가 이미 지급되었습니다')
+  //       }
+  //
+  //     } else {
+  //       // alert('')
+  //     }
+  //
+  //   } else {
+  //     const yes = confirm('로그인 해주세요');
+  //     if (yes) {
+  //       this.open_login();
+  //     }
+  //   }
+  //
   // }
+
 
   open_brander(brand) {
     this.page.brander.brand = brand;
@@ -400,6 +407,7 @@ class Session {
       this.open_balancegame();
 
     } else {
+      this.balancegame.pixpair_set = new PixpairSet(this);
       this.open_page('stylevote');
     }
   }
@@ -851,10 +859,57 @@ class Wallet {
     this.amount_baseinfo_input = 100;
     this.amount_stylelabels_input = 50;
     this.amount_itemlabels_input = 50;
-    this.amount_to_levelup = 5000;
+    // this.amount_to_levelup = 5000;
   }
 
 
+  get level() {
+    const inflow = this.amount_inflow;
+    if (!inflow) {
+      return 1
+    }
+
+    if (inflow < 5000) {
+      return 1
+
+    } else if (inflow < 12000) {
+      return 2
+
+    } else if (inflow < 30000) {
+      return 3
+
+    } else if (inflow < 50000) {
+      return 4
+
+    } else if (inflow < 80000) {
+      return 5
+
+    } else {
+      return 6
+    }
+  }
+
+  get amount_to_levelup() {
+    switch (this.level) {
+      case 1:
+        return 5000
+
+      case 2:
+        return 12000
+
+      case 3:
+        return 30000
+
+      case 4:
+        return 50000
+
+      case 5:
+        return 80000
+
+      case 6:
+        return 100000
+    }
+  }
 
   send(type, amount, receiver_id) {
     fetch(`transact?receiver_id=${receiver_id}&type=${type}&amount=${amount}`)
@@ -1160,7 +1215,8 @@ class Research extends Loader {
     this.created_at = undefined;
     this.answers = undefined;
     this.priority = undefined;
-    this.researchitems = new ResearchItems(session, baseobj.id);
+    // this.iresearchitems = undefined;
+    this.researchitems = undefined;// new ResearchItems(session, baseobj.id);
   }
 
   assign(obj) {
@@ -1176,6 +1232,8 @@ class Research extends Loader {
     this.created_at = obj.created_at;
     this.answers = obj.answers;
     this.priority = obj.priority;
+    this.researchitems = new ResearchItems(this.session, obj.iresearchitems);
+    // this.iresearchitems = obj.iresearchitems;
 
     if (obj.brand) {
       this.brand = Brand.init(this.session, obj.brand);
@@ -1389,12 +1447,11 @@ class Flashgames extends Multiloader {
 
 
 class ResearchItems extends Multiloader {
-  constructor(session, research_id) {
+  constructor(session, iresearchitems) {
     super(session);
     this.contentype = ResearchItem;
     this.nloads_init = 0;
-    this.ids_url = `/research/${research_id}/iresearchitems`;
-    this.load_ids();
+    this.ids = iresearchitems;
   }
 
   load_all() {
@@ -1402,12 +1459,26 @@ class ResearchItems extends Multiloader {
   }
 }
 
+// class ResearchItems extends Multiloader {
+//   constructor(session, research_id) {
+//     super(session);
+//     this.contentype = ResearchItem;
+//     this.nloads_init = 0;
+//     this.ids_url = `/research/${research_id}/iresearchitems`;
+//     this.load_ids();
+//   }
+//
+//   load_all() {
+//     this.load(this.ids.length);
+//   }
+// }
+
 
 class Researches extends Multiloader {
   constructor(session) {
     super(session);
     this.contentype = Research;
-    this.nloads_init = 100;
+    this.nloads_init = 5;
     this.ids_url = `/research/iresearches`;
     this.load_ids();
   }
@@ -1513,6 +1584,16 @@ class Postages extends Multiloader {
 }
 
 
+// class Tagpair extends Multiloader {
+//   constructor(session, n) {
+//     super(session);
+//     this.contentype = Tag
+//     this.nloads_init = 2;
+//     this.ids_url = `/tag/itags/${n}`;
+//     this.load_ids();
+//   }
+// }
+
 class Tagpair extends Multiloader {
   constructor(session) {
     super(session);
@@ -1528,7 +1609,7 @@ class Tagpairs extends Multiloader {
   constructor(session) {
     super(session);
     this.contentype = Tagpair;
-    this.load(1);
+    this.load(3);
   }
 
   load(n) {
@@ -1537,6 +1618,8 @@ class Tagpairs extends Multiloader {
 
     for (let i = 0; i < n; i++) {
       const content = new this.contentype(this.session);
+      // this.list.concat(content);
+      // this.list_onloading.concat(content);
       this.list.push(content);
       this.list_onloading.push(content);
     };
@@ -1559,7 +1642,7 @@ class PixpairSet extends Multiloader {
   constructor(session) {
     super(session);
     this.contentype = Pixpair;
-    this.load(1);
+    this.load(3);
   }
 
   load(n) {

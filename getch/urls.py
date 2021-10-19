@@ -176,6 +176,7 @@ urlpatterns = [
 
     path('tag/<int:tag_id>/', v.get_tag, name='get_tag'),
     path('tag/itags/', v.get_itags, name='get_itags'),
+    path('tag/itags/<int:n>/', v.get_itags_many, name='get_itags_many'),
 
     path('mobile/send_authkey/', v.send_mobile_authkey, name='send_mobile_authkey'),
     path('mobile/verify/', v.mobile_verify, name='mobile_verify'),

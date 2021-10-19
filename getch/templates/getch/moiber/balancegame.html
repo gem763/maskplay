@@ -157,7 +157,8 @@
 
     watch: {
       itagpair: function(_new, _old) {
-        if (this.tagpairs.list.length - _new <= 3) {
+        // console.log(_new, this.tagpairs.list.length)
+        if (this.tagpairs.list.length - _new < 3) {
           this.tagpairs.load(3);
         }
 

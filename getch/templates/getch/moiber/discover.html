@@ -33,7 +33,8 @@
   <style>
     :root {
       /* --color-point: #F81059; */
-      --color-point: #db3b26;
+      /* --color-point: #db3b26; */
+      --color-point: #cc2b2a;
       --color-backgray: #F9F9F9;
       --color-message: #CCCCCC;
       --color-pos: rgb(241,20,15);
@@ -109,8 +110,8 @@
       --discover-col-interval: calc((var(--width) - 2 * var(--discover-col-width)) / 3);
       --discover-col-padding: calc(var(--discover-col-interval) / 2);
 
-      --dasher-height-min: 60px;
-      --dasher-height-expanded: 150px;
+      /* --dasher-height-min: 60px;
+      --dasher-height-expanded: 150px; */
 
       --minipost-margin: var(--w-1);
       --minipost-width: calc((var(--width) - var(--minipost-margin) * 4) / 3);
@@ -361,7 +362,7 @@
 
   <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
   <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
-  <script src="https://unpkg.com/@saeris/vue-spinners"></script>
+  <!-- <script src="https://unpkg.com/@saeris/vue-spinners"></script> -->
   <script src="/static/merge-images/merge-images.js"></script>
   <script src="/static/cropperjs/cropper.min.js"></script>
   <script src="https://unpkg.com/vue-masonry-css"></script>
@@ -371,6 +372,7 @@
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/vue-clipboard2/0.3.1/vue-clipboard.min.js'></script>
+  <script src="https://unpkg.com/vue-lazyload/vue-lazyload.js"></script>
 
   {% include "getch/moiber/pages2.html" %}
   {% include "getch/moiber/joystick.html" %}
@@ -385,8 +387,10 @@
   {% include "getch/moiber/pointguider.html" %}
   {% include "getch/moiber/pointget.html" %}
   {% include "getch/moiber/pointuse.html" %}
+  {% include "getch/moiber/pointmenu.html" %}
   {% include "getch/moiber/researchcard.html" %}
   {% include "getch/moiber/shop.html" %}
+  {% include "getch/moiber/market.html" %}
   {% include "getch/moiber/raffler.html" %}
   {% include "getch/moiber/itemdetail.html" %}
   {% include "getch/moiber/supportbrands.html" %}
@@ -403,6 +407,8 @@
   {% include "getch/editext.html" %}
 
   <script>
+    Vue.use(VueLazyload);
+
     const moiber = new Vue({
       el: '#moiber',
       delimiters: ['[[', ']]'],

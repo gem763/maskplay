@@ -1,0 +1,241 @@
+<style>
+  .pointmenu.vcomp .content > .title,
+  .pointmenu.vcomp .detail > .title {
+    position: relative;
+    width: 100%;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-dark);
+    height: 60px;
+    line-height: 60px;
+    box-sizing: border-box;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .pointmenu.vcomp .content > .body,
+  .pointmenu.vcomp .detail > .body {
+    position: relative;
+    width: 100%;
+    flex-grow: 1;
+  }
+
+  .pointmenu.vcomp .content > .explain {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    font-size: 12px;
+    color: var(--color-dark);
+    /* pointer-events: none; */
+    height: calc(100% - 60px);
+    margin-top: 60px;
+  }
+
+  .pointmenu.vcomp .content > .explain > .gobutton {
+    color: white;
+    height: 36px;
+    line-height: 36px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px;
+    border-radius: 15px;
+    background: var(--color-point);
+    margin-top: 30px;
+    cursor: pointer;
+  }
+</style>
+
+<script type='text/x-template' id='pointmenu-template'>
+  <pointguider
+    class='pointmenu vcomp'
+    :phase='control.phase'
+    @backto_menu='backto_menu'
+    @backto_content='backto_content'>
+
+    <template #menu>
+
+      <div class='item' @click='session.open_checkin()'>
+        <img src='/static/materials/imgs/menu/pointget-choolcheck-game.jpg'>
+        <div class='title'>
+          <span>출쳌게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content("balancegame")'>
+        <img src='/static/materials/imgs/menu/pointget-balance-game.jpg'>
+        <div class='title'>
+          <span>매일보너스</span>
+          <span>밸런스게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content("bookmarkgame")'>
+        <img src='/static/materials/imgs/menu/pointget-closet.jpg'>
+        <div class='title'>
+          <span>매일보너스</span>
+          <span>북마크게임</span>
+        </div>
+      </div>
+
+      <div class='item' @click='open_researcher'>
+        <img src='/static/materials/imgs/menu/pointget-moiber-survey.jpg'>
+        <div class='title'>
+          <span>트렌드</span>
+          <span>연구</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content("raffle")'>
+        <img src='/static/materials/imgs/menu/pointuse-raffle.jpg'>
+        <div class='title'>
+          <span>럭키</span>
+          <span>드로우</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content("shoptem")'>
+        <img src='/static/materials/imgs/menu/pointuse-shop.jpg'>
+        <div class='title'>
+          <span>상품권</span>
+          <span>쇼핑</span>
+        </div>
+      </div>
+
+      <div class='item' @click='go_content("coffeecoupon")'>
+        <img src='/static/materials/imgs/menu/pointuse-coupon.jpg'>
+        <div class='title'>
+          <span>커피음료</span>
+          <span>쿠폰</span>
+        </div>
+      </div>
+
+      <div class='item' @click='session.contact()'>
+        <img src='/static/materials/imgs/menu/pointuse-suggestion.jpg'>
+        <div class='title'>
+          <span>건의하기</span>
+        </div>
+      </div>
+
+    </template>
+
+
+    <template #content>
+      <template v-if='control.content=="raffle"'>
+        <div class='title'>럭키 드로우</div>
+        <div class='body'>
+          <raffler :session='session' @go_detail='go_detail'></raffler>
+        </div>
+      </template>
+
+      <template v-else-if='control.content=="shoptem"'>
+        <div class='title'>상품권 쇼핑</div>
+        <div class='body'>
+          <market :session='session' items_type='shoptem' @go_detail='go_detail' key='shoptem'></market>
+        </div>
+      </template>
+
+      <template v-else-if='control.content=="coffeecoupon"'>
+        <div class='title'>커피음료 쿠폰</div>
+        <div class='body'>
+          <market :session='session' items_type='coffeecoupon' @go_detail='go_detail' key='coffeecoupon'></market>
+        </div>
+      </template>
+
+      <template v-else-if='control.content=="balancegame"'>
+        <div class='explain'>
+          <robo :session='session' type='next-dark' @action='open_stylevote'>
+            <div>👆🏻 몰랐는데 나, ㅇㅇㅇ 좋아하네??
+              위? 아래? 내 스타일을 고를 때 마다 1P 획득
+              매일 보너스는 최대 100P 까지!
+              (밸런스게임 + 북마크게임)</div>
+          </robo>
+
+          <div class='gobutton' @click='open_stylevote'>밸런스게임GO</div>
+        </div>
+      </template>
+
+      <template v-else-if='control.content=="bookmarkgame"'>
+        <div class='explain'>
+          <robo :session='session' type='next-dark' @action='open_search'>
+            <div>👆🏻 요즘 사람들 뭐입어?? 검색하다가
+              내 취향 발견하면 북마크하고 1P 획득
+              매일 보너스는 최대 100P 까지!
+              (밸런스게임 + 북마크게임)</div>
+          </robo>
+
+          <div class='gobutton' @click='open_search'>북마크게임GO</div>
+        </div>
+      </template>
+
+    </template>
+
+
+    <template #detail>
+      <div class='title' v-if='detail_type=="raffle"'>럭키 드로우</div>
+      <div class='title' v-else-if='detail_type=="shoptem"'>상품권 쇼핑</div>
+      <div class='title' v-else-if='detail_type=="coffeecoupon"'>커피음료 쿠폰</div>
+
+      <div class='body'>
+        <itemdetail :obj='control.detail_obj' :session='session'></itemdetail>
+      </div>
+    </template>
+  </pointguider>
+</script>
+
+
+<script>
+  Vue.component('pointmenu', {
+    template: '#pointmenu-template',
+    delimiters: ['[[', ']]'],
+    props: [ 'session', 'control' ],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      detail_type: function() {
+        if (this.control.detail_obj) {
+          return this.control.detail_obj.constructor.name.toLowerCase()
+        }
+      }
+    },
+
+    methods: {
+      backto_menu: function() {
+        this.control.phase = 'menu';
+      },
+
+      backto_content: function() {
+        this.control.phase = 'content';
+      },
+
+      go_content: function(what) {
+        this.control.phase = 'content';
+        this.control.content = what;
+      },
+
+      go_detail: function(obj) {
+        this.control.phase = 'detail';
+        this.control.detail_obj = obj;
+      },
+
+      open_stylevote: function() {
+        this.$emit('close');
+        this.session.open_stylevote();
+      },
+
+      open_search: function() {
+        this.$emit('close');
+        this.session.open_search();
+      },
+
+      open_researcher: function() {
+        this.$emit('close');
+        this.session.open_researcher();
+      },
+    }
+  });
+</script>

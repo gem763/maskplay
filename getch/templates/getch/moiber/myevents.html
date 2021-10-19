@@ -495,7 +495,7 @@
             .then(x => x.json())
             .then(j => {
               console.log(j);
-              
+
               if (j.success) {
                 r.send_requested = true;
                 alert(`상품배송을 성공적으로 신청하였습니다! ${this.myboo.nick}님의 휴대번호로 안내 메시지를 전송하였습니다.`);
@@ -579,9 +579,9 @@
 
       open_raffle: function(raffle) {
         const dasher_control = this.session.mode.dasher_control;
-        dasher_control.section = 'pointuse';
+        dasher_control.section = 'pointmenu';
         dasher_control.phase = 'detail';
-        dasher_control.content = 1;
+        dasher_control.content = 'raffle';
         dasher_control.detail_obj = raffle;
         setTimeout(() => { dasher_control.open = true; }, 100);
       },

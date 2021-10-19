@@ -9,7 +9,7 @@ from django_currentuser.middleware import get_current_user, get_current_authenti
 from django.db.models import F, Q, Sum, Count, Case, When, IntegerField, Value
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from django.utils.functional import classproperty
+from django.utils.functional import classproperty, cached_property
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.utils.safestring import mark_safe
@@ -512,7 +512,7 @@ class Wallet(BigIdAbstract):
             return self.coffeecoupon
 
 
-    @property
+    @cached_property
     def whose_type(self):
         _whose = self.whose
         if _whose:
@@ -521,57 +521,57 @@ class Wallet(BigIdAbstract):
     def __str__(self):
         return str(self.whose)
 
-    @property
+    @cached_property
     def n_transaction(self):
         return self.sender_transaction_set.count() + self.receiver_transaction_set.count()
         # return self.transaction_set.count()
 
-    @property
+    @cached_property
     def amount(self):
         return self.inflow - self.outflow
         # agg = self.transaction_set.aggregate(total=Sum('amount'))
         # return agg['total'] if agg['total'] else 0
 
-    @property
+    @cached_property
     def amount_today(self):
         return self.inflow_today - self.outflow_today
         # agg = self.transaction_set.filter(when__date=datetime.now().date()).aggregate(total=Sum('amount'))
         # return agg['total'] if agg['total'] else 0
 
-    @property
+    @cached_property
     def amount_daybonus(self):
         q = Q(type=IN_DAILY_BALANCE_GAME) | Q(type=IN_DAILY_COLLECTING)
         agg = self.receiver_transaction_set.filter(q, when__date=datetime.now().date()).aggregate(total=Sum('amount'))
         return agg['total'] if agg['total'] else 0
 
 
-    @property
+    @cached_property
     def checkin_today(self):
         agg = self.receiver_transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).aggregate(total=Sum('amount'))
         return agg['total'] > 0 if agg['total'] else False
         # return self.receiver_transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
         # return self.transaction_set.filter(when__date=datetime.now().date(), type=IN_CHECKIN_GAME).exists()
 
-    @property
+    @cached_property
     def welcomed(self):
         return self.receiver_transaction_set.filter(type=IN_WELCOME).exists()
         # return self.transaction_set.filter(type=IN_WELCOME).exists()
 
-    @property
+    @cached_property
     def baseinfo_inputed(self):
         agg = self.receiver_transaction_set.filter(type=IN_BASEINFO_INPUT).aggregate(total=Sum('amount'))
         return agg['total'] > 0 if agg['total'] else False
         # return self.receiver_transaction_set.filter(type=IN_BASEINFO_INPUT).exists()
         # return self.transaction_set.filter(type=IN_BASE_INPUT).exists()
 
-    @property
+    @cached_property
     def stylelabels_inputed(self):
         agg = self.receiver_transaction_set.filter(type=IN_STYLELABELS_INPUT).aggregate(total=Sum('amount'))
         return agg['total'] > 0 if agg['total'] else False
         # return self.receiver_transaction_set.filter(type=IN_STYLELABELS_INPUT).exists()
         # return self.transaction_set.filter(type=IN_STYLE_INPUT).exists()
 
-    @property
+    @cached_property
     def itemlabels_inputed(self):
         agg = self.receiver_transaction_set.filter(type=IN_ITEMLABELS_INPUT).aggregate(total=Sum('amount'))
         return agg['total'] > 0 if agg['total'] else False
@@ -583,7 +583,7 @@ class Wallet(BigIdAbstract):
     #     agg = self.transaction_set.values('type').annotate(total=Sum('amount'))
     #     return list(agg)
 
-    @property
+    @cached_property
     def inflow(self):
         agg = self.receiver_transaction_set.aggregate(total=Sum('amount'))
         # agg = self.transaction_set.aggregate(
@@ -595,7 +595,7 @@ class Wallet(BigIdAbstract):
         # )
         return agg['total'] if agg['total'] else 0
 
-    @property
+    @cached_property
     def outflow(self):
         agg = self.sender_transaction_set.aggregate(total=Sum('amount'))
         # agg = self.transaction_set.aggregate(
@@ -607,12 +607,12 @@ class Wallet(BigIdAbstract):
         # )
         return agg['total'] if agg['total'] else 0
 
-    @property
+    @cached_property
     def inflow_today(self):
         agg = self.receiver_transaction_set.filter(when__date=datetime.now().date()).aggregate(total=Sum('amount'))
         return agg['total'] if agg['total'] else 0
 
-    @property
+    @cached_property
     def outflow_today(self):
         agg = self.sender_transaction_set.filter(when__date=datetime.now().date()).aggregate(total=Sum('amount'))
         return agg['total'] if agg['total'] else 0
@@ -757,10 +757,15 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return self.id == GUESTBOO
 
     def answers_of(self, research_id):
-        if str(research_id) in self.answers:
+        try:
             return self.answers[str(research_id)]
-        else:
+        except:
             return { 'finished': False }
+
+        # if str(research_id) in self.answers:
+        #     return self.answers[str(research_id)]
+        # else:
+        #     return { 'finished': False }
 
     @property
     def icollections(self):
@@ -1212,7 +1217,7 @@ class RaffleSerializer(serializers.ModelSerializer):
             obj.save()
 
         amount = obj.wallet.amount
-        n_transaction = obj.wallet.n_transaction
+        # n_transaction = obj.wallet.n_transaction
         raffled = False
         amount_raffled = 0
 
@@ -1226,7 +1231,7 @@ class RaffleSerializer(serializers.ModelSerializer):
 
         return {
             'collected': amount,
-            'n_transaction': n_transaction,
+            # 'n_transaction': n_transaction,
             'raffled': raffled,
             'amount_raffled': amount_raffled
         }
@@ -1380,7 +1385,7 @@ class SupportSerializer(serializers.ModelSerializer):
             obj.save()
 
         amount = obj.wallet.amount
-        n_transaction = obj.wallet.n_transaction
+        # n_transaction = obj.wallet.n_transaction
         supported = False
         amount_supported = 0
 
@@ -1392,7 +1397,7 @@ class SupportSerializer(serializers.ModelSerializer):
 
         return {
             'collected': amount, # if amount else 0,
-            'n_transaction': n_transaction, # if n_transaction else 0,
+            # 'n_transaction': n_transaction, # if n_transaction else 0,
             'supported': supported,
             'amount_supported': amount_supported
         }
@@ -1454,7 +1459,7 @@ class Research(BigIdAbstract):
     # def iresearches_onwork(cls):
     #     return cls.objects.filter(published=False).order_by('due').values_list('id', flat=True)
 
-    @property
+    @cached_property
     def iresearchitems(self):
         return self.researchitem_set.order_by('order').values_list('id', flat=True)
 
@@ -1464,14 +1469,18 @@ class ResearchSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
     brand = serializers.SerializerMethodField()
     answers = serializers.SerializerMethodField()
+    iresearchitems = serializers.SerializerMethodField()
 
     class Meta:
         model = Research
-        fields = ['id', 'owner', 'brand', 'title', 'desc', 'published', 'coverpix', 'reward', 'due', 'created_at', 'answers', 'priority']
+        fields = ['id', 'owner', 'brand', 'title', 'desc', 'published', 'coverpix', 'reward', 'due', 'created_at', 'answers', 'priority', 'iresearchitems']
         read_only_fields = fields
 
     def get_owner(self, obj):
         return {'id': obj.owner.id, 'nick': obj.owner.nick}
+
+    def get_iresearchitems(self, obj):
+        return list(obj.iresearchitems)
 
     def get_answers(self, obj):
         user = get_current_user()
@@ -2283,20 +2292,20 @@ class BasebooSerializer(serializers.ModelSerializer):
 
 class GuestbooSerializer(serializers.ModelSerializer):
     profile = serializers.SerializerMethodField()
-    voting_record = serializers.SerializerMethodField()
+    # voting_record = serializers.SerializerMethodField()
     # ilikes_comment = serializers.SerializerMethodField()
 
     class Meta:
         model = Boo
-        fields = ['id', 'nick', 'text', 'profile', 'voting_record']#, 'ilikes_comment']
+        fields = ['id', 'nick', 'text', 'profile']#, 'voting_record']#, 'ilikes_comment']
         read_only_fields = fields
 
     def get_profile(self, obj):
         return {'pix': obj.profile.pix.url}
 
-    def get_voting_record(self, obj):
-        q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
-        return {f.object_id:f.status for f in Flager.objects.filter(q, user=obj, note=self.context.get('sessionkey'))}
+    # def get_voting_record(self, obj):
+    #     q = Q(status=VOTE_UP) | Q(status=VOTE_DOWN)
+    #     return {f.object_id:f.status for f in Flager.objects.filter(q, user=obj, note=self.context.get('sessionkey'))}
 
     # def get_ilikes_comment(self, obj):
     #     return list(Flager.objects.filter(status=LIKE_COMMENT, user=obj, note=self.context.get('sessionkey')).values_list('object_id', flat=True))
@@ -2321,6 +2330,7 @@ class BooSerializer(serializers.ModelSerializer):
         return {
             'id': obj.wallet.id,
             'amount': obj.wallet.amount,
+            'amount_inflow': obj.wallet.inflow,
             'amount_daybonus': obj.wallet.amount_daybonus,
             # 'amount_today': obj.wallet.amount_today,
             'checkin_today': obj.wallet.checkin_today,

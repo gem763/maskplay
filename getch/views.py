@@ -520,7 +520,8 @@ def get_user2(request):
         else:
             sessionkey = request.session.session_key
             guestboo = m.Boo.guestboo_serialized(sessionkey)
-            return JsonResponse({'mode':1, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
+            return JsonResponse({'mode':1, 'guestboo':guestboo})
+            # return JsonResponse({'mode':1, 'guestboo':m.Boo.guestboo_serialized(sessionkey)})
 
     except:
         return JsonResponse({'mode':-1, 'message':'something wrong while auth'})
@@ -1049,16 +1050,27 @@ univ = [
 df_choice = pd.DataFrame(univ)
 
 
-def get_itags(request):
-    # _itags = m.Tag.objects.order_by('?')[:2].values_list('id', flat=True)
-    # _itags = m.Tag.objects.filter(item='티셔츠').order_by('?')[:2].values_list('id', flat=True)
+def __itags():
     try:
         _itags = m.Tag.objects.filter(**random.choices(df_choice[1], weights=df_choice[0])[0]).order_by('?')[:2].values_list('id', flat=True)
-        _itags = sorted(list(_itags))
-        return JsonResponse({'success':True, 'ids':_itags}, safe=False)
-    except:
-        return get_itags(request)
+        return sorted(list(_itags))
 
+    except:
+        return __itags()
+
+
+def get_itags(request):
+    return JsonResponse({'success':True, 'ids':__itags()}, safe=False)
+    # try:
+    #     _itags = m.Tag.objects.filter(**random.choices(df_choice[1], weights=df_choice[0])[0]).order_by('?')[:2].values_list('id', flat=True)
+    #     _itags = sorted(list(_itags))
+    #     return JsonResponse({'success':True, 'ids':_itags}, safe=False)
+    # except:
+    #     return get_itags(request)
+
+def get_itags_many(request, n):
+    _itags_many = [__itags() for i in range(n)]
+    return JsonResponse({'success':True, 'ids':_itags_many}, safe=False)
 
 
 def get_random_icols(request):
@@ -1292,7 +1304,6 @@ def get_baseboo(request, boo_id):
 
         if request.user.is_authenticated and request.user.boo_set.filter(id=boo_id).exists():
             _baseboo = m.BooSerializer(_baseboo).data
-            # print(_baseboo)
 
         else:
             _baseboo = m.BasebooSerializer(_baseboo).data

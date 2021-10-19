@@ -434,15 +434,23 @@
     props: ['session'],
     data: function() {
       return {
-        collections: undefined
+        // collections: undefined
       }
     },
 
-    created: function() {
-      this.collections = new Collections(this.session);
-    },
+    // created: function() {
+    //   this.collections = new Collections(this.session);
+    // },
 
     computed: {
+      collections: function() {
+        if (!this.session.collections) {
+          this.session.load_collections();
+        }
+
+        return this.session.collections
+      },
+
       category: function() {
         return this.session.page.search.category
       },

@@ -231,7 +231,7 @@
 
             <div class='tail'>
               <div class='subtail left'>
-                <div class='lv'>LEVEL 1</div>
+                <div class='lv'>LEVEL [[ level ]]</div>
                 <div class='lv-message'>[!] 레벨업을 하면 더 많은 리서치에 참여할 수 있어요</div>
               </div>
 
@@ -409,6 +409,12 @@
 
         } else {
           return 0
+        }
+      },
+
+      level: function() {
+        if (this.wallet_loaded) {
+          return this.boo.wallet.level
         }
       }
     },

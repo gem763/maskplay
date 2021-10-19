@@ -115,7 +115,7 @@
 
     <div class='banner' @click='open_raffle'>
       <div class='pix'>
-        <img class='cover' src='/static/materials/bulletin/luckydraw/banner-luckydraw.png'>
+        <img class='cover' src='/static/materials/bulletin/luckydraw/banner-luckydraw.jpg'>
       </div>
 
       <div class='content'>
@@ -190,8 +190,8 @@
 
       open_raffle: function() {
         this.control.phase = 'content';
-        this.control.section = 'pointuse';
-        this.control.content = 1;
+        this.control.section = 'pointmenu';
+        this.control.content = 'raffle';
         setTimeout(() => { this.control.open = true; }, 10);
       }
     }

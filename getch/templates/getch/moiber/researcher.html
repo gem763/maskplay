@@ -62,6 +62,12 @@
     methods: {
       scroll: function(obj) {
         this.session.scroll_direction = obj.scroll_direction;
+
+        if (obj.triggered && this.session.scroll_direction=='down') {
+          this.researches.load(3);
+          // this.collections.load(4);
+          // console.log(1234);
+        }
       }
     },
 

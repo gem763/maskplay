@@ -71,6 +71,7 @@
   <div class='pixs vcomp'>
     <masonry :cols="2" :gutter="0">
       <div class='pix' v-for="(pix, idx) in pixs.list" :key="idx" @click='choose(pix)'>
+        <!-- <img v-lazy='pix.src' @load='pixloaded'> -->
         <img :src='pix.src' @load='pixloaded'>
 
         <div class='info' v-if='pix.owner'>

@@ -130,6 +130,7 @@
           observer: true,
           observeParents: true,
           slidesPerView: 'auto',
+          allowSlideNext: false,
           mousewheel: {
             releaseOnEdges: true,
           }
@@ -199,6 +200,10 @@
 
       boo: function() {
         if (this.session.user.has_auth) {
+          if (this.swiper) {
+            this.swiper.allowSlideNext = true;
+          }
+          
           return this.session.user.boo
         }
       },

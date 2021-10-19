@@ -80,9 +80,9 @@
         <img class='logo' :src='b.logo' @load='logo_loaded'>
       </div>
 
-      <div class='spinner' v-if='!ready'>
+      <!-- <div class='spinner' v-if='!ready'>
         <i class="fa fa-spinner fa-spin"></i>
-      </div>
+      </div> -->
     </div>
 
     <div class='spinner' v-if='!ready'>
@@ -103,6 +103,10 @@
       }
     },
 
+    created: function() {
+      this.session.load_supports();
+    },
+
     methods: {
       logo_loaded: function(event) {
         this.ready = true;
@@ -110,7 +114,6 @@
       },
 
       open_brander: function(b) {
-        // this.session.dasher_control = 'close';
         this.session.open_brander(b);
       }
     },

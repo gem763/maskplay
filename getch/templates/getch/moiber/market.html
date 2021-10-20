@@ -33,7 +33,7 @@
     position: relative;
     width: calc((100% - 8px) / 2);
     margin-bottom: 8px;
-    height: 220px;
+    height: 240px;
     border-radius: 8px;
     overflow: hidden;
     border: 0.5px solid #f1f1f1;
@@ -54,10 +54,14 @@
   .market.vcomp > .items > .item > .coverpix {
     position: relative;
     width: 100%;
-    height: 140px;
+    /* height: 140px; */
+    padding-top: 100%;
   }
 
   .market.vcomp > .items > .item > .coverpix > img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;

@@ -410,7 +410,7 @@ class Session {
       if (!this.balancegame.pixpair_set) {
         this.balancegame.pixpair_set = new PixpairSet(this);
       }
-      
+
       this.open_page('stylevote');
     }
   }
@@ -508,7 +508,8 @@ class Session {
   }
 
   help() {
-    this.show_guider = true;
+    this.show_guider = !this.show_guider;
+    // this.show_guider = true;
   }
 
   fix_window_width() {
@@ -678,7 +679,7 @@ class Boo extends Baseboo {
   assign(obj) {
     Object.assign(this, obj);
     this.collections = new Collections(this.session, this.id);
-    this.supports = new MySupports(this.session);
+    // this.supports = new MySupports(this.session);
     this.raffles = new MyRaffles(this.session);
     this.wallet = new Wallet(obj.wallet, this.session);
     this.signup_check();

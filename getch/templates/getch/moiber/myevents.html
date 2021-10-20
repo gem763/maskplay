@@ -316,7 +316,7 @@
     </div>
 
     <div class='segment'>
-      <div class='title'>추첨</div>
+      <div class='title'>럭키 드로우</div>
       <div class='spinner' v-if='raffles_onloading'>
         <i class="fa fa-spinner fa-spin"></i>
       </div>
@@ -340,7 +340,7 @@
     </div>
 
 
-    <div class='segment'>
+    <!-- <div class='segment'>
       <div class='title'>후원</div>
 
       <div class='spinner' v-if='supports_onloading'>
@@ -351,7 +351,6 @@
         <div class='event' v-for='(r, idx) in supports_list' @click='open_support(r)'>
           <div class='coverpix'>
             <img :src='coverpix(r)' @load='coverpix_loaded'>
-            <!-- <div class='name'>[[ name(r) ]]</div> -->
             <div class='deduction'>[[ deduction(r) ]]</div>
             <div class='blogo' v-if='r.brand'>
               <img :src='r.brand.logo'>
@@ -365,7 +364,7 @@
       <div class='no-event' v-else>
         참여 중인 후원이 없습니다
       </div>
-    </div>
+    </div> -->
 
   </div>
 </script>

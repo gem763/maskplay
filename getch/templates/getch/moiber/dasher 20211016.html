@@ -11,7 +11,8 @@
     z-index: 200;
   }
 
-  .dasher.vcomp.show.open {
+  .dasher.vcomp.show.menu,
+  .dasher.vcomp.show.content {
     background: rgba(0,0,0,0.5);
     pointer-events: auto;
   }
@@ -23,27 +24,23 @@
     width: 100%;
     height: var(--dasher-height);
     background: rgba(255,255,255,0.98);
-    /* outline: 1px solid #333333; */
     box-shadow: 0 0 0 1px #333;
-    /* box-shadow: 0 0 0 0.5px #333 inset; */
     border-radius: 15px 15px 0 0;
     pointer-events: auto;
     transition: all 0.3s;
-    /* opacity: 0; */
   }
 
   .dasher.vcomp.show > .panel {
     bottom: 0;
-    /* opacity: 1; */
   }
 
   .dasher.vcomp.show.open > .panel {
-    height: calc(100% - 50px);
-    /* height: 310px; */
+    /* height: calc(100% - 50px); */
+    height: 310px;
     background: white;
   }
 
-  /* .dasher.vcomp.show.menu > .panel {
+  .dasher.vcomp.show.menu > .panel {
     height: 310px;
     background: white;
   }
@@ -51,7 +48,7 @@
   .dasher.vcomp.show.content > .panel {
     height: calc(100% - 50px);
     background: white;
-  } */
+  }
 
   .dasher.vcomp.blocked > .panel {
     pointer-events: none;
@@ -79,7 +76,7 @@
   .dasher.vcomp > .panel > .sections > .head {
     position: relative;
     width: 100%;
-    height: 60px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -111,6 +108,14 @@
     transition: all 0.2s;
   }
 
+  /* .dasher.vcomp > .panel.pointget > .sections > .content {
+    transform: translateX(0);
+  }
+
+  .dasher.vcomp > .panel.pointuse > .sections > .content {
+    transform: translateX(-100%);
+  } */
+
   .dasher.vcomp > .panel > .sections > .content > .section {
     position: absolute;
     top: 0;
@@ -118,6 +123,14 @@
     height: 100%;
     overflow: hidden;
   }
+
+  /* .dasher.vcomp > .panel > .sections > .content > .section.pointget {
+    left: 0;
+  }
+
+  .dasher.vcomp > .panel > .sections > .content > .section.pointuse {
+    left: 100%;
+  } */
 
   .dasher.vcomp > .panel > .monitor {
     position: absolute;
@@ -127,57 +140,88 @@
     height: var(--dasher-height);
     box-sizing: border-box;
     transition: all 0.3s;
-    padding: 16px;
   }
 
   .dasher.vcomp > .panel > .monitor.show {
     bottom: 0;
   }
 
-  .dasher.vcomp > .panel > .monitor > .section {
-    position: relative;
-    width: 100%;
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section.top {
-    height: 24px;
-    /* background: orange; */
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section.mid {
-    height: 16px;
-    /* background: lightblue; */
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section.bottom {
-    height: 12px;
-    /* background: lightpink; */
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section > .point-total {
+  .dasher.vcomp > .panel > .monitor > .point-total {
+    position: absolute;
+    top: 13px;
+    left: 16px;
     font-size: 20px;
     font-weight: bold;
     color: var(--color-dark);
   }
 
-  .dasher.vcomp > .panel > .monitor > .section > .point-max {
+  .dasher.vcomp > .panel > .monitor > .point-max {
+    position: absolute;
+    bottom: calc(20px + var(--iphone-bottom));
+    right: 16px;
     font-size: 8px;
     color: #999;
-    line-height: 16px;
   }
 
-  .dasher.vcomp > .panel > .monitor > .section > .pbar {
-    position: relative;
-    height: 100%;
-    width: calc(100% - 32px);
+  .dasher.vcomp > .panel > .monitor > .point-today {
+    position: absolute;
+    bottom: calc(20px + var(--iphone-bottom));
+    right: 16px;
+    font-size: 8px;
+    color: #999;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .action {
+    position: absolute;
+    font-size: 12px;
+    top: 12px;
+    color: var(--color-dark);
+    height: 24px;
+    width: 72px;
+    text-align: center;
+    line-height: 24px;
+    background: #f9f9f9;
+    border-radius: 100px;
+    cursor: pointer;
+    box-shadow: 0 0 0 0.2px #999999 inset;
+  }
+
+  /* .dasher.vcomp.show.open > .panel.pointget > .monitor > .action.pointget,
+  .dasher.vcomp.show.open > .panel.pointuse > .monitor > .action.pointuse {
+    background: var(--color-dark);
+    color: white;
+  } */
+
+  .dasher.vcomp.show.open > .panel.pointmenu > .monitor > .action.pointmenu {
+    background: var(--color-point);
+    color: white;
+  }
+
+  /* .dasher.vcomp > .panel > .monitor > .action.pointuse {
+    right: 16px;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .action.pointget {
+    right: calc(16px + 72px + 8px);
+  } */
+
+  .dasher.vcomp > .panel > .monitor > .action.pointmenu {
+    right: 16px;
+  }
+
+  .dasher.vcomp > .panel > .monitor > .pbar {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: calc(16px + var(--iphone-bottom));
+    height: 12px;
     background: white;
     border-radius: 100px;
     box-shadow: 0 0 0 0.3px #888888 inset;
     box-sizing: border-box;
-    overflow: hidden;
   }
 
-  .dasher.vcomp > .panel > .monitor > .section > .pbar > .core {
+  .dasher.vcomp > .panel > .monitor > .pbar > .core {
     position: absolute;
     top: 0;
     left: 0;
@@ -187,56 +231,26 @@
     border-radius: 100px;
   }
 
-  .dasher.vcomp > .panel > .monitor > .section > .point-today {
+
+  .dasher.vcomp > .panel > .monitor > .pbar > .point-max {
     position: absolute;
+    right: 5px;
     top: 50%;
-    right: 0;
-    /* height: 100%; */
-    font-size: 14px;
-    color: var(--color-point);
+    font-size: 7pt;
     transform: translateY(-50%);
-    font-weight: bold;
+    color: #a1a1a1;
   }
 
-  .dasher.vcomp > .panel > .monitor > .section > .action {
+
+  .dasher.vcomp > .panel > .monitor > .pbar > .point-today {
     position: absolute;
-    top: 0;
-    height: 100%;
-    width: 72px;
+    bottom: 100%;
     font-size: 12px;
-    color: var(--color-dark);
-    background: #f9f9f9;
-    border-radius: 100px;
-    cursor: pointer;
-    box-shadow: 0 0 0 0.3px #999999 inset;
+    transform: translateX(-50%);
+    color: var(--color-point);
+    height: 14px;
+    /* opacity: 0.5; */
   }
-
-  .dasher.vcomp.blocked > .panel > .monitor > .section > .action {
-    pointer-events: auto;
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section > .action.guide {
-    right: calc(72px + 8px);
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section > .action.pointmenu {
-    right: 0;
-  }
-
-  .dasher.vcomp > .panel > .monitor > .section > .action > span {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    transform: translateY(-50%);
-  }
-
-  .dasher.vcomp.show.open > .panel.pointmenu > .monitor > .section > .action.pointmenu {
-    background: var(--color-point);
-    color: white;
-  }
-
 
   .dasher.vcomp > .panel > .spinner {
     position: absolute;
@@ -294,11 +308,19 @@
     <div class='panel' :class='control.section' @click.stop>
       <div class='sections'>
         <div class='head'>
-          <span class='title'>LEVEL [[ level ]]</span>
-          <span class='desc'>스타일 레벨을 올리면 리서치/인터뷰 참여 폭이 넓어집니다</span>
+          <!-- <span class='title'>LEVEL [[ level ]]</span>
+          <span class='desc'>스타일 레벨을 올리면 리서치/인터뷰 참여 폭이 넓어집니다</span> -->
         </div>
 
         <div class='content'>
+          <!-- <div class='section pointget'>
+            <pointget :session='session' :control='control' @close='close'></pointget>
+          </div> -->
+
+          <!-- <div class='section pointuse'>
+            <pointuse :session='session' :control='control'></pointuse>
+          </div> -->
+
           <div class='section pointmenu'>
             <pointmenu :session='session' :control='control'></pointmenu>
           </div>
@@ -307,27 +329,16 @@
 
 
       <div class='monitor' :class='{ show: !wallet_onloading }'>
-        <div class='section top'>
-          <div class='point-total'>[[ amount ]]P</div>
-
-          <div class='action guide' @click='session.help()'>
-            <span>사용 가이드</span>
-          </div>
-
-          <div class='action pointmenu' @click='toggle_section("pointmenu")'>
-            <span>포인트 메뉴</span>
-          </div>
-        </div>
-
-        <div class='section mid'>
-          <div class='point-max'>매일 최대 100 포인트</div>
-        </div>
-
-        <div class='section bottom'>
-          <div class='pbar'>
-            <div class='core' :style='pbar_core_style'></div>
-          </div>
-          <div class='point-today'>[[ amount_daybonus ]]</div>
+        <div class='point-total'>[[ amount ]]P</div>
+        <!-- <div class='point-max'>매일 최대 100 포인트</div> -->
+        <!-- <div class='point-today'>매일보너스 [[ amount_daybonus ]]P / [[ amount_daybonus_max ]]P</div> -->
+        <!-- <div class='action pointget' @click='toggle_section("pointget")'>포인트획득</div>
+        <div class='action pointuse' @click='toggle_section("pointuse")'>포인트사용</div> -->
+        <div class='action pointmenu' @click='toggle_section("pointmenu")'>포인트메뉴</div>
+        <div class='pbar'>
+          <div class='core' :style='pbar_core_style'></div>
+          <span class='point-max'>매일 최대 100 포인트</span>
+          <span class='point-today' :style='point_today_style'>[[ amount_daybonus ]]</span>
         </div>
       </div>
 
@@ -383,7 +394,7 @@
           setTimeout(() => { this.control.open = true; }, 10);
           setTimeout(() => { this.control.phase = 'menu'; }, 10);
           this.control.section = sec;
-          this.session.show_guider = false;
+          // this.control.phase = 'menu';
         }
       },
 
@@ -467,7 +478,7 @@
 
       amount_daybonus: function() {
         if (this.wallet) {
-          return this.boo.wallet.amount_daybonus
+          return this.boo.wallet.amount_daybonus + 80
         } else {
           0
         }
@@ -488,13 +499,13 @@
         }
       },
 
-      // point_today_style: function() {
-      //   if (this.amount_daybonus) {
-      //     return {
-      //       left: this.amount_daybonus + '%'
-      //     }
-      //   }
-      // }
+      point_today_style: function() {
+        if (this.amount_daybonus) {
+          return {
+            left: this.amount_daybonus + '%'
+          }
+        }
+      }
     }
   });
 </script>

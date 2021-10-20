@@ -87,6 +87,7 @@ class TransactionAdmin(admin.ModelAdmin):
 class SupportAdmin(admin.ModelAdmin):
     list_display = ['brand', 'active', 'due', 'ticketsize', 'target', 'gift_preview']
     list_editable = ['active']
+    list_per_page = 10
 
     def gift_preview(self, obj):
         if obj.gift.pix_wide:
@@ -103,6 +104,7 @@ class RaffleAdmin(admin.ModelAdmin):
     list_display = ['item', 'listing', 'deduction', 'due', 'winner', 'send_requested', 'item_preview']
     list_editable = ['listing']
     raw_id_fields = ('item', 'wallet', 'winner', )
+    list_per_page = 10
 
     def item_preview(self, obj):
         if obj.item.pix_wide:
@@ -116,6 +118,7 @@ class CoffeecouponAdmin(admin.ModelAdmin):
     list_editable = ['listing']
     raw_id_fields = ('wallet', )
     exclude = ('wallet',)
+    list_per_page = 10
 
     def item_preview(self, obj):
         return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.item.pix_0.url))
@@ -127,6 +130,7 @@ class ShoptemAdmin(admin.ModelAdmin):
     list_editable = ['listing']
     raw_id_fields = ('wallet', )
     exclude = ('wallet',)
+    list_per_page = 10
 
     def item_preview(self, obj):
         return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.item.pix_0.url))
@@ -136,7 +140,9 @@ class ShoptemAdmin(admin.ModelAdmin):
 class ItemAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'out_of_stock', 'pix_0_preview']
     list_editable = ['out_of_stock']
+    # search_fields = ('name', )
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
+    list_per_page = 10
 
     def pix_0_preview(self, obj):
         return mark_safe('<img src="{}" style="height:100px;width:100px;object-fit:cover;" />'.format(obj.pix_0.url))
@@ -146,6 +152,7 @@ class ItemAdmin(admin.ModelAdmin):
 class BrandAdmin(admin.ModelAdmin):
     list_display = ['name_en', 'name_kr', 'established', 'origin', 'logo_preview']
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
+    list_per_page = 10
 
     def logo_preview(self, obj):
         return obj.logo_preview
@@ -176,6 +183,7 @@ class Flashgame(admin.ModelAdmin):
     list_editable = ['published']
     exclude = ['created_at']
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
+    list_per_page = 20
 
 
 @admin.register(m.Flashgametag)
@@ -190,6 +198,7 @@ class ResearchItemAdmin(admin.ModelAdmin):
     list_display = ['research', 'order', 'type', 'gender', 'preq', 'text']
     list_editable = ['order']
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
+    list_per_page = 10
     # form = ResearchItemForm
 
     fieldsets = (
@@ -258,6 +267,7 @@ class ResearchAdmin(admin.ModelAdmin):
     list_editable = ['published', 'priority', 'time_required']
     raw_id_fields = ('owner', 'brand', )
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
+    list_per_page = 10
     # readonly_fields = ('coverpix_thumbnail',)
     # coverpix_thumbnail = AdminThumbnail(image_field='coverpix', template='admin/coverpix_preview.html')
 

@@ -400,6 +400,11 @@
     color: black;
   }
 
+  .researchitem > .backbone > .section.full > .cover > span.more.link-copy {
+    background: #eee;
+    color: black;
+  }
+
 
   .researchitem > .backbone > .section > .mc {
     position: absolute;
@@ -771,10 +776,11 @@
           <span class='bname' v-if='brand'>[[ brand.name_en ]]</span>
           <!-- <span class='outment'>[[ outment ]]</span> -->
           <span class='outment'>[[ researchitem.text ]]</span>
-          <span class='more support' v-if='has_support' @click='go_brander'>후원 이벤트 참여</span>
+          <!-- <span class='more support' v-if='has_support' @click='go_brander'>후원 이벤트 참여</span> -->
           <span class='more homepage' v-if='has_homepage' @click='go_homepage'>브랜드 공식 사이트</span>
           <span class='more insta' v-if='has_insta' @click='go_insta'>브랜드 공식 인스타</span>
           <span class='more kakao-share' @click='$emit("kakao_share")'>카카오톡 공유하기</span>
+          <span class='more link-copy' @click='$emit("link_copy")'>링크 복사하기</span>
         </div>
       </div>
     </div>
@@ -1133,11 +1139,11 @@
         }
       },
 
-      has_support: function() {
-        if (this.brand) {
-          return this.brand.supports.length > 0
-        }
-      }
+      // has_support: function() {
+      //   if (this.brand) {
+      //     return this.brand.supports.length > 0
+      //   }
+      // }
     },
 
 
@@ -1156,9 +1162,9 @@
         this.swiper.allowSlideNext = true
       },
 
-      go_brander: function() {
-        this.session.open_brander(this.brand);
-      },
+      // go_brander: function() {
+      //   this.session.open_brander(this.brand);
+      // },
 
       go_homepage: function() {
         window.open(this.brand.homepage);
@@ -1243,7 +1249,7 @@
             if (this.is_single_choice_only) {
               this.answer.splice(0);
             }
-            
+
             this.answer.push(act);
           }
 

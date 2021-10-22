@@ -404,17 +404,17 @@
         }
       },
 
-      supports: function() {
-        if (this.myboo) {
-          return this.myboo.supports
-        }
-      },
+      // supports: function() {
+      //   if (this.myboo) {
+      //     return this.myboo.supports
+      //   }
+      // },
 
-      supports_list: function() {
-        if (this.supports) {
-          return this.supports.list
-        }
-      },
+      // supports_list: function() {
+      //   if (this.supports) {
+      //     return this.supports.list
+      //   }
+      // },
 
       raffles: function() {
         if (this.myboo) {
@@ -452,23 +452,23 @@
         }
       },
 
-      supports_onloading: function() {
-        if (!this.myboo) {
-          return true
+      // supports_onloading: function() {
+      //   if (!this.myboo) {
+      //     return true
+      //
+      //   } else if (this.myboo && this.myboo.onloading) {
+      //     return true
+      //
+      //   } else if (this.supports) {
+      //     return this.supports.onloading
+      //   }
+      // },
 
-        } else if (this.myboo && this.myboo.onloading) {
-          return true
-
-        } else if (this.supports) {
-          return this.supports.onloading
-        }
-      },
-
-      has_supports: function() {
-        if (this.supports_list) {
-          return this.supports_list.length > 0
-        }
-      },
+      // has_supports: function() {
+      //   if (this.supports_list) {
+      //     return this.supports_list.length > 0
+      //   }
+      // },
 
       sendable: function() {
         return this.name && this.mobile && this.address
@@ -583,11 +583,11 @@
         dasher_control.content = 'raffle';
         dasher_control.detail_obj = raffle;
         setTimeout(() => { dasher_control.open = true; }, 100);
-      },
-
-      open_support: function(support) {
-        this.session.open_brander(support.brand);
       }
+
+      // open_support: function(support) {
+      //   this.session.open_brander(support.brand);
+      // }
     }
   });
 </script>

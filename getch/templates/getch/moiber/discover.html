@@ -180,7 +180,7 @@
       position: relative;
       width: 100%;
       height: var(--appdownloader-height);
-      background: var(--color-dark);
+      background: var(--color-point);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -190,11 +190,18 @@
       transition: all 0.3s;
     }
 
-    #moiber > .window > .header > .downloadapp {
+    #moiber > .window > .header > .message {
+      position: relative;
+      height: var(--appdownloader-height);
+      line-height: var(--appdownloader-height);
+    }
+
+    #moiber > .window > .header > .message > .downloadapp {
       position: absolute;
       top: 0;
-      right: 0;
-      width: var(--appdownloader-height);
+      left: calc(100% + 10px);
+      /* right: 0; */
+      width: auto;
       height: var(--appdownloader-height);
       /* background: orange; */
       display: flex;
@@ -203,7 +210,7 @@
       overflow: hidden;
     }
 
-    #moiber > .window > .header > .downloadapp > img {
+    #moiber > .window > .header > .message > .downloadapp > img {
       width: 15px;
       height: auto;
     }
@@ -316,10 +323,12 @@
   <div id='moiber'>
     <div class='window'>
       <div class='header' @click='open_appdownload'>
-        <span>모이버 앱으로 더 편리하게 이용하기</span>
-        <span class='downloadapp'>
-          <img src='/static/materials/icons/download.png'>
-        </span>
+        <div class='message'>
+          모이버 앱 다운받기
+          <span class='downloadapp'>
+            <img src='/static/materials/icons/download.png'>
+          </span>
+        </div>
 
         <span class='closer' @click.stop='close_appdownloader'>
           <img src='/static/materials/icons/icon_x.png'>
@@ -331,8 +340,6 @@
         <joystick :session='session'></joystick>
         <guider :session='session'></guider>
         <dasher :session='session'></dasher>
-        <!-- <popup :session='session'></popup> -->
-        <!-- <notice :session='session'></notice> -->
       </div>
     </div>
 
@@ -363,11 +370,11 @@
   <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
   <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
   <!-- <script src="https://unpkg.com/@saeris/vue-spinners"></script> -->
-  <script src="/static/merge-images/merge-images.js"></script>
-  <script src="/static/cropperjs/cropper.min.js"></script>
+  <!-- <script src="/static/merge-images/merge-images.js"></script> -->
+  <!-- <script src="/static/cropperjs/cropper.min.js"></script> -->
   <script src="https://unpkg.com/vue-masonry-css"></script>
   <script src="/static/swiper/swiper-bundle.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script> -->
   <!-- <script src="https://unpkg.com/vuewordcloud"></script> -->
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
@@ -376,17 +383,12 @@
 
   {% include "getch/moiber/pages2.html" %}
   {% include "getch/moiber/joystick.html" %}
-  {% include "getch/moiber/headerbar.html" %}
   {% include "getch/moiber/colib.html" %}
   {% include "getch/moiber/minicol.html" %}
   {% include "getch/moiber/pixs.html" %}
   {% include "getch/moiber/picks.html" %}
   {% include "getch/moiber/dasher.html" %}
-  {% include "getch/moiber/notice.html" %}
-  {% include "getch/moiber/postage.html" %}
   {% include "getch/moiber/pointguider.html" %}
-  {% include "getch/moiber/pointget.html" %}
-  {% include "getch/moiber/pointuse.html" %}
   {% include "getch/moiber/pointmenu.html" %}
   {% include "getch/moiber/researchcard.html" %}
   {% include "getch/moiber/shop.html" %}
@@ -395,15 +397,13 @@
   {% include "getch/moiber/itemdetail.html" %}
   {% include "getch/moiber/myinfo.html" %}
   {% include "getch/moiber/myevents.html" %}
-  {% include "getch/moiber/pointer.html" %}
   {% include "getch/moiber/flashgame.html" %}
   {% include "getch/moiber/guider.html" %}
   {% include "getch/moiber/robo.html" %}
   {% include "getch/moiber/popup.html" %}
   {% include "getch/moiber/banners.html" %}
-
-  {% include "getch/pixloader.html" %}
-  {% include "getch/editext.html" %}
+  {% include "getch/moiber/pixloader.html" %}
+  <!-- % include "getch/editext.html" %} -->
 
   <script>
     Vue.use(VueLazyload);
@@ -413,22 +413,22 @@
       delimiters: ['[[', ']]'],
       data: {
         session: undefined,
-        entry: undefined,
-        id: undefined,
+        entrypoint: undefined
       },
 
       created: function() {
-        this.session = new Session();
-        this.session.labels = {{labels|safe}};
-        this.session.entry = '{{entry}}';
-        this.entry = '{{entry}}';
-        this.id = Number('{{id}}');
+        this.entrypoint = {
+          entry: '{{entry}}',
+          id: Number('{{id}}')
+        };
 
-        switch (this.entry) {
+        this.session = new Session(this.entrypoint);
+        this.session.labels = {{labels|safe}};
+        // this.session.entry = '{{entry}}';
+
+        switch (this.entrypoint.entry) {
           case 'research':
-            console.log(this.id);
             this.open_research();
-            // this.session.open_zthinker();
             break;
 
           case 'zthinker':
@@ -455,15 +455,15 @@
             this.session.open_policy();
             break;
 
-          case 'mbti-dongne':
-            this.session.open_contentwork('동네스타일');
-            break;
-
-          case 'mbti-dongne-result':
-            const dongne = '{{dongne}}';
-            const gender = '{{gender}}';
-            this.session.open_mbtiresult('동네스타일', {0:dongne}, gender, 'share');
-            break;
+          // case 'mbti-dongne':
+          //   this.session.open_contentwork('동네스타일');
+          //   break;
+          //
+          // case 'mbti-dongne-result':
+          //   const dongne = '{{dongne}}';
+          //   const gender = '{{gender}}';
+          //   this.session.open_mbtiresult('동네스타일', {0:dongne}, gender, 'share');
+          //   break;
 
           case 'test':
             this.session.open_stylevote();
@@ -489,7 +489,7 @@
         },
 
         open_research: function() {
-          const r = _.find(this.session.researches.list, ['id', this.id]);
+          const r = _.find(this.session.researches.list, ['id', this.entrypoint.id]);
           if (r) {
             this.session.open_research(r);
 
@@ -497,10 +497,6 @@
             setTimeout(()=>{ this.open_research() }, 1000);
           }
         }
-
-        // contact: function() {
-        //   window.open('mailto:contact@moiber.com');
-        // },
       }
     });
 
@@ -508,8 +504,6 @@
     // console.log(kakao)
 
     function kakaotalk_login(data) {
-      // alert(typeof(data) + data);
-      // alert(data);
       const formdata = new FormData();
       formdata.append('csrfmiddlewaretoken', '{{ csrf_token }}');
       formdata.append('data', data);

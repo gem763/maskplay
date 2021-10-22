@@ -1,7 +1,5 @@
 {% include "getch/moiber/page3.html" %}
-{% include "getch/moiber/finder.html" %}
 {% include "getch/moiber/collector.html" %}
-{% include "getch/moiber/my.html" %}
 {% include "getch/moiber/agit.html" %}
 {% include "getch/moiber/accountcheck.html" %}
 {% include "getch/moiber/baseinfo.html" %}
@@ -16,21 +14,17 @@
 {% include "getch/moiber/privacy.html" %}
 {% include "getch/moiber/texteditor.html" %}
 {% include "getch/moiber/pixeditor.html" %}
-{% include "getch/moiber/mbtiresult.html" %}
 {% include "getch/moiber/landing.html" %}
 {% include "getch/moiber/multichooser.html" %}
 {% include "getch/moiber/profiler.html" %}
-{% include "getch/moiber/infoboard.html" %}
 {% include "getch/moiber/pixchooser.html" %}
 {% include "getch/moiber/tagchooser.html" %}
 {% include "getch/moiber/stylevote.html" %}
 {% include "getch/moiber/balancegame.html" %}
-{% include "getch/moiber/contentwork.html" %}
 {% include "getch/moiber/search.html" %}
 {% include "getch/moiber/researcher.html" %}
 {% include "getch/moiber/research.html" %}
 {% include "getch/moiber/researchitem.html" %}
-{% include "getch/moiber/brander.html" %}
 {% include "getch/moiber/checkin.html" %}
 {% include "getch/moiber/bulletin.html" %}
 {% include "getch/moiber/test.html" %}
@@ -52,17 +46,12 @@
   <div class='pages'>
     <researcher :session='session'></researcher>
     <search :session='session'></search>
-    <brander :session='session'></brander>
+    <!-- <brander :session='session'></brander> -->
     <stylevote :session='session'></stylevote>
     <balancegame :session='session'></balancegame>
-    <!-- <stylevote :session='session' v-if='session.balancegame.pixpair_set'></stylevote> -->
-    <!-- <stylevote :session='session' v-if='session.page.stylevote.contents'></stylevote> -->
-    <!-- <contentwork :session='session' v-if='session.page.contentwork.contents'></contentwork> -->
     <research :session='session'></research>
     <checkin :session='session'></checkin>
-    <!-- <flashgames :session='session'></flashgames> -->
-    <!-- <mbtiresult :session='session' v-if='session.page.contentwork.contents'></mbtiresult> -->
-    <my :session='session'></my>
+    <!-- <my :session='session'></my> -->
     <agit :session='session'></agit>
     <multichooser :session='session'></multichooser>
     <!-- <profiler :session='session' v-if='session.user.has_auth'></profiler> -->
@@ -76,7 +65,6 @@
     <recruit :session='session'></recruit>
     <policy :session='session'></policy>
     <privacy :session='session'></privacy>
-    <infoboard :session='session'></infoboard>
     <baseinfo :session='session' v-if='session.user.has_auth'></baseinfo>
     <signup :session='session'></signup>
     <signupper :session='session'></signupper>

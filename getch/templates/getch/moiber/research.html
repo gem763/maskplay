@@ -96,6 +96,7 @@
             :session='session'
             :swiper='swiper'
             @kakao_share='kakao_share'
+            @link_copy='link_copy'
           ></researchitem>
 
         </div>
@@ -179,7 +180,8 @@
           title: this.research.title,
           desc: `${this.research.desc} - ${this.brand.name_en}`,
           pix: this.intro.pix.pix_0,
-          linkpath: `?entry=research&id=${this.research.id}`
+          linkpath: this.linkpath
+          // linkpath: `?entry=research&id=${this.research.id}`
         };
 
         Kakao.Link.sendCustom({
@@ -188,6 +190,18 @@
         });
 
         // this.dismiss_popup();
+      },
+
+      link_copy: function() {
+        this.$copyText(this.link).then(e => {
+          alert('공유할 수 있는 링크가 복사되었습니다');
+          // this.copied = true;
+          // setTimeout(() => { this.copied = false; }, 1000);
+          // console.log('copied');
+
+        }, function (e) {
+          console.log(e);
+        });
       }
     },
 
@@ -203,7 +217,7 @@
           if (this.swiper) {
             this.swiper.allowSlideNext = true;
           }
-          
+
           return this.session.user.boo
         }
       },
@@ -307,6 +321,15 @@
         if (this.mainstory) {
           return this.mainstory.length
         }
+      },
+
+      linkpath: function() {
+        return `?entry=research&id=${this.research.id}`
+      },
+
+      link: function() {
+        const loc = window.location;
+        return `${loc.protocol}//${loc.host}${this.linkpath}`
       }
     }
   });

@@ -77,7 +77,7 @@
     border-radius: 8px;
     width: calc(100% - 32px);
     overflow: hidden;
-    cursor: pointer;
+    /* cursor: pointer; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -136,9 +136,25 @@
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .nick {
+    position: relative;
     font-size: 18px;
     margin-top: 16px;
     margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .nick > .copy-nick {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: var(--color-dark);
+    color: white;
+    font-size: 10px;
+    padding: 5px;
+    border-radius: 8px;
+    cursor: pointer;
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .text {
@@ -221,7 +237,10 @@
 
         <div class='segment'>
           <div class='profilecard my' v-if='is_myboo' @click=''>
-            <div class='nick'>HI, @[[ nick ]]</div>
+            <div class='nick'>
+              HI, @[[ nick ]]
+              <span class='copy-nick' @click='copy_nick'>닉네임 복사</span>
+            </div>
 
             <div class='profilepix'>
               <img :src='profilepix' @load='profilepix_loaded'>
@@ -312,6 +331,9 @@
       is_myboo: function(_new, _old) {
         if (_new) {
           this.section = 'related';
+
+        } else {
+          this.section = 'collection';
         }
 
         // if (!_new) {
@@ -443,6 +465,19 @@
 
       scroll: function(obj) {
         this.session.scroll_direction = obj.scroll_direction;
+      },
+
+      copy_nick: function() {
+        if (!this.nick) {
+          return
+        }
+
+        this.$copyText(this.nick).then(e => {
+          alert('닉네임이 복사되었습니다');
+
+        }, function (e) {
+          console.log(e);
+        });
       }
     }
   });

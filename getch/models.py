@@ -1113,6 +1113,7 @@ class Item(BigIdAbstract):
     pix_3 = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
     pix_4 = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
     pix_wide = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
+    pix_detail = models.ImageField(upload_to=_itempix_path, max_length=500, null=True, blank=True)
     desc = models.TextField(max_length=1000, blank=True, null=True)
     out_of_stock = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now, null=False)
@@ -1124,7 +1125,7 @@ class Item(BigIdAbstract):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['id', 'pix_1', 'pix_2', 'pix_3', 'pix_4', 'desc']
+        fields = ['id', 'pix_1', 'pix_2', 'pix_3', 'pix_4', 'desc', 'pix_detail']
         read_only_fields = fields
 
 

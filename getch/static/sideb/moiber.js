@@ -1,9 +1,9 @@
 const guestboo = 363;
 
 class Session {
-  constructor() {
+  constructor(entrypoint) {
     this.page = {
-      my:           { order: 0, instant: false, open: false },
+      // my:           { order: 0, instant: false, open: false },
       agit:         { order: 0, instant: false, open: false, boo: undefined, from: 'left' },
       researcher:   { order: 0, instant: false, open: false, from: 'left' },
       collector:    { order: 0, instant: false, open: false, from: 'bottom', pix: undefined },
@@ -19,15 +19,12 @@ class Session {
       profiler:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
       multichooser: { order: 0, instant: false, open: false, from: 'left', univ: undefined },
 
-      // mbtiresult:   { order: 0, instant: false, open: false, from: 'left', result: undefined, gender: undefined, mode: undefined },
-      // contentwork:  { order: 0, instant: false, open: false, from: 'left', contents: undefined },
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
       checkin:      { order: 0, instant: false, open: false, from: undefined },
       // flashgames:   { order: 0, instant: false, open: false, from: 'top', content: undefined },
 
       stylevote:    { order: 0, instant: false, open: false, from: 'left'},// contents: new PixpairSet(this) },
       balancegame:  { order: 0, instant: false, open: false, from: 'left'},
-      // stylevote:    { order: 0, instant: false, open: false, from: 'left', contents: new PixpairSet(this, 200) },
       search:       { order: 0, instant: false, open: false, from: 'left', category: 'pix' },
       brander:      { order: 0, instant: false, open: false, from: 'left', brand: undefined },
 
@@ -38,21 +35,15 @@ class Session {
       landing:      { order: 0, instant: true, open: false, from: 'left' },
       // zthinker:     { order: 0, instant: false, open: false, from: 'left' },
       bulletin:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
-      infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
+      // infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
 
       test:         { order: 0, instant: false, open: false, from: 'right' },
     };
 
+    this.entrypoint = entrypoint;
     this.home = 'researcher';
     this.page[this.home].open = true;
-
     this.show_guider = false;
-    // this.popup = { open: false, type: undefined, actions: {} };
-
-    // this.contentworks = {
-    //   '동네스타일': Contentwork.build(this, { id: 1})
-    //   // '동네스타일': Contentwork.build(this, { agenda: '동네스타일'})
-    // }
 
     this.store = new Store();
     this.editing = { on: false, selected:[] };
@@ -60,10 +51,10 @@ class Session {
     this.mode = { on: this.home, order: 0, prev: undefined, dasher_control: this.dasher_control };
     this.ikeyset = undefined;
     this.labels = undefined;
-    this.entry = undefined;
-    this.show_notice = undefined;
+    // this.entry = undefined;
+    // this.show_notice = undefined;
     this.researches = new Researches(this);
-    this.supports = undefined;//new Supports(this);
+    // this.supports = undefined;//new Supports(this);
     this.flashgames = new Flashgames(this);
     this.shoptems = undefined;
     this.coffeecoupons = undefined;
@@ -71,8 +62,6 @@ class Session {
     this.stylelabels = undefined; //new Stylelabels(this);
     this.itemlabels = undefined;
     this.collections = undefined;
-    // this.checkingame = Checkingame.build(this);
-    // this.balancegame = { pixpair_set: new PixpairSet(this), stat: undefined, stat_updated: false, stat_last: false };
     this.balancegame = { pixpair_set: undefined, stat: undefined, stat_updated: false, stat_last: false };
     this.balancegame2 = { tagpairs: new Tagpairs(this), stat: undefined, stat_updated: false, stat_last: false };
     this.pixtory = [{ pixs: new Pixs(this) }];
@@ -80,22 +69,8 @@ class Session {
     // this.keyset_sampling();
 
     this.reload_everyday();
-    // this.open_baseinfo();
-    // this.open_signup();
-
-    // fetch('balancegame/stat')
-    //   .then(x => x.json())
-    //   .then(js => {
-    //     if (js.success) {
-    //       this.balancegame.stat = js.stat;
-    //       this.balancegame.stat_updated = true;
-    //     }
-    //   });
   }
 
-  // reload_user() {
-  //   this.user = new User(this);
-  // }
 
   get dasher_control() {
     return {
@@ -126,9 +101,9 @@ class Session {
   }
 
 
-  load_supports() {
-    this.supports = new Supports(this);
-  }
+  // load_supports() {
+  //   this.supports = new Supports(this);
+  // }
 
 
   load_collections() {
@@ -242,17 +217,8 @@ class Session {
     // this.open_researcher();
   }
 
-  // open_guider() {
-  //   this.open_page('guider');
-  // }
-
   open_about() {
     this.open_page('about');
-  }
-
-  open_infoboard(position) {
-    this.page.infoboard.contents = position;
-    this.open_page('infoboard');
   }
 
   open_recruit() {
@@ -369,41 +335,13 @@ class Session {
   }
 
 
-  // open_flashgames() {
-  //   if (this.user.has_auth) {
-  //     if (this.user.boo.wallet) {
-  //       if (!this.user.boo.wallet.checkin_today) {
-  //         this.user.boo.wallet.receive('checkin_game', this.user.boo.wallet.per_checkin);
-  //         this.user.boo.wallet.checkin_today = true;
-  //         alert('<출첵> 지금 ' + this.user.boo.wallet.per_checkin + 'P가 지급되었습니다');
-  //
-  //       } else {
-  //         alert('출첵 포인트가 이미 지급되었습니다')
-  //       }
-  //
-  //     } else {
-  //       // alert('')
-  //     }
-  //
-  //   } else {
-  //     const yes = confirm('로그인 해주세요');
-  //     if (yes) {
-  //       this.open_login();
-  //     }
-  //   }
-  //
-  // }
-
-
   open_brander(brand) {
     this.page.brander.brand = brand;
-    // this.page.brander.ready = false;
     this.open_page('brander');
   }
 
   open_stylevote() {
     if (this.user.has_auth && this.user.auth.is_superuser) {
-    // if (this.entry == 'testbed') {
       this.open_balancegame();
 
     } else {
@@ -439,28 +377,6 @@ class Session {
     this.open_page('pixeditor');
   }
 
-  open_contentwork(agenda) {
-    if (!this.page.contentwork.contents) {
-      this.page.contentwork.contents = this.contentworks[agenda];
-    }
-
-    setTimeout(() => { this.open_page('contentwork'); }, 10);
-  }
-
-  open_mbtiresult(agenda, result, gender, mode) {
-    if (!this.page.contentwork.contents) {
-      this.page.contentwork.contents = this.contentworks[agenda];
-    }
-
-    this.page.mbtiresult.result = result;
-    this.page.mbtiresult.gender = gender;
-    this.page.mbtiresult.mode = mode;
-    this.open_page('mbtiresult');
-  }
-
-  // open_profileconfig() {
-  //   this.open_page('profileconfig');
-  // }
 
   open_multichooser(univ) {
     this.page.multichooser.univ = univ;
@@ -657,16 +573,13 @@ class Baseboo extends Loader {
 class Boo extends Baseboo {
   constructor(session, baseobj) {
     super(session, baseobj);
-    // this.voting_record = undefined;
     this.genderlabels = undefined;
-    // this.agelabels = undefined;
     this.stylelabels = undefined;
     this.itemlabels = undefined;
     this.styleprofile = {};
-    // this.contentwork_result = {};
     this.wallet = undefined;
     this.researched = [];
-    this.supports = undefined;
+    // this.supports = undefined;
     this.raffles = undefined;
   }
 
@@ -957,15 +870,15 @@ class Wallet {
 
 
 
-class Contentwork extends Loader {
-  constructor(session, baseobj) {
-    super(session, baseobj);
-    this.url = `/contentwork/${baseobj.id}`;
-    this.agenda = undefined;
-    this.profiles = undefined;
-    this.postages = new Postages(session, baseobj.id);
-  }
-}
+// class Contentwork extends Loader {
+//   constructor(session, baseobj) {
+//     super(session, baseobj);
+//     this.url = `/contentwork/${baseobj.id}`;
+//     this.agenda = undefined;
+//     this.profiles = undefined;
+//     this.postages = new Postages(session, baseobj.id);
+//   }
+// }
 
 
 class Collection extends Loader {
@@ -1000,13 +913,13 @@ class Pick extends Loader {
 }
 
 
-class Postage extends Loader {
-  constructor(session, baseobj) {
-    super(session, baseobj);
-    this.url = `/postage/${baseobj.id}`;
-    this.group = undefined;
-  }
-}
+// class Postage extends Loader {
+//   constructor(session, baseobj) {
+//     super(session, baseobj);
+//     this.url = `/postage/${baseobj.id}`;
+//     this.group = undefined;
+//   }
+// }
 
 
 class ResearchItem extends Loader {
@@ -1091,6 +1004,7 @@ class Item extends Loader {
     this.pix_3 = undefined;
     this.pix_4 = undefined;
     this.desc = undefined;
+    this.pix_detail = undefined;
     // this.out_of_stock = undefined;
   }
 
@@ -1188,7 +1102,7 @@ class Brand extends Loader {
     this.coverpix_4 = undefined;
     // this.supports = undefined;
     this.researches = [];
-    this.supports = [];
+    // this.supports = [];
   }
 
   static init(session, baseobj) {
@@ -1246,40 +1160,39 @@ class Research extends Loader {
   }
 }
 
-class Support extends Loader {
-  constructor(session, baseobj) {
-    super(session, baseobj);
-    this.url = `/support/${baseobj.id}`;
-    this.brand = undefined;
-    this.ticketsize = undefined;
-    this.target = undefined;
-    this.desc = undefined;
-    this.due = undefined;
-    this.gift = undefined;
-    this.active = undefined;
-    this.wallet = undefined;
-  }
-
-  assign(obj) {
-    Object.assign(this, obj);
-    // this.brand = obj.brand ? Brand.init(this.session, obj.brand) : obj.brand;
-    if (obj.brand) {
-      this.brand = Brand.init(this.session, obj.brand);
-      this.brand.supports.push(this);
-    }
-  }
-
-  static init(session, baseobj) {
-    if (baseobj.id in session.store.supportstore) {
-      return session.store.supportstore[baseobj.id]
-
-    } else {
-      const support = super.init(session, baseobj);
-      Vue.set(session.store.supportstore, support.id, support);
-      return support
-    }
-  }
-}
+// class Support extends Loader {
+//   constructor(session, baseobj) {
+//     super(session, baseobj);
+//     this.url = `/support/${baseobj.id}`;
+//     this.brand = undefined;
+//     this.ticketsize = undefined;
+//     this.target = undefined;
+//     this.desc = undefined;
+//     this.due = undefined;
+//     this.gift = undefined;
+//     this.active = undefined;
+//     this.wallet = undefined;
+//   }
+//
+//   assign(obj) {
+//     Object.assign(this, obj);
+//     if (obj.brand) {
+//       this.brand = Brand.init(this.session, obj.brand);
+//       this.brand.supports.push(this);
+//     }
+//   }
+//
+//   static init(session, baseobj) {
+//     if (baseobj.id in session.store.supportstore) {
+//       return session.store.supportstore[baseobj.id]
+//
+//     } else {
+//       const support = super.init(session, baseobj);
+//       Vue.set(session.store.supportstore, support.id, support);
+//       return support
+//     }
+//   }
+// }
 
 
 class Tag extends Loader {
@@ -1335,7 +1248,7 @@ class Multiloader {
     return this
   }
 
-  load_ids() {
+  load_ids(first) {
     this.onloading = true;
     fetch(this.ids_url)
       .then(x => x.json())
@@ -1344,6 +1257,15 @@ class Multiloader {
 
         if (js.success) {
           this.ids = js.ids;
+
+          if (first) {
+            var idx = this.ids.indexOf(first);
+            if (idx !== -1) {
+              this.ids.splice(idx, 1);
+              this.ids.unshift(first);
+            }
+          }
+
           this.load(this.nloads_init);
         }
       });
@@ -1372,15 +1294,15 @@ class Itemlabels extends Multiloader {
 }
 
 
-class Supports extends Multiloader {
-  constructor(session) {
-    super(session);
-    this.contentype = Support;
-    this.nloads_init = 100; // 우선 많이 받아오는데,, 나중에 이걸 바꿔야한다
-    this.ids_url = `/support/isupports`;
-    this.load_ids();
-  }
-}
+// class Supports extends Multiloader {
+//   constructor(session) {
+//     super(session);
+//     this.contentype = Support;
+//     this.nloads_init = 100; // 우선 많이 받아오는데,, 나중에 이걸 바꿔야한다
+//     this.ids_url = `/support/isupports`;
+//     this.load_ids();
+//   }
+// }
 
 
 class Raffles extends Multiloader {
@@ -1394,15 +1316,15 @@ class Raffles extends Multiloader {
 }
 
 
-class MySupports extends Multiloader {
-  constructor(session) {
-    super(session);
-    this.contentype = Support;
-    this.nloads_init = 10;
-    this.ids_url = `/support/isupports/my`;
-    this.load_ids();
-  }
-}
+// class MySupports extends Multiloader {
+//   constructor(session) {
+//     super(session);
+//     this.contentype = Support;
+//     this.nloads_init = 10;
+//     this.ids_url = `/support/isupports/my`;
+//     this.load_ids();
+//   }
+// }
 
 
 class MyRaffles extends Multiloader {
@@ -1484,22 +1406,14 @@ class Researches extends Multiloader {
     this.contentype = Research;
     this.nloads_init = 5;
     this.ids_url = `/research/iresearches`;
-    this.load_ids();
-  }
 
-  // load_onworks() {
-  //   this.onloading = true;
-  //   fetch('/research/iresearches/onwork')
-  //     .then(x => x.json())
-  //     .then(js => {
-  //       this.onloading = false;
-  //
-  //       if (js.success) {
-  //         this.ids = js.ids.concat(this.ids);
-  //         this.load(js.ids.length);
-  //       }
-  //     });
-  // }
+    if ((session.entrypoint.entry=='research') && session.entrypoint.id) {
+      this.load_ids(session.entrypoint.id);
+      
+    } else {
+      this.load_ids();
+    }
+  }
 }
 
 
@@ -1577,15 +1491,15 @@ class Collections extends Multiloader {
   }
 }
 
-class Postages extends Multiloader {
-  constructor(session, contentwork_id) {
-    super(session);
-    this.contentype = Postage;
-    this.nloads_init = 20;
-    this.ids_url = `/contentwork/${contentwork_id}/ipostages`;
-    this.load_ids();
-  }
-}
+// class Postages extends Multiloader {
+//   constructor(session, contentwork_id) {
+//     super(session);
+//     this.contentype = Postage;
+//     this.nloads_init = 20;
+//     this.ids_url = `/contentwork/${contentwork_id}/ipostages`;
+//     this.load_ids();
+//   }
+// }
 
 
 // class Tagpair extends Multiloader {
@@ -1622,8 +1536,6 @@ class Tagpairs extends Multiloader {
 
     for (let i = 0; i < n; i++) {
       const content = new this.contentype(this.session);
-      // this.list.concat(content);
-      // this.list_onloading.concat(content);
       this.list.push(content);
       this.list_onloading.push(content);
     };
@@ -1670,7 +1582,7 @@ class Store {
     this.boostore = {};
     this.brandstore = {};
     this.itemstore = {};
-    this.supportstore = {};
+    // this.supportstore = {};
     this.rafflestore = {};
   }
 }
@@ -1690,8 +1602,6 @@ class User {
     fetch('/user2')
       .then(x => x.json())
       .then(js => {
-        // console.log(js);
-
         if (js.mode == 0) {
           this.auth = new Auth(js.user, this.session);
 
@@ -1702,11 +1612,6 @@ class User {
 
         }
 
-        // if (js.success) {
-        //   this.auth = new Auth(js.user, this.session);
-        // }
-        //
-        // this.guest = { boo: JSON.parse(js.guestboo) };
         this.onloading = false;
       });
   }
@@ -1840,7 +1745,6 @@ class User {
 
 
 class Auth {
-  // constructor(cuser, store) {
   constructor(cuser, session) {
     this.cuser = cuser;
     this.id = Number(cuser.id);
@@ -1850,7 +1754,6 @@ class Auth {
     this.address = cuser.address;
     this.mobile = cuser.mobile;
     this.mobile_verified = cuser.mobile_verified;
-    // this.store = store;
     this.session = session;
     this.email = cuser.email;
     this.is_superuser = cuser.is_superuser;
@@ -1858,10 +1761,7 @@ class Auth {
     this.referal_code = cuser.referal_code;
     this.boo_selected = Number(cuser.boo_selected);
     this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(session, cuser.boo)} : {};
-    // this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.build(cuser.boo.id, store)} : {};
-    // this.boos = cuser.boo ? {[cuser.boo_selected]: Boo.rebuild(cuser.boo, store, true)} : {};
     this.boos_fully_loaded = false;
-    // this.links = cuser.links;
     // this.load_other_boos();
     // this.signup_check();
   }
@@ -1920,8 +1820,6 @@ class Auth {
 
     this.boo_selected = Number(boo_id);
     this.boos[this.boo_selected] = Boo.build(this.session, this.boos[this.boo_selected]);
-    // this.boos[this.boo_selected] = Boo.build(this.boo_selected, this.store);
-    // this.boos[this.boo_selected] = Boo.rebuild(this.boos[this.boo_selected], this.store, true);
     this.api_get(`/boo/${boo_id}/set/`);
   }
 
@@ -1945,39 +1843,4 @@ class Auth {
     this.api_get(`/boo/${author_id}/follow`);
     this.boo.followees_id.push(author_id);
   }
-
-  // has_voted_as(post_id) {
-  //   if (post_id in this.boo.voting_record) {
-  //     return this.boo.voting_record[post_id]
-  //
-  //   } else {
-  //     return -1
-  //   }
-  // }
-
-  // has_liked_comment(comment_id) {
-  //   return this.boo.ilikes_comment.includes(comment_id)
-  // }
-  //
-  // like_comment(comment_id) {
-  //   this.boo.ilikes_comment.push(comment_id)
-  // }
-  //
-  // delike_comment(comment_id) {
-  //   const where = this.boo.ilikes_comment.indexOf(comment_id);
-  //   this.boo.ilikes_comment.splice(where, 1);
-  // }
-
-  // vote(post_id, action) {
-  //   const feed_act = {};
-  //   feed_act[post_id] = action;
-  //   this.boo.voting_record = Object.assign({}, this.boo.voting_record, feed_act);
-  //
-  //   fetch(`/post/${post_id}/vote?action=${action}`)
-  //     .then(x => x.json())
-  //     .then(js => {
-  //       console.log(js);
-  //       this.boo.fit = js.fit;
-  //     });
-  // }
 }

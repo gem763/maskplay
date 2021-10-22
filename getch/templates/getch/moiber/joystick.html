@@ -304,11 +304,11 @@
                       || this.session.on('balancegame')
                       // || (this.session.scroll_direction=='down' && this.session.on('search'))
                       // || (this.session.scroll_direction=='down' && this.session.on('stylevote'))
-                      || (this.session.scroll_direction=='down' && this.session.on('researcher'))
-                      || (this.session.scroll_direction=='down' && this.session.on('brander')),
+                      || (this.session.scroll_direction=='down' && this.session.on('researcher')),
+                      // || (this.session.scroll_direction=='down' && this.session.on('brander')),
                       // || (this.session.on('checkin')),
 
-          hidden: this.session.on('contentwork', 'mbtiresult', 'landing', 'baseinfo', 'signup', 'signupper', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'infoboard', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research', 'checkingame', 'flashgames')
+          hidden: this.session.on('landing', 'baseinfo', 'signup', 'signupper', 'login', 'accountcheck', 'emailogin', 'emailsignup', 'about', 'recruit', 'policy', 'privacy', 'profiler', 'multichooser', 'texteditor', 'pixeditor', 'collector', 'research')
                   || this.on_agit
         }
       },

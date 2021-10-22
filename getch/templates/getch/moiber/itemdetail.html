@@ -167,6 +167,15 @@
     pointer-events: none;
   }
 
+  .itemdetail.vcomp > .main > .explain {
+    margin-top: 30px;
+  }
+
+  .itemdetail.vcomp > .main > .explain > img {
+    width: 100%;
+    height: auto;
+  }
+
  .itemdetail.vcomp > .spinner {
    position: absolute;
    top: 0;
@@ -223,6 +232,10 @@
 
       <div class='txt noti' v-if='is_raffle && !outdated'>
         <span>응모 기간 종료 후 3일 이내에 당첨자 추첨 및 발표가 진행 됩니다. 고객 실수로 인한 주소 오류 또는 연락처 미기재 등으로 인한 오발송 되는 경품은 재발송이 불가합니다.</span>
+      </div>
+
+      <div class='explain' v-if='pix_detail'>
+        <img :src='pix_detail'>
       </div>
     </div>
 
@@ -385,6 +398,12 @@
       item: function() {
         if (this.obj && this.obj.item) {
           return this.obj.item.load()
+        }
+      },
+
+      pix_detail: function() {
+        if (this.item) {
+          return this.item.pix_detail
         }
       },
 

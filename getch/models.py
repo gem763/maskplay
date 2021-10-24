@@ -1206,11 +1206,19 @@ class Raffle(BigIdAbstract):
 class RaffleSerializer(serializers.ModelSerializer):
     item = serializers.SerializerMethodField()
     wallet = serializers.SerializerMethodField()
+    winner = serializers.SerializerMethodField()
 
     class Meta:
         model = Raffle
         fields = ['id', 'item', 'deduction', 'due', 'wallet', 'winner', 'send_requested']
         read_only_fields = fields
+
+    def get_winner(self, obj):
+        if obj.winner:
+            return {
+                'id': obj.winner.id,
+                'email': obj.winner.user.email
+            }
 
     def get_wallet(self, obj):
         if not obj.wallet:

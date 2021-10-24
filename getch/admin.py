@@ -140,7 +140,7 @@ class ShoptemAdmin(admin.ModelAdmin):
 class ItemAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'out_of_stock', 'pix_0_preview']
     list_editable = ['out_of_stock']
-    # search_fields = ('name', )
+    search_fields = ('name', )
     formfield_overrides = { models.ImageField: {'widget': AdminpixPreviewWidget} }
     list_per_page = 10
 

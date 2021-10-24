@@ -97,7 +97,32 @@
     height: 100%;
     object-fit: cover;
     filter: brightness(80%);
+    /* opacity: 0; */
+    transition: all 0.5s;
   }
+
+  /* .myevents.vcomp > .segment > .event > .coverpix > img[lazy='loading'] {
+    opacity: 0;
+  }
+
+  .myevents.vcomp > .segment > .event > .coverpix > img[lazy='loaded'] {
+    opacity: 1;
+    animation-name: fadein;
+    animation-duration: 0.5s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-direction: normal;
+    animation-timing-function: ease-out;
+  } */
+
+  /* @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  } */
 
   .myevents.vcomp > .segment > .event.outdated > .coverpix > img {
     opacity: 0.2;
@@ -142,7 +167,7 @@
     display: none;
   }
 
-  .myevents.vcomp > .segment > .event.outdated > .coverpix > .see-result {
+  .myevents.vcomp > .segment > .event.outdated.resulted > .coverpix > .see-result {
     display: block;
   }
 
@@ -322,9 +347,11 @@
       </div>
 
       <template v-else-if='has_raffles'>
-        <div class='event' :class='{ outdated:outdated(r) }' v-for='(r, idx) in raffles_list' @click='open_raffle(r)'>
+        <div class='event' :class='{ loaded:r.coverpix_loaded, outdated:outdated(r), resulted:has_winner(r) }' v-for='(r, idx) in raffles_list' :key='idx' @click='open_raffle(r)'>
           <div class='coverpix'>
-            <img :src='coverpix(r)' @load='coverpix_loaded'>
+            <img :src='coverpix(r)' @load='coverpix_loaded(r)'>
+            <!-- <img :src='coverpix(r)' @error='coverpix_errored'> -->
+            <!-- <img :data-src='coverpix(r)'/> -->
             <div class='item-name'>[[ item_name(r) ]]</div>
             <div class='deduction'>[[ deduction(r) ]]</div>
             <div class='see-result'>결과확인 🤩</div>
@@ -430,7 +457,12 @@
 
       raffles_mywin: function() {
         if (this.myboo && this.raffles_list) {
-          return _.filter(this.raffles_list, ['winner', this.myboo.id])
+          return _.filter(this.raffles_list, (o) => {
+            if (o.winner && (new Date(o.due) <= new Date())) {
+              return o.winner.id == this.myboo.id
+            }
+          })
+          // return _.filter(this.raffles_list, ['winner.id', this.myboo.id])
         }
       },
 
@@ -516,9 +548,18 @@
         }
       },
 
-      coverpix_loaded: function(event) {
-        this.ready = true;
-        event.target.closest('.event').classList.add('loaded');
+      coverpix_loaded: function(raffle) {
+        raffle.coverpix_loaded = true;
+        // this.ready = true;
+        // event.target.closest('.event').classList.add('loaded');
+      },
+
+      // coverpix_errored: function(event) {
+      //   console.log(event);
+      // },
+
+      has_winner: function(raffle) {
+        return raffle.winner != undefined
       },
 
       item_name: function(e) {

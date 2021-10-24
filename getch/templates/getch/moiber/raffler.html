@@ -100,7 +100,7 @@
     display: none;
   }
 
-  .raffler.vcomp > .raffles > .raffle.outdated > .coverpix > .see-result {
+  .raffler.vcomp > .raffles > .raffle.outdated.resulted > .coverpix > .see-result {
     display: block;
   }
 
@@ -139,9 +139,9 @@
 <script type='text/x-template' id='raffler-template'>
   <div class='raffler vcomp'>
     <div class='raffles'>
-      <div class='raffle' :class='{ outdated:outdated(r) }' v-for='(r, idx) in raffles_list' @click='go_detail(r)'>
+      <div class='raffle' :class='{ loaded:r.coverpix_loaded, outdated:outdated(r), resulted:has_winner(r) }' v-for='(r, idx) in raffles_list' @click='go_detail(r)'>
         <div class='coverpix'>
-          <img :src='coverpix(r)' @load='coverpix_loaded'>
+          <img :src='coverpix(r)' @load='coverpix_loaded(r)'>
           <div class='name'>[[ name(r) ]]</div>
           <div class='deduction'>[[ deduction(r) ]]</div>
           <div class='see-result'>결과확인 🤩</div>
@@ -224,9 +224,14 @@
         }
       },
 
-      coverpix_loaded: function(event) {
+      coverpix_loaded: function(raffle) {
         this.ready = true;
-        event.target.closest('.raffle').classList.add('loaded');
+        raffle.coverpix_loaded = true;
+        // event.target.closest('.raffle').classList.add('loaded');
+      },
+
+      has_winner: function(raffle) {
+        return raffle.winner != undefined
       },
 
       go_detail: function(raffle) {

@@ -380,6 +380,9 @@
   <script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/vue-clipboard2/0.3.1/vue-clipboard.min.js'></script>
   <script src="https://unpkg.com/vue-lazyload/vue-lazyload.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/v-lazy-image@2.0.1/dist/v-lazy-image.umd.min.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/intersection-observer@0.7.0/intersection-observer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.5.0/dist/lazyload.min.js"></script> -->
 
   {% include "getch/moiber/pages2.html" %}
   {% include "getch/moiber/joystick.html" %}
@@ -406,7 +409,8 @@
   <!-- % include "getch/editext.html" %} -->
 
   <script>
-    Vue.use(VueLazyload);
+    // Vue.use(VueLazyload);
+    // Vue.use(VLazyImage);
 
     const moiber = new Vue({
       el: '#moiber',

@@ -125,6 +125,23 @@
     white-space: pre-line;
   }
 
+  .itemdetail.vcomp > .main > .txt.winner-notice > .box {
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .itemdetail.vcomp > .main > .txt.winner-notice > .box > .head {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .itemdetail.vcomp > .main > .txt.winner-notice > .box > .content {
+    font-size: 12px;
+    white-space: pre-line;
+  }
+
   .itemdetail.vcomp > .main > .txt.noti {
     font-size: 11px;
     color: var(--color-gray);
@@ -228,11 +245,19 @@
 
       <div class='txt cum'>[[ amount_raffled_text ]]</div>
 
+      <div class='txt winner-notice' v-if='winner && outdated'>
+        <div class='box'>
+          <div class='head'>럭키 드로우 결과 발표</div>
+          <div class='content'><b>[[ winner_email_secret ]]</b> 님, 축하드립니다.
+            모이버에서 개별 연락을 드릴 예정이니, 이메일을 꼭 확인해주시기 바랍니다 😁</div>
+        </div>
+      </div>
+
       <div class='txt desc'>[[ desc ]]</div>
 
-      <div class='txt noti' v-if='is_raffle && !outdated'>
+      <!-- <div class='txt noti' v-if='is_raffle && !outdated'>
         <span>응모 기간 종료 후 3일 이내에 당첨자 추첨 및 발표가 진행 됩니다. 고객 실수로 인한 주소 오류 또는 연락처 미기재 등으로 인한 오발송 되는 경품은 재발송이 불가합니다.</span>
-      </div>
+      </div> -->
 
       <div class='explain' v-if='pix_detail'>
         <img :src='pix_detail'>
@@ -324,7 +349,7 @@
       },
 
       apply_raffle: function() {
-        if (this.raffleable) {
+        if (this.raffleable && !this.raffled) {
           const receiver_id = this.raffle.id;
           const amount = this.deduction;
           const msg = `추첨에 참여하시겠습니까? \n참여시 ${amount}P가 차감되며, 취소는 불가합니다`;
@@ -576,6 +601,26 @@
           return this.raffle_collected.toLocaleString() + 'P'
         }
       },
+
+      winner: function() {
+        if (this.raffle) {
+          return this.raffle.winner
+        }
+      },
+
+      winner_email: function() {
+        if (this.winner) {
+          return this.winner.email
+        }
+      },
+
+      winner_email_secret: function() {
+        if (this.winner_email) {
+          let str = this.winner_email.split('');
+          str[2] = '*';
+          return str.join('');
+        }
+      }
     }
   });
 </script>

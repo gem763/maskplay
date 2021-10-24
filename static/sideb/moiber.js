@@ -1006,6 +1006,7 @@ class Item extends Loader {
     this.desc = undefined;
     this.pix_detail = undefined;
     // this.out_of_stock = undefined;
+    // this.coverpix_loaded = false;
   }
 
   static init(session, baseobj) {
@@ -1031,6 +1032,7 @@ class Raffle extends Loader {
     this.wallet = undefined;
     this.winner = undefined;
     this.send_requested = false;
+    this.coverpix_loaded = false;
   }
 
   assign(obj) {
@@ -1409,7 +1411,7 @@ class Researches extends Multiloader {
 
     if ((session.entrypoint.entry=='research') && session.entrypoint.id) {
       this.load_ids(session.entrypoint.id);
-      
+
     } else {
       this.load_ids();
     }

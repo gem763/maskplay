@@ -990,11 +990,12 @@ class Boo(BigIdAbstract, ModelWithFlag):
         df_pos = pd.DataFrame([r.tag_pos.__dict__ for r in bgr])[flds]
         df_neg = pd.DataFrame([r.tag_neg.__dict__ for r in bgr])[flds]
 
-        df_pos = self._get_baseframe(df_pos)
-        df_neg = self._get_baseframe(df_neg)
+        df_pos = self._get_baseframe(df_pos)#; print(df_pos)
+        df_neg = self._get_baseframe(df_neg)#; print(df_neg)
 
-        df = df_pos - df_neg
-        df = df[df['count'] > 0]
+        # df = df_pos - df_neg
+        df = df_pos.sub(df_neg, fill_value=0)
+        df = df[df['count'] > 0]#; print(df)
         return df.reset_index().to_dict('records')
 
 

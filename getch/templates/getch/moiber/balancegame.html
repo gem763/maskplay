@@ -36,30 +36,72 @@
   .balancegame.vcomp .page-body > .analyzer > .box > .head {
     position: relative;
     width: 100%;
-    height: 40px;
+    height: 60px;
     background: white;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--color-dark);
+    padding-left: 60px;
+    box-sizing: border-box;
+    /* border-bottom: 1px solid #999; */
   }
 
-  .balancegame.vcomp .page-body > .analyzer > .box > .types {
-    position: relative;
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .head0 {
     width: 100%;
     height: 30px;
+    /* background: orange; */
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-dark);
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .head1 {
+    width: 100%;
+    height: 30px;
+    /* background: lightblue; */
+    font-size: 12px;
+    /* font-weight: bold; */
+    color: #999;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
     /* background: orange; */
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: row;
-    color: var(--color-dark);
-    border-bottom: 1px solid #999;
   }
 
-  .balancegame.vcomp .page-body > .analyzer > .box > .types > .type {
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .icon > img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .types {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    /* background: orange; */
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    flex-direction: row;
+    color: var(--color-dark);
+    padding-right: 10px;
+    box-sizing: border-box;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .types > .type {
     font-size: 10px;
     padding: 3px;
     border-radius: 100px;
@@ -70,16 +112,17 @@
     padding-right: 6px;
     margin-right: 3px;
     margin-left: 3px;
+    cursor: pointer;
   }
 
-  .balancegame.vcomp .page-body > .analyzer > .box > .types > .type.on {
+  .balancegame.vcomp .page-body > .analyzer > .box > .head > .types > .type.on {
     background: #4E99C3;
     color: white;
   }
 
   .balancegame.vcomp .page-body > .analyzer > .box > .tail {
     position: relative;
-    width: 100%;
+    width: calc(100% - 20px);
     height: 30px;
     /* background: orange; */
     display: flex;
@@ -91,6 +134,19 @@
     font-size: 10px;
     padding-right: 15px;
     box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .bar {
+    height: 1px;
+    border: 0px;
+    /* padding: 0; */
+    margin: 0;
+    background: #999;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .balancegame.vcomp .page-body > .analyzer > .box > .content {
@@ -172,10 +228,19 @@
 
       <div class='analyzer' :class='{ on: on_analyzer }' @click='close_analyzer'>
         <div class='box'>
-          <div class='head' @click.stop>[[ analyzer_title ]]</div>
-          <div class='types' @click.stop>
-            <div class='type' :class='{ on: t.en==analyzing_type }' v-for='t in types' v-if='has_type(t.en)' @click='set_type(t.en)'>[[ t.ko ]]</div>
+          <div class='head' @click.stop>
+            <div class='head0'>[[ analyzer_title ]]</div>
+            <div class='head1'>내 스타일 취향은?</div>
+            <div class='icon'>
+              <img src='/static/materials/icons/balance_result_icon.png'>
+            </div>
+
+            <div class='types' @click.stop>
+              <div class='type' :class='{ on: t.en==analyzing_type }' v-for='t in types' v-if='has_type(t.en)' @click='set_type(t.en)'>[[ t.ko ]]</div>
+            </div>
           </div>
+
+          <hr class='bar'>
 
           <div class='content' @click.stop>
             <div class='wordcloud' ref='wordcloud'></div>

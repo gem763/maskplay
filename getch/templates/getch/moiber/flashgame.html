@@ -274,20 +274,8 @@
       return {
         popup_type: 'done',
         popup_open: false,
-        copied: false,
-        // answer: []
+        // copied: false,
       }
-    },
-
-    mounted: function() {
-      // const cb = new ClipboardJS('.action.copy-link');
-      // cb.on('success', function(e) {
-      //   console.log('성공');
-      // });
-      //
-      // cb.on('error', function(e) {
-      //   console.log('실패');
-      // });
     },
 
     watch: {
@@ -326,7 +314,6 @@
           this.mywallet.receive('checkin_game', this.mywallet.per_checkin);
           this.mywallet.checkin_today = true;
           this.open_popup('done');
-          // setTimeout(() => { alert('<출첵> 지금 ' + this.mywallet.per_checkin + 'P가 지급되었습니다'); }, 300);
         }
       },
 
@@ -335,7 +322,6 @@
           this.mywallet.receive('checkin_game', -this.mywallet.per_checkin);
           this.mywallet.checkin_today = false;
           this.open_popup('cancel');
-          // setTimeout(() => { alert('출첵 ' + this.mywallet.per_checkin + 'P가 취소처리 됩니다'); }, 300);
         }
       },
 
@@ -347,13 +333,13 @@
           }
 
         } else if (!this.mywallet) {
+        // if (!this.mywallet) {
           alert('잠시만 기다려주세요');
 
         } else if (this.answer) {
           if (this.answer.includes(act)) {
             this.answer.splice(0); // 완전히 비우기
             this.stat['count_' + act] -= 1;
-            // this.$nextTick(() => this.cancel_reward_checkin());
             this.cancel_reward_checkin();
 
           } else if (this.answer.includes(1-act)) {
@@ -365,13 +351,10 @@
           } else {
             this.answer.push(act);
             this.stat['count_' + act] += 1;
-            // this.$nextTick(() => this.reward_checkin());
             this.reward_checkin();
-            // setTimeout(() => { this.session.close_page(); }, 1000);
           }
 
           this.answering();
-          // this.share();
         }
       },
 
@@ -384,16 +367,16 @@
         this.popup_open = false;
       },
 
-      copy_link: function() {
-        this.$copyText(this.link).then(e => {
-          this.copied = true;
-          setTimeout(() => { this.copied = false; }, 1000);
-          console.log('copied');
-
-        }, function (e) {
-          console.log(e);
-        });
-      },
+      // copy_link: function() {
+      //   this.$copyText(this.link).then(e => {
+      //     this.copied = true;
+      //     setTimeout(() => { this.copied = false; }, 1000);
+      //     console.log('copied');
+      //
+      //   }, function (e) {
+      //     console.log(e);
+      //   });
+      // },
 
       kakao_share: function() {
         _templateArgs = {
@@ -413,7 +396,6 @@
         });
 
         this.dismiss_popup();
-        // this.session.close_page();
       },
 
       ok: function() {
@@ -512,14 +494,13 @@
 
       pct_0: function() {
         if (this.stat) {
-          return Math.round(100 * this.stat.count_0 / (this.stat.count_0 + this.stat.count_1))// + '%'
+          return Math.round(100 * this.stat.count_0 / (this.stat.count_0 + this.stat.count_1))
         }
       },
 
       pct_1: function() {
         if (this.stat) {
-          return (100 - this.pct_0)// + '%'
-          // return Math.round(100 * this.stat.count_1 / (this.stat.count_0 + this.stat.count_1)) + '%'
+          return (100 - this.pct_0)
         }
       },
 

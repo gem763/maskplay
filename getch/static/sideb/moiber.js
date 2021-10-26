@@ -642,7 +642,9 @@ class Boo extends Baseboo {
   }
 
   balancegame_stat_update2(amount_add) {
-    if ([10,30,50,70,100].includes(this.wallet.amount_daybonus + amount_add)) {
+    // if ([10,30,50,70,100].includes(this.wallet.amount_daybonus + amount_add)) {
+    // if (_.range(100).includes(this.wallet.amount_daybonus + amount_add)) {
+    if ([10,20,30,40,50,60,70,80,90,100].includes(this.wallet.amount_daybonus + amount_add)) {
       const is_last = 100 == (this.wallet.amount_daybonus + amount_add);
 
       fetch('balancegame/stat/2')
@@ -841,6 +843,11 @@ class Wallet {
   }
 
   receive(type, amount) {
+    // if (!this.baseinfo_inputed) {
+    //   alert('기본정보 입력해라');
+    //   return
+    // }
+
     fetch(`transact?type=${type}&amount=${amount}`)
       .then(x => x.json())
       .then(js => {

@@ -36,14 +36,61 @@
   .balancegame.vcomp .page-body > .analyzer > .box > .head {
     position: relative;
     width: 100%;
-    height: 50px;
+    height: 40px;
     background: white;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     font-size: 20px;
     font-weight: bold;
     color: var(--color-dark);
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .types {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    color: var(--color-dark);
+    border-bottom: 1px solid #999;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .types > .type {
+    font-size: 10px;
+    padding: 3px;
+    border-radius: 100px;
+    /* height: 20px; */
+    box-sizing: border-box;
+    /* line-height: 20px; */
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-right: 3px;
+    margin-left: 3px;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .types > .type.on {
+    background: #4E99C3;
+    color: white;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .tail {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    /* background: orange; */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    color: #999;
+    border-top: 1px solid #999;
+    font-size: 10px;
+    padding-right: 15px;
+    box-sizing: border-box;
   }
 
   .balancegame.vcomp .page-body > .analyzer > .box > .content {
@@ -60,6 +107,10 @@
 
   .balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud {
     position: absolute;
+    /* top: 0;
+    left:0;
+    right: 0;
+    bottom: 0; */
     top: 16px;
     left: 16px;
     right: 16px;
@@ -120,11 +171,18 @@
       </div>
 
       <div class='analyzer' :class='{ on: on_analyzer }' @click='close_analyzer'>
-        <div class='box' @click.stop>
-          <div class='head'>[[ analyzer_title ]]</div>
+        <div class='box'>
+          <div class='head' @click.stop>[[ analyzer_title ]]</div>
+          <div class='types' @click.stop>
+            <div class='type' :class='{ on: t.en==analyzing_type }' v-for='t in types' v-if='has_type(t.en)' @click='set_type(t.en)'>[[ t.ko ]]</div>
+          </div>
 
-          <div class='content'>
+          <div class='content' @click.stop>
             <div class='wordcloud' ref='wordcloud'></div>
+          </div>
+
+          <div class='tail'>
+            다음 집계까지 계속해 볼까요?
           </div>
         </div>
       </div>
@@ -141,6 +199,19 @@
     data: function() {
       return {
         on_analyzer: false,
+        wordclouding: true,
+        analyzing_type: 'total',
+        types: [
+          { ko: '전체', en: 'total' },
+          { ko: '의류', en: 'clothing' },
+          { ko: '신발', en: 'shoes' },
+          { ko: '가방/지갑', en: 'bags' },
+          { ko: '잡화', en: 'accessories' },
+          { ko: '쥬얼리', en: 'jewelries' },
+          { ko: '모자', en: 'hats' },
+        ],
+        // ['전체', '의류', '신발', '악세서리'],
+
         swiper: undefined,
         swiper_options: {
           direction: 'horizontal',
@@ -171,10 +242,14 @@
 
       stat_updated: function(_new, _old) {
         if (_new) {
-          this.wordcloud_render();
+          this.wordcloud_render(this.analyzing_type);
           this.on_analyzer = true;
           setTimeout(() => { this.session.balancegame2.stat_updated = false; }, 100);
         }
+      },
+
+      analyzing_type: function(_new, _old) {
+        this.wordcloud_render(_new);
       }
     },
 
@@ -192,7 +267,9 @@
         this.on_analyzer = false;
       },
 
-      wordcloud_render: function() {
+      wordcloud_render: function(type_en) {
+        d3.select("svg").remove();
+
         // https://codepen.io/art-lav/pen/oKGgeZ?editors=1111
 
         var raw;
@@ -201,6 +278,7 @@
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
         var chart = d3.select(".balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud")
+        // var chart = d3.select(`.balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud.${type}`)
           .append('svg')
           .attr("width", size)
           .attr("height", size);
@@ -209,7 +287,9 @@
           .size([size, size])
           .padding(size*0.005);
 
-        var counts = this.result;//console.log(counts);
+        // var counts = this.result_clothing;//console.log(counts);
+        // var counts = this.keywords_by(this.analyzing_type);//console.log(counts);
+        var counts = this.keywords_by(type_en);//console.log(counts);
         var keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);//console.log(keys);
         var root = d3.hierarchy({children: keys})
           .sum(function(d) {
@@ -250,6 +330,48 @@
             }
           })
           .text(function(d) { return d.data; });
+      },
+
+      keywords_by: function(type_en) {
+        const dict = {};
+        const screened = (type_en == 'total') ? this.result : _.filter(this.result, ['type', type_en]);
+
+        screened.forEach(o => {
+            if (o.category in dict) {
+                dict[o.category] += o.count;
+            } else {
+                dict[o.category] = o.count;
+            }
+
+            if ((o.item in dict) && (o.item != o.category)) {
+              dict[o.item] += o.count;
+            } else if (!(o.item in dict) && (o.item != o.category)) {
+              dict[o.item] = o.count;
+            }
+
+            if (o.val in dict) {
+              dict[o.val] += o.count;
+            } else {
+              dict[o.val] = o.count;
+            }
+        });
+
+        return dict
+      },
+
+      has_type: function(type_en) {
+        if (this.result) {
+          if (type_en == 'total') {
+            return true
+
+          } else {
+            return _.findIndex(this.result, ['type', type_en]) >= 0
+          }
+        }
+      },
+
+      set_type: function(type_en) {
+        this.analyzing_type = type_en;
       }
     },
 

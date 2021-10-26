@@ -949,12 +949,36 @@ class Boo(BigIdAbstract, ModelWithFlag):
         return out
 
 
+    # @property
+    # def balancegame_stat2(self):
+    #     bgr = BalancegameRecord.objects.filter(who=self).exclude(tag_pos__isnull=True).select_related('tag_pos', 'tag_neg').order_by('-id')[:100]
+    #
+    #     df_pos = pd.DataFrame([r.tag_pos.__dict__ for r in bgr])
+    #     df_neg = pd.DataFrame([r.tag_neg.__dict__ for r in bgr])
+    #
+    #     flds = [
+    #         'type','category','item',
+    #         'color','detail','pattern','texture','look','length','sleeve_length',
+    #         'neckline','fit','shape','heel_height','heel_shape','toe_type','sole_type',
+    #         'strap','size','main_material','sub_material'
+    #     ]
+    #
+    #     count = { col: collections.Counter(df_pos[col]) - collections.Counter(df_neg[col]) for col in flds }
+    #     count = sum(count.values(), collections.Counter())
+    #     return dict(count.most_common(30))
+
+
+    def _get_baseframe(self, df0):
+        _df = df0.set_index(['type','category','item']).stack().to_frame()
+        _df[1] = 1
+        _df.index.names = ['type','category','item','prop']
+        _df.columns = ['val', 'count']
+        return _df.groupby(by=['type','category','item','prop','val']).count()
+
+
     @property
     def balancegame_stat2(self):
         bgr = BalancegameRecord.objects.filter(who=self).exclude(tag_pos__isnull=True).select_related('tag_pos', 'tag_neg').order_by('-id')[:100]
-
-        df_pos = pd.DataFrame([r.tag_pos.__dict__ for r in bgr])
-        df_neg = pd.DataFrame([r.tag_neg.__dict__ for r in bgr])
 
         flds = [
             'type','category','item',
@@ -963,9 +987,15 @@ class Boo(BigIdAbstract, ModelWithFlag):
             'strap','size','main_material','sub_material'
         ]
 
-        count = { col: collections.Counter(df_pos[col]) - collections.Counter(df_neg[col]) for col in flds }
-        count = sum(count.values(), collections.Counter())
-        return dict(count.most_common(30))
+        df_pos = pd.DataFrame([r.tag_pos.__dict__ for r in bgr])[flds]
+        df_neg = pd.DataFrame([r.tag_neg.__dict__ for r in bgr])[flds]
+
+        df_pos = self._get_baseframe(df_pos)
+        df_neg = self._get_baseframe(df_neg)
+
+        df = df_pos - df_neg
+        df = df[df['count'] > 0]
+        return df.reset_index().to_dict('records')
 
 
     @property

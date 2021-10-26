@@ -247,9 +247,9 @@
 
       <div class='txt winner-notice' v-if='winner && outdated'>
         <div class='box'>
-          <div class='head'>럭키 드로우 결과 발표</div>
+          <div class='head'>🎰🎰🎰 럭키 드로우 결과 발표 🎉🎉🎉</div>
           <div class='content'><b>[[ winner_email_secret ]]</b> 님, 축하드립니다.
-            모이버에서 개별 연락을 드릴 예정이니, 이메일을 꼭 확인해주시기 바랍니다 😁</div>
+            모이버에서 개별 연락을 드릴 예정이니, 이메일을 꼭 확인해주시기 바랍니다.</div>
         </div>
       </div>
 
@@ -618,6 +618,7 @@
         if (this.winner_email) {
           let str = this.winner_email.split('');
           str[2] = '*';
+          str[3] = '*';
           return str.join('');
         }
       }

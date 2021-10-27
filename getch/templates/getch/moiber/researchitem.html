@@ -430,6 +430,7 @@
     position: relative;
     width: calc(100% / 3);
     padding-top: calc(100% / 3);
+    cursor: pointer;
     /* background: lightblue; */
   }
 
@@ -588,6 +589,28 @@
   .researchitem > .backbone > .section.down > .label {
     top: calc(min(var(--width) - 90px, (var(--height) - 60px - 32px - var(--iphone-bottom))/2) - 38px);
   }
+
+  .researchitem > .backbone > .section > .mc > .btn-done {
+    position: absolute;
+    top: 110%;
+    /* left: 0; */
+    width: 100px;
+    height: 35px;
+    background: var(--color-dark);
+    font-size: 15px;
+    color: white;
+    border-radius: 100px;
+    line-height: 35px;
+    text-align: center;
+    cursor: pointer;
+    /* pointer-events: none;
+    opacity: 0; */
+  }
+
+  /* .researchitem > .backbone > .section > .mc > .btn-done.active {
+    pointer-events: auto;
+    opacity: 1;
+  } */
 
   .researchitem > .backbone > .divider {
     position: absolute;
@@ -849,6 +872,8 @@
               <span>[[ c.mclabel ? c.mclabel : '' ]]</span>
             </div>
           </div>
+
+          <div class='btn-done' v-if='!slide_holded && !is_single_choice_only' @click='go_next'>선택완료</div>
         </div>
       </div>
     </div>
@@ -866,6 +891,8 @@
               <span>[[ c.mclabel ? c.mclabel : '' ]]</span>
             </div>
           </div>
+
+          <div class='btn-done' v-if='!slide_holded && !is_single_choice_only' @click='go_next'>선택완료</div>
         </div>
       </div>
     </div>

@@ -36,7 +36,7 @@
   .balancegame.vcomp .page-body > .analyzer > .box > .head {
     position: relative;
     width: 100%;
-    height: 60px;
+    height: 70px;
     background: white;
     padding-left: 60px;
     box-sizing: border-box;
@@ -57,7 +57,7 @@
 
   .balancegame.vcomp .page-body > .analyzer > .box > .head > .head1 {
     width: 100%;
-    height: 30px;
+    height: 40px;
     /* background: lightblue; */
     font-size: 12px;
     /* font-weight: bold; */
@@ -144,7 +144,7 @@
     /* padding: 0; */
     margin: 0;
     background: #999;
-    width: 90%;
+    width: calc(100% - 20px);
     margin-left: auto;
     margin-right: auto;
   }
@@ -158,22 +158,128 @@
     /* overflow-y: auto; */
     /* height: calc(100% - 50px - 16px); */
     width: 100%;
-    padding-top: 100%;
+    padding-top: calc(100% - 60px);
+    /* padding-top: 100%; */
   }
 
-  .balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud {
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .keyword {
     position: absolute;
-    /* top: 0;
-    left:0;
-    right: 0;
-    bottom: 0; */
-    top: 16px;
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
+    top: 0;
+    right:calc(100% - 60px);
+    width: calc(100% - 60px);
+    bottom: 0;
+    transition: all 0.3s;
   }
 
-  .balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud > svg text {
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop {
+    position: absolute;
+    top: 0;
+    right: calc(60px - 100%);
+    width: calc(100% - 60px);
+    bottom: 0;
+    transition: all 0.3s;
+    /* background: orange; */
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    overflow: auto;
+    align-content: flex-start;
+    padding-bottom: 50px;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .keyword.on {
+    right: 0;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop.on {
+    right: 0;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop > .proptem {
+    position: relative;
+    width: calc((100% - 30px - 10px) / 3);
+    height: 60px;
+    /* background: lightblue; */
+    margin-left: 10px;
+    margin-top: 10xp;
+    box-sizing: border-box;
+    border-bottom: 1px solid #999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop > .proptem > .name {
+    font-size: 9px;
+    color: #999;
+    padding-left: 5px;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop > .proptem > .value {
+    font-size: 11px;
+    /* color: #999; */
+    border: 1px solid black;
+    /* padding: 3px; */
+    height: 24px;
+    line-height: 24px;
+    border-radius: 100px;
+    /* display: inline-block; */
+    padding-left: 8px;
+    padding-right: 8px;
+    /* min-width: 50px; */
+    box-sizing: border-box;
+    margin-top: 2px;
+  }
+
+  /* .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop > .proptem:nth-child(1),
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop > .proptem:nth-child(2),
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .prop > .proptem:nth-child(3) {
+    border: 0px;
+  } */
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .keyword > .canvas {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right:10px;
+    bottom: 10px;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .sidemenu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 100%;
+    background: white;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .sidemenu > .item {
+    width: 40px;
+    height: 40px;
+    /* background: #4E99C3; */
+    margin-top: 10px;
+    border-radius: 100px;
+    color: var(--color-dark);
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .sidemenu > .item.on {
+    background: #4E99C3;
+    color: white;
+  }
+
+  .balancegame.vcomp .page-body > .analyzer > .box > .content > .keyword > .canvas > svg text {
     text-anchor: middle;
   }
 
@@ -243,7 +349,21 @@
           <hr class='bar'>
 
           <div class='content' @click.stop>
-            <div class='wordcloud' ref='wordcloud'></div>
+            <div class='keyword' :class='{ on: analyzing_view=="keyword" }'>
+              <div class='canvas' ref='wordcloud'></div>
+            </div>
+
+            <div class='prop' :class='{ on: analyzing_view=="prop" }'>
+              <div class='proptem' v-for='p in props'>
+                <div class='name'>[[ prop_match[p.prop] ]]</div>
+                <span class='value'>[[ prop_value(p.val) ]]</span>
+              </div>
+            </div>
+
+            <div class='sidemenu'>
+              <div class='item keyword' :class='{ on: analyzing_view=="keyword" }' @click='set_view("keyword")'>키워드</div>
+              <div class='item prop' :class='{ on: analyzing_view=="prop" }' @click='set_view("prop")'>속성</div>
+            </div>
           </div>
 
           <div class='tail'>
@@ -264,8 +384,8 @@
     data: function() {
       return {
         on_analyzer: false,
-        wordclouding: true,
         analyzing_type: 'total',
+        analyzing_view: 'keyword',
         types: [
           { ko: '전체', en: 'total' },
           { ko: '의류', en: 'clothing' },
@@ -276,6 +396,27 @@
           { ko: '모자', en: 'hats' },
         ],
         // ['전체', '의류', '신발', '악세서리'],
+
+        prop_match: {
+          color: '색상',
+          detail: '디테일',
+          fit: '핏',
+          heel_height: '굽높이',
+          heel_shape: '굽모양',
+          length: '기장',
+          look: '스타일',
+          neckline: '넥라인',
+          pattern: '프린트',
+          shape: '형태',
+          size: '사이즈',
+          sleeve_length: '소매기장',
+          sole_type: '밑창모양',
+          strap: '가방/지갑 스트랩',
+          texture: '소재감',
+          toe_type: '앞코모양',
+          main_material: '주얼리 메인소재',
+          sub_material: '주얼리 서브소재'
+        },
 
         swiper: undefined,
         swiper_options: {
@@ -315,7 +456,7 @@
 
       analyzing_type: function(_new, _old) {
         this.wordcloud_render(_new);
-      }
+      },
     },
 
 
@@ -342,7 +483,7 @@
         // var color = d3.scaleOrdinal(d3.schemeCategory10);
         var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
-        var chart = d3.select(".balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud")
+        var chart = d3.select(".balancegame.vcomp .page-body > .analyzer > .box > .content > .keyword > .canvas")
         // var chart = d3.select(`.balancegame.vcomp .page-body > .analyzer > .box > .content > .wordcloud.${type}`)
           .append('svg')
           .attr("width", size)
@@ -354,8 +495,9 @@
 
         // var counts = this.result_clothing;//console.log(counts);
         // var counts = this.keywords_by(this.analyzing_type);//console.log(counts);
-        var counts = this.keywords_by(type_en);//console.log(counts);
-        var keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);//console.log(keys);
+        // var counts = this.keywords_by(type_en);//console.log(counts);
+        var counts = this['keywords_by_' + type_en];
+        var keys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0,30);//console.log(keys);
         var root = d3.hierarchy({children: keys})
           .sum(function(d) {
             // return counts[d];
@@ -399,7 +541,7 @@
 
       keywords_by: function(type_en) {
         const dict = {};
-        const screened = (type_en == 'total') ? this.result : _.filter(this.result, ['type', type_en]);
+        const screened = (type_en == 'total') ? this.prop_count : _.filter(this.prop_count, ['type', type_en]);
 
         screened.forEach(o => {
             if (o.category in dict) {
@@ -424,19 +566,40 @@
         return dict
       },
 
+      props_by: function(type_en) {
+        return _.filter(this.max_prop, ['type', type_en])
+      },
+
       has_type: function(type_en) {
-        if (this.result) {
+        if (this.prop_count) {
           if (type_en == 'total') {
             return true
 
           } else {
-            return _.findIndex(this.result, ['type', type_en]) >= 0
+            return _.findIndex(this.prop_count, ['type', type_en]) >= 0
           }
         }
       },
 
       set_type: function(type_en) {
         this.analyzing_type = type_en;
+      },
+
+      set_view: function(v) {
+        this.analyzing_view = v;
+      },
+
+      prop_value: function(val) {
+        if (typeof(val) == 'boolean') {
+          if (val) {
+            return '스트랩O'
+          } else {
+            return '스트랩X'
+          }
+
+        } else {
+          return val
+        }
       }
     },
 
@@ -457,8 +620,20 @@
         }
       },
 
-      result: function() {
+      stat: function() {
         return this.session.balancegame2.stat
+      },
+
+      prop_count: function() {
+        if (this.stat) {
+          return this.stat.prop_count
+        }
+      },
+
+      max_prop: function() {
+        if (this.stat) {
+          return this.stat.max_prop
+        }
       },
 
       stat_updated: function() {
@@ -472,6 +647,68 @@
         } else {
           return '밸런스게임 중간집계'
         }
+      },
+
+      keywords_by_total: function() {
+        return this.keywords_by('total')
+      },
+
+      keywords_by_clothing: function() {
+        return this.keywords_by('clothing')
+      },
+
+      keywords_by_shoes: function() {
+        return this.keywords_by('shoes')
+      },
+
+      keywords_by_bags: function() {
+        return this.keywords_by('bags')
+      },
+
+      keywords_by_accessories: function() {
+        return this.keywords_by('accessories')
+      },
+
+      keywords_by_jewelries: function() {
+        return this.keywords_by('jewelries')
+      },
+
+      keywords_by_hats: function() {
+        return this.keywords_by('hats')
+      },
+
+      props_by_total: function() {
+        if (this.stat) {
+          return this.stat.max_prop_total
+        }
+      },
+
+      props_by_clothing: function() {
+        return _.reject(this.props_by('clothing'), ['prop', 'strap'])
+      },
+
+      props_by_shoes: function() {
+        return _.reject(this.props_by('shoes'), ['prop', 'strap'])
+      },
+
+      props_by_bags: function() {
+        return this.props_by('bags')
+      },
+
+      props_by_accessories: function() {
+        return _.reject(this.props_by('accessories'), ['prop', 'strap'])
+      },
+
+      props_by_jewelries: function() {
+        return _.reject(this.props_by('jewelries'), ['prop', 'strap'])
+      },
+
+      props_by_hats: function() {
+        return _.reject(this.props_by('hats'), ['prop', 'strap'])
+      },
+
+      props: function() {
+        return this['props_by_' + this.analyzing_type]
       }
     }
   });

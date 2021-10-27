@@ -996,7 +996,19 @@ class Boo(BigIdAbstract, ModelWithFlag):
         # df = df_pos - df_neg
         df = df_pos.sub(df_neg, fill_value=0)
         df = df[df['count'] > 0]#; print(df)
-        return df.reset_index().to_dict('records')
+        # return df.reset_index().to_dict('records')
+
+        maxprop = df['count'].unstack().groupby(by=['type','prop']).count().idxmax(axis=1)#.to_frame()
+        maxprop.name = 'val'
+
+        maxprop_total = df['count'].unstack().groupby(by=['prop']).count().idxmax(axis=1)#.to_frame()
+        maxprop_total.name = 'val'
+
+        return {
+            'prop_count': df.reset_index().to_dict('records'),
+            'max_prop': maxprop.reset_index().to_dict('records'),
+            'max_prop_total': maxprop_total.reset_index().to_dict('records')
+        }
 
 
     @property

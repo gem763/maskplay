@@ -1349,8 +1349,9 @@ def boo_save(request):
 
             if _labels:
                 _labels_update(boo, json.loads(_labels))
-
-            if _boo_text:
+            # print(_boo_text, '***********')
+            if _boo_text or _boo_text=='':
+                # print('###########')
                 boo.text = _boo_text
                 boo.save()
 

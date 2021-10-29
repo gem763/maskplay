@@ -115,11 +115,13 @@
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix {
+    cursor: pointer;
+    position: relative;
     width: 80px;
     height: 80px;
-    border-radius: 100px;
-    overflow: hidden;
-    filter: brightness(95%);
+    /* border-radius: 100px; */
+    /* overflow: hidden; */
+    /* filter: brightness(95%); */
   }
 
 
@@ -129,10 +131,30 @@
     object-fit: cover;
     opacity: 0;
     transition: all 0.5s;
+    border-radius: 100px;
+    filter: brightness(95%);
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix > img.loaded {
     opacity: 1;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix > .modifier {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 10px);
+    transform: translateY(-50%);
+    width: 30px;
+    height: auto;
+    /* background: orange; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .agit.vcomp .page-body > .container > .segment > .profilecard > .profilepix > .modifier > img.icon {
+    width: 60%;
+    height: 60%;
   }
 
   .agit.vcomp .page-body > .container > .segment > .profilecard > .nick {
@@ -236,14 +258,18 @@
       <div class='container'>
 
         <div class='segment'>
-          <div class='profilecard my' v-if='is_myboo' @click=''>
+          <div class='profilecard my' v-if='is_myboo'>
             <div class='nick'>
               HI, @[[ nick ]]
               <span class='copy-nick' @click='copy_nick'>닉네임 복사</span>
             </div>
 
-            <div class='profilepix'>
+            <div class='profilepix' @click='go_profiler'>
               <img :src='profilepix' @load='profilepix_loaded'>
+
+              <div class='modifier'>
+                <img class='icon' src='/static/materials/icons/edit.png'>
+              </div>
             </div>
 
             <div class='text'>[[ text ]]</div>
@@ -450,10 +476,10 @@
       //   console.log(raffle);
       // },
 
-      // go_profiler: function() {
-      //   if (this.is_myboo && this.boo.profile && this.boo.id)
-      //     this.session.open_profiler();
-      // },
+      go_profiler: function() {
+        if (this.boo.profile && this.boo.id)
+          this.session.open_profiler();
+      },
 
       on: function(sec) {
         return this.section == sec

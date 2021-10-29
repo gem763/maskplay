@@ -16,7 +16,7 @@ class Session {
       emailsignup:  { order: 0, instant: false, open: false, from: 'left', email: undefined },
       texteditor:   { order: 0, instant: false, open: false, from: 'left', basetext: undefined, setter: undefined, placeholder: undefined, maxlines: 1 },
       pixeditor:    { order: 0, instant: false, open: false, from: 'left', src: undefined, pixloader: undefined, type: undefined },
-      profiler:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
+      profiler:     { order: 0, instant: false, open: false, from: 'left' }, //, type: undefined },
       multichooser: { order: 0, instant: false, open: false, from: 'left', univ: undefined },
 
       research:     { order: 0, instant: false, open: false, from: 'left', content: undefined },
@@ -69,6 +69,8 @@ class Session {
     // this.keyset_sampling();
 
     this.reload_everyday();
+
+    // this.open_profiler();
   }
 
 
@@ -375,7 +377,7 @@ class Session {
     this.page.pixeditor.src = src;
     this.page.pixeditor.type = type;
     this.page.pixeditor.pixloader = pixloader;
-    this.open_page('pixeditor');
+    this.open_page('pixeditor', true);
   }
 
 
@@ -384,16 +386,21 @@ class Session {
     this.open_page('multichooser');
   }
 
-  open_profiler(type) {
-    if (type) {
-      this.page.profiler.type = type;
-
-    } else {
-      this.page.profiler.type = undefined;
-    }
-
+  open_profiler() {
+    // setTimeout(() => { this.open_page('profiler'); }, 300);
     this.open_page('profiler');
   }
+
+  // open_profiler(type) {
+  //   if (type) {
+  //     this.page.profiler.type = type;
+  //
+  //   } else {
+  //     this.page.profiler.type = undefined;
+  //   }
+  //
+  //   this.open_page('profiler');
+  // }
 
   open_test() {
     this.open_page('test');

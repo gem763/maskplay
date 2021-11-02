@@ -361,8 +361,8 @@
             </div>
 
             <div class='sidemenu'>
-              <div class='item keyword' :class='{ on: analyzing_view=="keyword" }' @click='set_view("keyword")'>키워드</div>
               <div class='item prop' :class='{ on: analyzing_view=="prop" }' @click='set_view("prop")'>속성</div>
+              <div class='item keyword' :class='{ on: analyzing_view=="keyword" }' @click='set_view("keyword")'>키워드</div>
             </div>
           </div>
 
@@ -385,7 +385,7 @@
       return {
         on_analyzer: false,
         analyzing_type: 'total',
-        analyzing_view: 'keyword',
+        analyzing_view: 'prop',
         types: [
           { ko: '전체', en: 'total' },
           { ko: '의류', en: 'clothing' },

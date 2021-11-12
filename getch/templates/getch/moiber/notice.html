@@ -1,0 +1,250 @@
+<style>
+  .notice.vcomp .page-body > .analyzer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .notice.vcomp .page-body > .analyzer.on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    /* top: 100%; */
+    /* height: calc(50% - 77px - 16px - var(--iphone-bottom)); */
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s;
+    bottom: calc(32px - 50px - var(--width));
+  }
+
+  .notice.vcomp .page-body > .analyzer.on > .box {
+    bottom: calc(77px + 16px + var(--iphone-bottom));
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    background: white;
+    /* padding-left: 60px; */
+    box-sizing: border-box;
+    /* border-bottom: 1px solid #999; */
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .head0 {
+    width: 100%;
+    height: 60px;
+    /* background: orange; */
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--color-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .head1 {
+    width: 100%;
+    height: 40px;
+    /* background: lightblue; */
+    font-size: 12px;
+    /* font-weight: bold; */
+    color: #999;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 60px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .icon > img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .types {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    /* background: orange; */
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    flex-direction: row;
+    color: var(--color-dark);
+    padding-right: 10px;
+    box-sizing: border-box;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .types > .type {
+    font-size: 10px;
+    padding: 3px;
+    border-radius: 100px;
+    /* height: 20px; */
+    box-sizing: border-box;
+    /* line-height: 20px; */
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-right: 3px;
+    margin-left: 3px;
+    cursor: pointer;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .head > .types > .type.on {
+    background: #4E99C3;
+    color: white;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .tail {
+    position: relative;
+    width: calc(100% - 20px);
+    height: 30px;
+    /* background: orange; */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: row;
+    color: #999;
+    border-top: 1px solid #999;
+    font-size: 10px;
+    padding-right: 15px;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .bar {
+    height: 1px;
+    border: 0px;
+    /* padding: 0; */
+    margin: 0;
+    background: #999;
+    width: calc(100% - 20px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .content {
+    position: relative;
+    /* padding: 0 16px 16px 16px; */
+    box-sizing: border-box;
+    /* flex-grow: 1; */
+    background: white;
+    /* overflow-y: auto; */
+    /* height: calc(100% - 50px - 16px); */
+    width: 100%;
+    /* padding-top: calc(100% - 60px); */
+    /* padding-top: 100%; */
+    padding: 30px;
+    font-size: 12px;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .content > .parag {
+    white-space: pre-line;
+    margin-bottom: 10px;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .content > .parag:last-child {
+    margin-bottom: 0;
+  }
+
+  .notice.vcomp .page-body > .analyzer > .box > .content > .parag > span {
+    margin-left: 20px;
+  }
+</style>
+
+
+<script type='text/x-template' id='notice-template'>
+  <page
+    class='notice vcomp'
+    :order='session.page.notice.order'
+    :open='session.page.notice.open'
+    :from='session.page.notice.from'
+    :hide_close='true'
+    :hide_menu='true'
+    :hide_headerbar='true'
+    :trans_headerbar='true'>
+
+    <template #headerbar-menu>
+    </template>
+
+    <template #headerbar-body-default>
+    </template>
+
+    <template #page-body>
+      <div class='analyzer' :class='{ on: true }' @click='session.close_page()'>
+        <div class='box'>
+          <div class='head' @click.stop>
+            <div class='head0'>포인트 제도 서비스 종료 안내</div>
+            <!-- <div class='head1'>내 스타일 취향은?</div> -->
+            <div class='icon'>
+              <img src='/static/materials/characters/ai.png'>
+            </div>
+          </div>
+
+          <hr class='bar'>
+
+          <div class='content' @click.stop>
+            <div class='parag'>모이버 앱 리뉴얼을 위해 현재 사용 중인 포인트 서비스가 종료됩니다.</div>
+
+            <div class='parag'>📌 11월 21일 일요일 자정 : 포인트 획득 중단
+                              <span>(밸런스게임, 출쳌게임, 서베이, 컬렉션 넣기)</span></div>
+
+            <div class='parag'>📌 11월 28일 일요일 자정 : 포인트 사용 중단
+                              <span>(럭키드로우, 상품권 쇼핑, 커피음료 쿠폰)</span></div>
+
+            <div class='parag'>위 기간이 지나면 포인트는 소멸되며 복구나 사용이 불가하오니, 일정 확인 후  사용 바랍니다.</div>
+
+            <div class='parag'>21세기 혁신적인 Z-패션 공동 연구를 위한 앱 버전 업을 위한 변화이오니, 유저 여러분의 많은 양해 부탁 드립니다.</div>
+
+            <div class='parag'>감사합니다.</div>
+          </div>
+
+          <div class='tail'>
+            모이버 앱 리뉴얼을 기대해 주세요!
+          </div>
+        </div>
+      </div>
+    </template>
+  </page>
+</script>
+
+
+<script>
+  Vue.component('notice', {
+    template: '#notice-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    methods: { },
+    computed: { }
+  });
+</script>

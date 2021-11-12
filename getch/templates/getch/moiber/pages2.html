@@ -27,6 +27,7 @@
 {% include "getch/moiber/researchitem.html" %}
 {% include "getch/moiber/checkin.html" %}
 {% include "getch/moiber/bulletin.html" %}
+{% include "getch/moiber/notice.html" %}
 {% include "getch/moiber/test.html" %}
 
 <style>
@@ -72,6 +73,8 @@
     <login :session='session'></login>
     <emailogin :session='session'></emailogin>
     <emailsignup :session='session'></emailsignup>
+
+    <notice :session='session'></notice>
 
     <test :session='session'></test>
   </div>

@@ -35,7 +35,7 @@ class Session {
       landing:      { order: 0, instant: true, open: false, from: 'left' },
       // zthinker:     { order: 0, instant: false, open: false, from: 'left' },
       bulletin:     { order: 0, instant: false, open: false, from: 'left', type: undefined },
-      // infoboard:    { order: 0, instant: true, open: false, from: 'right', contents: undefined },
+      notice:       { order: 0, instant: true, open: false, from: undefined },
 
       test:         { order: 0, instant: false, open: false, from: 'right' },
     };
@@ -70,7 +70,7 @@ class Session {
 
     this.reload_everyday();
 
-    // this.open_profiler();
+    // this.open_notice();
   }
 
 
@@ -358,6 +358,10 @@ class Session {
 
   open_balancegame() {
     this.open_page('balancegame');
+  }
+
+  open_notice() {
+    this.open_page('notice');
   }
 
   open_collector(pix) {

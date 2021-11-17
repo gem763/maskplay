@@ -97,6 +97,11 @@ def recruit(request):
     return redirect_params('discover', params)
 
 
+def intern(request):
+    params = { 'entry': 'intern' }
+    return redirect_params('discover', params)
+
+
 def app_ios(request):
     return redirect('https://itunes.apple.com/app/id1578448720')
 

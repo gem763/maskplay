@@ -216,6 +216,10 @@
         return (this.type=='career-dev') || (this.type=='career-designer') || (this.type=='career-mkt') || (this.type=='career-planner')
       },
 
+      is_intern: function() {
+        return this.type=='intern'
+      },
+
       list: function() {
         switch (this.type) {
           case 'zthinker-app':
@@ -293,6 +297,19 @@
               '/static/materials/bulletin/career/MOIBER-RECRUIT-8.jpg',
               '/static/materials/bulletin/career/MOIBER-RECRUIT-9.jpg'
             ]
+
+          case 'intern':
+            return [
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-1.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-2.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-3.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-4.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-5.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-6.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-7.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-8.jpg',
+              '/static/materials/bulletin/intern/MOIBER-RECRUIT-9.jpg'
+            ]
         }
       }
     },
@@ -308,6 +325,9 @@
 
         } else if (this.is_career) {
           window.open('https://tally.so/r/n0Pqjn');
+
+        } else if (this.is_intern) {
+          window.open('https://tally.so/r/w2bGew');
         }
 
       }

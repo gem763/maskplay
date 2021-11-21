@@ -317,7 +317,7 @@
 
       <div class='default' v-else>
         <img src='/static/materials/imgs/tag_game_style.png'>
-        <div class='guide'>클릭하고 관심 스타일 선택하면 포인트 지급!</div>
+        <!-- <div class='guide'>클릭하고 관심 스타일 선택하면 포인트 지급!</div> -->
       </div>
     </div>
 
@@ -344,7 +344,7 @@
 
       <div class='default' v-else>
         <img src='/static/materials/imgs/tag_game_item.png'>
-        <div class='guide'>클릭하고 관심 아이템 선택하면 포인트 지급!</div>
+        <!-- <div class='guide'>클릭하고 관심 아이템 선택하면 포인트 지급!</div> -->
       </div>
     </div>
 
@@ -445,15 +445,15 @@
       },
 
       baseinfo_reward_txt: function() {
-        return '+100P' + (this.baseinfo_inputed ? ' (지급완료)' : '')
+        return ''// '+100P' + (this.baseinfo_inputed ? ' (지급완료)' : '')
       },
 
       stylelabels_reward_txt: function() {
-        return '+50P' + (this.stylelabels_inputed ? ' (지급완료)' : '')
+        return ''// '+50P' + (this.stylelabels_inputed ? ' (지급완료)' : '')
       },
 
       itemlabels_reward_txt: function() {
-        return '+50P' + (this.itemlabels_inputed ? ' (지급완료)' : '')
+        return ''// '+50P' + (this.itemlabels_inputed ? ' (지급완료)' : '')
       },
     },
 

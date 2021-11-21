@@ -784,7 +784,7 @@
 
         <div class='cover' :class='{ loaded: pix_0_loaded }'>
           <robo :class='{ hidden:robo_hidden }' :session='session' type='' @action=''>
-            <div class='reward'>+[[ research_reward ]]P 💰</div>
+            <!-- <div class='reward'>+[[ research_reward ]]P 💰</div> -->
 
             <div class='message'>서베이 완료
               센스있는 의견 감사합니다~
@@ -981,14 +981,13 @@
           console.log('인트로');
 
         } else if (this.swiper.isEnd && this.is_outro) {
-          // this.release_slide();
           if (!this.answers.finished && this.wallet) {
-            this.wallet.receive('research', this.research_reward);
+            // this.wallet.receive('research', this.research_reward);
 
             fetch(`research/${this.research.id}/done`).then(x=>x.json()).then(console.log);
             this.answers.finished = true;
 
-            setTimeout(() => { alert(this.research_reward + 'P가 지급되었습니다'); }, 500);
+            // setTimeout(() => { alert(this.research_reward + 'P가 지급되었습니다'); }, 500);
           }
 
           console.log('아웃트로');
@@ -1203,7 +1202,8 @@
 
       go_next: function() {
         if (!this.session.user.has_auth) {
-          const answer = confirm('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다');
+          const answer = confirm('서베이 참여를 위해서는 로그인이 필요합니다');
+          // const answer = confirm('서베이 참여로 포인트를 지급받으려면 로그인이 필요합니다');
           if (answer) {
             this.session.open_login();
           }

@@ -239,14 +239,14 @@
         const amount = this.wallet['amount_' + transaction_type];
 
         if (!this.rewarded && this.has_labels) {
-          this.wallet.receive(transaction_type, amount);
+          // this.wallet.receive(transaction_type, amount);
           this.wallet[this.label_type + '_inputed'] = true;
-          alert(amount + 'P가 지급되었습니다');
+          // alert(amount + 'P가 지급되었습니다');
 
         } else if (this.rewarded && !this.has_labels) {
-          this.wallet.receive(transaction_type, -amount);
+          // this.wallet.receive(transaction_type, -amount);
           this.wallet[this.label_type + '_inputed'] = false;
-          alert('관심 ' + this.title + '을 선택하지 않으면 ' + amount + 'P가 반환됩니다');
+          // alert('관심 ' + this.title + '을 선택하지 않으면 ' + amount + 'P가 반환됩니다');
         }
       }
     },

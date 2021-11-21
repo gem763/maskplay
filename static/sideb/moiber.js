@@ -622,9 +622,9 @@ class Boo extends Baseboo {
       Object.assign(this.session.user.auth, JSON.parse(signupinfo));
       sessionStorage.removeItem('signupinfo');
 
-      this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
+      // this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
       this.wallet.baseinfo_inputed = true;
-      alert(`기본정보 입력으로 ${this.wallet.amount_baseinfo_input}P가 지급되었습니다`);
+      // alert(`기본정보 입력으로 ${this.wallet.amount_baseinfo_input}P가 지급되었습니다`);
       this.session.help();
     }
   }
@@ -877,12 +877,12 @@ class Wallet {
       amount = Math.min(this.amount_daybonus + amount, this.amount_daybonus_max) - this.amount_daybonus;
 
       if (amount > 0) {
-        this.receive(type, amount);
+        // this.receive(type, amount);
         this.amount_daybonus += amount;
       }
 
     } else {
-      this.receive(type, amount);
+      // this.receive(type, amount);
       this.amount_daybonus += amount;
     }
   }

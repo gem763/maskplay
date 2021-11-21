@@ -322,16 +322,16 @@
 
         if (this.rewarded && !this.rewardable) {
           setTimeout(() => {
-            this.wallet.receive('baseinfo_input', -this.wallet.amount_baseinfo_input);
+            // this.wallet.receive('baseinfo_input', -this.wallet.amount_baseinfo_input);
             this.wallet.baseinfo_inputed = false;
-            alert(this.wallet.amount_baseinfo_input + 'P를 차감했습니다');
+            // alert(this.wallet.amount_baseinfo_input + 'P를 차감했습니다');
           }, 600);
 
         } else if (!this.rewarded && this.rewardable) {
           setTimeout(() => {
-            this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
+            // this.wallet.receive('baseinfo_input', this.wallet.amount_baseinfo_input);
             this.wallet.baseinfo_inputed = true;
-            alert(this.wallet.amount_baseinfo_input + 'P를 지급했습니다');
+            // alert(this.wallet.amount_baseinfo_input + 'P를 지급했습니다');
           }, 600);
 
         }

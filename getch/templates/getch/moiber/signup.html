@@ -278,7 +278,8 @@
           </table>
         </div>
 
-        <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div>
+        <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하기</div>
+        <!-- <div class='action signup' :class='{ active: nextable }' @click='goto_signupper'>가입하고 100P 받기</div> -->
         <!-- <div class='action signup' :class='{ active: nextable }' @click='mobile_check'>가입하고 100P 받기</div> -->
         <div class='desc agree'>약관에 동의하고 가입합니다.</div>
 
@@ -294,14 +295,14 @@
           모이버는 회원님의 개인 정보를 지키기 위해 DID (Decentralized identifiers) 기술을 사용합니다.
         </div>
 
-        <robo :class='{ hidden: robo_hidden }' :session='session' type='x' @action='close_robo'>
+        <!-- <robo :class='{ hidden: robo_hidden }' :session='session' type='x' @action='close_robo'>
           <div>패션 서베이 참여를 위해서
              기본정보 입력이 필요해요.</div>
           <div>👉🏻 전화번호/주소는 선택사항이지만
             래플 참여나 포인트 쇼핑 시에는 필수이니
             미리미리 입력해 두는 센스!!</div>
           <div>💋 입력하면 100P가 즉시 지급됩니다!</div>
-        </robo>
+        </robo> -->
 
         <div class='tail'>
           <span class='item' @click='session.open_about()'>회사소개</span>

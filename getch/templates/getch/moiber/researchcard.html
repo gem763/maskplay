@@ -201,10 +201,11 @@
       reward: function() {
         if (this.research) {
           if (this.finished) {
-            return this.research.reward ? '서베이 완료! ' + this.research.reward + 'P 득! ✌🏻': ''
+            return this.research.reward ? '서베이 완료!' : ''
+            // return this.research.reward ? '서베이 완료! ' + this.research.reward + 'P 득! ✌🏻': ''
 
           } else {
-            return this.research.reward ? '완료하면 ' + this.research.reward + 'P 지급 💰': ''
+            // return this.research.reward ? '완료하면 ' + this.research.reward + 'P 지급 💰': ''
           }
 
         } else {

@@ -310,14 +310,17 @@
 
       <div class='monitor' :class='{ show: !wallet_onloading }'>
         <div class='section top'>
-          <div class='point-total'>[[ amount ]]P</div>
+          <!-- <div class='point-total'>[[ amount ]]P</div> -->
 
-          <div class='action guide' @click='session.help()'>
-            <span>사용 가이드</span>
+          <!-- <div class='action guide' @click='session.help()'> -->
+          <div class='action guide' @click='toggle_notice'>
+            <span>공지</span>
+            <!-- <span>사용 가이드</span> -->
           </div>
 
           <div class='action pointmenu' @click='toggle_section("pointmenu")'>
-            <span>포인트 메뉴</span>
+            <span>메뉴</span>
+            <!-- <span>포인트 메뉴</span> -->
           </div>
         </div>
 
@@ -395,6 +398,15 @@
 
       reload_boo: function() {
         this.session.user.auth.reload_boos();
+      },
+
+      toggle_notice: function() {
+        if (this.session.on('notice')) {
+          this.session.close_page();
+
+        } else {
+          this.session.open_notice();
+        }
       }
     },
 

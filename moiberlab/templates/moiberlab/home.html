@@ -1,263 +1,69 @@
-<!doctype html>
-<html lang="ko">
-
-<head>
-  <!-- Google Tag Manager -->
-  <script>
-    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-5PVVB55');
-  </script>
-  <!-- End Google Tag Manager -->
-
-  <title>MOIBER</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1, user-scalable=no">
-
-  <!-- <meta property="og:type" content="website">
-  <meta property="og:url" content="https://moiber.com">
-  <meta property="og:title" content="모이버">
-  <meta property="og:description" content="브랜드에 훈수두고 포인트 얻자">
-  <meta property="og:image" content="/static/materials/imgs/kakao-share.png"> -->
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href='/static/jquery-ui/jquery-ui.min.css'>
-  <link rel="stylesheet" href='/static/cropperjs/cropper.min.css'>
-  <link rel="stylesheet" href='/static/swiper/swiper-bundle.css'>
-
-  <!-- favicon.ico 404 Not found error -->
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-
-  <style>
-    :root {
-      /* vh 단위는 아이폰에서 안먹히는 경우가 있어서
-      아래처럼 height를 js로 새로 정의하고, var(--height) 방식으로 보정했다
-      https://stackoverflow.com/questions/23223157/how-to-fix-vhviewport-unit-css-in-mobile-safari */
-      --height: 100vh; /* Fallback for browsers that do not support Custom Properties */
-      --height: calc(var(--vh, 1vh) * 100);
-
-      /* --width-max: 428px; */
-      --width-max: 1000px;
-      --width: min(100vw, var(--width-max));
-      /* --width: min(var(--width-max), 100vw, calc(100vh * 11 / 16)); */
-      --width-unit: calc(var(--width) / 100);
-
-      --w-1: calc(var(--width-unit) * 1);
-
-      --iphone-bottom: 0px;
-      --appdownloader-height: 0px;
-    }
-
-    @font-face {
-      font-family: 'AppleSDGothicNeo';
-      src: url('/static/font/AppleSDGothicNeoR00-01.otf') format('opentype');
-      font-weight: normal;
-    }
-
-    @font-face {
-      font-family: 'AppleSDGothicNeo';
-      src: url('/static/font/AppleSDGothicNeoB00-07.otf') format('opentype');
-      font-weight: bold;
-    }
+<style>
+  .home.vcomp .page-body {
+    background: lightpink;
+    padding-top: 600px;
+  }
+</style>
 
 
-    html, body {
-      /* 모바일브라우저 검색바를 고정하기 위함
-      https://stackoverflow.com/questions/18061308/prevent-address-bar-hiding-in-mobile-browsers */
-      margin: 0;
-      height: 100%;
-      /* overflow: hidden; */
-      /* 안드로이드에서 키보드올라올때 이 body의 높이가 바뀐다. 이때 스크롤할수 있도록 overflow 설정  */
-      overflow: auto;
-      background: white;
-    }
+<script type='text/x-template' id='home-template'>
+  <page
+    class='home vcomp'
+    :order='session.page.home.order'
+    :open='session.page.home.open'
+    :from='session.page.home.from'
+    :hide_close='true'
+    @scroll='scroll'>
 
-    * {
-      font-family: 'AppleSDGothicNeo';
-    }
-
-    #moiber > .window {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: var(--width);
-      height: var(--height);
-      background: orange;
-      transform: translateX(-50%);
-      /* border-right: 1px solid #cecece;
-      border-left: 1px solid #cecece;
-      box-sizing: content-box; */
-      overflow: hidden;
-      /* display: flex;
-      flex-direction: column; */
-    }
-
-    @media (max-width: 480px) {
-      #moiber > .window {
-        background: lightblue;
-      }
-    }
-
-    /* @media (min-width: 1200px) {
-      body {
-        background: lightblue;
-      }
-    } */
-
-    @supports (-webkit-touch-callout: none) {
-      /* CSS specific to iOS devices */
-    }
-
-    @supports not (-webkit-touch-callout: none) {
-      /* CSS for other than iOS devices */
-
-    }
-  </style>
-</head>
-
-
-<body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5PVVB55" height="0" width="0" style="display:none;visibility:hidden"></iframe>
-  </noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
-
-  <div id='moiber'>
-    <div class='window'>
-      <!-- <div class='header' @click='open_appdownload'>
-        <div class='message'>
-          모이버 앱 다운받기
-          <span class='downloadapp'>
-            <img src='/static/materials/icons/download.png'>
-          </span>
-        </div>
-
-        <span class='closer' @click.stop='close_appdownloader'>
-          <img src='/static/materials/icons/icon_x.png'>
-        </span>
+    <template #page-body>
+      <div @click.stop='load_pix'>
+        <input type="file" name="image" accept="image/*" style='display:none' @change='imagize' ref='pixinput'>
+        업로드하기
       </div>
+    </template>
 
-      <div class='main'>
-        <pages :session='session'></pages>
-        <joystick :session='session'></joystick>
-        <guider :session='session'></guider>
-        <dasher :session='session'></dasher>
-      </div> -->
-    </div>
-  </div>
+  </page>
+</script>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="/static/jquery-ui/jquery-ui.min.js"></script>
-  <script src="/static/jquery-ui/jquery.ui.touch-punch.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-  <script src="/static/vue/vue.2.6.11.js"></script>
-  <script src="/static/sideb/moiber.js"></script>
 
-  <script src='https://cdn.jsdelivr.net/lodash/4.17.2/lodash.min.js'></script>
-  <script src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
-  <script src="/static/cropperjs/cropper.min.js"></script>
-  <script src="https://unpkg.com/vue-masonry-css"></script>
-  <script src="/static/swiper/swiper-bundle.js"></script>
-  <script src="https://d3js.org/d3.v4.min.js"></script>
-  <script src='https://developers.kakao.com/sdk/js/kakao.min.js'></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue-clipboard2/0.3.1/vue-clipboard.min.js'></script>
-  <script src="https://unpkg.com/vue-lazyload/vue-lazyload.js"></script>
+<script>
+  Vue.component('home', {
+    template: '#home-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
 
-  <script>
-    const moiber = new Vue({
-      el: '#moiber',
-      delimiters: ['[[', ']]'],
-      data: {
-        session: undefined,
-        entrypoint: undefined
+    methods: {
+      scroll: function(obj) {
+        this.session.scroll_direction = obj.scroll_direction;
+
+        if (obj.triggered && this.session.scroll_direction=='down') {
+          // this.researches.load(3);
+        }
       },
 
-      created: function() {
-        this.entrypoint = {
-          entry: '{{entry}}',
-          id: Number('{{id}}')
-        };
-
-        // this.session = new Session(this.entrypoint);
-        // this.session.labels = {{labels|safe}};
-
-        // switch (this.entrypoint.entry) {
-        //   case 'research':
-        //     this.open_research();
-        //     break;
-        // }
-      }
-    });
-
-    Kakao.init('{{ kakao_js_key|safe }}');
-    // console.log(kakao)
-
-    function kakaotalk_login(data) {
-      const formdata = new FormData();
-      formdata.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-      formdata.append('data', data);
-      // formdata.append('data', JSON.stringify(data));
-
-      fetch('/login/social/kakaotalk/', { method: 'POST', body: formdata })
-        .then(res => res.json())
-        .then(js => {
-          console.log(js);
-          // alert(js.message);
-          if (js.code == -1) {
-            alert(js.message);
-
-          } else {
-            location.reload();
-          }
-        });
-    }
-
-
-    function csrfSafeMethod(method) {
-      return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    $(document).ready(function(){
-      var csrftoken = Cookies.get('csrftoken');
-
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
+      load_pix: function() {
+        if (this.$refs) {
+          const input = this.$refs.pixinput;
+          input.click();
         }
-      });
+      },
 
+      imagize: function(event) {
+        const input = event.target;
+        const self = this;
 
+        if (input.files && input.files[0]) {
+          let reader = new FileReader();
+          reader.onload = function(e) {
+            self.session.open_pixeditor(e.target.result, 'writer');
+          };
 
-      if (navigator.userAgent.toLowerCase().indexOf('iosapp') != -1) {
-        document.documentElement.style.setProperty('--iphone-bottom', '30px');
-        document.documentElement.style.setProperty('--vh', `1vh`);
-
-      } else {
-        document.documentElement.style.setProperty('--iphone-bottom', '0px');
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-      }
-
-
-      if ((/iPhone|iPad|iPod/i.test(navigator.userAgent)) && (navigator.userAgent.toLowerCase().indexOf('mobileapp') == -1)) {
-        // true for mobile device
-        document.documentElement.style.setProperty('--appdownloader-height', '45px');
-
-      } else if ((/Android/i.test(navigator.userAgent)) && (navigator.userAgent.toLowerCase().indexOf('mobileapp') == -1)) {
-        document.documentElement.style.setProperty('--appdownloader-height', '45px');
-
-      } else {
-        // false for not mobile device
-        document.documentElement.style.setProperty('--appdownloader-height', '0px');
-      }
-    });
-  </script>
-
-</body>
-</html>
+          reader.readAsDataURL(input.files[0]);
+        }
+      },
+    }
+  });
+</script>

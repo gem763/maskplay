@@ -1,0 +1,76 @@
+<style>
+  .writer.vcomp .page-body {
+    background: white;
+  }
+
+  .writer.vcomp .page-body > .section {
+    position: relative;
+    width: 100%;
+    /* height: 300px; */
+    background: lightblue;
+    padding: 48px;
+  }
+
+  .writer.vcomp .page-body > .section.pix > img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>
+
+
+<script type='text/x-template' id='writer-template'>
+  <page
+    class='writer vcomp'
+    :order='session.page.writer.order'
+    :open='session.page.writer.open'
+    :from='session.page.writer.from'
+    :hide_close='false'
+    @close='session.close_page()'
+    @scroll='scroll'>
+
+    <template #page-body>
+      <div class='section pix'>
+        <img :src='pixsrc' v-if='pixsrc'>
+      </div>
+
+      <div class='section'></div>
+      <div class='section'></div>
+    </template>
+
+  </page>
+</script>
+
+
+<script>
+  Vue.component('writer', {
+    template: '#writer-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    },
+
+    computed: {
+      blob: function() {
+        return this.session.page.writer.blob
+      },
+
+      pixsrc: function() {
+        if (this.blob) {
+          return URL.createObjectURL(this.blob);
+        }
+      }
+    },
+
+    methods: {
+      scroll: function(obj) {
+        this.session.scroll_direction = obj.scroll_direction;
+
+        if (obj.triggered && this.session.scroll_direction=='down') {
+          // this.researches.load(3);
+        }
+      }
+    }
+  });
+</script>

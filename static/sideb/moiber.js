@@ -70,7 +70,7 @@ class Session {
 
     this.reload_everyday();
 
-    this.open_notice();
+    // this.open_notice();
     // this.open_bulletin('intern');
   }
 

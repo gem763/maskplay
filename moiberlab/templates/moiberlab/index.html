@@ -16,11 +16,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1, user-scalable=no">
 
-  <!-- <meta property="og:type" content="website">
+  <meta property="og:type" content="website">
   <meta property="og:url" content="https://moiber.com">
-  <meta property="og:title" content="모이버">
-  <meta property="og:description" content="브랜드에 훈수두고 포인트 얻자">
-  <meta property="og:image" content="/static/materials/imgs/kakao-share.png"> -->
+  <meta property="og:title" content="MOIBER">
+  <meta property="og:description" content="Metaverse Street Market">
+  <meta property="og:image" content="/static/materials/imgs/kakao_shareimg.jpg">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href='/static/jquery-ui/jquery-ui.min.css'>
@@ -38,8 +38,8 @@
       --height: 100vh; /* Fallback for browsers that do not support Custom Properties */
       --height: calc(var(--vh, 1vh) * 100);
 
-      /* --width-max: 428px; */
-      --width-max: 800px;
+      --width-max: 428px;
+      /* --width-max: 800px; */
       --width: min(100vw, var(--width-max));
       /* --width: min(var(--width-max), 100vw, calc(100vh * 11 / 16)); */
       --width-unit: calc(var(--width) / 100);
@@ -75,17 +75,26 @@
 
     * {
       font-family: 'AppleSDGothicNeo';
+      color: #c9c9c9;
       box-sizing: border-box;
+      letter-spacing: -0.1px;
+      line-height: 16px;
+    }
+
+    #moiber {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
     #moiber > .window {
       position: absolute;
       top: 0;
-      left: 0;
+      left: 50%;
       width: var(--width);
       height: var(--height);
       background: orange;
-      /* transform: translateX(-50%); */
+      transform: translateX(-50%);
       /* border-right: 1px solid #cecece;
       border-left: 1px solid #cecece;
       box-sizing: content-box; */
@@ -133,6 +142,23 @@
       height: 100px;
     }
 
+    #moiber > .window > .logo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 110px;
+      /* background: orange; */
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    #moiber > .window > .logo > img {
+      height: 80px;
+      width: auto;
+    }
+
     #moiber > .window > .main {
       position: absolute;
       top: 0;
@@ -143,6 +169,49 @@
       /* padding-top: 30px; */
       padding-bottom: 20px;
       overflow: auto;
+    }
+
+    #moiber > .window > .floater {
+      position: absolute;
+      bottom: 70px;
+      /* bottom: 20px; */
+      right: 20px;
+      width: 115px;
+      height: 115px;
+      /* background: orange; */
+    }
+
+    @keyframes startag_rotate {
+      0%   {transform: rotate(0);}
+      100% {transform: rotate(360deg);}
+    }
+
+    #moiber > .window > .floater > img.startag {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      animation-name: startag_rotate;
+      animation-duration: 10s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
+    #moiber > .window > .floater > .msg {
+      font-size: 10px;
+      color: black;
+      white-space: pre-line;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-top: 3px;
+      font-weight: bold;
+      line-height: 10px;
     }
 
     #moiber > .window > .main > .section {
@@ -161,7 +230,8 @@
 
     #moiber > .window > .main > .section.top {
       height: auto;
-      padding: 110px 0 0 0;
+      padding: 0px 0 0 0;
+      /* padding: 110px 0 0 0; */
       background: black;
     }
 
@@ -170,7 +240,7 @@
       padding: 15px 30px 15px 30px;
     }
 
-    #moiber > .window > .main > .section.nft {
+    #moiber > .window > .main > .section.video {
       height: auto;
       padding: 15px 30px 15px 30px;
     }
@@ -184,7 +254,7 @@
 
     #moiber > .window > .main > .section.foot {
       height: auto;
-      padding: 15px 30px 15px 30px;
+      padding: 45px 30px 15px 30px;
       /* background: orange; */
       display: block;
     }
@@ -194,7 +264,7 @@
       height: 100%;
     } */
 
-    #moiber > .window > .main > .section.top > img.mov {
+    #moiber > .window > .main > .section.top > video.mov {
       width: 100%;
       height: auto;
     }
@@ -211,21 +281,21 @@
     #moiber > .window > .main > .section > .card {
       width: 100%;
       height: 100%;
-      background: rgba(22,22,22,0.43);
+      background: rgba(25,25,25,0.43);
       /* background: rgba(255,255,255,0.1); */
       border-radius: 15px;
       overflow: hidden;
       color: white;
       padding: 20px;
-      -webkit-backdrop-filter: blur(1px);
-      backdrop-filter: blur(1px);
+      -webkit-backdrop-filter: blur(1.5px);
+      backdrop-filter: blur(1.5px);
     }
 
-    #moiber > .window > .main > .section.nft > .card {
+    #moiber > .window > .main > .section.video > .card {
       padding: 0;
     }
 
-    #moiber > .window > .main > .section.nft > .card > video {
+    #moiber > .window > .main > .section.video > .card > video {
       display: block;
       width: 100%;
     }
@@ -233,6 +303,7 @@
     #moiber > .window > .main > .section > .card > .title {
       font-size: 14px;
       font-weight: bold;
+      color: white;
     }
 
     #moiber > .window > .main > .section > .card > .content {
@@ -242,7 +313,7 @@
     }
 
     #moiber > .window > .main > .section > .card > .content > .boxed {
-      border: 1px solid white;
+      border: 1px solid #c9c9c9;
       width: 60px;
       height: 25px;
       line-height: 25px;
@@ -288,6 +359,21 @@
       height: 100%;
     }
 
+    #moiber > .window > .main > .section > .enter {
+      position: absolute;
+      top: calc(100% - 10px);
+      left: 50%;
+      /* width: 100%; */
+      font-size: 13px;
+      color: white;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    #moiber > .window > .main > .section > .enter > * {
+      color: white;
+    }
+
     #moiber > .window > .main > .section.btns > .btn {
       height: 40px;
       width: calc((100% - 10px) / 2);
@@ -295,8 +381,8 @@
       text-align: center;
       font-size: 13px;
       font-weight: bold;
-      color: white;
-      border: 1px solid white;
+      /* color: white; */
+      border: 1px solid #c9c9c9;
       border-radius: 10px;
     }
 
@@ -321,9 +407,25 @@
 
     #moiber > .window > .main > .section.foot > .company {
       font-size: 12px;
-      color: white;
+      color: #929292;
       white-space: pre-line;
-      margin-top: 30px;
+      margin-top: 10px;
+    }
+
+    #moiber > .window > .main > .section > .links {
+      width: 100%;
+      height: 25px;
+      /* background: orange; */
+      display: flex;
+      flex-direction: row;
+      /* justify-content: space-evenly */
+    }
+
+    #moiber > .window > .main > .section > .links > .link {
+      height: 100%;
+      width: auto;
+      margin-right: 19px;
+      filter: brightness(0.5);
     }
   </style>
 </head>
@@ -345,6 +447,10 @@
         <img class='bgimg' src='/static/materials/imgs/space.gif'>
         <img class='bgimg' src='/static/materials/imgs/space.gif'>
         <img class='bgimg' src='/static/materials/imgs/space.gif'>
+        <img class='bgimg' src='/static/materials/imgs/space.gif'>
+        <img class='bgimg' src='/static/materials/imgs/space.gif'>
+        <img class='bgimg' src='/static/materials/imgs/space.gif'>
+        <img class='bgimg' src='/static/materials/imgs/space.gif'>
       </div>
 
       <div class='main'>
@@ -353,8 +459,13 @@
         </div> -->
 
         <div class='section top'>
-          <img class='mov' src='/static/materials/imgs/mov_sample.jpg'>
-          <img class='logo' src='/static/materials/logos/logo_green.png'>
+          <video class='mov' playsinline muted autoplay loop>
+            <source src="/static/materials/video/headmov_hr.mp4" type="video/mp4">
+            <!-- <strong>이 문장은 사용자의 웹 브라우저가 video 태그를 지원하지 않을 때 나타납니다!</strong> -->
+          </video>
+
+          <!-- <img class='mov' src='/static/materials/imgs/mov_sample.jpg'> -->
+          <!-- <img class='logo' src='/static/materials/logos/logo_green.png'> -->
         </div>
 
         <div class='section desc'>
@@ -371,16 +482,16 @@
               크리에이터, 브랜드와 함께 만들어 가는 미래 수익
 
               메타버스 스트리트 마켓 모이버에서
-              멀티 컬처를 경험하고 먼저 구매하세요
+              멀티 컬처를 경험하고 먼저 구매하세요.
             </div>
           </div>
         </div>
 
-        <div class='section nft'>
-          <div class='card'>
+        <div class='section video'>
+          <div class='card' @click='go_opensea("adidas")'>
             <video playsinline muted autoplay loop>
               <source src="https://res.cloudinary.com/adidas-app/video/upload/q_auto:good/v1/feed-assets/b1s4tljlwn01mu8kfl9d.mp4" type="video/mp4">
-              <strong>이 문장은 사용자의 웹 브라우저가 video 태그를 지원하지 않을 때 나타납니다!</strong>
+              <!-- <strong>이 문장은 사용자의 웹 브라우저가 video 태그를 지원하지 않을 때 나타납니다!</strong> -->
             </video>
           </div>
         </div>
@@ -407,6 +518,15 @@
           </div>
         </div>
 
+        <div class='section video'>
+          <div class='card' @click='go_opensea("hape")'>
+            <video playsinline muted autoplay loop>
+              <source src="https://meta.hapeprime.com/placeholder.mp4" type="video/mp4">
+              <!-- <strong>이 문장은 사용자의 웹 브라우저가 video 태그를 지원하지 않을 때 나타납니다!</strong> -->
+            </video>
+          </div>
+        </div>
+
         <div class='section desc'>
           <div class='card'>
             <div class='title'>Multi NFT ; 가상에 실물 가치를 더하다</div>
@@ -425,11 +545,23 @@
               롱라이프 디자인의 초판,
               실물 상품을 리워드로 받을 수 있습니다.
 
-              <div class='boxed'>share</div>
+              <div class='boxed'>Profit</div>
               해당 라인의 리스탁(추가생산) 시
               판매 수익의 일부를 받을 권리를 갖게 됩니다.
             </div>
           </div>
+        </div>
+
+        <div class='section video'>
+          <div class='card' @click='go_space'>
+            <video playsinline muted autoplay loop>
+              <source src="/static/materials/video/space.mov" type="video/mp4">
+              <!-- <strong>이 문장은 사용자의 웹 브라우저가 video 태그를 지원하지 않을 때 나타납니다!</strong> -->
+            </video>
+            <!-- <div class='enter'><b>MOIBER Metaspace</b> >> 입장하기</div> -->
+          </div>
+
+          <div class='enter' @click='go_space'><b>MOIBER Metaspace</b> >> 입장하기</div>
         </div>
 
         <div class='section desc'>
@@ -438,7 +570,7 @@
             <div class='content'>디지털 전시를 즐기고 상품을 구매할 수 있는
               메타버스 공간이 구현됩니다.
 
-              Hall of iframe
+              Hall of Fame
               컨템포러리 패션을 주도하는 브랜드의 현대판 명예의 전당
 
               Long-life Brand Dig Site
@@ -466,17 +598,24 @@
         </div>
 
         <div class='section btns'>
-          <div class='btn'>FAQ</div>
-          <div class='btn'>INQUIRY</div>
+          <div class='btn' @click='go_faq'>FAQ</div>
+          <div class='btn' @click='go_partnership'>Partnership</div>
         </div>
 
         <div class='section foot'>
-          <div class='menu'>
+          <!-- <div class='menu'>
             <span>INFORMATION</span>
             <span>REPORTS</span>
             <span>LEGAL</span>
             <span>AGREEMENT</span>
             <span>PRIVACY</span>
+          </div> -->
+
+          <div class='links'>
+            <img class='link' src='/static/materials/icons/insta.png' @click='go_insta'>
+            <img class='link' src='/static/materials/icons/youtube.png' @click='go_youtube'>
+            <!-- <img class='link' src='/static/materials/icons/android.png' @click='go_android'>
+            <img class='link' src='/static/materials/icons/ios.png' @click='go_ios'> -->
           </div>
 
           <div class='company'>주식회사 모이버 (대표 : 임동석)
@@ -487,6 +626,18 @@
           </div>
         </div>
 
+      </div>
+
+
+      <div class='floater'>
+        <img class='startag' src='/static/materials/imgs/startag.png'>
+        <div class='msg'>Released
+          on March
+        </div>
+      </div>
+
+      <div class='logo'>
+        <img src='/static/materials/logos/logo_green_hr.png'>
       </div>
     </div>
   </div>
@@ -517,7 +668,56 @@
       el: '#moiber',
       delimiters: ['[[', ']]'],
       data: { },
-      created: function() { }
+      created: function() { },
+      methods: {
+        send_email: function() {
+          document.location.href = 'mailto:contact@moiber.com';
+        },
+
+        go_faq: function() {
+          this.open_page('https://tally.so/r/n0lVZn');
+        },
+
+        go_partnership: function() {
+          this.open_page('https://tally.so/r/wQjOAn');
+        },
+
+        go_space: function() {
+          this.open_page('https://oncyber.io/spaces/nriWwJY8wkdlJ1iuNnJ7');
+        },
+
+        go_insta: function() {
+          this.open_page('https://www.instagram.com/moiber_official');
+        },
+
+        go_youtube: function() {
+          this.open_page('https://www.youtube.com/channel/UCnqOIIFCrl792Nr_-cfvl_Q');
+        },
+
+        go_opensea: function(nft) {
+          if (nft == 'adidas') {
+            this.open_page('https://opensea.io/assets/0x28472a58a490c5e09a238847f66a68a47cc76f0f/0');
+
+          } else if (nft == 'hape') {
+            this.open_page('https://opensea.io/assets/0x4db1f25d3d98600140dfc18deb7515be5bd293af/4004');
+          }
+        },
+
+        open_page(url) {
+          let where;
+          if (navigator.userAgent.toLowerCase().indexOf('androidapp') != -1) {
+            // alert(this.agenda.outlink);
+            // cordova 안드로이드앱에서 _self로 하면, 예외처리로 되어 외부브라우저가 열린다
+            // 왜? 인지는 모른다... 2021.09.09
+            where = '_self';
+
+          } else {
+            where = '_blank';
+          }
+
+          window.open(url, where);
+        }
+      }
     });
 
 

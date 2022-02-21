@@ -369,7 +369,8 @@
       position: absolute;
       top: calc(100% - 10px);
       left: 50%;
-      /* width: 100%; */
+      width: 100%;
+      text-align: center;
       font-size: 13px;
       color: white;
       transform: translateX(-50%);
@@ -378,6 +379,7 @@
 
     #moiber > .window > .main > .section > .enter > * {
       color: white;
+      cursor: pointer;
     }
 
     #moiber > .window > .main > .section.btns > .btn {
@@ -569,16 +571,21 @@
           </div>
         </div>
 
-        <div class='section video'>
-          <div class='card' @click='go_space'>
+        <div class='section video' @click='go_showroom("streetmarket")'>
+          <div class='card'>
             <video playsinline muted autoplay loop>
-              <source src="/static/materials/video/space.mov" type="video/mp4">
+              <source src="/static/materials/video/showroom_streetmarket.mov" type="video/mp4">
               <!-- <strong>이 문장은 사용자의 웹 브라우저가 video 태그를 지원하지 않을 때 나타납니다!</strong> -->
             </video>
             <!-- <div class='enter'><b>MOIBER Metaspace</b> >> 입장하기</div> -->
           </div>
 
-          <div class='enter' @click='go_space'><b>MOIBER Metaspace</b> >> 입장하기</div>
+          <!-- <div class='enter' @click='go_space'><b>MOIBER Metaspace</b> >> 입장하기</div> -->
+          <div class='enter'><b>Street Market by Moiber</b> >> 입장하기</div>
+        </div>
+
+        <div class='section video'>
+          <div class='enter' @click='go_showroom("tatoo")'><b>Street Art Studio</b> >> 입장하기</div>
         </div>
 
         <div class='section desc'>
@@ -700,6 +707,18 @@
 
         go_partnership: function() {
           this.open_page('https://tally.so/r/wQjOAn');
+        },
+
+        go_showroom: function(agenda) {
+          switch (agenda) {
+            case 'tatoo':
+              this.open_page('https://oncyber.io/spaces/nriWwJY8wkdlJ1iuNnJ7');
+              break;
+
+            case 'streetmarket':
+              this.open_page('https://cyber.xyz/spaces/Hx3eXm0hqydaFiLqGIVw');
+              break;
+          }
         },
 
         go_space: function() {

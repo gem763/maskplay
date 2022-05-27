@@ -17,3 +17,7 @@ def bbs(request):
     # context['entry'] = request.GET.get('entry', None)
     # context['kakao_js_key'] = settings.KAKAO_JS_KEY
     return render(request, 'moiberlab/bbs.html', context)
+
+
+def test(request):
+    return render(request, 'moiberlab/test.html', context)

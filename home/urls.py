@@ -23,8 +23,9 @@ urlpatterns = [
     path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('', include(settings.APP + '.urls')),
-    path('lab/', include('moiberlab' + '.urls')),
+    # path('', include(settings.APP + '.urls')),
+    # path('lab/', include('moiberlab' + '.urls')),
+    path('', include('moiberlab' + '.urls')),
     # path('', include('getch.urls')),
 ]
 

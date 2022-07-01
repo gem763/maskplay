@@ -3,6 +3,5 @@ from django.conf.urls import include
 from . import views as v
 
 urlpatterns = [
-    # path('mvp1', v.play, name='play'),
-    path('', v.home, name='home'),
+    path('', v.index, name='index'),
 ]

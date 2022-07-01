@@ -5,8 +5,8 @@ from django.conf import settings
 
 context = dict()
 
-def home(request):
+def index(request):
     request.session.save()
     context['entry'] = request.GET.get('entry', None)
     context['kakao_js_key'] = settings.KAKAO_JS_KEY
-    return render(request, 'moiberlab/home.html', context)
+    return render(request, 'moiberlab/index.html', context)

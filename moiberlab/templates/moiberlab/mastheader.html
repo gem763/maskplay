@@ -1,0 +1,185 @@
+<style>
+  .mastheader.vcomp {
+    position: relative;
+    width: 100%;
+  }
+
+  .mastheader.vcomp > .banner {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    background: lightblue;
+  }
+
+  .mastheader.vcomp > .banner > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+  }
+
+  .mastheader.vcomp > .banner > .title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .mastheader.vcomp > .banner > .title > img.lettering {
+    height: 60px;
+    width: auto;
+  }
+
+  .mastheader.vcomp > .banner > .title > .subtitle-0 {
+    color: white;
+    white-space: pre-line;
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .mastheader.vcomp > .banner > .title > .subtitle-1 {
+    color: white;
+    white-space: pre-line;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .mastheader.vcomp > .banner > .title > .morebtn {
+    padding: 10px 15px 10px 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: #333;
+    border-radius: 50px;
+    margin-top: 20px;
+    border: 1px solid white;
+  }
+
+  .mastheader.vcomp > .topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    /* background: rgba(0,0,0,0.5); */
+    padding-left: 48px;
+    padding-right: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mastheader.vcomp > .topbar > .logo {
+    position: relative;
+    width: 60px;
+    height: 100%;
+    /* background: white; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mastheader.vcomp > .topbar > .logo > img {
+    width: 100%;
+    height: auto;
+  }
+
+  .mastheader.vcomp > .topbar > .menu {
+    position: relative;
+    /* width: 100px; */
+    height: 100%;
+    /* background: white; */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .mastheader.vcomp > .topbar > .menu > .item {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    /* background: orange; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mastheader.vcomp > .topbar > .menu > .item.more {
+    margin-left: 10px;
+  }
+
+  .mastheader.vcomp > .topbar > .menu > .item.cart {
+    margin-left: 15px;
+  }
+
+  .mastheader.vcomp > .topbar > .menu > .item.more > img {
+    width: 24px;
+    height: auto;
+  }
+
+  .mastheader.vcomp > .topbar > .menu > .item.cart > img {
+    width: 24px;
+    height: auto;
+  }
+
+  .mastheader.vcomp > .topbar > .menu > .item.profiletag > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 100%;
+    filter: brightness(90%);
+    border: 1px solid white;
+  }
+</style>
+
+
+<script type='text/x-template' id='mastheader-template'>
+  <div class='mastheader vcomp'>
+    <div class='banner'>
+      <img src='/static/materials/imgs/homebanner.jpg'>
+      <div class='title'>
+        <img class='lettering' src='/static/materials/icons/lettering_white.png'>
+        <div class='subtitle-0'>유저 X 전문가의 트렌드 티키타카 ㅡ 모이버는 지금
+          혁신 스타일 제품 공동 제작 중!!</div>
+
+        <div class='subtitle-1'>TALK TREND$, $HARE IDEA,
+          MAKE/BUY $TYLE INNOVATION!</div>
+
+        <div class='morebtn'>더 알아보기</div>
+      </div>
+    </div>
+
+    <div class='topbar'>
+      <div class='logo'><img src='/static/materials/icons/logo_white.png'></div>
+
+      <div class='menu'>
+        <div class='item profiletag'><img src='/static/materials/imgs/tempuser.jpg'></div>
+        <div class='item cart'><img src='/static/materials/icons/cart_white.png'></div>
+        <div class='item more'><img src='/static/materials/icons/more_white.png'></div>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+<script>
+  Vue.component('mastheader', {
+    template: '#mastheader-template',
+    delimiters: ['[[', ']]'],
+    props: ['session'],
+    data: function() {
+      return {}
+    }
+  });
+</script>
